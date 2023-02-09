@@ -1,0 +1,96 @@
+import React,{useState,useEffect} from 'react';
+import {View, Pressable, Image, ImageBackground} from 'react-native';
+import RNFS from 'react-native-fs';
+import uuid from 'react-native-uuid';
+import {CircleButton} from './Button';
+import {launchCamera} from 'react-native-image-picker';
+import fs from '../utils/fs';
+
+export default function Camera({onChange, type, disabled}) {
+  const openCamera = async () => {
+    try {
+      const res = await launchCamera({
+        mediaType: type,
+        videoQuality: 'high',
+      });
+      if (!res.assets[0]) {
+        return;
+      }
+      const file = res.assets[0];
+      const documentDir = RNFS.DocumentDirectoryPath;
+      const UUID = uuid.v4();
+      await fs.copyFile(
+        file.uri,
+        `file://${documentDir}/${UUID}.${file.uri.split('.').pop()}`,
+      );
+      onChange &&
+        onChange({
+          uri: `${documentDir}/${UUID}.${file.uri.split('.').pop()}`,
+          type: file.type,
+          fileSize: file.fileSize,
+        });
+    } catch (err) {
+      console.info(err);
+    }
+  };
+
+  const [fileImg, setFileImg] = useState()
+  const [fileDisImg, setFileDisImg] = useState()
+  const [cameraImg, setCameraImg] = useState()
+  const [cameraDisImg, serCameraDisImg] = useState()
+  const [videoImg, setVideoImg] = useState()
+  const [videoDisImg, setVideoDisImg] = useState()
+
+  useEffect(() => {
+    let fileImg = require('../iconImg/file.png')
+    setFileImg(fileImg)
+    let cameraImg = require('../iconImg/camera.png')
+    setCameraImg(cameraImg)
+    let cameraDisImg = require('../iconImg/cameraDis.png')
+    serCameraDisImg(cameraDisImg)
+    let videoImg = require('../iconImg/video.png')
+    setVideoImg(videoImg)
+    let videoDisImg = require('../iconImg/videoDis.png')
+    setVideoDisImg(videoDisImg)
+  }, [])
+
+  const cameraPulldown = (type) => {
+    if (type === 'photo') {
+      let cameraImg = require('../iconImg/cameraPull.png')
+      setCameraImg(cameraImg)
+    } else {
+      let videoImg = require('../iconImg/videoPull.png')
+      setVideoImg(videoImg)
+    }
+  }
+
+  const cameraPullup = (type) => {
+    if (type === 'photo') {
+      let cameraImg = require('../iconImg/camera.png')
+      setCameraImg(cameraImg)
+    } else {
+      let videoImg = require('../iconImg/video.png')
+      setVideoImg(videoImg)
+    }
+  }
+
+  return (
+    // <CircleButton
+    //   disabled={disabled}
+    //   onPress={openCamera}
+    //   name={type === 'photo' ? 'camera' : 'video'}
+    // />
+    <Pressable disabled={disabled} onPress={openCamera}
+    onPressIn={() => cameraPulldown(type)}
+    onPressOut={() => cameraPullup(type)}>
+      <Image style={{ height: 45, width: 45, alignItems: 'center' }}
+        source={
+          disabled && type === 'photo' ? cameraDisImg : // 按钮为禁用状态时，分别判断type的值，以让相机与摄像机显示对应的图片
+          (disabled && type !== 'photo' ? videoDisImg :
+          (!disabled && type === 'photo' ? cameraImg : // 按钮为可用状态时....
+          (!disabled && type !=='photo' ? videoImg : [])))
+        }
+      />
+    </Pressable>
+  );
+}

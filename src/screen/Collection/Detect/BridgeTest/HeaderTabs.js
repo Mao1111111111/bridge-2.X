@@ -1,0 +1,57 @@
+import React from 'react';
+import {View, StyleSheet} from 'react-native';
+import {tailwind} from 'react-native-tailwindcss';
+import Tabs from '../../../../components/Tabs';
+
+export default function HeaderTabs({onChangeTab, style, disabled}) {
+  const yaer = [
+    {
+      key: '2020',
+      name: '2020',
+    },
+    {
+      key: '2021',
+      name: '2021',
+    },
+    {
+      key: '2022',
+      name: '2022',
+    },
+  ];
+
+  const page = [
+    {
+      key: '数据',
+      name: '数据',
+    },
+    {
+      key: '影音',
+      name: '影音',
+    },
+  ];
+
+  return (
+    <View style={[styles.tabsBox, style]}>
+      <Tabs style={[tailwind.mB1,{position:'absolute',left:80}]} defaultActive="2022" tabs={yaer} />
+      <Tabs
+        tabs={page}
+        type="button"
+        disabled={disabled}
+        defaultActive="数据"
+        style={[tailwind.mB1, tailwind.mR1, {position:'absolute',right:80}]}
+        onChangeTab={onChangeTab}
+      />
+      <View style={[tailwind.mY4]}></View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  tabsBox: {
+    ...tailwind.justifyBetween,
+    ...tailwind.itemsCenter,
+    ...tailwind.flexRow,
+    ...tailwind.pX16,
+    ...tailwind.pT2,
+  },
+});
