@@ -8,6 +8,7 @@ import {Context as ThemeContext} from '../providers/ThemeProvider';
 import Headerbar from './Headerbar';
 import {Context as GlobalContext} from '../providers/GlobalProvider';
 // import {BoxShadow} from '../declaration/react-native-shadow'
+import ModalDropdown from 'react-native-modal-dropdown';
 
 const Tab = createBottomTabNavigator();
 
@@ -114,6 +115,29 @@ const TabBar = ({state, navigation, descriptors}) => {
     console.log(menuListDisable);
   }
 
+  const type = ['采集平台', '数据同步','数据统计','用户设置']
+  
+  // 分类选择
+  _selectType = (index,value) => {
+    console.log(index + '--' + value)
+    // this.setState({
+    //     areaIndex: index
+    // })
+  }
+  // 下拉列表分隔符
+  _separator = () => {
+    return(
+      <Text style={{height:0}}></Text>
+    )
+  }
+  // 下拉框位置
+  _adjustType = () => {
+    return({
+      top: 25,
+      right: 15
+    })
+  }
+
   return (
     // Animated 给菜单添加点击动画
     <Animated.View
@@ -172,7 +196,24 @@ const TabBar = ({state, navigation, descriptors}) => {
         </TouchableOpacity>
       ))}
       {/* 用户信息 */}
-      <Pressable onPress={() => menuList()}>
+      {/* <Pressable onPress={() => menuList()}>
+        <View style={styles.user}>
+          <Image style={{ height: 24, width: 24, alignItems: 'center' }}
+              source={require('../iconImg/user.png')}
+          />
+          <Text>{' '}</Text>
+          <Text>{userInfo?.nickname}</Text>
+        </View>
+      </Pressable> */}
+      <ModalDropdown style={[styles.user,{top:10}]}
+        adjustFrame={this._adjustType}
+        options={type} // 选项内容
+        dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
+        dropdownStyle={[{width:100,height:145,alignItems:'center'}]}
+        dropdownTextStyle={[{width:80,textAlign:'center'}]}
+        onSelect={this._selectType} // 点击选项时，执行的方法
+        defaultValue={'采集平台'}
+      >
         <View style={styles.user}>
           
           {/* <Icon name="account-circle" size={24} style={tailwind.mR1} /> */}
@@ -184,7 +225,8 @@ const TabBar = ({state, navigation, descriptors}) => {
           <Text>{' '}</Text>
           <Text>{userInfo?.nickname}</Text>
         </View>
-      </Pressable>
+        <Text style={{color: '#444'}}></Text>
+      </ModalDropdown>
       
       {/* <Image style={
         { height: 50, width: 200, alignItems: 'center' }}

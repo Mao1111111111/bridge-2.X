@@ -131,7 +131,7 @@ export const SliderInput = React.forwardRef(
         console.log('溢出');
       }
     }
-
+    
     return (
       <LabelItem style={style} LabelStyle={LabelStyle} label={label}>
         <View style={[tailwind.flexRow]}>

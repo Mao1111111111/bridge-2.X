@@ -64,7 +64,7 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
    }
 
   React.useEffect(() => {
-    console.log("groupList",groupList);
+    // console.log("groupList",groupList);
     if (groupList && groupList.length) {
       groupList[0] && setNowEdit(groupList[0]);
       if(setSecondDisTypeSel){
