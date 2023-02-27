@@ -220,7 +220,7 @@ export default function DiseaseEdit2({route, navigation}) {
                 <View style={tailwind.mX2} />
                 {/* ================================================= */}
                 {/* 引入不同病害填写页面 */}
-                <View>
+                  <View>
                   {route.params.routeParams.membertype == 'b100001' ||
                   route.params.routeParams.membertype == 'b100006' ?
                   <DiseaseA route={route} navigation={navigation} diseaseData={diseaseData} /> :
@@ -239,7 +239,7 @@ export default function DiseaseEdit2({route, navigation}) {
                   <DiseaseB route={route} navigation={navigation} diseaseData={diseaseData} /> :
                   route.params.routeParams.membertype == 'b100003' ||
                   route.params.routeParams.membertype == 'b100005' ||
-                  route.params.routeParams.membertype == 'b100007'?
+                  route.params.routeParams.membertype == 'b100007' ?
                   <DiseaseC route={route} navigation={navigation} diseaseData={diseaseData} /> :
                   route.params.routeParams.membertype == 'b300001' ?
                   <DiseaseK route={route} navigation={navigation} diseaseData={diseaseData} /> :
@@ -250,6 +250,7 @@ export default function DiseaseEdit2({route, navigation}) {
                   <></>
                   }
                 </View>
+                
                 {/* ================================================= */}
                 <View style={tailwind.mX2} />
               </View>

@@ -137,7 +137,7 @@ export const SliderInput = React.forwardRef(
         <View style={[tailwind.flexRow]}>
           {/* <LabelItem label="长" style={tailwind.w18} /> */}
           <Slider
-            style={{width: 185, height: 20}}
+            style={{width: 130, height: 20}}
             minimumValue={0}
             // value={diseaseData.disLength}
             value={strToNum(textValue)}

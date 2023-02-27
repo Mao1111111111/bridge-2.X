@@ -1,6 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import {tailwind} from 'react-native-tailwindcss';
-import {Text,View, TouchableOpacity, StyleSheet, Animated, Image, Pressable, ImageBackground} from 'react-native';
+import {Text,View, TouchableOpacity, StyleSheet, Animated, Image, StatusBar,Pressable, ImageBackground} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Context} from '../providers/GlobalProvider';
@@ -9,6 +9,12 @@ import Headerbar from './Headerbar';
 import {Context as GlobalContext} from '../providers/GlobalProvider';
 // import {BoxShadow} from '../declaration/react-native-shadow'
 import ModalDropdown from 'react-native-modal-dropdown';
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Caiji from '../../src/screen/Collection/Index';
+import Shuju from '../../src/screen/Sync/Index';
+import Tongji from '../../src/screen/Chart';
+import Shezhi from '../../src/screen/Setting';
 
 const Tab = createBottomTabNavigator();
 
@@ -48,6 +54,7 @@ const TabItem = ({title, icon, img,imgActive,isActive}) => {
     </>
   );
 };
+
 
 // 自定义 TabBar 渲染
 const TabBar = ({state, navigation, descriptors}) => {
@@ -90,12 +97,6 @@ const TabBar = ({state, navigation, descriptors}) => {
   }, [isTabBarShow, tabHeight]);
 
 
-  let [menuListDisable, setMenuListDisable] = useState()
-  useEffect(() => {
-    let menuListDisable = false
-    setMenuListDisable(menuListDisable)
-  },[])
-
   const handlePress = (route, index) => {
     const event = navigation.emit({
       type: 'tabPress',
@@ -107,22 +108,18 @@ const TabBar = ({state, navigation, descriptors}) => {
     }
   };
 
-  // 点击展开一级菜单列表
-  const menuList = () => {
-    console.log('点击了菜单下拉按钮');
-    menuListDisable = !menuListDisable
-    setMenuListDisable(menuListDisable)
-    console.log(menuListDisable);
-  }
+  
 
   const type = ['采集平台', '数据同步','数据统计','用户设置']
   
+  const [toPage, setToPage] = useState()
   // 分类选择
   _selectType = (index,value) => {
     console.log(index + '--' + value)
     // this.setState({
-    //     areaIndex: index
+    //   areaIndex: index
     // })
+    console.log('toPage');
   }
   // 下拉列表分隔符
   _separator = () => {
@@ -157,7 +154,6 @@ const TabBar = ({state, navigation, descriptors}) => {
         ],
       ]}
       >
-        
       {/* logo */}
       <Image style={
         { height: 55, width: 180, alignItems: 'center' }}
@@ -205,7 +201,7 @@ const TabBar = ({state, navigation, descriptors}) => {
           <Text>{userInfo?.nickname}</Text>
         </View>
       </Pressable> */}
-      <ModalDropdown style={[styles.user,{top:10}]}
+      {/* <ModalDropdown style={[styles.user,{top:0}]}
         adjustFrame={this._adjustType}
         options={type} // 选项内容
         dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
@@ -213,7 +209,7 @@ const TabBar = ({state, navigation, descriptors}) => {
         dropdownTextStyle={[{width:80,textAlign:'center'}]}
         onSelect={this._selectType} // 点击选项时，执行的方法
         defaultValue={'采集平台'}
-      >
+      > */}
         <View style={styles.user}>
           
           {/* <Icon name="account-circle" size={24} style={tailwind.mR1} /> */}
@@ -225,15 +221,15 @@ const TabBar = ({state, navigation, descriptors}) => {
           <Text>{' '}</Text>
           <Text>{userInfo?.nickname}</Text>
         </View>
-        <Text style={{color: '#444'}}></Text>
-      </ModalDropdown>
+      {/* </ModalDropdown> */}
+      
       
       {/* <Image style={
         { height: 50, width: 200, alignItems: 'center' }}
         // source={require('../iconImg/logo.png')}
       /> */}
-        {/* <Headerbar items={[{name: ''}]} /> */}
-        
+      {/* <Headerbar items={[{name: ''}]} /> */}
+      
     </Animated.View>
     
     

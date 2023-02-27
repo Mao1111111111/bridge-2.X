@@ -19,8 +19,9 @@ import {TextInput, KeyboardInput} from '../../../../components/Input';
 import {SliderInput} from '../../../../components/SliderInput';
 import Select from '../../../../components/Select';
 import * as hooks from '../BridgeTest/DiseaseHooks';
-import {RadioGroup} from '../../../../components/Radio';
+// import {RadioGroup} from '../../../../components/Radio';
 import ScaleInfo from '../BridgeTest/ScaleInfo';
+import RadioGroup from 'react-native-radio-buttons-group';
 
 export function DiseaseA({route, navigation}) {
     const {
@@ -200,7 +201,8 @@ export function DiseaseA({route, navigation}) {
     return (
     <View style={tailwind.flexRow}>
       {/* 病害填写表格区域 */}
-      <View style={[{width:'55%'}]}>
+      <ScrollView style={{height:350}}>
+        <View style={[{width:'95%'}]}>
         <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
           <LabelItem label="编号:">
             <Text style={[tailwind.fontBold]}>
@@ -379,10 +381,12 @@ export function DiseaseA({route, navigation}) {
           onChange={handleFormChenge}
         />
       </View>
+      </ScrollView>
+      
       {/* ================================================= */}
       <View style={tailwind.mX2} />
       
-      {/* 病害类型选择区域 */}
+      {/* 病害评定标准表 */}
       <View style={[{width:'42%'}]}>
         <View>
         {/* <Text style={[tailwind.mR0, {color:'#2b427d'}]}>病害评定标准表</Text> */}
@@ -606,144 +610,147 @@ export function DiseaseB({route, navigation}) {
   return (
   <View style={tailwind.flexRow}>
     {/* 病害填写表格区域 */}
-    <View style={[{width:'55%'}]}>
-      <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
-        <LabelItem label="编号:">
-          <Text style={[tailwind.fontBold]}>
-            {route.params?.data?.index}
-          </Text>
-        </LabelItem>
-        <View style={tailwind.flexRow}>
-          <LabelItem
-            label="重点关注"
-            LabelStyle={[tailwind.mR0, {color:'#2b427d'}]}
-          />
-          <Checkbox
-            checked={!!diseaseData?.mian}
-            onPress={() =>
-              handleFormChenge({
-                name: 'mian',
-                value: !diseaseData?.mian + 0,
-              })
-            }
-          />
+    <ScrollView style={{height:350}}>
+      <View style={[{width:'95%'}]}>
+        <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
+          <LabelItem label="编号:">
+            <Text style={[tailwind.fontBold]}>
+              {route.params?.data?.index}
+            </Text>
+          </LabelItem>
+          <View style={tailwind.flexRow}>
+            <LabelItem
+              label="重点关注"
+              LabelStyle={[tailwind.mR0, {color:'#2b427d'}]}
+            />
+            <Checkbox
+              checked={!!diseaseData?.mian}
+              onPress={() =>
+                handleFormChenge({
+                  name: 'mian',
+                  value: !diseaseData?.mian + 0,
+                })
+              }
+            />
+          </View>
         </View>
-      </View>
-      <Select
-        label="构件类型"
-        name="areatype"
-        labelName="areaname"
-        valueName="areatype"
-        value={diseaseData?.areatype}
-        onChange={handleFormChenge}
-        values={baseData.components}
-      />
-      <View style={tailwind.mT2} />
+        <Select
+          label="构件类型"
+          name="areatype"
+          labelName="areaname"
+          valueName="areatype"
+          value={diseaseData?.areatype}
+          onChange={handleFormChenge}
+          values={baseData.components}
+        />
+        <View style={tailwind.mT2} />
 
-      <View style={[tailwind.flexRow]}>
-        <View style={[tailwind.flex1]}>
-          {areanode ? (
-            <>
-              {/* <View style={tailwind.mY1} /> */}
-              {/* <View style={[tailwind.flexRow]}>
-                <LabelItem label="参照点" style={tailwind.w16} />
-                <Select
-                  name="areanode"
-                  values={areanode}
-                  value={diseaseData?.areanode}
-                  onChange={handleFormChenge}
-                />
-              </View> */}
-              {/* <View style={tailwind.mY1} /> */}
-              <View style={tailwind.mT2} />
-              {/* <View style={[tailwind.flexRow, tailwind.mB3]}>
-                <LabelItem label="dx(cm)" style={tailwind.w16} />
-                <KeyboardInput
-                  name="dx"
-                  value={diseaseData?.dx}
-                  onChange={handleFormChenge}
-                />
-                <View style={tailwind.mX2} />
-                <LabelItem label="dy(cm)" style={tailwind.w16} />
-                <KeyboardInput
-                  name="dy"
-                  value={diseaseData?.dy}
-                  onChange={handleFormChenge}
-                />
-              </View> */}
-            </>
+        <View style={[tailwind.flexRow]}>
+          <View style={[tailwind.flex1]}>
+            {areanode ? (
+              <>
+                {/* <View style={tailwind.mY1} /> */}
+                {/* <View style={[tailwind.flexRow]}>
+                  <LabelItem label="参照点" style={tailwind.w16} />
+                  <Select
+                    name="areanode"
+                    values={areanode}
+                    value={diseaseData?.areanode}
+                    onChange={handleFormChenge}
+                  />
+                </View> */}
+                {/* <View style={tailwind.mY1} /> */}
+                <View style={tailwind.mT2} />
+                {/* <View style={[tailwind.flexRow, tailwind.mB3]}>
+                  <LabelItem label="dx(cm)" style={tailwind.w16} />
+                  <KeyboardInput
+                    name="dx"
+                    value={diseaseData?.dx}
+                    onChange={handleFormChenge}
+                  />
+                  <View style={tailwind.mX2} />
+                  <LabelItem label="dy(cm)" style={tailwind.w16} />
+                  <KeyboardInput
+                    name="dy"
+                    value={diseaseData?.dy}
+                    onChange={handleFormChenge}
+                  />
+                </View> */}
+              </>
+            ) : (
+              <></>
+            )}
+          </View>
+        </View>
+
+        {/* <View style={tailwind.mB2}>
+          {!areaparam.length ? (
+            <TextInput
+              name="area"
+              label="病害区域"
+              value={diseaseData?.area}
+              onChange={handleFormChenge}
+            />
           ) : (
-            <></>
+            <Select
+              name="area"
+              label="病害区域"
+              value={diseaseData?.area}
+              values={areaparam}
+              onChange={handleFormChenge}
+            />
           )}
-        </View>
-      </View>
+        </View> */}
 
-      {/* <View style={tailwind.mB2}>
-        {!areaparam.length ? (
-          <TextInput
-            name="area"
-            label="病害区域"
-            value={diseaseData?.area}
-            onChange={handleFormChenge}
-          />
+        {scale.length ? (
+          <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
+            <LabelItem label="标度" />
+            <Select
+              name="scale"
+              values={scale}
+              value={diseaseData?.scale}
+              onChange={handleFormChenge}
+            />
+          </View>
         ) : (
-          <Select
-            name="area"
-            label="病害区域"
-            value={diseaseData?.area}
-            values={areaparam}
-            onChange={handleFormChenge}
-          />
+          <></>
         )}
-      </View> */}
+        <View style={tailwind.mT2} />
+        <TextInput
+          name="disPosition"
+          label="病害位置"
+          value={diseaseData?.disPosition}
+          onChange={handleFormChenge}
+        />
+        <View style={tailwind.mT2} />
+        
+        {infoList.length ? (
+          infoList.map(({strvalue, strinfo}, index) => (
+            <React.Fragment key={index}>
+              <View style={[tailwind.flexRow, tailwind.mB2]}>
+                <LabelItem label={strinfo} style={styles.width110} />
+                <KeyboardInput
+                  name={strvalue}
+                  value={diseaseData[strvalue]}
+                  onChange={handleFormChenge}
+                />
+              </View>
+            </React.Fragment>
+          ))
+        ) : (
+          <></>
+        )}
 
-      {scale.length ? (
-        <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
-          <LabelItem label="标度" />
-          <Select
-            name="scale"
-            values={scale}
-            value={diseaseData?.scale}
-            onChange={handleFormChenge}
-          />
-        </View>
-      ) : (
-        <></>
-      )}
-      <View style={tailwind.mT2} />
-      <TextInput
-        name="disPosition"
-        label="病害位置"
-        value={diseaseData?.disPosition}
-        onChange={handleFormChenge}
-      />
-      <View style={tailwind.mT2} />
-      
-      {infoList.length ? (
-        infoList.map(({strvalue, strinfo}, index) => (
-          <React.Fragment key={index}>
-            <View style={[tailwind.flexRow, tailwind.mB2]}>
-              <LabelItem label={strinfo} style={styles.width110} />
-              <KeyboardInput
-                name={strvalue}
-                value={diseaseData[strvalue]}
-                onChange={handleFormChenge}
-              />
-            </View>
-          </React.Fragment>
-        ))
-      ) : (
-        <></>
-      )}
-
-      <TextInput
-        name="description"
-        label="病害描述"
-        value={diseaseData?.description}
-        onChange={handleFormChenge}
-        // disabled={true}
-      />
-    </View>
+        <TextInput
+          name="description"
+          label="病害描述"
+          value={diseaseData?.description}
+          onChange={handleFormChenge}
+          // disabled={true}
+        />
+      </View>
+    </ScrollView>
+    
     {/* ================================================= */}
     <View style={tailwind.mX2} />
     
@@ -971,7 +978,8 @@ export function DiseaseC({route, navigation}) {
   return (
   <View style={tailwind.flexRow}>
     {/* 病害填写表格区域 */}
-    <View style={[{width:'55%'}]}>
+    <ScrollView style={{height:350}}>
+      <View style={[{width:'95%'}]}>
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
         <LabelItem label="编号:">
           <Text style={[tailwind.fontBold]}>
@@ -1096,6 +1104,8 @@ export function DiseaseC({route, navigation}) {
       onChange={handleFormChenge}
     />
     </View>
+    </ScrollView>
+    
     {/* ================================================= */}
     <View style={tailwind.mX2} />
     
@@ -1323,7 +1333,8 @@ export function DiseaseK({route, navigation}) {
   return (
   <View style={tailwind.flexRow}>
     {/* 病害填写表格区域 */}
-    <View style={[{width:'55%'}]}>
+    <ScrollView style={{height:350}}>
+      <View style={[{width:'95%'}]}>
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
         <LabelItem label="编号:">
           <Text style={[tailwind.fontBold]}>
@@ -1474,6 +1485,8 @@ export function DiseaseK({route, navigation}) {
         onChange={handleFormChenge}
       />
     </View>
+    </ScrollView>
+    
     {/* ================================================= */}
     <View style={tailwind.mX2} />
     
@@ -1701,7 +1714,8 @@ export function DiseaseG({route, navigation}) {
   return (
   <View style={tailwind.flexRow}>
     {/* 病害填写表格区域 */}
-    <View style={[{width:'55%'}]}>
+    <ScrollView style={{height:350}}>
+      <View style={[{width:'95%'}]}>
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
         <LabelItem label="编号:">
           <Text style={[tailwind.fontBold]}>
@@ -1852,6 +1866,8 @@ export function DiseaseG({route, navigation}) {
         onChange={handleFormChenge}
       />
     </View>
+    </ScrollView>
+    
     {/* ================================================= */}
     <View style={tailwind.mX2} />
     
@@ -2079,7 +2095,8 @@ export function DiseaseH({route, navigation}) {
   return (
   <View style={tailwind.flexRow}>
     {/* 病害填写表格区域 */}
-    <View style={[{width:'55%'}]}>
+    <ScrollView style={{height:350}}>
+      <View style={[{width:'95%'}]}>
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
         <LabelItem label="编号:">
           <Text style={[tailwind.fontBold]}>
@@ -2230,6 +2247,8 @@ export function DiseaseH({route, navigation}) {
         onChange={handleFormChenge}
       />
     </View>
+    </ScrollView>
+    
     {/* ================================================= */}
     <View style={tailwind.mX2} />
     

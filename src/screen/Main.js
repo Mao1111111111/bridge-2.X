@@ -160,8 +160,6 @@ export default function Main() {
           animated={true}
         />
         <NavigatorTabs routes={routes} />
-        
-        {/* <ImageBackground source={require('../iconImg/testbg.webp')} style={[{width:'100%', height:'100%'}]}></ImageBackground> */}
       </NavigationContainer>
     </>
   ) : (
