@@ -202,7 +202,7 @@ export function DiseaseA({route, navigation}) {
     <View style={tailwind.flexRow}>
       {/* 病害填写表格区域 */}
       <ScrollView style={{height:350}}>
-        <View style={[{width:'95%'}]}>
+        <View style={[{width:380}]}>
         <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
           <LabelItem label="编号:">
             <Text style={[tailwind.fontBold]}>
@@ -324,7 +324,6 @@ export function DiseaseA({route, navigation}) {
               value={diseaseData?.disLength}
               onChange={handleFormChenge}
             />
-            
           </View>
           <View style={[tailwind.flexRow]}>
             <LabelItem label="宽度" style={tailwind.w18} />

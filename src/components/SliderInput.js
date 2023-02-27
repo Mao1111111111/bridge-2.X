@@ -137,7 +137,7 @@ export const SliderInput = React.forwardRef(
         <View style={[tailwind.flexRow]}>
           {/* <LabelItem label="长" style={tailwind.w18} /> */}
           <Slider
-            style={{width: 130, height: 20}}
+            style={{width: 145, height: 20}}
             minimumValue={0}
             // value={diseaseData.disLength}
             value={strToNum(textValue)}
@@ -165,8 +165,13 @@ export const SliderInput = React.forwardRef(
             <Text style={[tailwind.textBlack]}>{(value * (memberData / 100)).toFixed(1)}</Text>
           </View> */}
           {/* <Button style={[{width:10}]} onPress={countChange(1)}>+</Button> */}
-          <Text onPress={() => countChange(1)}>   +</Text>
-          <Text onPress={() => countChange(-1)}>   -</Text>
+          {/* <Text onPress={() => countChange(1)} style={[tailwind.textBlack,{fontSize:16}]}>   +   </Text> */}
+          <TouchableOpacity
+          style={[styles.button]}
+          >
+            <Text style={[styles.buttonText]}>  +  </Text>
+          </TouchableOpacity>
+          <Text onPress={() => countChange(-1)}>   -   </Text>
         {/* <Text style={[tailwind.textBlack]}>{(value / memberLength)*100}</Text> */}
         <Portal>
           <Modal
@@ -284,7 +289,7 @@ const styles = StyleSheet.create({
     ...tailwind.border,
     ...tailwind.borderGray400,
     ...tailwind.roundedSm,
-    // ...tailwind.flex1,
+    ...tailwind.flex1,
     ...tailwind.textSm,
     ...tailwind.pX2,
     paddingBottom: 1,
@@ -333,5 +338,20 @@ const styles = StyleSheet.create({
     ...tailwind.pY1,
     ...tailwind.pX2,
     height: 25,
+  },
+  button: {
+    width: 40,
+    height: 20,
+    borderRadius: 5,
+    backgroundColor: '#2b427d',
+    justifyContent: 'center',
+    overflow: 'hidden'
+  },
+  buttonText: {
+    textAlign: 'center',
+    color:'#fff'
+  },
+  disabled:{
+    backgroundColor:'gray',
   },
 });
