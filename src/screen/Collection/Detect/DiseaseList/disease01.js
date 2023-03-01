@@ -425,7 +425,7 @@ export function DiseaseA({route, navigation}) {
           setRangeLengthM(rangeLengthM)
         } else if (name == 'hzbrmc_range_width_mm') {
           // 宽度范围 - 毫米
-          let rangeWidthMM = value
+          let rangeWidthMM = '宽度范围'+ value + '@@毫米@@,'
           setRangeWidthMM(rangeWidthMM)
         } else if (name == 'hzbrmc_range_spacing_cm') {
           // 间距范围 - 厘米
@@ -467,17 +467,34 @@ export function DiseaseA({route, navigation}) {
 
       const writeText = () => {
         
-        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                        + widthMM + heightM + heightCM + heightMM + areaFace
-                        + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                        + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                        + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                        + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                        + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                        + bottomWidthMM + rightWidthMM + slantM
+        // let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+        //                 + widthMM + heightM + heightCM + heightMM + areaFace
+        //                 + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+        //                 + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+        //                 + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+        //                 + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+        //                 + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+        //                 + bottomWidthMM + rightWidthMM + slantM
+        let writeTxt = rangeWidthMM
         setWriteTxt(writeTxt)
         console.log('writeTxt', writeTxt);
-        diseaseData['description'] = writeTxt
+        // 截取有变化的数据的前两位内容
+        let sliceWrite = writeTxt.slice(0, 2)
+        console.log('sliceWrite', sliceWrite);
+        // 在remark里面查找这两位内容，取出其位置下标
+        let allText = diseaseData.remark
+        let numStart = allText.indexOf(sliceWrite)
+        console.log(numStart);
+        // 替换下标位置到其后第一个逗号之间的内容
+        let allTextEnd = allText.slice(numStart, -1)
+        console.log('allTextEnd', allTextEnd);
+        let douhao = ','
+        let numEnd = allTextEnd.indexOf(douhao)
+        console.log('numEnd', numEnd);
+        // 得出内容的末尾下标值
+        let lengthAll = numStart + numEnd
+        console.log('lengthAll', lengthAll);
+        // diseaseData['description'] = writeTxt
         console.log('diseaseData.description:',diseaseData.description);
       }
 
