@@ -28,6 +28,8 @@ export const TextInput = React.forwardRef(function (
     type,
     isPassword,
     disabled,
+    lines,
+    height
   },
   ref,
 ) {
@@ -89,10 +91,13 @@ export const TextInput = React.forwardRef(function (
         textContentType={isPassword ? 'password' : 'none'}
         secureTextEntry={isPassword}
         editable={!disabled}
+        multiline = {true}
+        numberOfLines = {lines}
         // defaultValue={value}
         onChangeText={handleChange}
         style={[
           styles.input,
+          {height:height},
           inputStyle ? inputStyle : {},
           disabled && {
             ...tailwind.opacity10,
@@ -443,7 +448,7 @@ const styles = StyleSheet.create({
     ...tailwind.textSm,
     ...tailwind.pY1,
     ...tailwind.pX2,
-    height: 25,
+    // height: 25,
   },
   textarea: {
     textAlignVertical: 'top',

@@ -137,7 +137,7 @@ export const SliderInput = React.forwardRef(
         <View style={[tailwind.flexRow]}>
           {/* <LabelItem label="长" style={tailwind.w18} /> */}
           <Slider
-            style={{width: 145, height: 20}}
+            style={{width: 230, height: 20}}
             minimumValue={0}
             // value={diseaseData.disLength}
             value={strToNum(textValue)}
@@ -159,20 +159,20 @@ export const SliderInput = React.forwardRef(
             <Text style={[tailwind.textBlack, {fontSize:10}]}>{value}</Text>
           </View>
         </TouchableWithoutFeedback>
-        {/* <Text style={[tailwind.textBlack]}>{disDataText}</Text> */}
-          {/* <View style={[styles.keyboardInput]}>
-            <Text style={[tailwind.textBlack]}>{finalDisData}</Text>
-            <Text style={[tailwind.textBlack]}>{(value * (memberData / 100)).toFixed(1)}</Text>
-          </View> */}
-          {/* <Button style={[{width:10}]} onPress={countChange(1)}>+</Button> */}
-          {/* <Text onPress={() => countChange(1)} style={[tailwind.textBlack,{fontSize:16}]}>   +   </Text> */}
+        <Text>  </Text>
           <TouchableOpacity
           style={[styles.button]}
+          onPress={() => countChange(1)}
           >
             <Text style={[styles.buttonText]}>  +  </Text>
           </TouchableOpacity>
-          <Text onPress={() => countChange(-1)}>   -   </Text>
-        {/* <Text style={[tailwind.textBlack]}>{(value / memberLength)*100}</Text> */}
+          <Text>  </Text>
+          <TouchableOpacity
+          style={[styles.button]}
+          onPress={() => countChange(-1)}
+          >
+            <Text style={[styles.buttonText]}>  -  </Text>
+          </TouchableOpacity>
         <Portal>
           <Modal
             visible={visible}
