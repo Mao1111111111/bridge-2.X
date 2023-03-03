@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Portal, Modal} from 'react-native-paper';
 import {
   StyleSheet,
@@ -29,7 +29,7 @@ export const TextInput = React.forwardRef(function (
     isPassword,
     disabled,
     lines,
-    height
+    height,
   },
   ref,
 ) {
@@ -97,6 +97,98 @@ export const TextInput = React.forwardRef(function (
         onChangeText={handleChange}
         style={[
           styles.input,
+          inputStyle ? inputStyle : {},
+          disabled && {
+            ...tailwind.opacity10,
+            ...tailwind.bgGray300,
+          },
+        ]}
+      />
+    </LabelItem>
+  );
+});
+
+export const WriteInput = React.forwardRef(function (
+  {
+    label,
+    style,
+    value,
+    inputStyle,
+    LabelStyle,
+    name,
+    onChange,
+    type,
+    isPassword,
+    disabled,
+    lines,
+    height,
+  },
+  ref,
+) {
+  const textRef = React.useRef();
+
+  const [textValue, setTextValue] = React.useState();
+
+  React.useEffect(() => {
+    if (!value) {
+      setTextValue('');
+      return;
+    }
+    setTextValue(value);
+  }, [value]);
+
+  React.useImperativeHandle(ref, () => ({
+    focus: () => {
+      textRef.current.focus();
+    },
+    blur: () => {
+      textRef.current.blur();
+    },
+    setValue: val => {
+      setTextValue(val + '');
+    },
+    clear: () => {
+      setTextValue('');
+      onChange &&
+        onChange({
+          name,
+          value: '',
+        });
+    },
+    value: textValue,
+    name,
+  }));
+
+  const handleChange = val => {
+    let _val = type === 'numeric' ? val.replace(/[^\d]+/, '') : val;
+    setTextValue(_val);
+    onChange &&
+      onChange({
+        name,
+        value: _val,
+      });
+  };
+
+  return (
+    <LabelItem
+      style={style}
+      label={label}
+      LabelStyle={LabelStyle}
+      onPress={() => textRef.current.focus()}>
+      <RnTextInput
+        ref={textRef}
+        blurOnSubmit={true}
+        keyboardType={type || 'default'}
+        value={textValue}
+        textContentType={isPassword ? 'password' : 'none'}
+        secureTextEntry={isPassword}
+        editable={!disabled}
+        multiline = {true}
+        numberOfLines = {lines}
+        // defaultValue={value}
+        onChangeText={handleChange}
+        style={[
+          styles.writeInput,
           {height:height},
           inputStyle ? inputStyle : {},
           disabled && {
@@ -108,6 +200,7 @@ export const TextInput = React.forwardRef(function (
     </LabelItem>
   );
 });
+
 
 export const Textarea = React.forwardRef(function (
   {label, style, value, inputStyle, labelStyle, name, onChange, type, disabled},
@@ -448,6 +541,27 @@ const styles = StyleSheet.create({
     ...tailwind.textSm,
     ...tailwind.pY1,
     ...tailwind.pX2,
+    height: 25,
+  },
+  writeInput: {
+    textAlignVertical: 'center',
+    ...tailwind.border,
+    ...tailwind.borderGray400,
+    ...tailwind.roundedSm,
+    ...tailwind.flex1,
+    ...tailwind.textSm,
+    ...tailwind.pY1,
+    ...tailwind.pX2,
+  },
+  pressWrite: {
+    textAlignVertical: 'center',
+    ...tailwind.border,
+    ...tailwind.borderGray400,
+    ...tailwind.roundedSm,
+    ...tailwind.flex1,
+    ...tailwind.textSm,
+    ...tailwind.pY1,
+    ...tailwind.pX2,
     // height: 25,
   },
   textarea: {
@@ -517,4 +631,12 @@ const styles = StyleSheet.create({
     ...tailwind.pX2,
     height: 25,
   },
+  sideButton: {
+    backgroundColor:'#2b427d',
+    height:30,
+    width:80,
+    ...tailwind.justifyCenter,
+    ...tailwind.itemsCenter,
+    ...tailwind.rounded,
+  }
 });
