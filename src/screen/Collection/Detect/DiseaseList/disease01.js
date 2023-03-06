@@ -158,54 +158,14 @@ export function DiseaseA({route, navigation}) {
       // 病害名称
       const [infoshort, setInfoShort] = useState()
 
-      const [desPosition,  setDesPosition] = useState()
+      // 位置描述 墩台
+      const [pier,  setPier] = useState()
+      // 位置描述 长、宽、距顶
       const [lengthNum, setLengthNum] = useState()
       const [widthNum, setWidthNum] = useState()
       const [heightNum, setHeightNum] = useState()
 
       // =================================================
-      // React.useEffect(() => {
-      //   saveData.current = {...diseaseData};
-      //   try {
-      //     let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
-      //     setLengthText(lengthText)
-      //     let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
-      //     setWidthText(widthText)
-      //     let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(1)
-      //     setHeightText(heightText)
-      //     if (lengthText == 'NaN') {
-      //       let lengthText = '0'
-      //       setLengthText(lengthText)
-      //     }
-      //     if (widthText == 'NaN') {
-      //       let widthText = '0'
-      //       setWidthText(widthText)
-      //     }
-      //     if (heightText == 'NaN') {
-      //       let heightText = '0'
-      //       setHeightText(heightText)
-      //     }
-          
-      //     let infoshort = route.params.thridData.checkinfoshort
-      //     setInfoShort(infoshort)
-      //     // 将病害位置的长宽高数据存进diseaseData
-      //     diseaseData['lengthText'] = lengthText
-      //     diseaseData['widthText'] = widthText
-      //     diseaseData['heightText'] = heightText
-      //     // diseaseData['description'] = saveDescription
-      //     // console.log("diseaseData.description2",diseaseData.description);
-      //     // console.log('diseaseData.remark2', diseaseData.remark);
-      //     // console.log("saveDescription2",saveDescription);
-      //     if (diseaseData.description == '' || diseaseData.description == undefined) {
-      //       diseaseData['description'] = diseaseData.remark
-      //     }
-      //     // else if (saveDescription == '' || saveDescription == undefined){
-      //     //   diseaseData['description'] = diseaseData.description
-      //     // }
-      //   } catch {
-      //   }
-        
-      // }, [diseaseData]);
       React.useEffect(() => {
         saveData.current = {...diseaseData};
         try {
@@ -231,46 +191,29 @@ export function DiseaseA({route, navigation}) {
           diseaseData['lengthText'] = lengthText
           diseaseData['widthText'] = widthText
           diseaseData['heightText'] = heightText
-          // diseaseData['position'] = writePositionTxt
 
-          let lengthNum = lengthText + 'm,'
-          // setLengthNum(lengthNum)
-          let widthNum = '距左侧' + widthText + 'm,'
-          // setWidthNum(widthNum)
-          let heightNum = '距顶部' + heightText + 'm'
-          // setHeightNum(heightNum)
-          let writePositionTxt = '/' + diseaseData.area + '距' + '' + lengthNum + widthNum + heightNum
-          setWritePositionTxt(writePositionTxt)
+
+          // console.log('桥跨：：',route.params.memberList[0].membername);
+          let defaultPier = route.params.memberList[0].membername
+          // 提取第一个字符进行判断（表示墩台的数据）
+          let firstDefaultPier = defaultPier.slice(0,1)
+          if (firstDefaultPier == 1) {
+            let pier = (firstDefaultPier - 1) + '#台'
+            setPier(pier)
+            // console.log('dundun:', pier);
+          } else {
+            let pier = (firstDefaultPier - 1) + '#墩'
+            setPier(pier)
+            // console.log('dundun:', pier);
+          }
+          // let lengthNum = lengthText + 'm,'
+          // let widthNum = '距左侧' + widthText + 'm,'
+          // let heightNum = '距顶部' + heightText + 'm'
+          // let writePositionTxt = '/' + diseaseData.area + '距' + '' + lengthNum + widthNum + heightNum
+          // setWritePositionTxt(writePositionTxt)
           // diseaseData['position'] = writePositionTxt
-          console.log('writePositionTxt0000000',writePositionTxt);
           // console.log('diseaseData.area2222222:', areaparam[0].label);
           diseaseData['area'] = areaparam[0].label
-          // if (diseaseData.position == '' || diseaseData.position == undefined) {
-          //   // let lengthNum = lengthText + 'm,'
-          //   // let widthNum = '距左侧' + widthText + 'm,'
-          //   // let heightNum = '距顶部' + heightText + 'm'
-          //   // let writePositionTxt = '/' + diseaseData.area + '距' + '' + lengthNum + widthNum + heightNum
-          //   // setWritePositionTxt(writePositionTxt)
-          //   if (areaparam[0].label == undefined || areaparam[0].label == '') {
-          //     diseaseData['position'] = '/'
-          //   } else {
-          //     diseaseData['position'] = '/' + areaparam[0].label
-          //   }
-          // } else {
-          //   // setDiseaseData(diseaseData)
-          //   // diseaseData.position = writePositionTxt
-          // }
-          // if (diseaseData.position == '' || diseaseData.position == undefined) {
-          //   diseaseData['position'] = writePositionTxt
-          //   setDiseaseData(diseaseData)
-          // } else {
-          // }
-          // diseaseData['description'] = diseaseData.remark + writeTxt
-          // if (writeTxt !== '') {
-          //   diseaseData['description'] = writeTxt
-          // } else {
-          //   diseaseData['description'] = diseaseData.remark
-          // }
           if (diseaseData.remark == '' || diseaseData.remark == undefined) {
             let infoshort = route.params.thridData.checkinfoshort
             setInfoShort(infoshort)
@@ -339,7 +282,7 @@ export function DiseaseA({route, navigation}) {
           //   componentDidMount()
           // }, 5000)
           // 右侧的分项数据（不定）
-          console.log('infoList', infoList);
+          // console.log('infoList', infoList);
         };
       }, [baseData, saveData, version, route.params, dispatch]);
       const handleScaleOpen = () => scaleInfoRef.current.open();
@@ -386,171 +329,171 @@ export function DiseaseA({route, navigation}) {
 
         if (name == 'scale') {
           // 标度
-          let biaodu = '标度' + value + '@@'
+          let biaodu = ',标度' + value + '@@'
           setBiaodu(biaodu)
         } else if (name == 'hzbrmc_length_m') {
           //长度 - 米
-          let lengthM = '长度' + value + '@@米@@'
+          let lengthM = ',长度' + value + '@@米@@'
           setLengthM(lengthM)
         } else if (name == 'hzbrmc_length_cm') {
           // 长度 - 厘米
-          let lengthCM = '长度' + value + '@@厘米@@'
+          let lengthCM = ',长度' + value + '@@厘米@@'
           setLengthCM(lengthCM)
         } else if (name == 'hzbrmc_length_mm') {
           // 长度 - 毫米
-          let lengthMM = '长度' + value + '@@毫米@@'
+          let lengthMM = ',长度' + value + '@@毫米@@'
           setLengthMM(lengthMM)
         } else if (name == 'hzbrmc_width_m') {
           // 宽度 - 米
-          let widthM = '宽度' + value + '@@米@@'
+          let widthM = ',宽度' + value + '@@米@@'
           setWidthM(widthM)
         } else if (name == 'hzbrmc_width_cm') {
           // 宽度 - 厘米
-          let widthCM = '宽度' + value + '@@厘米@@'
+          let widthCM = ',宽度' + value + '@@厘米@@'
           setWidthCM(widthCM)
         } else if (name == 'hzbrmc_width_mm') {
           // 宽度 - 毫米
-          let widthMM = '宽度' + value + '@@毫米@@'
+          let widthMM = ',宽度' + value + '@@毫米@@'
           setWidthMM(widthMM)
         } else if (name == 'hzbrmc_height_m') {
           // 高度 - 米
-          let heightM = '高度' + value + '@@米@@'
+          let heightM = ',高度' + value + '@@米@@'
           setHeightM(heightM)
         } else if (name == 'hzbrmc_height_cm') {
           // 高度 - 厘米
-          let heightCM = '高度' + value + '@@厘米@@'
+          let heightCM = ',高度' + value + '@@厘米@@'
           setHeightCM(heightCM)
         } else if (name == 'hzbrmc_height_mm') {
           // 高度 - 毫米
-          let heightMM = '高度' + value + '@@毫米@@'
+          let heightMM = ',高度' + value + '@@毫米@@'
           setHeightMM(heightMM)
         } else if (name == 'hzbrmc_area_face') {
           // 面域 - %
-          let areaFace = '面域' + value + '@@%@@'
+          let areaFace = ',面域' + value + '@@%@@'
           setAreaFace(areaFace)
         } else if (name == 'hzbrmc_area_per') {
           // 面积占比 - %
-          let areaPer = '面积占比' + value + '@@%@@'
+          let areaPer = ',面积占比' + value + '@@%@@'
           setAreaPer(areaPer)
         } else if (name == 'hzbrmc_area_m') {
           // 面积 - 平方米
-          let areaM = '面积' + value + '@@平方米@@'
+          let areaM = ',面积' + value + '@@平方米@@'
           setAreaM(areaM)
         } else if (name == 'hzbrmc_area_cm') {
           // 面积 - 平方厘米
-          let areaCM = '面积' + value + '@@平方厘米@@'
+          let areaCM = ',面积' + value + '@@平方厘米@@'
           setAreaCM(areaCM)
         } else if (name == 'hzbrmc_area_mm') {
           // 面积 - 平方毫米
-          let areaMM = '面积' + value + '@@平方毫米@@'
+          let areaMM = ',面积' + value + '@@平方毫米@@'
           setAreaMM(areaMM)
         } else if (name == 'hzbrmc_heightdiff_cm') {
           // 高差 - 厘米
-          let heightDiffCM = '高差' + value + '@@厘米@@'
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
           setHeightDiffCM(heightDiffCM)
         } else if (name == 'hzbrmc_heightdiff_mm') {
           // 高差 - 毫米
-          let heightDiffMM = '高差' + value + '@@毫米@@'
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
           setHeightDiffMM(heightDiffMM)
         } else if (name == 'hzbrmc_spacing_cm') {
           // 间距 - 厘米
-          let spacingCM = '间距' + value + '@@厘米@@'
+          let spacingCM = ',间距' + value + '@@厘米@@'
           setSpacingCM(spacingCM)
         } else if (name == 'hzbrmc_deformation_mm') {
           // 变形 - 毫米
-          let deformationMM = '变形' + value + '@@毫米@@'
+          let deformationMM = ',变形' + value + '@@毫米@@'
           setDeformationMM(deformationMM)
         } else if (name == 'hzbrmc_num') {
           // 个数 - 个
-          let num = '个数' + value + '@@个@@'
+          let num = ',个数' + value + '@@个@@'
           setNum(num)
         } else if (name == 'hzbrmc_range_cm') {
           // 距离 - 厘米
-          let rangeCM = '距离' + value + '@@厘米@@'
+          let rangeCM = ',距离' + value + '@@厘米@@'
           setRangeCM(rangeCM)
         } else if (name == 'hzbrmc_range_mm') {
           // 距离 - 毫米
-          let rangeMM = '距离' + value + '@@毫米@@'
+          let rangeMM = ',距离' + value + '@@毫米@@'
           setRangeMM(rangeMM)
         } else if (name == 'hzbrmc_depth_cm') {
           // 深度 - 厘米
-          let depthCM = '深度' + value + '@@厘米@@'
+          let depthCM = ',深度' + value + '@@厘米@@'
           setDepthCM(depthCM)
         } else if (name == 'hzbrmc_depth_mm') {
           // 深度 - 毫米
-          let depthMM = '深度' + value + '@@毫米@@'
+          let depthMM = ',深度' + value + '@@毫米@@'
           setDepthMM(depthMM)
         } else if (name == 'hzbrmc_volume_m') {
           // 体积 - 立方米
-          let volumeM = '体积' + value + '@@立方米@@'
+          let volumeM = ',体积' + value + '@@立方米@@'
           setVolumeM(volumeM)
         } else if (name == 'hzbrmc_volume_cm') {
           // 体积 - 立方厘米
-          let volumeCM = '体积' + value + '@@立方厘米@@'
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
           setVolumeCM(volumeCM)
         } else if (name == 'hzbrmc_disp_cm') {
           // 位移 - 厘米
-          let dispCM = '位移' + value + '@@厘米@@'
+          let dispCM = ',位移' + value + '@@厘米@@'
           setDispCM(dispCM)
         } else if (name == 'hzbrmc_disp_mm') {
           // 位移 - 毫米
-          let dispMM = '位移' + value + '@@毫米@@'
+          let dispMM = ',位移' + value + '@@毫米@@'
           setDispMM(dispMM)
         } else if (name == 'hzbrmc_angle_c') {
           // 角度 - 度
-          let dispMM = '角度' + value + '@@度@@'
+          let dispMM = ',角度' + value + '@@度@@'
           setDispMM(dispMM)
         } else if (name == 'hzbrmc_chu') {
           // 处
-          let chu = '' + value + '@@处@@'
+          let chu = ',' + value + '@@处@@'
           setChu(chu)
         } else if (name == 'hzbrmc_tiao') {
           // 条
-          let tiao = '' + value + '@@条@@'
+          let tiao = ',' + value + '@@条@@'
           setTiao(tiao)
         } else if (name == 'hzbrmc_range_fenbu_m') {
           // 分布范围 - 米
-          let rangeFenbuM = '分布范围' + value + '@@米@@'
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
           setRangeFenbuM(rangeFenbuM)
         } else if (name == 'hzbrmc_range_length_m') {
           // 长度范围 - 米
-          let rangeLengthM = '长度范围' + value + '@@米@@'
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
           setRangeLengthM(rangeLengthM)
         } else if (name == 'hzbrmc_range_width_mm') {
           // 宽度范围 - 毫米
-          let rangeWidthMM = '宽度范围'+ value + '@@毫米@@'
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
           setRangeWidthMM(rangeWidthMM)
         } else if (name == 'hzbrmc_range_spacing_cm') {
           // 间距范围 - 厘米
-          let rangeSpacingCM = '间距范围' + value + '@@厘米@@'
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
           setRangeSpacingCM(rangeSpacingCM)
         } else if (name == 'hzbrmc_lb_left_length_m') {
           // 左腹板长度 - 米
-          let leftLengthM = '左腹板长度' + value + '@@米@@'
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
           setLeftLengthM(leftLengthM)
         } else if (name == 'hzbrmc_lb_bottom_length_m') {
           // 底板长度 - 米
-          let bottomLengthM = '底板长度' + value + '@@米@@'
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
           setBottomLengthM(bottomLengthM)
         } else if (name == 'hzbrmc_lb_right_length_m') {
           // 右腹板长度 - 米
-          let rightLengthM = '右腹板长度' + value + '@@米@@'
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
           setRightLengthM(rightLengthM)
         } else if (name == 'hzbrmc_lb_left_width_mm') {
           // 左腹板宽度 - 毫米
-          let leftWidthMM = '左腹板宽度' + value + '@@毫米@@'
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
           setLeftWidthMM(leftWidthMM)
         } else if (name == 'hzbrmc_lb_bottom_width_mm') {
           // 底板宽度 - 毫米
-          let bottomWidthMM = '底板宽度' + value + '@@毫米@@'
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
           setBottomWidthMM(bottomWidthMM)
         } else if (name == 'hzbrmc_lb_right_width_mm') {
           // 右腹板宽度 - 毫米
-          let rightWidthMM = '右腹板宽度' + value + '@@毫米@@'
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
           setRightWidthMM(rightWidthMM)
         } else if (name == 'hzbrmc_slant_m') {
           // 倾斜量 - 米
-          let slantM = '倾斜量' + value + '@@米@@'
+          let slantM = ',倾斜量' + value + '@@米@@'
           setSlantM(slantM)
         }
         setDiseaseData(_data);
@@ -566,91 +509,134 @@ export function DiseaseA({route, navigation}) {
                         + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
                         + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
                         + bottomWidthMM + rightWidthMM + slantM
-          // let writeTxt = rangeWidthMM
           setWriteTxt(writeTxt)
           console.log('writeTxt', writeTxt);
-          console.log('remark:', diseaseData.remark);
+          // console.log('remark:', diseaseData.remark);
           // console.log('route:::', route.params.thridData.checkinfoshort);
-          // 截取有变化的数据的前两位内容
-          let sliceWrite = writeTxt.slice(0, 2)
+          // 截取有变化的数据的二、三位内容(第一位为逗号)
+          let sliceWrite = writeTxt.slice(1, 3)
           console.log('sliceWrite', sliceWrite);
           // 在remark里面查找这两位内容，取出其位置下标
           if (diseaseData.remark !== undefined) {
-            let allText = diseaseData.remark
-            let binghai = allText.slice(0,allText.indexOf('，'))
-            console.log('binghai',binghai);
-            let numStart = allText.indexOf(sliceWrite)
-            console.log(numStart);
-            // 替换下标位置到其后第一个逗号之间的内容
-            let allTextEnd = allText.slice(numStart, -1)
-            console.log('allTextEnd', allTextEnd);
-            let douhao = ','
-            let numEnd = allTextEnd.indexOf(douhao)
-            console.log('numEnd', numEnd);
-            // 得出内容的末尾下标值
-            let lengthAll = numStart + numEnd
-            console.log('lengthAll', lengthAll);
-            // diseaseData['description'] = writeTxt
-            let aaaa = allText.substr(0, numStart-1)
-            console.log('aaaa: ', aaaa);
-            let bbbb = allText.substr(lengthAll)
-            console.log('bbbb', bbbb);
-            let cccc = aaaa.concat(bbbb) 
-            console.log('cccc: ', cccc);
-            let ccca = ',' + writeTxt
-            // let saveDescription = cccc.concat(ccca)
-            let saveDescription = binghai.concat(ccca)
-            setSaveDescription(saveDescription)
-            console.log('saveDescription: ', saveDescription);
-            if (writeTxt == '') {
-              diseaseData['description'] = diseaseData.remark
-            } else {
-              diseaseData['description'] = saveDescription
-              // diseaseData['remark'] = saveDescription
+            if (writeTxt == '' || writeTxt == undefined) {
+              // 当还没有输入的内容时
+              let allText = diseaseData.remark
+              let binghai = allText.slice(0,allText.indexOf('，'))
+              console.log('binghai',binghai);
+              let numStart = allText.indexOf(sliceWrite)
+              console.log(numStart);
+              // 替换下标位置到其后第一个逗号之间的内容
+              let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
+              console.log('allTextEnd', allTextEnd);
+              let douhao = ','
+              let numEnd = allTextEnd.indexOf(douhao)
+              console.log('numEnd', numEnd);
+              // 得出内容的末尾下标值
+              let lengthAll = numStart + numEnd
+              console.log('lengthAll', lengthAll);
+              // diseaseData['description'] = writeTxt
+              let aaaa = allText.substr(0, numStart-1)
+              console.log('aaaa: ', aaaa);
+              let bbbb = allText.substr(lengthAll)
+              console.log('bbbb', bbbb);
+              let cccc = aaaa.concat(bbbb)
+              console.log('cccc: ', cccc);
+              let ccca = '' + writeTxt
+              // let saveDescription = cccc.concat(ccca)
+              let saveDescription = binghai.concat(ccca)
+              setSaveDescription(saveDescription)
+              console.log('saveDescription: ', saveDescription);
+              diseaseData['description'] = allTextEnd
+              handleFormChenge(allTextEnd, diseaseData.description)
+            } else if (writeTxt !== '' || writeTxt !== undefined) {
+              // 当有输入的内容时
+              console.log('=============================================================================');
+              console.log('writeTxt有内容： ',writeTxt);
+              let writeArr = []
+              // 将输入的内容按逗号分隔开
+              // 先找到逗号
+              let num = 0
+              let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
+              console.log('逗号的位置：',commaKey);
+              let writeArrNum = []
+              // 查找逗号出现的位置，将其下标存入数组
+              while (commaKey !== -1) {
+                writeArrNum.push(commaKey)
+                console.log('commaKey逗号出现的位置:',commaKey);
+                num ++
+                commaKey = writeTxt.indexOf(',', commaKey + 1)
+              }
+              console.log('逗号出现的次数:', num);
+              console.log('截取节点数组：', writeArrNum);
+              // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
+              for (let i = 0; i < writeArrNum.length; i++) {
+                writeArr.push(
+                  writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
+                )
+              }
+              console.log('截取后的数组：',writeArr);
+              // 对writeArr数组的每一项进行替换
+              for (let i = 0; i < writeArr.length; i++) {
+                  // 截取数组每一项的二、三位内容，与原有数据对比
+                  let sliceWrite = writeArr[i].slice(1, 3)
+                  let allText = diseaseData.description
+                  // console.log('allText', allText);
+                  // console.log('sliceWrite:', sliceWrite);
+                  let numStart = allText.indexOf(sliceWrite)
+                  // console.log('numStart',numStart);
+                  // 替换下标位置到其后第一个逗号之间的内容
+                  let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
+                  // console.log('allTextEnd', allTextEnd);
+                  let numEnd = allTextEnd.indexOf(',')
+                  // console.log('numEnd', numEnd);
+                  if (numEnd !== -1) {
+                    // 得出内容的末尾下标值
+                    let lengthAll = numStart + numEnd
+                    // console.log('lengthAll', lengthAll);
+                    let aaaa = allText.substr(0, numStart-1)
+                    // console.log('aaaa: ', aaaa);
+                    let bbbb = allText.substr(lengthAll)
+                    // console.log('bbbb', bbbb);
+                    let ccca = '' + writeArr[i].concat(bbbb)
+                    let saveDescription = aaaa.concat(ccca)
+                    setSaveDescription(saveDescription)
+                    // console.log('saveDescription: ', saveDescription);
+                    diseaseData['description'] = saveDescription
+                    handleFormChenge(saveDescription, diseaseData.description)
+                  } else {
+                    // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
+                    let aaaa = allText.substr(0, numStart-1)
+                    // console.log('aaaa: ', aaaa);
+                    let ccca = aaaa.concat(writeArr[i])
+                    let saveDescription = ccca
+                    setSaveDescription(saveDescription)
+                    // console.log('saveDescription: ', saveDescription);
+                    diseaseData['description'] = saveDescription
+                    handleFormChenge(saveDescription, diseaseData.description)
+                  }
+                  
+              }
             }
           } else {
-            if (writeTxt == '') {
-              diseaseData['description'] = diseaseData.remark
-            } else {
-              let binghai = infoshort
-              let allText = binghai.concat(writeTxt)
-              console.log('allText2',allText);
-              diseaseData['description'] = allText
-            }
+            // if (writeTxt == '') {
+            //   diseaseData['description'] = diseaseData.remark
+            //   handleFormChenge(diseaseData.remark, diseaseData.description)
+            // } else {
+            //   let binghai = infoshort
+            //   let allText = binghai.concat(writeTxt)
+            //   // console.log('allText2',allText);
+            //   diseaseData['description'] = allText
+            //   handleFormChenge(allText, diseaseData.description)
+            // }
+            let binghai = infoshort
+            let allText = binghai.concat(writeTxt)
+            // console.log('allText2',allText);
+            diseaseData['description'] = allText
+            handleFormChenge(allText, diseaseData.description)
+            
           }
-          
-          // let binghai = allText.slice(0,allText.indexOf('，'))
-          // console.log('binghai',binghai);
-          // let numStart = allText.indexOf(sliceWrite)
-          // console.log(numStart);
-          // // 替换下标位置到其后第一个逗号之间的内容
-          // let allTextEnd = allText.slice(numStart, -1)
-          // console.log('allTextEnd', allTextEnd);
-          // let douhao = ','
-          // let numEnd = allTextEnd.indexOf(douhao)
-          // console.log('numEnd', numEnd);
-          // // 得出内容的末尾下标值
-          // let lengthAll = numStart + numEnd
-          // console.log('lengthAll', lengthAll);
-          // // diseaseData['description'] = writeTxt
-          // let aaaa = allText.substr(0, numStart-1)
-          // console.log('aaaa: ', aaaa);
-          // let bbbb = allText.substr(lengthAll)
-          // console.log('bbbb', bbbb);
-          // let cccc = aaaa.concat(bbbb) 
-          // console.log('cccc: ', cccc);
-          // let ccca = ',' + writeTxt
-          // // let saveDescription = cccc.concat(ccca)
-          // let saveDescription = binghai.concat(ccca)
-          // setSaveDescription(saveDescription)
-          // console.log('saveDescription: ', saveDescription);
-          // if (writeTxt == '') {
-          //   diseaseData['description'] = diseaseData.remark
-          // } else {
-          //   diseaseData['description'] = saveDescription
-          //   // diseaseData['remark'] = saveDescription
-          // }
-          console.log('diseaseData.description1:',diseaseData.description);
+          // let writeTxt = ''
+          // setWriteTxt(writeTxt)
         } catch (err) {
           console.log(err);
         }
@@ -660,35 +646,34 @@ export function DiseaseA({route, navigation}) {
 
       const writePositionText = () => {
         try {
-          console.log('diseaseData.area', areaparam[0].label);
+          // console.log('diseaseData.area', areaparam[0].label);
           if (diseaseData.area == undefined) {
             let writePositionTxt = '/'
             setWritePositionTxt(writePositionTxt)
             diseaseData['position'] = writePositionTxt
           } else {
 
+            // 墩/台描述
             // 长度描述
             let lengthNum = lengthText + 'm,'
             setLengthNum(lengthNum)
+            // 宽度描述
             let widthNum = '距左侧' + widthText + 'm,'
             setWidthNum(widthNum)
+            // 距顶描述
             let heightNum = '距顶部' + heightText + 'm'
             setHeightNum(heightNum)
 
             // 位置描述 = / + 病害区域 + 桥台 + 长度 + 宽度 + 距顶
-            let writePositionTxt = '/' + diseaseData.area + '距' + '' + lengthNum + widthNum + heightNum
+            let writePositionTxt = '/' + diseaseData.area + '距' + pier + lengthNum + widthNum + heightNum + '处'
             setWritePositionTxt(writePositionTxt)
             diseaseData['writePositionTxt'] = writePositionTxt
             setDiseaseData(diseaseData)
             handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
-
           }
-          
         } catch (err) {
           console.log(err);
         }
-        
-        
       }
 
 
@@ -831,7 +816,7 @@ export function DiseaseA({route, navigation}) {
         </View>
         {/* <View style={tailwind.mT2} /> */}
         <View style={[tailwind.flexRow]}>
-          <View style={{width:490}}>
+          <View style={{width:435}}>
             <WriteInput
               name="description"
               label="病害描述"
@@ -842,9 +827,9 @@ export function DiseaseA({route, navigation}) {
               // disabled={true}
             />
           </View>
-          {/* <TouchableOpacity style={styles.sideButton} onPress={writeDesText}>
+          <TouchableOpacity style={styles.sideButton} onPress={writeDesText}>
             <Text style={[{color:'#fff',fontSize:12}]}>填入描述</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow]}>
