@@ -16,7 +16,7 @@ import Button from './Button';
 import Pid from './Pid';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Slider from '@react-native-community/slider';
-
+import {KeyboardInput} from '../components/Input'
 
 export const SliderInput = React.forwardRef(
   ({label, style, LabelStyle, name, onChange, value, num, memberData}, ref) => {
@@ -131,6 +131,13 @@ export const SliderInput = React.forwardRef(
         console.log('溢出');
       }
     }
+
+
+    const [diseaseData, setDiseaseData] = React.useState();
+    const handleFormChenge = ({name, value}) => {
+      // 修改比例数值
+      handleOk(value)
+    };
     
     return (
       <LabelItem style={style} LabelStyle={LabelStyle} label={label}>
@@ -152,13 +159,17 @@ export const SliderInput = React.forwardRef(
             // onSlidingComplete={(value) => {handleOk(value)}}
           />
         </View>
-        <Text style={[tailwind.textBlack,{fontSize:13}]}>比例(%)</Text>
-        <TouchableWithoutFeedback>
+        <Text style={[tailwind.textBlack]}>比例(%)</Text>
+        <KeyboardInput
+          name={name}
+          value={value}
+          onChange={handleFormChenge}
+        />
+        {/* <TouchableOpacity>
           <View style={[styles.keyboardInput]}>
-            {/* <Text style={[tailwind.textBlack]}>{value}</Text> */}
             <Text style={[tailwind.textBlack, {fontSize:10}]}>{value}</Text>
           </View>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity> */}
         <Text>  </Text>
           <TouchableOpacity
           style={[styles.button]}

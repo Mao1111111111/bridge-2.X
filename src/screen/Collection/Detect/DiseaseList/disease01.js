@@ -155,6 +155,11 @@ export function DiseaseA({route, navigation}) {
 
       const [saveDescription, setSaveDescription] = useState()
 
+      // 构件类型
+      const [labelName, setLabelName] = useState()
+      // 构件区域
+      const [areaName, setAreaName] = useState()
+
       // 病害名称
       const [infoshort, setInfoShort] = useState()
 
@@ -187,33 +192,13 @@ export function DiseaseA({route, navigation}) {
             let heightText = '0'
             setHeightText(heightText)
           }
+          console.log('short',route.params.thridData.checkinfoshort);
           // 将病害位置的长宽高数据存进diseaseData
           diseaseData['lengthText'] = lengthText
           diseaseData['widthText'] = widthText
           diseaseData['heightText'] = heightText
-
-
-          // console.log('桥跨：：',route.params.memberList[0].membername);
-          let defaultPier = route.params.memberList[0].membername
-          // 提取第一个字符进行判断（表示墩台的数据）
-          let firstDefaultPier = defaultPier.slice(0,1)
-          if (firstDefaultPier == 1) {
-            let pier = (firstDefaultPier - 1) + '#台'
-            setPier(pier)
-            // console.log('dundun:', pier);
-          } else {
-            let pier = (firstDefaultPier - 1) + '#墩'
-            setPier(pier)
-            // console.log('dundun:', pier);
-          }
-          // let lengthNum = lengthText + 'm,'
-          // let widthNum = '距左侧' + widthText + 'm,'
-          // let heightNum = '距顶部' + heightText + 'm'
-          // let writePositionTxt = '/' + diseaseData.area + '距' + '' + lengthNum + widthNum + heightNum
-          // setWritePositionTxt(writePositionTxt)
-          // diseaseData['position'] = writePositionTxt
-          // console.log('diseaseData.area2222222:', areaparam[0].label);
-          diseaseData['area'] = areaparam[0].label
+          diseaseData['remark'] = route.params.thridData.checkinfoshort
+          // console.log(diseaseData);
           if (diseaseData.remark == '' || diseaseData.remark == undefined) {
             let infoshort = route.params.thridData.checkinfoshort
             setInfoShort(infoshort)
@@ -255,6 +240,7 @@ export function DiseaseA({route, navigation}) {
                   ({checktypeid}) => saveData.current.checktypeid === checktypeid,
                 )?.scalegroupid || '';
             }
+            
             const jsondata = {
               ...saveData.current,
               checktypegroupid: type.checktypegroupid,
@@ -278,13 +264,43 @@ export function DiseaseA({route, navigation}) {
             dispatch({type: 'isLoading', payload: true});
             dispatch({type: 'cachePartsList', payload: list});
           }
-          // setTimeout(() => {
-          //   componentDidMount()
-          // }, 5000)
-          // 右侧的分项数据（不定）
-          // console.log('infoList', infoList);
         };
       }, [baseData, saveData, version, route.params, dispatch]);
+
+
+      useEffect(() => {
+        // console.log('桥跨：：',route.params.memberList);
+        let defaultPier = route.params.memberList[0].membername
+        // 提取第一个字符进行判断（表示墩台的数据）
+        let firstDefaultPier = defaultPier.slice(0,1)
+        if (firstDefaultPier == 1) {
+          let pier = '距' + (firstDefaultPier - 1) + '#台'
+          setPier(pier)
+          console.log('dundun:', pier);
+        } else {
+          let pier = '距' + (firstDefaultPier - 1) + '#墩'
+          setPier(pier)
+          console.log('dundun:', pier);
+        }
+
+        console.log('构件区域列表：：',areaparam);
+        // console.log('表单中的构件区域',diseaseData.area);
+        if (areaparam == '') {
+          console.log('选的其他');
+          try{
+           console.log('构件类型', itemData.areatype); 
+           if (itemData.areatype == 'at0000' || itemData.areatype == undefined) {
+            // console.log('9999');
+            diseaseData['area'] = '/'
+            let labelName = itemData.areatype
+            setLabelName(labelName)
+           }
+          } catch {
+
+          }
+        }
+      },[])
+
       const handleScaleOpen = () => scaleInfoRef.current.open();
       const handleFormChenge = ({name, value}) => {
         const _data = {
@@ -499,6 +515,7 @@ export function DiseaseA({route, navigation}) {
         setDiseaseData(_data);
       };
 
+      // 填入病害描述内容
       const writeDesText = () => {
         try {
           let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
@@ -513,13 +530,14 @@ export function DiseaseA({route, navigation}) {
           console.log('writeTxt', writeTxt);
           // console.log('remark:', diseaseData.remark);
           // console.log('route:::', route.params.thridData.checkinfoshort);
-          // 截取有变化的数据的二、三位内容(第一位为逗号)
-          let sliceWrite = writeTxt.slice(1, 3)
-          console.log('sliceWrite', sliceWrite);
+          
           // 在remark里面查找这两位内容，取出其位置下标
           if (diseaseData.remark !== undefined) {
             if (writeTxt == '' || writeTxt == undefined) {
               // 当还没有输入的内容时
+              // 截取有变化的数据的二、三位内容(第一位为逗号)
+              let sliceWrite = writeTxt.slice(1, 3)
+              console.log('sliceWrite', sliceWrite);
               let allText = diseaseData.remark
               let binghai = allText.slice(0,allText.indexOf('，'))
               console.log('binghai',binghai);
@@ -577,9 +595,15 @@ export function DiseaseA({route, navigation}) {
               console.log('截取后的数组：',writeArr);
               // 对writeArr数组的每一项进行替换
               for (let i = 0; i < writeArr.length; i++) {
+                
                   // 截取数组每一项的二、三位内容，与原有数据对比
                   let sliceWrite = writeArr[i].slice(1, 3)
-                  let allText = diseaseData.description
+                  if (diseaseData.description == undefined || diseaseData.description == '') {
+                    var allText = diseaseData.remark
+                  } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
+                    var allText = diseaseData.description
+                  }
+                  
                   // console.log('allText', allText);
                   // console.log('sliceWrite:', sliceWrite);
                   let numStart = allText.indexOf(sliceWrite)
@@ -590,6 +614,7 @@ export function DiseaseA({route, navigation}) {
                   let numEnd = allTextEnd.indexOf(',')
                   // console.log('numEnd', numEnd);
                   if (numEnd !== -1) {
+                    console.log('numEnd的值', numEnd);
                     // 得出内容的末尾下标值
                     let lengthAll = numStart + numEnd
                     // console.log('lengthAll', lengthAll);
@@ -604,15 +629,22 @@ export function DiseaseA({route, navigation}) {
                     diseaseData['description'] = saveDescription
                     handleFormChenge(saveDescription, diseaseData.description)
                   } else {
+                    console.log('numEnd的值', numEnd);
                     // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-                    let aaaa = allText.substr(0, numStart-1)
-                    // console.log('aaaa: ', aaaa);
-                    let ccca = aaaa.concat(writeArr[i])
-                    let saveDescription = ccca
-                    setSaveDescription(saveDescription)
-                    // console.log('saveDescription: ', saveDescription);
-                    diseaseData['description'] = saveDescription
-                    handleFormChenge(saveDescription, diseaseData.description)
+                    // let aaaa = allText.substr(0, numStart-1)
+                    let aaaa = diseaseData.remark
+                    console.log('aaaa: ', aaaa);
+                    let bbbb = ''
+                    for (let i =0; i < writeArr.length; i++) {
+                      bbbb += writeArr[i]
+                      let ccca = aaaa.concat(bbbb)
+                      console.log('ccca', ccca);
+                      let saveDescription = ccca
+                      setSaveDescription(saveDescription)
+                      // console.log('saveDescription: ', saveDescription);
+                      diseaseData['description'] = saveDescription
+                      handleFormChenge(saveDescription, diseaseData.description)
+                    }
                   }
                   
               }
@@ -644,35 +676,77 @@ export function DiseaseA({route, navigation}) {
         
       }
 
+      // 填入位置描述内容
       const writePositionText = () => {
         try {
-          // console.log('diseaseData.area', areaparam[0].label);
+          // console.log('diseaseData.area', diseaseData.area);
+          console.log('diseaseData.lengthText',lengthText,widthText,heightText);
           if (diseaseData.area == undefined) {
-            let writePositionTxt = '/'
+            let writePositionTxt = ''
             setWritePositionTxt(writePositionTxt)
-            diseaseData['position'] = writePositionTxt
-          } else {
-
+            diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0){
+            console.log('有数据了');
+            console.log('构件区域列表：：',areaparam);
+            console.log('表单中的构件区域',diseaseData.area);
+            console.log('构件类型',labelName);
+            if (labelName == 'at0000' || labelName == undefined && areaparam == '') {
+              var areaName = ''
+              diseaseData['area'] = areaName
+              // handleFormChenge(areaName, diseaseData.area)
+            }
+            if (areaparam !== '') {
+              let areaArr = areaparam
+              let inputArea = diseaseData.area
+              for (let i = 0; i < areaArr.length; i++) {
+                if (inputArea == areaArr[i].value) {
+                  console.log('此时选中的构件是：',areaArr[i].label);
+                  var areaName = areaArr[i].label
+                }
+              }
+            }
+            setAreaName(areaName)
+            
             // 墩/台描述
             // 长度描述
-            let lengthNum = lengthText + 'm,'
-            setLengthNum(lengthNum)
+            if (lengthText == '0.0') {
+              var lengthNum = ''
+              setLengthNum(lengthNum)
+              let pier = ''
+              setPier(pier)
+            } else if (lengthText !== '0.0') {
+              var lengthNum = lengthText + 'm,'
+              setLengthNum(lengthNum)
+            }
+            
             // 宽度描述
-            let widthNum = '距左侧' + widthText + 'm,'
-            setWidthNum(widthNum)
+            if (widthText == '0.0') {
+              var widthNum = ''
+              setWidthNum(widthNum)
+            } else if (widthText !== '0.0') {
+              var widthNum = '距左侧' + widthText + 'm'
+              setWidthNum(widthNum)
+            }
+
             // 距顶描述
-            let heightNum = '距顶部' + heightText + 'm'
-            setHeightNum(heightNum)
+            if (heightText == '0.0') {
+              var heightNum = ''
+              setHeightNum(heightNum)
+            } else if (heightText !== '0.0') {
+              var heightNum = ',距顶' + heightText + 'm'
+              setHeightNum(heightNum)
+            }
 
             // 位置描述 = / + 病害区域 + 桥台 + 长度 + 宽度 + 距顶
-            let writePositionTxt = '/' + diseaseData.area + '距' + pier + lengthNum + widthNum + heightNum + '处'
+            let writePositionTxt = areaName + pier + lengthNum + widthNum + heightNum + '处'
             setWritePositionTxt(writePositionTxt)
             diseaseData['writePositionTxt'] = writePositionTxt
             setDiseaseData(diseaseData)
             handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
           }
         } catch (err) {
-          console.log(err);
+          console.log('出现错误1:',err);
         }
       }
 
@@ -723,8 +797,8 @@ export function DiseaseA({route, navigation}) {
               {!areaparam.length ? (
                 <TextInput
                   name="area"
-                  label="病害区域"
-                  // value={diseaseData?.area}
+                  label="构件区域"
+                  value={diseaseData?.area}
                   onChange={handleFormChenge}
                   lines={1}
                   height={25}
@@ -732,8 +806,8 @@ export function DiseaseA({route, navigation}) {
               ) : (
                 <Select
                   name="area"
-                  label="病害区域"
-                  // value={diseaseData?.area}
+                  label="构件区域"
+                  value={diseaseData?.area}
                   values={areaparam}
                   onChange={handleFormChenge}
                 />
@@ -784,6 +858,7 @@ export function DiseaseA({route, navigation}) {
               onChange={handleFormChenge}
             />
           </View>
+          <View style={tailwind.mT2} />
           <View style={[tailwind.flexRow]}>
             <LabelItem label="宽度" style={tailwind.w18} />
             <KeyboardInput
@@ -798,7 +873,7 @@ export function DiseaseA({route, navigation}) {
               onChange={handleFormChenge}
             />
           </View>
-
+          <View style={tailwind.mT2} />
           <View style={[tailwind.flexRow,tailwind.mB3]}>
             <LabelItem label="距顶" style={tailwind.w18} />
             <KeyboardInput
