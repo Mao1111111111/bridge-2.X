@@ -25,20 +25,6 @@ export function RadioGroup({label, values, name, value, onChange, type}) {
       });
   };
 
-
-  // 将标度选项中，'无'的选项剔除
-  // const [newValue, setNewValue] = useState()
-
-  // React.useEffect(() => {
-  //   console.log('123');
-  //   for (let i = 0; i < values.length; i++) {
-  //     if (values[i].label == '无') {
-  //       values = values.slice(i+1)
-  //     }
-  //   }
-  //   console.log(values);
-  // }, []);
-
   return (
     <View style={styles.box}>
       {/* <View>
