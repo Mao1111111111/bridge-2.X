@@ -100,7 +100,8 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
     '0',
     'train-car-box-full',
     'wrench-cog-outline',
-    'filter-settings-outline'
+    'filter-settings-outline',
+    'tally-mark-3'
   ]
 
   return (
@@ -276,6 +277,8 @@ export default function DiseaseList({route, navigation}) {
 
   const {title, list, dataGroupId, routeParams} = route.params;
 
+  const [cacheNum, setCacheNum] = React.useState()
+
   useFocusEffect(
     React.useCallback(() => {
       if (!list || group.length !== 0 || groupList.length === 0) {
@@ -294,6 +297,7 @@ export default function DiseaseList({route, navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
+      console.log('123321');
       if (!list || isLoading) {
         return;
       }
@@ -346,6 +350,35 @@ export default function DiseaseList({route, navigation}) {
           setNowEdit(null);
 
           setTableData(listToPage(_list, 10));
+          // console.log('route.params',route.params);
+          // console.log('填写的病害数据jsondata', res[0].jsondata);
+          // console.log('填写的病害数据 - 长度', res[0].jsondata.memberLength);
+          // console.log('填写的病害数据 - 宽度', res[0].jsondata.memberWidth);
+          // console.log('填写的病害数据 - 高度', res[0].jsondata.memberHeight);
+          // let cacheNum = [
+          //   {memberLength: res[0].jsondata.memberLength},
+          //   {memberWidth: res[0].jsondata.memberWidth},
+          //   {memberHeight: res[0].jsondata.memberHeight}
+          // ]
+
+          // 将一片梁下最初始填的长宽高数据传给这片梁下后续的病害填写表单，使其成为默认值
+          try {
+            if (res[0].jsondata !== undefined || res[0].jsondata !== '') {
+              let cacheNum = [
+                {
+                  memberLength: res[0].jsondata.memberLength,
+                  memberWidth: res[0].jsondata.memberWidth,
+                  memberHeight: res[0].jsondata.memberHeight
+                }
+              ]
+              console.log('cacheNum',cacheNum);
+              setCacheNum(cacheNum)
+            } else {
+              console.log('jsondata为空');
+            }
+          } catch {}
+          
+          
         });
     }, [list, isLoading, dataGroupId]),
   );
@@ -397,7 +430,9 @@ export default function DiseaseList({route, navigation}) {
       setGroup(a)
     }
     typeModelRef.current.open();
+    data['cacheNum'] = cacheNum
     setWaitingData(data);
+    console.log('datadata',data);
   };
 
   const handleEdit = data => {
@@ -418,7 +453,7 @@ export default function DiseaseList({route, navigation}) {
       data: data,
       memberList: list,
       dataGroupId,
-      routeParams,
+      routeParams
     });
   };
 

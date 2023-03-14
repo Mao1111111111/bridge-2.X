@@ -64,7 +64,8 @@ export default function DiseaseEdit2({route, navigation}) {
 
   React.useEffect(() => {
     // route内容为DiseaseList文件handleModelCallBack传入的data数据
-    console.log('route', route);
+    // console.log('route', route);
+    // console.log('route.params.cacheNum',route.params.data.cacheNum);
     console.log('当前选择的membertype： ', route.params.routeParams.membertype + ' - ' + route.params.routeParams.title);
     console.log('params: ', navigation.routeParams);
     return () => {
@@ -123,6 +124,8 @@ export default function DiseaseEdit2({route, navigation}) {
   }, [baseData, saveData, version, route.params, dispatch]);
 
   React.useEffect(()=>{
+    console.log('routeroute:', route.params.data.jsondata);
+    // console.log('memberLength:', route.params.data.jsondata.memberLength);
     let list = []
     if(baseData.membercheckdata&&route.params.thridData){
       route.params.thridData.datastr.forEach(item=>{
@@ -132,6 +135,7 @@ export default function DiseaseEdit2({route, navigation}) {
       //这里的list就是字段数据
       console.log("listlistlist",list);
     }
+    // console.log('route.params.jsondata::::',route.params.data.jsondata);
   },[baseData])
   // const handleFormChenge = ({name, value}) => {
   //   const _data = {
@@ -223,7 +227,7 @@ export default function DiseaseEdit2({route, navigation}) {
                   <View>
                     {/* 主梁 - */}
                   {route.params.routeParams.membertype == 'b100001' ||
-                  // 挂梁
+                  // 挂梁 -
                   route.params.routeParams.membertype == 'b100006' ?
                   <DiseaseA route={route} navigation={navigation} diseaseData={diseaseData} /> :
                   // 横隔板 -
@@ -247,23 +251,23 @@ export default function DiseaseEdit2({route, navigation}) {
                   // 排水系统 - 
                   route.params.routeParams.membertype == 'b300005' ? 
                   <DiseaseB route={route} navigation={navigation} diseaseData={diseaseData} /> :
-                  // 湿接段
+                  // 湿接段 -
                   route.params.routeParams.membertype == 'b100003' ||
-                  // 铰缝
+                  // 铰缝 -
                   route.params.routeParams.membertype == 'b100005' ||
-                  // 湿接缝
+                  // 湿接缝 -
                   route.params.routeParams.membertype == 'b100007' ?
                   <DiseaseC route={route} navigation={navigation} diseaseData={diseaseData} /> :
-                  // 桥面铺装
+                  // 桥面铺装 -
                   route.params.routeParams.membertype == 'b300001' ?
                   <DiseaseK route={route} navigation={navigation} diseaseData={diseaseData} /> :
-                  // 桥台
+                  // 桥台 - 
                   route.params.routeParams.membertype == 'b200001' ?
                   <DiseaseG route={route} navigation={navigation} diseaseData={diseaseData} /> :
-                  // 桥墩
+                  // 桥墩 -
                   route.params.routeParams.membertype == 'b200002' ?
                   <DiseaseH route={route} navigation={navigation} diseaseData={diseaseData} /> :
-                  // 锥坡、护坡
+                  // 锥坡、护坡 - 
                   route.params.routeParams.membertype == 'b200005' ?
                   <DiseaseD route={route} navigation={navigation} diseaseData={diseaseData} /> :
                   // 照明、标志
