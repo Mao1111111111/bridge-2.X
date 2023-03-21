@@ -297,7 +297,7 @@ export default function DiseaseList({route, navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log('123321');
+      // console.log('123321');
       if (!list || isLoading) {
         return;
       }
@@ -361,11 +361,13 @@ export default function DiseaseList({route, navigation}) {
           //   {memberHeight: res[0].jsondata.memberHeight}
           // ]
 
+          console.log('res[0].jsondata', route.params.title);
           // 将一片梁下最初始填的长宽高数据传给这片梁下后续的病害填写表单，使其成为默认值
           try {
             if (res[0].jsondata !== undefined || res[0].jsondata !== '') {
               let cacheNum = [
                 {
+                  title:route.params.title,
                   memberLength: res[0].jsondata.memberLength,
                   memberWidth: res[0].jsondata.memberWidth,
                   memberHeight: res[0].jsondata.memberHeight
