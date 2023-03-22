@@ -8,6 +8,7 @@ import {Context as GlobalContext} from '../../providers/GlobalProvider';
 import {alert} from '../../utils/alert';
 import storage from '../../utils/storage';
 import * as createData from './createData';
+import { BucketName_storeTestData } from '../../assets/OBSConfig';
 
 const Context = React.createContext();
 
@@ -29,7 +30,7 @@ const getBaseData = async () => {
 
 function Provider({children}) {
   const {
-    state: {userInfo},
+    state: {userInfo,basememberinfo},
   } = React.useContext(GlobalContext);
 
   const [state, dispatch] = React.useReducer(reducer, {
@@ -94,7 +95,6 @@ function Provider({children}) {
               [data],
               userInfo.token.access_token,
             );
-
             if (success) {
               const res = await uploadData.syncCreateBridgeMemberList(
                 member,
@@ -167,28 +167,60 @@ function Provider({children}) {
         alert('上传完成');
       } else {
         const upload = async () => {
+          console.log("1111");
           try {
-            const data = await createData.getTestData(
+            // 获取数据
+            const data = await createData.getData(
               state.testDataUploadingIds[inx],
               state.planMeta,
               state.genesisMate,
               state.membercheckdata,
+              basememberinfo
             );
+            //存储到华为云的键值
+            let ObsKey = 'testData'
+            
+            //上传反馈数据
+            let feedbackParams = {
+              bucketname:BucketName_storeTestData,
+              objectkey:ObsKey,
+              obsstorage:'StorageClassStandard',
+              objecttype:'json',
+              objectsize:0,
+              downserver:'00000000-0000-0000-0000-bcaec5b80c54',
+              projectkey:data.testData.projectid,
+              objectinfo:{
+                companyid:BucketName_storeTestData,
+                userid:data.testData.userid
+              }
+            }
+            console.log("data",data);
+            console.log("len",JSON.stringify(data).length);
+            //上传到云
+            //await uploadData.syncUploadTestDataToObs(ObsKey,JSON.stringify(data));
 
-            if (data) {
+            /* const data = await createData.getTestData(
+              state.testDataUploadingIds[inx],
+              state.planMeta,
+              state.genesisMate,
+              state.membercheckdata,
+              basememberinfo
+            ); */
+             // console.log("data",data);
+         /*   if (data) {
               // 桥梁项目关联数据
-              await uploadData.syncCreateReportList(
+              await uploadData.syncCreateReportListToObs(
                 state.testDataUploadProject.projectid,
                 data.bridgeReportData ? [data.bridgeReportData] : [],
                 userInfo.token.access_token,
               );
               // 桥梁项目关联构件数据
-              await uploadData.syncCreateReportMemberList(
+              await uploadData.syncCreateReportMemberListToObs(
                 data.bridgeReportMemberData,
                 userInfo.token.access_token,
               );
               // 检测记录
-              await uploadData.syncCreateMemberCheckStatus(
+              await uploadData.syncCreateMemberCheckStatusToObs(
                 data.membercheckstatus,
                 userInfo.token.access_token,
               );
@@ -202,25 +234,25 @@ function Provider({children}) {
                   updata.push(item);
                 }
               });
-              await uploadData.syncCreateCheckStatusDataJson(
+              await uploadData.syncCreateCheckStatusDataJsonToObs(
                 updata,
                 userInfo.token.access_token,
               );
 
               // 裂缝数据
-              await uploadData.syncCreateMemberCheckStatusC1003(
+              await uploadData.syncCreateMemberCheckStatusC1003ToObs(
                 data.testData.filter(({datatype}) => datatype === 'c1003'),
                 userInfo.token.access_token,
               );
 
               // 病害程度值
-              await uploadData.syncCreateCheckStatusDataStrValue(
+              await uploadData.syncCreateCheckStatusDataStrValueToObs(
                 data.strvaluearr,
                 userInfo.token.access_token,
               );
 
               // 媒体数据
-              await uploadData.syncCreateCheckStatusMedia(
+              await uploadData.syncCreateCheckStatusMediaToObs(
                 data.mediaData,
                 userInfo.token.access_token,
               );
@@ -230,7 +262,7 @@ function Provider({children}) {
                 data.mediaData
                   .filter(({filepath}) => filepath)
                   .map(async item => {
-                    return await uploadData.upload(
+                    return await uploadData.uploadImageToObs(
                       {
                         uri: item.filepath,
                         type: item.filename.split('.').pop(),
@@ -248,12 +280,12 @@ function Provider({children}) {
                 to_projcet_id: state.testDataUploadProject.projectid,
                 to_projcet_name: state.testDataUploadProject.projectname,
               });
-            }
+            } */
 
-            dispatch({
+            /* dispatch({
               type: 'testDataUploadEndIds',
               payload: state.testDataUploadingIds?.slice(0, inx + 1),
-            });
+            }); */
           } catch (err) {
             console.info(err);
           } finally {

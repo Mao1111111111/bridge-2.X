@@ -79,6 +79,11 @@ export const get = async id => {
   return getResult(await db().executeSql(sql, [id]), 'object');
 };
 
+export const getByBridgeid = async bridgeid => {
+  const sql = 'select * from bridge where bridgeid = ?';
+  return getResult(await db().executeSql(sql, [bridgeid]), 'object');
+};
+
 export const save = async data => {
   const sql = `
   insert into bridge (
