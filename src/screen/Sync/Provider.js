@@ -9,6 +9,9 @@ import {alert} from '../../utils/alert';
 import storage from '../../utils/storage';
 import * as createData from './createData';
 import { BucketName_storeTestData } from '../../assets/OBSConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import fs from '../../utils/fs'
+import RNFS from 'react-native-fs';
 
 const Context = React.createContext();
 
@@ -177,27 +180,69 @@ function Provider({children}) {
               state.membercheckdata,
               basememberinfo
             );
-            //存储到华为云的键值
-            let ObsKey = 'testData'
             
-            //上传反馈数据
+            //---------对检测数据操作
+            //---文件夹
+            // 文件夹地址，根据 桥id 建立文件夹
+            let dirPath = RNFS.DocumentDirectoryPath + '/testData/' + data.bridgeid
+            // 创建文件夹
+            await fs.mkdir(dirPath)
+            //---写入本地
+            // 文件地址 = 桥梁文件夹 + 检测id
+            let dataPath = dirPath + '/' + data.testData.bridgereportid + '.txt'
+            // 将数据存入本地
+            await fs.write(dataPath,JSON.stringify(data),'utf8')
+            //---获取文件信息
+            //文件大小
+            let fileSize = 0
+            //文件创建时间
+            let fileCTime = ''
+            await fs.getFileInfo(dataPath).then(res=>{
+              fileSize = res.size
+              fileCTime = res.ctime
+            })
+
+            //---------存储到华为云的键值
+            // 获取用户信息
+            const userInfo = JSON.parse(await AsyncStorage.getItem('userInfo'))
+            // 企业编号/用户编号/桥梁编号/桥梁检测编号/对象文件编号
+            let ObsReportDataKey = userInfo.company.companyid + '/'
+                        + data.testData.userid + '/'
+                        + data.bridgeid + '/'
+                        + data.testData.bridgereportid + '/'
+                        + 'reportData.txt'
+            
+            //---------上传反馈数据
             let feedbackParams = {
               bucketname:BucketName_storeTestData,
-              objectkey:ObsKey,
-              obsstorage:'StorageClassStandard',
-              objecttype:'json',
-              objectsize:0,
+              objectkey:ObsReportDataKey,
+              obsstorage:'STANDARD',
+              objecttype:'txt',
+              objectsize:fileSize,
               downserver:'00000000-0000-0000-0000-bcaec5b80c54',
               projectkey:data.testData.projectid,
               objectinfo:{
-                companyid:BucketName_storeTestData,
-                userid:data.testData.userid
+                companyid:userInfo.company.companyid,
+                userid:data.testData.userid,
+                filenameuser:data.testData.bridgereportid,
+                filenamesys:data.testData.bridgereportid,
+                filesize:Math.floor(fileSize/1024*100)/100,
+                filetypes:'.json',
+                dirpath:ObsReportDataKey.replace("reportData.txt",""),
+                fileinfo:'',
+                filemd5:'',//obs反馈的etag
+                projectkey:data.testData.projectid,
+                createtime:fileCTime+'',
+                checkbridgeid:data.testData.bridgereportid,
+                bridgename:data.bridgename
               }
             }
-            console.log("data",data);
-            console.log("len",JSON.stringify(data).length);
-            //上传到云
-            //await uploadData.syncUploadTestDataToObs(ObsKey,JSON.stringify(data));
+            console.log("JSON.stringify(data)",JSON.stringify(data));
+            //---------上传到云
+            uploadData.syncUploadTestDataToObs(ObsReportDataKey,JSON.stringify(data)).then(res=>{
+              feedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
+              console.log("feedbackParams",feedbackParams);
+            })
 
             /* const data = await createData.getTestData(
               state.testDataUploadingIds[inx],

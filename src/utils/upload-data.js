@@ -466,10 +466,8 @@ export const uploadImageToObs = (file, filename, access_token) =>
   export const syncUploadTestDataToObs = (key,objects) =>
   new Promise((resolve, reject) => {
     uploadTestDataToObs(key,objects).then(res=>{
-      console.log("res",res);
       resolve(res);
     }).catch(err=>{
-      console.log("err",err);
       reject(err);
     })
   });
