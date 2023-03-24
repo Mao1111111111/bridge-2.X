@@ -216,7 +216,7 @@ function Provider({children}) {
             // 获取用户信息
             const userInfo = JSON.parse(await AsyncStorage.getItem('userInfo'))
             // 企业编号/用户编号/桥梁编号/桥梁检测编号/对象文件编号
-            let ObsReportDataKey = '/' + userInfo.company.companyid + '/'
+            let ObsReportDataKey = userInfo.company.companyid + '/'
                         + data.testData.userid + '/'
                         + data.bridgeid + '/'
                         + data.testData.bridgereportid + '/'
@@ -265,7 +265,7 @@ function Provider({children}) {
                   //将文件地址分割获取文件名
                   let arr = item.filepath.split('/')
                   //拼接key
-                  let key = '/' + userInfo.company.companyid + '/'
+                  let key = userInfo.company.companyid + '/'
                     + data.testData.userid + '/'
                     + data.bridgeid + '/'
                     + data.testData.bridgereportid + '/'
