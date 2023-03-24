@@ -201,12 +201,20 @@ function Provider({children}) {
               fileSize = res.size
               fileCTime = res.ctime
             })
+            //--将GMT时间 转换为 yyyy-mm-dd
+            let date = new Date(fileCTime)
+            fileCTime = date.getFullYear() + '-' +
+            (date.getMonth() + 1) + '-' + 
+            date.getDate() + ' ' + 
+            date.getHours() + ':' + 
+            date.getMinutes() + ':' + 
+            date.getSeconds()
 
             //---------存储到华为云的键值
             // 获取用户信息
             const userInfo = JSON.parse(await AsyncStorage.getItem('userInfo'))
             // 企业编号/用户编号/桥梁编号/桥梁检测编号/对象文件编号
-            let ObsReportDataKey = userInfo.company.companyid + '/'
+            let ObsReportDataKey = '/' + userInfo.company.companyid + '/'
                         + data.testData.userid + '/'
                         + data.bridgeid + '/'
                         + data.testData.bridgereportid + '/'
@@ -216,7 +224,7 @@ function Provider({children}) {
             let feedbackParams = {
               bucketname:BucketName_storeTestData,
               objectkey:ObsReportDataKey,
-              obsstorage:'STANDARD',
+              obsstorage:1,
               objecttype:'txt',
               objectsize:fileSize,
               downserver:'00000000-0000-0000-0000-bcaec5b80c54',
@@ -232,17 +240,19 @@ function Provider({children}) {
                 fileinfo:'',
                 filemd5:'',//obs反馈的etag
                 projectkey:data.testData.projectid,
-                createtime:fileCTime+'',
+                createtime:fileCTime+"",
                 checkbridgeid:data.testData.bridgereportid,
                 bridgename:data.bridgename
               }
             }
-            console.log("JSON.stringify(data)",JSON.stringify(data));
             //---------上传到云
             uploadData.syncUploadTestDataToObs(ObsReportDataKey,JSON.stringify(data)).then(res=>{
               feedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
-              console.log("feedbackParams",feedbackParams);
-            })
+              //---------反馈
+              uploadData.syncUploadToObsAfterFeedback(feedbackParams).then(res=>{
+                console.log("res",res);
+              }).catch(err=>console.log("err",err))
+            }).catch(err=>console.log("err",err))
 
             /* const data = await createData.getTestData(
               state.testDataUploadingIds[inx],

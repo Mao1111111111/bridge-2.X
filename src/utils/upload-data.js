@@ -3,6 +3,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import { uploadTestDataToObs } from './OBS';
 
 const host = 'http://testdata.api.jianlide.cn:1088';
+const feedbackHost = 'http://114.116.196.47:10807'; 
 
 /*
  * 获取桥梁项目列表
@@ -470,4 +471,33 @@ export const uploadImageToObs = (file, filename, access_token) =>
     }).catch(err=>{
       reject(err);
     })
+  });
+  //上传到云后，反馈到后端
+  export const syncUploadToObsAfterFeedback = (params) =>
+  new Promise((resolve, reject) => {
+   /*  const url = [feedbackHost, '/api/obs/object-upload-notify'];
+    axios
+      .post(
+        url.join(''),
+        {params}
+      )
+      .then(response => {
+        if (response.data.resultCode === 200) {
+          resolve(response);
+        } else {
+          reject(response);
+        }
+      })
+      .catch(err => reject(err)); */
+
+      fetch('http://114.116.196.47:10807/api/obs/object-upload-notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body:JSON.stringify(params)
+      })
+        .then(res => res.json())
+        .then(resolve)
+        .catch(err => reject(err));
   });
