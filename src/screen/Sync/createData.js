@@ -665,7 +665,17 @@ export const getData =async (
   })
   //部件数据 存入 测试数据
   data.testData['detailTestData'] = partData
-  return data
+
+  let newData = {
+    data:data,
+    mediaData:[
+      ...bridgeMedia,
+      ...partMedia,
+      ...diseasePartsMedia,
+      ...goodMemberMedia
+    ]
+  }
+  return newData
 }
 //获取
 /* const fun = key => {

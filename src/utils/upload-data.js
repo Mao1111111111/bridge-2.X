@@ -439,29 +439,7 @@ export const upload = (file, filename, access_token) =>
       .catch(err => console.info(err));
   });
 //console.log(await upload(fs.createReadStream("package.mp4")));
-export const uploadImageToObs = (file, filename, access_token) =>
-  new Promise(async (resolve, reject) => {
-    console.info('文件上传');
-    let data = ''
-    RNFetchBlob.fs.readStream(file.uri,'base64',4095).then((ifstream)=>{
-      ifstream.open()
-      ifstream.onData((chunk) => {
-        // when encoding is `ascii`, chunk will be an array contains numbers
-        // otherwise it will be a string
-        data += chunk
-      })
-      ifstream.onError((err) => {
-        console.log('oops', err)
-      })
-      ifstream.onEnd(() => {
-        uploadTestDataToObs('image'+filename,data).then(res=>{
-          resolve(res);
-        }).catch(err=>{
-          reject(err);
-        })
-      })
-    })
-  });
+
 
   //上传检测数据到云
   export const syncUploadTestDataToObs = (key,objects) =>
@@ -472,24 +450,33 @@ export const uploadImageToObs = (file, filename, access_token) =>
       reject(err);
     })
   });
+  //上传媒体数据到云
+export const uploadImageToObs = (key,filePath) =>
+new Promise(async (resolve, reject) => {
+  console.info('文件上传');
+  let data = ''
+  RNFetchBlob.fs.readStream(filePath,'base64',4095).then((ifstream)=>{
+    ifstream.open()
+    ifstream.onData((chunk) => {
+      // when encoding is `ascii`, chunk will be an array contains numbers
+      // otherwise it will be a string
+      data += chunk
+    })
+    ifstream.onError((err) => {
+      console.log('oops', err)
+    })
+    ifstream.onEnd(() => {
+      uploadTestDataToObs(key,data).then(res=>{
+        resolve(res);
+      }).catch(err=>{
+        reject(err);
+      })
+    })
+  })
+});
   //上传到云后，反馈到后端
   export const syncUploadToObsAfterFeedback = (params) =>
   new Promise((resolve, reject) => {
-   /*  const url = [feedbackHost, '/api/obs/object-upload-notify'];
-    axios
-      .post(
-        url.join(''),
-        {params}
-      )
-      .then(response => {
-        if (response.data.resultCode === 200) {
-          resolve(response);
-        } else {
-          reject(response);
-        }
-      })
-      .catch(err => reject(err)); */
-
       fetch('http://114.116.196.47:10807/api/obs/object-upload-notify', {
         method: 'POST',
         headers: {

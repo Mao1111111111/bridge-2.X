@@ -173,13 +173,15 @@ function Provider({children}) {
           console.log("1111");
           try {
             // 获取数据
-            const data = await createData.getData(
+            const allData = await createData.getData(
               state.testDataUploadingIds[inx],
               state.planMeta,
               state.genesisMate,
               state.membercheckdata,
               basememberinfo
             );
+            const data = allData.data
+            const mediaData = allData.mediaData
             
             //---------对检测数据操作
             //---文件夹
@@ -245,15 +247,55 @@ function Provider({children}) {
                 bridgename:data.bridgename
               }
             }
-            //---------上传到云
+            //---------上传检测数据到云
             uploadData.syncUploadTestDataToObs(ObsReportDataKey,JSON.stringify(data)).then(res=>{
-              feedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
+              let newFeedbackParams = feedbackParams
+              newFeedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
               //---------反馈
-              uploadData.syncUploadToObsAfterFeedback(feedbackParams).then(res=>{
-                console.log("res",res);
+              uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+                //console.log("res",res);
               }).catch(err=>console.log("err",err))
             }).catch(err=>console.log("err",err))
 
+            //---------上传媒体数据到云
+            await Promise.all(
+              mediaData
+                .filter(({filepath}) => filepath)
+                .map(async item => {
+                  //将文件地址分割获取文件名
+                  let arr = item.filepath.split('/')
+                  //拼接key
+                  let key = '/' + userInfo.company.companyid + '/'
+                    + data.testData.userid + '/'
+                    + data.bridgeid + '/'
+                    + data.testData.bridgereportid + '/'
+                    + arr[arr.length-1].replace("jpg","jpeg")
+                  return await uploadData.uploadImageToObs(key,item.filepath).then(res=>{
+                    //设置反馈参数
+                    let newFeedbackParams = {
+                      ...feedbackParams,
+                      objectkey:key,
+                      objecttype:'img',
+                      objectsize:item.filesize,
+                      objectinfo:{
+                        ...feedbackParams.objectinfo,
+                        filenameuser:item.filename + '.' + item.filetypes.replace("jpg","jpeg"),
+                        filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
+                        filesize:Math.floor(item.filesize/1024*100)/100,
+                        filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
+                        filemd5:(res.InterfaceResult.ETag.replace("\"","")).replace("\"",""),
+                        createtime:item.u_date
+                      }
+                    }
+                    //---------反馈
+                    uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+                      console.log("res",res);
+                    }).catch(err=>console.log("err",err))
+                  }).catch(err=>console.log("err",err))
+                }),
+            );
+
+            //------以下注释为 原上传逻辑
             /* const data = await createData.getTestData(
               state.testDataUploadingIds[inx],
               state.planMeta,
