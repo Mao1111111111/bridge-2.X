@@ -1,5 +1,6 @@
 import {PermissionsAndroid} from 'react-native';
 
+// 导出 异步的函数
 export default async () => {
   try {
     const permissions = [

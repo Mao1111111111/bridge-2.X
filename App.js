@@ -10,6 +10,7 @@ import location from './src/utils/location';
 import permission from './src/utils/permission';
 import {init as sqliteInit} from './src/utils/sqlite';
 
+// 忽略的打印
 LogBox.ignoreLogs([
   "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
   'If you want to use Reanimated 2 then go through our installation steps https://docs.swmansion.com/react-native-reanimated/docs/installation',
@@ -18,13 +19,15 @@ LogBox.ignoreLogs([
 ]);
 
 function App() {
+  // 是否初始化结束
   const [isReady, setIsReady] = React.useState(false);
-
+  // 是否初始化错误
   const [isError, setIsError] = React.useState(false);
 
   // const [massage, setMassage] = React.useState('');
 
   React.useEffect(() => {
+    // 匿名的异步函数，并执行
     (async () => {
       try {
         // 访问权限
@@ -42,21 +45,28 @@ function App() {
   }, []);
 
   // return <Login />;
-
+  // 三种情况：准备好，准备中，出现错误
   return isReady ? (
+    // 当准备好时
+    // GlobalProvider 全局提供者
     <GlobalProvider>
+      {/* GlobalProvider 主题默认配置 提供者 */}
       <ThemeProvider>
+        {/* PaperProvider 组件库的全局提供者 */}
         <PaperProvider
           settings={{
             icon: props => <Icon {...props} />,
           }}>
+          {/* 背景图片 */}
           <ImageBackground source={require('./src/iconImg/wangge.jpg')} style={[{width:'100%', height:'100%'}]}>
+            {/* 入口页面 */}
             <Main />
           </ImageBackground>
         </PaperProvider>
       </ThemeProvider>
     </GlobalProvider>
   ) : !isError ? (
+    // 准备中
     <View
       style={[tailwind.flex1, tailwind.justifyCenter, tailwind.itemsCenter]}>
       <View style={[styles.loading]}>
@@ -68,6 +78,7 @@ function App() {
       </View>
     </View>
   ) : (
+    // 出现错误时
     <View
       style={[tailwind.flex1, tailwind.justifyCenter, tailwind.itemsCenter]}>
       <Text>发生错误</Text>
