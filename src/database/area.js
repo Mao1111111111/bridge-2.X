@@ -33,6 +33,7 @@ export const save = async data => {
 };
 
 // 生成临时测试数据
+// 同步数据  先删除表，然后再逐条插入
 export const syncData = async data => {
   const sql2 = 'delete from area';
   await db().executeSql(sql2);

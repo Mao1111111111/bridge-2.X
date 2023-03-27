@@ -62,7 +62,7 @@ export const save = async data => {
 //   }
 // };
 
-// 同步数据
+// 同步数据 先删除整个表，然后再逐条插入
 export const syncData = async data => {
   const sql2 = 'delete from base_data';
   await db().executeSql(sql2);

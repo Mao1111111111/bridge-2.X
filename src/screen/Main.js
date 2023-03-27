@@ -118,15 +118,17 @@ export default function Main() {
 
 
 
-
+  // 主题
   const {
     state: {theme},
   } = React.useContext(Context);
 
+  // 全局参数 是否登录、是否初始化结束
   const {
     state: {isLogin, isInit},
   } = React.useContext(GlobalContext);
 
+  // 导航的主题色
   const [navTheme, setNavTheme] = React.useState({
     ...DefaultTheme,
     colors: {
@@ -147,10 +149,15 @@ export default function Main() {
     });
   }, [theme]);
 
+  // 判断是否初始化结束  初始化：获取网络状态、获取用户信息
   return isInit ? (
+    // 初始化结束
     <>
+      {/* 锁屏组件，默认不锁屏 */}
       <Lock />
+      {/* 登录，没有用户信息时，显示登录页面 */}
       {!isLogin ? <Login /> : <></>}
+      {/* 路由最顶层包裹 */}
       <NavigationContainer theme={navTheme}>
         {/* 隐藏设备顶部状态栏（电量 时间） */}
         <StatusBar
@@ -159,10 +166,13 @@ export default function Main() {
           hidden={true}
           animated={true}
         />
+        {/* tab 导航 */}
         <NavigatorTabs routes={routes} />
       </NavigationContainer>
     </>
   ) : (
+    // 未初始化结束
+    // 加载中
     <View
       style={[tailwind.flex1, tailwind.justifyCenter, tailwind.itemsCenter]}
       >

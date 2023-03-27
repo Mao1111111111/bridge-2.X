@@ -563,15 +563,22 @@ export const baseareamanage = async access_token =>
 
 // 同步数据 服务器->客户端
 export const syncCommonData = async (company_id, access_token, fun) => {
+  // 清空 本地存储
   await AsyncStorage.clear();
+  // 数据 以及 设置数据的函数
   const data = {};
   const setData = (name, val) => {
     data[name] = val;
   };
+  // fun 是回调函数，用于显示 同步到 哪一步了 
   try {
+    // 如果回调函数存储，那么执行
     fun && fun({name: '桥梁结构数据', status: '更新中'});
+    // 请求接口，获取桥梁结构数据
     const result = await fetchBasememberinfo(access_token);
+    // 时间
     const laetDate = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    // 将数据存入 data
     setData('桥梁结构数据', {
       data: result.list,
       laetDate,
@@ -582,6 +589,20 @@ export const syncCommonData = async (company_id, access_token, fun) => {
     console.error(err);
     fun && fun({name: '桥梁结构数据', status: '更新失败', massage: err});
   }
+  // 桥梁结构数据 示例
+  /* '桥梁结构数据' = {
+    data:[
+      {
+        "bridgertype": "g",
+        "id": 1,
+        "membername": "主梁",
+        "membertype": "b100001",
+        "positionid": "b10",
+        "weight": 0.7
+      }
+    ],
+    laetDate:'YYYY-MM-DD HH:mm:ss'
+  } */
 
   try {
     fun && fun({name: '桥梁结构检测位置', status: '更新中'});
@@ -596,6 +617,32 @@ export const syncCommonData = async (company_id, access_token, fun) => {
     fun && fun({name: '桥梁结构检测位置', status: '更新失败', massage: err});
     console.error(err);
   }
+  // 桥梁结构检测位置 示例
+  /* '桥梁结构检测位置' = {
+    data:[
+      {
+          "checktype": "bridge-a",
+          "list": [
+              {
+                  "list": [
+                      {
+                          "areaname": "箱梁",
+                          "areanodejson": "{}",
+                          "areaparamjson": "{}",
+                          "areatype": "at0003",
+                          "exampleimg": 0,
+                          "filename": 0,
+                          "img_type": "base64",
+                          "orderdesc": 30
+                      }
+                  ],
+                  "membertype": "b100001"
+              }
+          ]
+      }
+    ],
+    laetDate:'YYYY-MM-DD HH:mm:ss'
+  } */
 
   // fun && fun('获取部件养护计划信息');
   try {
@@ -611,6 +658,28 @@ export const syncCommonData = async (company_id, access_token, fun) => {
     fun && fun({name: '部件养护计划信息', status: '更新失败', massage: err});
     console.error(err);
   }
+  // 部件养护计划信息 示例
+  /* '部件养护计划信息' = {
+    data:[
+            {
+                "checktype": "bridge-a",
+                "list": [
+                    {
+                        "list": [
+                            {
+                                "maintplanid": "10000mp10003",
+                                "maintplanname": "拉索、锚\n头、阻尼器\n维修",
+                                "maintplanunit": "组",
+                                "orderdesc": 30
+                            }
+                        ],
+                        "membertype": "b100002"
+                    }
+                ]
+            }
+        ],
+    laetDate:'YYYY-MM-DD HH:mm:ss'
+  } */
 
   // fun && fun('获取桥梁各部件病害信息');
   try {
@@ -751,6 +820,7 @@ export const syncCommonData = async (company_id, access_token, fun) => {
         list.push(item);
       });
     });
+    // 同步 基础数据 到 数据库的  base_data表中
     await syncBaseData(list);
     setData('桥梁属性基础数据', {laetDate});
     fun && fun({name: '桥梁属性基础数据', status: '更新成功', laetDate});
@@ -800,9 +870,11 @@ export const syncCommonData = async (company_id, access_token, fun) => {
         });
       }
     });
+    // 将 养护区数据 更新 到 数据库的area表 中
     await syncAreaData(list);
     setData('养护区路线数据', {laetDate});
     fun && fun({name: '养护区路线数据', status: '更新成功', laetDate});
+    // 将所有获取到的数据，存储到 本地
     await AsyncStorage.setItem('baseData_' + company_id, JSON.stringify(data));
   } catch (err) {
     fun && fun({name: '养护区路线数据', status: '更新失败', massage: err});

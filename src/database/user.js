@@ -20,10 +20,14 @@ CREATE TABLE IF NOT EXISTS user (
 ) 
 `;
 
+// 登录
 export const login = async data => {
   let sql = 'select * from user where userid = ?';
+  // 根据 userid 查询 数据库中是否有这个用户的信息
   const user = getResult(await db().executeSql(sql, [data.userid]));
+  // 如果存在这个用户
   if (user) {
+    // 更新这个用户的 用户信息
     sql = `
       update user set 
         islogin = 1 
@@ -54,6 +58,8 @@ export const login = async data => {
       ]),
     );
   } else {
+    // 如果不存在这个用户
+    // 将这个用户信息 插入到 数据库中
     sql = `
       insert into user (
         userid,
@@ -117,6 +123,7 @@ export const check = async data => {
   );
 };
 
+// 通过 pin 登录
 export const loginpin = async data => {
   const sql2 = 'select * from user where username = ? and pin = ?';
   const user = getResult(
