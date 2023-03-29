@@ -107,6 +107,7 @@ export default function EditMenu({
       <View style={tailwind.mY1} />
       {/* 添加 */}
       <TouchableOpacity>
+        {/* 这里是控制按钮的显示效果 */}
         <Pressable onPressIn={addPulldown} onPressOut={addPullup} onPress={onAdd} disabled={!onAdd}>
           <Image style={
             { height: 45, width: 45, alignItems: 'center' }}

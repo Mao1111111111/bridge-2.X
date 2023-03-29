@@ -248,11 +248,15 @@ export default function CommonView({
 
 
   return (
+    // TouchableWithoutFeedback 点击空白处收起键盘
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      {/* 占满box */}
       <View style={[tailwind.flex1]}>
         {/* 界面顶部栏 页面路径与用户名 */}
         {/* <Headerbar items={headerItems || []} pid={pid || ''} /> */}
+        {/* tabBar 无意义参数 */}
         {tabBar ? tabBar : <></>}
+        {/* 内部大盒子，采用row 左中右 */}
         <View
           style={[
             tailwind.flex1,
@@ -260,26 +264,30 @@ export default function CommonView({
             tailwind.pX4,
             tailwind.pY3,
           ]}>
+          {/* 左侧按钮 */}
           <View style={[tailwind.mR3,tailwind.pX1]}>
-          <View style={tailwind.mY12} />
-            {/* 左侧按钮 */}
-            <EditMenu
-              onAdd={onAdd}
-              onEdit={onEdit}
-              onCopy={onCopy}
-              onCut={onCut}
-              onDelete={onDelete}
-              onStick={onStick}
-            />
+            <View style={tailwind.mY12} />
+              {/* 左侧按钮 */}
+              <EditMenu
+                onAdd={onAdd}
+                onEdit={onEdit}
+                onCopy={onCopy}
+                onCut={onCut}
+                onDelete={onDelete}
+                onStick={onStick}
+              />
           </View>
+          {/* 中部 = 顶部导航 + 内容 */}
           <View style={tailwind.flex1}>
-          {/* 页面路径与用户信息 */}
-          <View style={[tailwind.mX19,{width:700}]}>
-            <Headerbar items={headerItems || []} pid={pid || ''} />
-          </View>
-          
+            {/* 页面路径与用户信息 */}
+            <View style={[tailwind.mX19,{width:700}]}>
+              {/* 顶部导航 可以显示 1）导航按钮 2）icon图标按钮 3）对过长的标题截取 */}
+              <Headerbar items={headerItems || []} pid={pid || ''} />
+            </View>
+            {/* 嵌入公共盒子的内容，即主要内容 */}
             {children}
           </View>
+          {/* 右侧 */}
           <View style={tailwind.mL3}>
             {/* 帮助 按钮 */}
             {/* <CircleButton name="help" /> */}
