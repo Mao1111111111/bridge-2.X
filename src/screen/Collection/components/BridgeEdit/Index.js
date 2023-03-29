@@ -77,44 +77,65 @@ const Header = ({onClose}) => {
   );
 };
 
+// 桥梁组件
 function Index({onClose, onSubmitOver, isClone}, ref) {
+  // 桥梁的全局变量
   const {state} = React.useContext(Context);
 
+  // 总体的全局变量
   const {state: globalState} = React.useContext(GlobalContext);
 
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 按钮的loading
   const [loading, setLoading] = React.useState(false);
 
+  // 模态框是否显示
   const [visible, setVisible] = React.useState(false);
 
+  // 路由引用
   const navigatorRef = React.useRef();
 
+  // 从 桥梁的全局变量 中取出
   const {
+    // 表单数据
     values,
+    // 项目信息
     project,
+    // ？
     isUpdate,
+    // 顶部部件数据
     topPartsData,
+    // 底部部件数据
     bottomPartsData,
+    // 桥面部件数据
     pmxData,
+    // 底部类型
     footBarType,
   } = state;
 
+  // 全局的 -- 用户信息，屏幕配置，桥幅属性
   const {userInfo, screen, bridgeside} = globalState;
 
+  // 暴露给父组件的函数
   React.useImperativeHandle(ref, () => ({
+    // 打开
     open: () => {
       setVisible(true);
       setLoading(false);
     },
+    // 关闭
     close: () => {
       setVisible(false);
       setLoading(false);
     },
   }));
 
+
+  // 保存按钮点击
   const handleSave = () => {
     const _values = {
       ...values,
@@ -179,6 +200,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
     }
   };
 
+  // 当数据已存在时，拼接提示信息
   const getMessage = () => {
     const paramname =
       bridgeside?.find(it => it.paramid === values.bridgeside)?.paramname || '';
@@ -187,6 +209,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
 
   const add = async (_values, parts) => {
     try {
+      // 检测数据库中 桥梁名字 和 桥幅属性 是否存在
       if (!(await bridge.checkNameAndCode(values))) {
         Alert.alert('消息', getMessage());
         setLoading(false);
@@ -339,13 +362,16 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
   }, [visible, setVisible, navigatorRef]);
 
   return (
+    // 模态框
     <Modal
       visible={visible}
       setVisible={setVisible}
       dismissable={false}
       contentContainerStyle={[styles.bridgeForm, screen]}>
       <View style={[theme.primaryBgStyle, tailwind.flex1]}>
+        {/* 顶部 */}
         <Header onClose={() => setVisible(false)} />
+        {/* 内部各个页面的路由 */}
         <NavigationContainer ref={navigatorRef} independent={true}>
           <NavigatorStack
             routes={[
@@ -376,6 +402,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
             ]}
           />
         </NavigationContainer>
+        {/* 底部 */}
         <View
           style={[
             tailwind.justifyBetween,
@@ -385,6 +412,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
           ]}>
           {footBarType === 'root' ? (
             <>
+              {/* 点击取消，不显示桥梁编辑页面 */}
               <Button
                 style={[tailwind.bgRed700,{backgroundColor:'#808285'}]}
                 onPress={() => setVisible(false)}
@@ -396,6 +424,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
               </Button>
             </>
           ) : (
+            // 后退按钮
             <Button onPress={() => navigatorRef.current.goBack()} style={[{backgroundColor:'#2b427d'}]}>返回</Button>
           )}
         </View>
@@ -405,19 +434,26 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
 }
 const Bridge = React.forwardRef(Index);
 
+// 创建桥梁、编辑桥梁 的 组件
 export default React.forwardRef(function (
   {project, isClone, onClose, onSubmitOver},
   ref,
 ) {
+  // 表单数据
   const [values, setValues] = React.useState(null);
 
+  // 桥梁组件的引用
   const indexRef = React.useRef();
 
+  // 暴露给父组件的函数
   React.useImperativeHandle(ref, () => ({
+    // 打开时
     open: val => {
+      // 设置表单数据
       setValues({...val});
       indexRef.current.open(val);
     },
+    // 关闭时
     close: () => {
       setValues(null);
       indexRef.current.close();
@@ -435,7 +471,9 @@ export default React.forwardRef(function (
 
   return (
     <Portal>
+      {/* Provider 创建、编辑桥梁 的 组件 的 全局参数 */}
       <Provider project={project} values={values}>
+        {/* 桥梁组件 */}
         <Bridge
           ref={indexRef}
           onClose={handleClose}

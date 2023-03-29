@@ -470,7 +470,7 @@ export default function ProjectDetail({route, navigation}) {
   const cloneRef = React.useRef();
 
   const inductsRef = React.useRef();
-
+  // 桥梁引用
   const bridgeRef = React.useRef();
 
   const searchRef = React.useRef([]);
@@ -480,10 +480,12 @@ export default function ProjectDetail({route, navigation}) {
   const [areacode, setAreacode] = React.useState('');
 
   const [routecode, setRoutecode] = React.useState('');
-
+  // 项目管理传递过来的 此条项目的数据
   const {project} = route.params;
 
+  // 顶部导航项
   const headerItems = [
+    // 采集平台,点击打开抽屉路由
     {
       name: '采集平台',
       onPress: () =>
@@ -495,10 +497,12 @@ export default function ProjectDetail({route, navigation}) {
     {
       name: '检测平台',
     },
+    // 返回项目管理
     {
       name: '项目管理',
       onPress: () => navigation.navigate('Collection/Detect/Project'),
     },
+    // 项目名
     {
       name: `${project.projectname}`,
     },
@@ -602,6 +606,7 @@ export default function ProjectDetail({route, navigation}) {
   };
 
   return (
+    // 公共box
     <CommonView
       headerItems={headerItems}
       pid="P1101"
