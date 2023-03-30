@@ -31,7 +31,7 @@ const Provider = ({values, project, children}) => {
     project: {},
     // 表单对象
     values: {}, 
-    // 部件列表
+    // 部件(构件)列表
     partsList: [], 
     // 上部部件
     topPartsData: {}, 
@@ -78,9 +78,10 @@ const Provider = ({values, project, children}) => {
     // 向表单对象中添加数据
     dispatch({
       type: 'values',
+      // 这里遍历的 values 是 表格中的桥梁数据
       payload: Object.keys(values || {}).length
         ? {
-            // 如果values中有 键值对，即编辑桥梁
+            // ---编辑桥梁时
             ...values,
             ...JSON.parse(values?.bridgeconfig || '{}'),
           }
@@ -117,10 +118,11 @@ const Provider = ({values, project, children}) => {
             leibanshu: '1',
           },
     });
-    // 不知道什么用
+    // !!values 是 判断 valuse 是否存在，如果存在，那么 !!values 为 true
+    // isUpdate ，如果是编辑，那么给 isUpdate 赋值为 values.id
     dispatch({type: 'isUpdate', payload: !!values && values.id});
+    // 如果是编辑
     if (values && values.bridgeid) {
-      // 如果 桥梁表单存在 并且 桥梁表单的桥梁id存在，即编辑桥梁
       // 获取桥梁构件信息
       bridgeMember
         .list(values.bridgeid)

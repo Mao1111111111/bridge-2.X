@@ -1,3 +1,6 @@
+/* 
+  桥梁表单--桥面系
+ */
 import React from 'react';
 import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
@@ -11,25 +14,32 @@ import {listToPage} from '../../../../utils/common';
 import styles from './styles';
 
 export default function PMX({navigation}) {
+  // 桥梁全局参数 -- 表单对象、全部的构件信息，并按 b10 b20 b30 分组、桥面系部件数据
   const {
     dispatch,
     state: {values, memberInfo, pmxData},
   } = React.useContext(Context);
 
+  // 全局参数
   const {
     state: {type},
   } = React.useContext(GlobalContext);
 
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 选中
   const [checked, setChecked] = React.useState({});
 
+  // 部件数据 -- 处理一行两个
   const [memberRow, setMemberRow] = React.useState([]);
 
+  // 桥面系部件编号
   const pCode = 'b30';
 
+  // 页面聚焦时 -- 处理数据
   useFocusEffect(
     React.useCallback(() => {
       if (!memberInfo) {
@@ -46,6 +56,7 @@ export default function PMX({navigation}) {
     }, [values, memberInfo]),
   );
 
+  // 页面聚焦时 --- 处理页面配置
   useFocusEffect(
     React.useCallback(() => {
       dispatch({
@@ -71,6 +82,7 @@ export default function PMX({navigation}) {
     }, [dispatch, navigation]),
   );
 
+  // 选择，数据存入 桥梁全局参数的 表单对象中
   const handleCheck = name => {
     const _checked = {...checked};
     _checked[name] = !_checked[name];
@@ -82,6 +94,8 @@ export default function PMX({navigation}) {
       },
     });
   };
+
+  // 全选，数据存入 桥梁全局参数的 表单对象中
   const handleCheckAll = () => {
     const _checked = {
       b300001: true,

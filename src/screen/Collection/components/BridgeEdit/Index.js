@@ -22,11 +22,14 @@ import * as bridge from '../../../../database/bridge';
 import * as bridgeMember from '../../../../database/bridge_member';
 import * as bridgeProjectBind from '../../../../database/bridge_project_bind';
 
+// 桥梁表单顶部
 const Header = ({onClose}) => {
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 桥梁全局属性 --- 顶部导航列表、顶部导航左侧标签  这里的值，是在Base.js中赋予的
   const {
     state: {headerItems, pid},
   } = React.useContext(Context);
@@ -105,7 +108,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
     values,
     // 项目信息
     project,
-    // ？
+    // 编辑桥梁 的 id
     isUpdate,
     // 顶部部件数据
     topPartsData,
@@ -376,26 +379,32 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
           <NavigatorStack
             routes={[
               {
+                // 基本页面
                 name: 'Collection/Bridge/Base',
                 component: Base,
               },
               {
+                // 其他属性
                 name: 'Collection/Bridge/Other',
                 component: Other,
               },
               {
+                // 上部结构
                 name: 'Collection/Bridge/Top',
                 component: TopParts,
               },
               {
+                // 下部结构
                 name: 'Collection/Bridge/Bottom',
                 component: BottomParts,
               },
               {
+                // 桥面系
                 name: 'Collection/Bridge/PMX',
                 component: PMX,
               },
               {
+                // 部件列表
                 name: 'Collection/Bridge/PartsEdit',
                 component: PartsEdit,
               },
@@ -419,12 +428,13 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
                 loading={loading}>
                 取消
               </Button>
+              {/* 保存 */}
               <Button onPress={handleSave} loading={loading} style={[{backgroundColor:'#2b427d'}]}>
                 保存
               </Button>
             </>
           ) : (
-            // 后退按钮
+            // 后退按钮 -- 进入其他属性、部件等页面时，显示
             <Button onPress={() => navigatorRef.current.goBack()} style={[{backgroundColor:'#2b427d'}]}>返回</Button>
           )}
         </View>
@@ -449,6 +459,7 @@ export default React.forwardRef(function (
   React.useImperativeHandle(ref, () => ({
     // 打开时
     open: val => {
+      // 当新增时，val为空
       // 设置表单数据
       setValues({...val});
       indexRef.current.open(val);
@@ -460,10 +471,12 @@ export default React.forwardRef(function (
     },
   }));
 
+  // 关闭
   const handleClose = async () => {
     onClose && onClose();
   };
 
+  // 操作结束后，关闭组件，并执行父组件的函数
   const handleSubmitOver = () => {
     indexRef.current.close();
     onSubmitOver && onSubmitOver();
@@ -472,6 +485,7 @@ export default React.forwardRef(function (
   return (
     <Portal>
       {/* Provider 创建、编辑桥梁 的 组件 的 全局参数 */}
+      {/* 新增时，values = {}；编辑时，values 为这条桥梁的数据 */}
       <Provider project={project} values={values}>
         {/* 桥梁组件 */}
         <Bridge

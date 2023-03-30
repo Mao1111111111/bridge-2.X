@@ -1,3 +1,6 @@
+/* 
+  桥梁表单--部件列表
+ */
 import React from 'react';
 import uuid from 'react-native-uuid';
 import {View, Text, FlatList, ScrollView, TouchableOpacity} from 'react-native';
@@ -18,6 +21,7 @@ import {confirm} from '../../../../utils/alert';
 import {listToPage} from '../../../../utils/common';
 import rules from '../../../../utils/rules';
 
+// 构件表单 -- 新增、修改
 const PartsForm = React.forwardRef(({}, ref) => {
   const {
     state: {theme},
@@ -193,36 +197,49 @@ const PartsForm = React.forwardRef(({}, ref) => {
 const only1 = ['b100001', 'b100006'];
 const only2 = ['b100003', 'b100007', 'b100005'];
 
+// 添加部件
 const PartsAdd = React.forwardRef(({}, ref) => {
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 桥梁全局参数 -- 部件(构件)列表、全部的构件信息，并按 b10 b20 b30 分组、翼墙耳墙、表单对象
   const {
     dispatch,
     state: {partsList, memberInfo, bridgewall, values},
   } = React.useContext(Context);
 
+  // 模态框是否显示
   const [visible, setVisible] = React.useState(false);
 
+  // 上部结构 数据
   const [b10, setB10] = React.useState([]);
 
+  // 下部结构 数据
   const [b20, setB20] = React.useState([]);
 
+  // 桥面系结构 数据
   const [b30, setB30] = React.useState([]);
 
+  // 当前选中的
   const [checked, setChecked] = React.useState(new Set());
 
   // const [hide, setHide] = React.useState(new Set());
 
+  // 暴露给父组件的函数
   React.useImperativeHandle(ref, () => ({
+    // 打开
     open: () => {
       setVisible(true);
     },
+    // 关闭
     close,
   }));
 
+  // 构件列表、全部构件信息 变化时触发
   React.useEffect(() => {
+    // 存在构件 并 存在全部构件
     if (partsList && memberInfo) {
       const hide = new Set(partsList.map(({membertype}) => membertype));
       const checkOnly1 = membertype => {
@@ -267,10 +284,12 @@ const PartsAdd = React.forwardRef(({}, ref) => {
     }
   }, [partsList, memberInfo]);
 
+  // 关闭
   const close = () => {
     setVisible(false);
   };
 
+  // 点击确定
   const buildParts = () => {
     confirm('是否添加选中的部件？', () => {
       const data = [...partsList];
@@ -333,14 +352,19 @@ const PartsAdd = React.forwardRef(({}, ref) => {
   //   );
   // };
 
+  // 上部、下部、桥面系 表格
   const renderCheckList = (title, data) => {
+    // 点击部件时
     const handleCheck = membertype => {
+      // 设置当前选中
       const _checked = new Set(checked);
+      // 互斥选择
       if (only1.find(item => membertype === item)) {
         only1
           .filter(item => membertype !== item)
           .forEach(item => _checked.delete(item));
       }
+      // 互斥选择
       if (only2.find(item => membertype === item)) {
         only2
           .filter(item => membertype !== item)
@@ -351,11 +375,14 @@ const PartsAdd = React.forwardRef(({}, ref) => {
       } else {
         _checked.add(membertype);
       }
+      // 将选中的存入
       setChecked(_checked);
     };
     return (
       <>
+        {/* 标题 */}
         <Text style={[tailwind.fontBold, {color:'#2b427d'}]}>{title}</Text>
+        {/* 表格 */}
         {data.length ? (
           <View
             style={[
@@ -386,11 +413,13 @@ const PartsAdd = React.forwardRef(({}, ref) => {
 
   return (
     <Portal>
+      {/* 模态框 */}
       <Modal
         visible={visible}
         dismissable={false}
         contentContainerStyle={[styles.partsAddModalContent]}>
         <View style={[theme.primaryBgStyle, tailwind.flex1, tailwind.rounded]}>
+          {/* 顶部标题 */}
           <View style={[styles.partsEditModalHand]}>
             <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
               <Text
@@ -403,12 +432,15 @@ const PartsAdd = React.forwardRef(({}, ref) => {
               <Icon name="close" size={24} />
             </TouchableOpacity>
           </View>
+          {/* 中部 + 底部 */}
           <View style={[tailwind.flex1, tailwind.p2]}>
+            {/* 中部 */}
             {renderCheckList('上部结构', b10)}
             <View style={tailwind.mT2} />
             {renderCheckList('下部结构', b20)}
             <View style={tailwind.mT2} />
             {renderCheckList('桥面系', b30)}
+            {/* 底部按钮 */}
             <View
               style={[tailwind.flexRow, tailwind.mY2, tailwind.justifyBetween]}>
               {/* <Button onPress={handleCheckAll}>全选</Button> */}
@@ -424,32 +456,44 @@ const PartsAdd = React.forwardRef(({}, ref) => {
 });
 
 export default function PartsEdit({navigation}) {
+  // 桥梁全局参数
   const {dispatch, state} = React.useContext(Context);
 
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 全局参数 -- 桥台形式、桥墩形式、基础构件信息、翼墙耳墙
   const {
     state: {bridgeabutment, bridgepier, basememberinfo, bridgewall},
   } = React.useContext(GlobalContext);
 
+  // 部件列表数据
   const [list, setList] = React.useState([]);
 
+  // 当前编辑的部件index
   const [nowEdit, setNowEdit] = React.useState(0);
 
+  // 编号规则依据展示
   const [showInfo, setShowInfo] = React.useState(false);
 
+  // 按钮loading
   const [loading, setLoading] = React.useState(false);
 
+  // 右侧选中的
   const [checked, setChecked] = React.useState(new Set());
 
+  // 桥梁全局参数 -- 表单对象、部件列表
   const {values, partsList} = state;
 
+  // 构件表单组件 的 引用
   const partsFormRef = React.useRef();
 
+  // 新增部件组件 的 引用
   const partsAddRef = React.useRef();
 
+  // 配置页面
   React.useEffect(() => {
     dispatch({
       type: 'headerItems',
@@ -473,7 +517,9 @@ export default function PartsEdit({navigation}) {
     });
   }, [dispatch, navigation]);
 
+  // 处理部件数据列表 -- 桥梁全局参数、基础构件信息 变化时触发
   React.useEffect(() => {
+    // 获取 上部结构数据、下部结构数据、桥面系结构数据
     const {topPartsData, bottomPartsData, pmxData} = state;
     const _list = [];
     Object.keys(topPartsData).forEach(key => {
@@ -503,13 +549,16 @@ export default function PartsEdit({navigation}) {
         });
       }
     });
+    // 将构件数据处理为 部件数据 列表
     setList(_list);
   }, [state, basememberinfo]);
 
+  // 清除右侧的选中 --  当左侧选中变化时，清除右侧的选中
   React.useEffect(() => {
     setChecked(new Set());
   }, [nowEdit]);
 
+  // 右侧选中
   const handleCheck = id => {
     const _checked = new Set(checked);
     if (_checked.has(id)) {
@@ -520,59 +569,80 @@ export default function PartsEdit({navigation}) {
     setChecked(_checked);
   };
 
+  // 删除选中的构件
   const handleDelete = () => {
+    // 如果没有选中，那么返回
     if (!checked.size) {
       return;
     }
     try {
+      // 按钮loading
       setLoading(true);
+      // 删除--按id
       const _partsList = partsList.filter(item => !checked.has(item.id));
+      // 存入桥梁全局参数的 部件列表，以完成删除构件的功能
       dispatch({type: 'partsList', payload: _partsList});
     } finally {
       setLoading(false);
     }
+    // 清空所有选中
     setChecked(new Set());
   };
 
+  // 删除部件
   const handleDeletePorts = () => {
     confirm('是否删除选中的数据？', () => {
+      // 如果没有部件，那么点击删除按钮无效
       if (nowEdit === -1) {
         return;
       }
       try {
+        // 设置按钮loading
         setLoading(true);
+        // 过滤出 除要删除的部件外的 所有构件
         const _partsList = partsList.filter(
           item => item.membertype !== list[nowEdit].key,
         );
+        // 存入桥梁全局参数的 部件列表，以完成删除部件的功能
         dispatch({type: 'partsList', payload: _partsList});
       } finally {
+        // 解除按钮loading
         setLoading(false);
+        // 重置右侧box的选择
         setChecked(new Set());
+        // 重置选中的部件
         setNowEdit(0);
       }
     });
   };
 
+  // 编辑选中的构件
   const handleEdit = () => {
+    // 没选择则返回
     if (!checked.size) {
       return;
     }
+    // 打开编辑构件的模态框
     partsFormRef.current.open(
       state.partsList.filter(item => checked.has(item.id)),
       list[nowEdit].key,
     );
   };
 
+  // 添加构件
   const handleAdd = () => {
     try {
+      // 打开添加构件的模态框
       partsFormRef.current.open(undefined, list[nowEdit].key);
     } catch (err) {
       console.info(err);
     }
   };
 
+  // 添加部件
   const handleAddPorts = () => {
     try {
+      // 打开添加部件模态框
       partsAddRef.current.open();
     } catch (err) {
       console.info(err);
@@ -581,11 +651,14 @@ export default function PartsEdit({navigation}) {
 
   return (
     <View style={[styles.partsEdit]}>
+      {/* 左侧 */}
       <View style={[styles.partsEditCard, theme.primaryBgStyle]}>
+        {/* 顶部 */}
         <View style={[styles.partsEditList]}>
           <Text style={[tailwind.fontBold, {color:'#2b427d'}]}>
             已创建部件列表
           </Text>
+          {/* 点击展示 编号规则依据 */}
           <TouchableOpacity onPress={() => setShowInfo(!showInfo)}>
             <Icon
               name="information"
@@ -594,8 +667,11 @@ export default function PartsEdit({navigation}) {
             />
           </TouchableOpacity>
         </View>
+        {/* 中部 + 下部 */}
         {!showInfo ? (
+          // 部件列表 + 顶部操作按钮
           <View style={tailwind.flex1}>
+            {/* 表格 */}
             <Table.Box
               header={
                 <Table.Header style={[tailwind.flexGrow]}>
@@ -610,6 +686,7 @@ export default function PartsEdit({navigation}) {
               <FlatList
                 data={list}
                 renderItem={({item, index}) => (
+                  // 点击可以切换右侧的构件列表
                   <Table.Row
                     style={[index === nowEdit ? tailwind.bgGray300 : {}]}
                     onPress={() => setNowEdit(index)}>
@@ -620,6 +697,7 @@ export default function PartsEdit({navigation}) {
                 )}
               />
             </Table.Box>
+            {/* 操作按钮 */}
             <View
               style={[tailwind.mT2, tailwind.flexRow, tailwind.justifyBetween]}>
               <Button loading={loading} onPress={handleAddPorts} style={[{backgroundColor: '#2b427d'}]}>
@@ -635,6 +713,7 @@ export default function PartsEdit({navigation}) {
             </View>
           </View>
         ) : (
+          // 展示编号规则依据
           <View style={[styles.partsEditTeble]}>
             <View style={[tailwind.flexGrow]}>
               <View style={[tailwind.borderB, tailwind.borderGray400]}>
@@ -694,6 +773,7 @@ export default function PartsEdit({navigation}) {
           </View>
         )}
       </View>
+      {/* 右侧 */}
       <View style={[tailwind.flexGrow]}>
         <View
           style={[
@@ -702,8 +782,10 @@ export default function PartsEdit({navigation}) {
             styles.card,
             theme.primaryBgStyle,
           ]}>
+          {/* 如果左侧没有部件，那么右侧为空 */}
           {nowEdit !== -1 ? (
             <>
+              {/* 顶部标题 */}
               <Text
                 style={[
                   tailwind.fontBold,
@@ -711,9 +793,11 @@ export default function PartsEdit({navigation}) {
                   // theme.primaryTextStyle,
                   {color:'#2b427d'}
                 ]}>
+                {/* 左侧列表数据[index]，获取部件名称 和 其中的 构件数 */}
                 {(list[nowEdit] || {}).name}: 总构件{' '}
                 {(list[nowEdit] || {})?.data?.length}
               </Text>
+              {/* 中部表格 */}
               <Table.Box
                 header={
                   <Table.Header>
@@ -742,6 +826,7 @@ export default function PartsEdit({navigation}) {
                   )}
                 />
               </Table.Box>
+              {/* 底部操作按钮 */}
               <View
                 style={[
                   tailwind.pT2,
@@ -776,7 +861,9 @@ export default function PartsEdit({navigation}) {
           )}
         </View>
       </View>
+      {/* 构件表单 */}
       <PartsForm ref={partsFormRef} />
+      {/* 新增部件 */}
       <PartsAdd ref={partsAddRef} />
     </View>
   );
