@@ -23,45 +23,60 @@ import rules from '../../../../utils/rules';
 
 // 构件表单 -- 新增、修改
 const PartsForm = React.forwardRef(({}, ref) => {
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
+  // 桥梁全局参数 -- 现有构件列表、全部部件信息
   const {
     dispatch,
     state: {partsList, memberInfo},
   } = React.useContext(Context);
 
+  // 模态框是否显示
   const [visible, setVisible] = React.useState(false);
 
+  // 新增 还是 修改
   const [isUpdate, setIsUpdate] = React.useState(false);
 
+  // 模态框的数据列表，选中了几个构件这里有几条
   const [list, setList] = React.useState([]);
 
+  // 当前编辑的 id
   const [nowEdit, setNowEdit] = React.useState(0);
 
+  // 编号，例如 b200004
   const [typeName, setTypeName] = React.useState('');
-
+  
+  // 暴露给父组件的函数
   React.useImperativeHandle(ref, () => ({
+    // 打开
     open: (val, _typeName) => {
+      console.log("_typeName",_typeName);
       if (val) {
+        // 编辑时
         setList(val);
         setIsUpdate(true);
       } else {
+        // 新增时
         setList([{}]);
         setIsUpdate(false);
       }
       setTypeName(_typeName);
       setVisible(true);
     },
+    // 关闭
     close,
   }));
 
+  // 关闭
   const close = () => {
     setVisible(false);
     setNowEdit(0);
     setList([]);
   };
 
+  // 点击右侧按钮 -- 将现在编辑的id 加 1
   const handleNext = () => {
     if (nowEdit === list.length - 1) {
       return;
@@ -69,6 +84,7 @@ const PartsForm = React.forwardRef(({}, ref) => {
     setNowEdit(nowEdit + 1);
   };
 
+  // 点击左侧按钮 -- 将现在编辑的id 减 1
   const handlePrev = () => {
     if (nowEdit === 0) {
       return;
@@ -76,15 +92,21 @@ const PartsForm = React.forwardRef(({}, ref) => {
     setNowEdit(nowEdit - 1);
   };
 
+  // 内容改变时，将值存入
   const handleChange = val => {
     const _list = [...list];
     _list[nowEdit][val.name] = val.value;
+    // 将改变的值存入
     setList(_list);
   };
 
+  // 点击确定
   const handleOk = () => {
+    // 获取现有的构件列表
     const _partsList = [...partsList];
     if (isUpdate) {
+      // 如果是编辑
+      // 修改部件数据
       list.forEach(item => {
         const inx = _partsList.findIndex(it => item.id === it.id);
         if (inx !== -1) {
@@ -92,6 +114,8 @@ const PartsForm = React.forwardRef(({}, ref) => {
         }
       });
     } else {
+      // 是新增
+      // 新增部件数据
       _partsList.push({
         ...list[0],
         position: typeName.substring(0, 3),
@@ -99,12 +123,16 @@ const PartsForm = React.forwardRef(({}, ref) => {
         memberid: uuid.v4(),
       });
     }
+    // 将修改好的数据存入桥梁全局参数
     dispatch({type: 'partsList', payload: _partsList});
     close();
   };
 
+  // 获取部件名称
   const memberName = () => {
+    // 获取 上部、下部 或是 桥面系的全部构件
     const member = memberInfo[typeName.substring(0, 3)];
+    // 获取部件名称
     if (member) {
       return (
         member?.find(({membertype}) => membertype === typeName)?.membername ||
@@ -115,24 +143,30 @@ const PartsForm = React.forwardRef(({}, ref) => {
 
   return (
     <Portal>
+      {/* 模态框 */}
       <Modal
         visible={visible}
         dismissable={false}
         contentContainerStyle={[styles.partsEditModalContent]}>
         <View style={[theme.primaryBgStyle, tailwind.flex1, tailwind.rounded]}>
+          {/* 顶部标题 */}
           <View style={[styles.partsEditModalHand]}>
             <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
               <Text style={[tailwind.textLg, tailwind.fontBold, tailwind.mR2]}>
+                {/* 括号里显示当前部件名称 */}
                 {isUpdate ? '编辑构件' : '新增构件'}({memberName()})
               </Text>
               <Pid pid="P1207" />
             </View>
+            {/* 右侧关闭按钮 */}
             <TouchableOpacity onPress={close}>
               <Icon name="close" size={24} />
             </TouchableOpacity>
           </View>
+          {/* 中部 */}
           <View
             style={[tailwind.justifyBetween, tailwind.mT1, tailwind.flexRow]}>
+            {/* 左侧箭头 -- 仅编辑时显示 */}
             {isUpdate ? (
               <TouchableOpacity
                 onPress={handlePrev}
@@ -142,6 +176,7 @@ const PartsForm = React.forwardRef(({}, ref) => {
             ) : (
               <View style={[tailwind.mL4]} />
             )}
+            {/* 中间内容 */}
             <View style={[tailwind.flex1]}>
               <KeyboardInput
                 style={[tailwind.mT3]}
@@ -165,6 +200,7 @@ const PartsForm = React.forwardRef(({}, ref) => {
                 label="排序序号:    "
               />
             </View>
+            {/* 右侧箭头 -- 仅编辑时显示 */}
             {isUpdate ? (
               <TouchableOpacity
                 onPress={handleNext}
@@ -175,10 +211,12 @@ const PartsForm = React.forwardRef(({}, ref) => {
               <View style={[tailwind.mL4]} />
             )}
           </View>
+          {/* 底部操作 */}
           <View style={[styles.partsEditModalFoot]}>
             <Button style={[{backgroundColor:'#808285'}]} onPress={close}>
               取消
             </Button>
+            {/* 如果是编辑，那么显示当前是第几个构件 */}
             {isUpdate ? (
               <Text style={[tailwind.textBase, tailwind.fontBold]}>
                 {nowEdit + 1}/{list.length}
@@ -237,7 +275,7 @@ const PartsAdd = React.forwardRef(({}, ref) => {
     close,
   }));
 
-  // 构件列表、全部构件信息 变化时触发
+  // 构件信息--构件列表、全部构件信息 变化时触发
   React.useEffect(() => {
     // 存在构件 并 存在全部构件
     if (partsList && memberInfo) {
@@ -292,11 +330,14 @@ const PartsAdd = React.forwardRef(({}, ref) => {
   // 点击确定
   const buildParts = () => {
     confirm('是否添加选中的部件？', () => {
+      // data 为现有的所有构件
       const data = [...partsList];
+      // 过滤出部件
       const set = new Set(data.map(({membertype}) => membertype));
+      // 计算跨
       const kua =
         parseInt(values.b200001num, 10) + parseInt(values.b200002num, 10) - 1;
-
+      // 获取翼墙耳墙参数
       const getBridgewallParam = () => {
         if (!bridgewall || !bridgewall.length) {
           return '';
@@ -306,6 +347,7 @@ const PartsAdd = React.forwardRef(({}, ref) => {
           bridgewall[0].paramname
         );
       };
+      // 对当前选中项遍历，并存入data
       checked.forEach(item => {
         if (!set.has(item)) {
           data.push(
@@ -322,7 +364,9 @@ const PartsAdd = React.forwardRef(({}, ref) => {
           );
         }
       });
+      // 将新的构件信息存入
       dispatch({type: 'partsList', payload: data});
+      // 关闭模态框
       close();
     });
     // const data = partsList.filter(({membertype}) => checked.has(membertype));
@@ -428,6 +472,7 @@ const PartsAdd = React.forwardRef(({}, ref) => {
               </Text>
               <Pid pid="P1208" />
             </View>
+            {/* 右上角关闭按钮 */}
             <TouchableOpacity onPress={close}>
               <Icon name="close" size={24} />
             </TouchableOpacity>
@@ -455,6 +500,7 @@ const PartsAdd = React.forwardRef(({}, ref) => {
   );
 });
 
+// 部件列表
 export default function PartsEdit({navigation}) {
   // 桥梁全局参数
   const {dispatch, state} = React.useContext(Context);

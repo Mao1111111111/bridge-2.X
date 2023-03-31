@@ -140,6 +140,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
 
   // 保存按钮点击
   const handleSave = () => {
+    // 完善数据
     const _values = {
       ...values,
       top: JSON.stringify(values.top || {}),
@@ -164,7 +165,9 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         leibanshu: values.leibanshu,
       }),
     };
+    // 按钮loading
     setLoading(true);
+    // parts 存放当前桥梁所有构件的信息
     const parts = [];
     Object.keys(topPartsData).forEach(key =>
       parts.push(
@@ -190,6 +193,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         }),
       ),
     );
+    // 判断是 克隆 、编辑、新增
     if (isClone) {
       clone(_values, parts);
       return;
@@ -292,6 +296,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
     }
   };
 
+  // 克隆
   const clone = async (_values, parts) => {
     try {
       if (
@@ -343,6 +348,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
     }
   };
 
+  // 模态框显示状态变化时、路由变化时 触发
   React.useEffect(() => {
     const back = () => {
       if (navigatorRef.current && navigatorRef?.current?.getRootState) {

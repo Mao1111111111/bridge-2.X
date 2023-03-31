@@ -39,7 +39,7 @@ const Provider = ({values, project, children}) => {
     bottomPartsData: {}, 
     // 桥面系部件
     pmxData: {}, 
-    // 全部的构件信息，并按 b10 b20 b30 分组
+    // 全部的部件信息，并按 b10 b20 b30 分组
     memberInfo: {},
   });
 
