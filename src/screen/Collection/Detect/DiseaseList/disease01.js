@@ -58,15 +58,16 @@ export function DiseaseA({route, navigation}) {
 
       React.useEffect(() => {
         setDiseaseData(itemData);
-        console.log('itemData:',itemData);
+        console.log('itemData:',route);
+        console.log('itemData:',route.params.data.cacheNum);
         // route.params.thridData.checkinfoshort
         // console.log('456',route.params.thridData.checkinfoshort);
         // diseaseData['remark'] = route.params.thridData.checkinfoshort
       }, [itemData]);
     
       const [lengthText, setLengthText] = useState(0)
-      const [widthText, setWidthText] = useState('')
-      const [heightText, setHeightText] = useState('')
+      const [widthText, setWidthText] = useState(0)
+      const [heightText, setHeightText] = useState(0)
       // =================================================
       const [writeTxt, setWriteTxt] = useState('')
       const [writePositionTxt, setWritePositionTxt] = useState('')
@@ -167,7 +168,7 @@ export function DiseaseA({route, navigation}) {
       const [infoshort, setInfoShort] = useState()
 
       // 位置描述 墩台
-      const [pier,  setPier] = useState()
+      const [pier,  setPier] = useState('')
       // 位置描述 长、宽、距顶
       const [lengthNum, setLengthNum] = useState('')
       const [widthNum, setWidthNum] = useState('')
@@ -178,9 +179,56 @@ export function DiseaseA({route, navigation}) {
       const [memberHeight, setMemberHeight] = useState('')
 
       const [diseaseName, setDiseaseName] = useState('')
+      const [memberName, setMemberName] = useState('')
+
       // =================================================
       React.useEffect(() => {
         saveData.current = {...diseaseData};
+        try {
+          if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
+            console.log('7777');
+            diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
+            handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+          }
+        } catch (err){
+          console.log('err09', err);
+        }
+        try {
+          // console.log('选择的构件区域6', areaName)
+          // console.log('构件区域',diseaseData.area);
+          // console.log('构件区域列表2',areaparam);
+          // console.log('选择的构件类型id:', diseaseData.areatype);
+          // console.log('构件区域id',diseaseData.area);
+          // console.log('baseData.components[0].areatype',baseData.components[0].areatype);
+          // console.log('----------------------------------------------------------------');
+
+          // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
+          // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
+          for (let i =0; i < areaparam.length; i ++) {
+            if (diseaseData.area == undefined) {
+              diseaseData.area = areaparam[0].value
+              handleFormChenge(areaparam[0].value, diseaseData.area)
+              setAreaName(areaparam[0].label)
+            } else if (diseaseData.area !== undefined) {
+              let sliceArea = diseaseData.area.slice(0,6)
+              // console.log('sliceArea',sliceArea);
+              if (sliceArea !== diseaseData.areatype) {
+                // console.log('构件类型有变化！',diseaseData.areatype, sliceArea);
+                for (let k = 0; k < baseData.components.length; k++) {
+                  if (diseaseData.areatype == baseData.components[k].areatype) {
+                    // console.log('此时的areaname',baseData.components[k].areaname);
+                    // console.log('此时的areatype',baseData.components[k].areatype);
+                    // console.log('baseData.components[k]',baseData.components[k].areaparamjson.areaparamlist[0].areaparamid);
+                    diseaseData['areatype'] = baseData.components[k].areatype
+                    diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+                  }
+                }
+              }
+            }
+          }
+        } catch (err) {
+          console.log('err08', err);
+        }
         try {
           // 当新建的表单里长宽高为空，且前面有部件填写过长宽高数据时，则默认填写前面部件使用的长宽高数据
           // if (diseaseData.memberLength == undefined || diseaseData.memberWidth == undefined || diseaseData.memberHeight == undefined) {
@@ -201,56 +249,30 @@ export function DiseaseA({route, navigation}) {
           // }
           // console.log('12333233');
 
-          console.log('选择的构件区域6', areaName)
-          console.log('diseaseData.area',diseaseData.area);
-          console.log('areatype',baseData.components[0].areanodejson.nodeparamlist);
-          console.log(areaparam);
-          console.log(areaparam[0].label);
-
-
-          if (areaName == undefined || areaName == '') {
-            let areaName = areaparam[0].label
-            setAreaName(areaName)
-            diseaseData['area'] = areaName
-            handleFormChenge(areaName, diseaseData.area)
-            console.log('333', diseaseData.area);
-          } else {
-            // if (areaName == '' || areaName == undefined) {
-            //   if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
-            //     console.log('empty~~~');
-            //     var areaName = ''
-            //     diseaseData['area'] = areaName
-            //     handleFormChenge(areaName, diseaseData.area)
-            //   } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
-            //     console.log('not empty~~~~');
-            //     var areaName = diseaseData.area
-            //     diseaseData['area'] = areaName
-            //     handleFormChenge(areaName, diseaseData.area)
-            //   }
-            //   if (areaparam !== []) {
-            //     let areaArr = areaparam
-            //     let inputArea = diseaseData.area
-            //     console.log('inputArea',inputArea);
-            //     for (let i = 0; i < areaArr.length; i++) {
-            //       if (inputArea == areaArr[i].value) {
-            //         console.log('此时选中的构件是：',areaArr[i].label);
-            //         var areaName = areaArr[i].label
-            //         console.log(areaName);
-            //         setAreaName(areaName)
-            //       }
-            //     }
-            //   }
-            // }
-          }
+          console.log('=====route',route);
+          console.log('-------------------route.params.data.cacheNum',route.params.data.cacheNum);
+          console.log('-------------------route.params.data.cacheNum',route.params.data.jsondata);
 
           // console.log('表单填写页面的route',route.params.title);
 
           if (route.params.data.cacheNum == undefined) {
             console.log('cacheNum为空');
+            diseaseData['memberLength'] = diseaseData.memberLength == undefined ? '0' : diseaseData.memberLength
+            diseaseData['memberWidth'] = diseaseData.memberWidth == undefined ? '0' : diseaseData.memberWidth
+            diseaseData['memberHeight'] = diseaseData.memberHeight == undefined ? '0' : diseaseData.memberHeight
           } else if (route.params.data.cacheNum !== '' || route.params.data.cacheNum !== undefined) {
-              diseaseData['memberLength'] = route.params.data.cacheNum[0].memberLength
-              diseaseData['memberWidth'] = route.params.data.cacheNum[0].memberWidth
-              diseaseData['memberHeight'] = route.params.data.cacheNum[0].memberHeight
+            diseaseData['memberLength'] = diseaseData.memberLength == undefined ?
+                                          route.params.data.cacheNum[0].memberLength !== undefined ?
+                                          route.params.data.cacheNum[0].memberLength : '0'
+                                          : diseaseData.memberLength
+            diseaseData['memberWidth'] = diseaseData.memberWidth == undefined ?
+                                          route.params.data.cacheNum[0].memberWidth !== undefined ?
+                                          route.params.data.cacheNum[0].memberWidth : '0'
+                                          : diseaseData.memberWidth
+            diseaseData['memberHeight'] = diseaseData.memberHeight == undefined ?
+                                          route.params.data.cacheNum[0].memberHeight !== undefined ?
+                                          route.params.data.cacheNum[0].memberHeight : '0'
+                                          : diseaseData.memberHeight
           }
 
           let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
@@ -274,16 +296,19 @@ export function DiseaseA({route, navigation}) {
           
           // console.log('diseaseData.memberLength',diseaseData.memberLength);
           // console.log('route66:', route.params.thridData.checkinfoshort);
-
-          if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
-              diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
-              handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
-          }
+          // console.log('diseaseData.diseaseName',diseaseData.diseaseName);
+          // if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
+          //   console.log('7777');
+          //   diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
+          //   handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+          // }
           
           
           // console.log('diseaseData66:', diseaseData);
-          // console.log('diseaseData.areatype',diseaseData.area);
-          if (diseaseData.area !== '' || diseaseData.area !== undefined) {
+          // console.log('diseaseData.area',diseaseData.area);
+          if (diseaseData.area == undefined) {
+
+          } else if (diseaseData.area !== '' || diseaseData.area !== undefined || diseaseData.area !== '/') {
             var sliceArea = diseaseData.area.slice(0,5)
           }
           
@@ -321,8 +346,14 @@ export function DiseaseA({route, navigation}) {
           if (diseaseData.description == '' || diseaseData.description == undefined) {
             diseaseData['description'] = diseaseData.remark
           }
+
+          if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+            let writePositionTxt = '/'
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+          }
         } catch (err){
-          console.log('err1', err);
+          console.log('err10', err);
         }
       }, [diseaseData]);
     
@@ -399,9 +430,9 @@ export function DiseaseA({route, navigation}) {
         }
         
 
-        console.log('构件区域列表：：',areaparam);
+        // console.log('构件区域列表：：',areaparam);
         // console.log('表单中的构件区域',diseaseData.area);
-        if (areaparam == '') {
+        if (areaparam == '' || areaparam == undefined) {
           console.log('选的其他');
           try{
            console.log('构件类型', itemData.areatype); 
@@ -458,6 +489,12 @@ export function DiseaseA({route, navigation}) {
           _data.scale = _data.scale || '';
         }
 
+        if (value) {
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+        
+        
 
         if (name == 'scale') {
           // 标度
@@ -465,168 +502,451 @@ export function DiseaseA({route, navigation}) {
           setBiaodu(biaodu)
         } else if (name == 'hzbrmc_length_m') {
           //长度 - 米
-          let lengthM = ',长度' + value + '@@米@@'
-          setLengthM(lengthM)
+          // let lengthM = ',长度' + value + '@@米@@'
+          // setLengthM(lengthM)
+          if (value == '' || value == 0) {
+            let lengthM = ''
+            setLengthM(lengthM)
+          } else {
+            let lengthM = ',长度' + value + '@@米@@'
+            setLengthM(lengthM)
+          }
         } else if (name == 'hzbrmc_length_cm') {
           // 长度 - 厘米
-          let lengthCM = ',长度' + value + '@@厘米@@'
-          setLengthCM(lengthCM)
+          // let lengthCM = ',长度' + value + '@@厘米@@'
+          // setLengthCM(lengthCM)
+          if (value == '' || value == 0) {
+            let lengthCM = ''
+            setLengthCM(lengthCM)
+          } else {
+            let lengthCM = ',长度' + value + '@@厘米@@'
+            setLengthCM(lengthCM)
+          }
         } else if (name == 'hzbrmc_length_mm') {
           // 长度 - 毫米
-          let lengthMM = ',长度' + value + '@@毫米@@'
-          setLengthMM(lengthMM)
+          // let lengthMM = ',长度' + value + '@@毫米@@'
+          // setLengthMM(lengthMM)
+          if (value == '' || value == 0) {
+            let lengthMM = ''
+            setLengthMM(lengthMM)
+          } else {
+            let lengthMM = ',长度' + value + '@@毫米@@'
+            setLengthMM(lengthMM)
+          }
         } else if (name == 'hzbrmc_width_m') {
           // 宽度 - 米
-          let widthM = ',宽度' + value + '@@米@@'
-          setWidthM(widthM)
+          // let widthM = ',宽度' + value + '@@米@@'
+          // setWidthM(widthM)
+          if (value == '' || value == 0) {
+            let widthM = ''
+            setWidthM(widthM)
+          } else {
+            let widthM = ',宽度' + value + '@@米@@'
+            setWidthM(widthM)
+          }
         } else if (name == 'hzbrmc_width_cm') {
           // 宽度 - 厘米
-          let widthCM = ',宽度' + value + '@@厘米@@'
-          setWidthCM(widthCM)
+          // let widthCM = ',宽度' + value + '@@厘米@@'
+          // setWidthCM(widthCM)
+          if (value == '' || value == 0) {
+            let widthCM = ''
+            setWidthCM(widthCM)
+          } else {
+            let widthCM = ',宽度' + value + '@@厘米@@'
+            setWidthCM(widthCM)
+          }
         } else if (name == 'hzbrmc_width_mm') {
           // 宽度 - 毫米
-          let widthMM = ',宽度' + value + '@@毫米@@'
-          setWidthMM(widthMM)
+          if (value == '' || value == 0) {
+            let widthMM = ''
+            setWidthMM(widthMM)
+          } else {
+            let widthMM = ',宽度' + value + '@@毫米@@'
+            setWidthMM(widthMM)
+          }
         } else if (name == 'hzbrmc_height_m') {
           // 高度 - 米
-          let heightM = ',高度' + value + '@@米@@'
-          setHeightM(heightM)
+          // let heightM = ',高度' + value + '@@米@@'
+          // setHeightM(heightM)
+          if (value == '' || value == 0) {
+            let heightM = ''
+            setHeightM(heightM)
+          } else {
+            let heightM = ',高度' + value + '@@米@@'
+            setHeightM(heightM)
+          }
         } else if (name == 'hzbrmc_height_cm') {
           // 高度 - 厘米
-          let heightCM = ',高度' + value + '@@厘米@@'
-          setHeightCM(heightCM)
+          if (value == '' || value == 0) {
+            let heightCM = ''
+            setHeightCM(heightCM)
+          } else {
+            let heightCM = ',高度' + value + '@@厘米@@'
+            setHeightCM(heightCM)
+          }
         } else if (name == 'hzbrmc_height_mm') {
           // 高度 - 毫米
-          let heightMM = ',高度' + value + '@@毫米@@'
-          setHeightMM(heightMM)
+          // let heightMM = ',高度' + value + '@@毫米@@'
+          // setHeightMM(heightMM)
+          if (value == '' || value == 0) {
+            let heightMM = ''
+            setHeightMM(heightMM)
+          } else {
+            let heightMM = ',高度' + value + '@@毫米@@'
+            setHeightMM(heightMM)
+          }
         } else if (name == 'hzbrmc_area_face') {
           // 面域 - %
-          let areaFace = ',面域' + value + '@@%@@'
-          setAreaFace(areaFace)
+          // let areaFace = ',面域' + value + '@@%@@'
+          // setAreaFace(areaFace)
+          if (value == '' || value == 0) {
+            let areaFace = ''
+            setAreaFace(areaFace)
+          } else {
+            let areaFace = ',面域' + value + '@@%@@'
+            setAreaFace(areaFace)
+          }
         } else if (name == 'hzbrmc_area_per') {
           // 面积占比 - %
-          let areaPer = ',面积占比' + value + '@@%@@'
-          setAreaPer(areaPer)
+          // let areaPer = ',面积占比' + value + '@@%@@'
+          // setAreaPer(areaPer)
+          if (value == '' || value == 0) {
+            let areaPer = ''
+            setAreaPer(areaPer)
+          } else {
+            let areaPer = ',面积占比' + value + '@@%@@'
+            setAreaPer(areaPer)
+          }
         } else if (name == 'hzbrmc_area_m') {
           // 面积 - 平方米
-          let areaM = ',面积' + value + '@@平方米@@'
-          setAreaM(areaM)
+          // let areaM = ',面积' + value + '@@平方米@@'
+          // setAreaM(areaM)
+          if (value == '' || value == 0) {
+            let areaM = ''
+            setAreaM(areaM)
+          } else {
+            let areaM = ',面积' + value + '@@平方米@@'
+            setAreaM(areaM)
+          }
         } else if (name == 'hzbrmc_area_cm') {
           // 面积 - 平方厘米
-          let areaCM = ',面积' + value + '@@平方厘米@@'
-          setAreaCM(areaCM)
+          // let areaCM = ',面积' + value + '@@平方厘米@@'
+          // setAreaCM(areaCM)
+          if (value == '' || value == 0) {
+            let areaCM = ''
+            setAreaCM(areaCM)
+          } else {
+            let areaCM = ',面积' + value + '@@平方厘米@@'
+            setAreaCM(areaCM)
+          }
         } else if (name == 'hzbrmc_area_mm') {
           // 面积 - 平方毫米
-          let areaMM = ',面积' + value + '@@平方毫米@@'
-          setAreaMM(areaMM)
+          // let areaMM = ',面积' + value + '@@平方毫米@@'
+          // setAreaMM(areaMM)
+          if (value == '' || value == 0) {
+            let areaMM = ''
+            setAreaMM(areaMM)
+          } else {
+            let areaMM = ',面积' + value + '@@平方毫米@@'
+            setAreaMM(areaMM)
+          }
         } else if (name == 'hzbrmc_heightdiff_cm') {
           // 高差 - 厘米
-          let heightDiffCM = ',高差' + value + '@@厘米@@'
-          setHeightDiffCM(heightDiffCM)
+          // let heightDiffCM = ',高差' + value + '@@厘米@@'
+          // setHeightDiffCM(heightDiffCM)
+          if (value == '' || value == 0) {
+            let heightDiffCM = ''
+            setHeightDiffCM(heightDiffCM)
+          } else {
+            let heightDiffCM = ',高差' + value + '@@厘米@@'
+            setHeightDiffCM(heightDiffCM)
+          }
         } else if (name == 'hzbrmc_heightdiff_mm') {
           // 高差 - 毫米
-          let heightDiffMM = ',高差' + value + '@@毫米@@'
-          setHeightDiffMM(heightDiffMM)
+          // let heightDiffMM = ',高差' + value + '@@毫米@@'
+          // setHeightDiffMM(heightDiffMM)
+          if (value == '' || value == 0) {
+            let heightDiffMM = ''
+            setHeightDiffMM(heightDiffMM)
+          } else {
+            let heightDiffMM = ',高差' + value + '@@毫米@@'
+            setHeightDiffMM(heightDiffMM)
+          }
         } else if (name == 'hzbrmc_spacing_cm') {
           // 间距 - 厘米
-          let spacingCM = ',间距' + value + '@@厘米@@'
-          setSpacingCM(spacingCM)
+          // let spacingCM = ',间距' + value + '@@厘米@@'
+          // setSpacingCM(spacingCM)
+          if (value == '' || value == 0) {
+            let spacingCM = ',间距' + value + '@@厘米@@'
+            setSpacingCM(spacingCM)
+          } else {
+            let spacingCM = ',间距' + value + '@@厘米@@'
+            setSpacingCM(spacingCM)
+          }
         } else if (name == 'hzbrmc_deformation_mm') {
           // 变形 - 毫米
-          let deformationMM = ',变形' + value + '@@毫米@@'
-          setDeformationMM(deformationMM)
+          // let deformationMM = ',变形' + value + '@@毫米@@'
+          // setDeformationMM(deformationMM)
+          if (value == '' || value == 0) {
+            let deformationMM = ''
+            setDeformationMM(deformationMM)
+          } else {
+            let deformationMM = ',变形' + value + '@@毫米@@'
+            setDeformationMM(deformationMM)
+          }
         } else if (name == 'hzbrmc_num') {
           // 个数 - 个
-          let num = ',个数' + value + '@@个@@'
-          setNum(num)
+          // let num = ',个数' + value + '@@个@@'
+          // setNum(num)
+          if (value == '' || value == 0) {
+            let num = ''
+            setNum(num)
+          } else {
+            let num = ',个数' + value + '@@个@@'
+            setNum(num)
+          }
         } else if (name == 'hzbrmc_range_cm') {
           // 距离 - 厘米
-          let rangeCM = ',距离' + value + '@@厘米@@'
-          setRangeCM(rangeCM)
+          // let rangeCM = ',距离' + value + '@@厘米@@'
+          // setRangeCM(rangeCM)
+          if (value == '' || value == 0) {
+            let rangeCM = ''
+            setRangeCM(rangeCM)
+          } else {
+            let rangeCM = ',距离' + value + '@@厘米@@'
+            setRangeCM(rangeCM)
+          }
         } else if (name == 'hzbrmc_range_mm') {
           // 距离 - 毫米
-          let rangeMM = ',距离' + value + '@@毫米@@'
-          setRangeMM(rangeMM)
+          // let rangeMM = ',距离' + value + '@@毫米@@'
+          // setRangeMM(rangeMM)
+          if (value == '' || value == 0) {
+            let rangeMM = ''
+            setRangeMM(rangeMM)
+          } else {
+            let rangeMM = ',距离' + value + '@@毫米@@'
+            setRangeMM(rangeMM)
+          }
         } else if (name == 'hzbrmc_depth_cm') {
           // 深度 - 厘米
-          let depthCM = ',深度' + value + '@@厘米@@'
-          setDepthCM(depthCM)
+          // let depthCM = ',深度' + value + '@@厘米@@'
+          // setDepthCM(depthCM)
+          if (value == '' || value == 0) {
+            let depthCM = ''
+            setDepthCM(depthCM)
+          } else {
+            let depthCM = ',深度' + value + '@@厘米@@'
+            setDepthCM(depthCM)
+          }
         } else if (name == 'hzbrmc_depth_mm') {
           // 深度 - 毫米
-          let depthMM = ',深度' + value + '@@毫米@@'
-          setDepthMM(depthMM)
+          // let depthMM = ',深度' + value + '@@毫米@@'
+          // setDepthMM(depthMM)
+          if (value == '' || value == 0) {
+            let depthMM = ''
+            setDepthMM(depthMM)
+          } else {
+            let depthMM = ',深度' + value + '@@毫米@@'
+            setDepthMM(depthMM)
+          }
         } else if (name == 'hzbrmc_volume_m') {
           // 体积 - 立方米
-          let volumeM = ',体积' + value + '@@立方米@@'
-          setVolumeM(volumeM)
+          // let volumeM = ',体积' + value + '@@立方米@@'
+          // setVolumeM(volumeM)
+          if (value == '' || value == 0) {
+            let volumeM = ''
+            setVolumeM(volumeM)
+          } else {
+            let volumeM = ',体积' + value + '@@立方米@@'
+            setVolumeM(volumeM)
+          }
         } else if (name == 'hzbrmc_volume_cm') {
           // 体积 - 立方厘米
-          let volumeCM = ',体积' + value + '@@立方厘米@@'
-          setVolumeCM(volumeCM)
+          // let volumeCM = ',体积' + value + '@@立方厘米@@'
+          // setVolumeCM(volumeCM)
+          if (value == '' || value == 0) {
+            let volumeCM = ''
+            setVolumeCM(volumeCM)
+          } else {
+            let volumeCM = ',体积' + value + '@@立方厘米@@'
+            setVolumeCM(volumeCM)
+          }
         } else if (name == 'hzbrmc_disp_cm') {
           // 位移 - 厘米
-          let dispCM = ',位移' + value + '@@厘米@@'
-          setDispCM(dispCM)
+          // let dispCM = ',位移' + value + '@@厘米@@'
+          // setDispCM(dispCM)
+          if (value == '' || value == 0) {
+            let dispCM = ''
+            setDispCM(dispCM)
+          } else {
+            let dispCM = ',位移' + value + '@@厘米@@'
+            setDispCM(dispCM)
+          }
         } else if (name == 'hzbrmc_disp_mm') {
           // 位移 - 毫米
-          let dispMM = ',位移' + value + '@@毫米@@'
-          setDispMM(dispMM)
+          // let dispMM = ',位移' + value + '@@毫米@@'
+          // setDispMM(dispMM)
+          if (value == '' || value == 0) {
+            let dispMM = ''
+            setDispMM(dispMM)
+          } else {
+            let dispMM = ',位移' + value + '@@毫米@@'
+            setDispMM(dispMM)
+          }
         } else if (name == 'hzbrmc_angle_c') {
           // 角度 - 度
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          // let dispMM = ',角度' + value + '@@度@@'
+          // setDispMM(dispMM)
+          if (value == '' || value == 0) {
+            let dispMM = ''
+            setDispMM(dispMM)
+          } else {
+            let dispMM = ',角度' + value + '@@度@@'
+            setDispMM(dispMM)
+          }
         } else if (name == 'hzbrmc_chu') {
           // 处
-          let chu = ',' + value + '@@处@@'
-          setChu(chu)
+          // let chu = ',' + value + '@@处@@'
+          // setChu(chu)
+          if (value == '' || value == 0) {
+            let chu = ''
+            setChu(chu)
+          } else {
+            let chu = ',' + value + '@@处@@'
+            setChu(chu)
+          }
         } else if (name == 'hzbrmc_tiao') {
           // 条
-          let tiao = ',' + value + '@@条@@'
-          setTiao(tiao)
+          // let tiao = ',' + value + '@@条@@'
+          // setTiao(tiao)
+          if (value == '' || value == 0) {
+            let tiao = ''
+            setTiao(tiao)
+          } else {
+            let tiao = ',' + value + '@@条@@'
+            setTiao(tiao)
+          }
         } else if (name == 'hzbrmc_range_fenbu_m') {
           // 分布范围 - 米
-          let rangeFenbuM = ',分布范围' + value + '@@米@@'
-          setRangeFenbuM(rangeFenbuM)
+          // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          // setRangeFenbuM(rangeFenbuM)
+          if (value == '' || value == 0) {
+            let rangeFenbuM = ''
+            setRangeFenbuM(rangeFenbuM)
+          } else {
+            let rangeFenbuM = ',分布范围' + value + '@@米@@'
+            setRangeFenbuM(rangeFenbuM)
+          }
         } else if (name == 'hzbrmc_range_length_m') {
           // 长度范围 - 米
-          let rangeLengthM = ',长度范围' + value + '@@米@@'
-          setRangeLengthM(rangeLengthM)
+          // let rangeLengthM = ',长度范围' + value + '@@米@@'
+          // setRangeLengthM(rangeLengthM)
+          if (value == '' || value == 0) {
+            let rangeLengthM = ''
+            setRangeLengthM(rangeLengthM)
+          } else {
+            let rangeLengthM = ',长度范围' + value + '@@米@@'
+            setRangeLengthM(rangeLengthM)
+          }
         } else if (name == 'hzbrmc_range_width_mm') {
           // 宽度范围 - 毫米
-          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-          setRangeWidthMM(rangeWidthMM)
+          // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          // setRangeWidthMM(rangeWidthMM)
+          if (value == '' || value == 0) {
+            let rangeWidthMM = ''
+            setRangeWidthMM(rangeWidthMM)
+          } else {
+            let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+            setRangeWidthMM(rangeWidthMM)
+          }
         } else if (name == 'hzbrmc_range_spacing_cm') {
           // 间距范围 - 厘米
-          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-          setRangeSpacingCM(rangeSpacingCM)
+          // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          // setRangeSpacingCM(rangeSpacingCM)
+          if (value == '' || value == 0) {
+            let rangeSpacingCM = ''
+            setRangeSpacingCM(rangeSpacingCM)
+          } else {
+            let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+            setRangeSpacingCM(rangeSpacingCM)
+          }
         } else if (name == 'hzbrmc_lb_left_length_m') {
           // 左腹板长度 - 米
-          let leftLengthM = ',左腹板长度' + value + '@@米@@'
-          setLeftLengthM(leftLengthM)
+          // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          // setLeftLengthM(leftLengthM)
+          if (value == '' || value == 0) {
+            let leftLengthM = ''
+            setLeftLengthM(leftLengthM)
+          } else {
+            let leftLengthM = ',左腹板长度' + value + '@@米@@'
+            setLeftLengthM(leftLengthM)
+          }
         } else if (name == 'hzbrmc_lb_bottom_length_m') {
           // 底板长度 - 米
-          let bottomLengthM = ',底板长度' + value + '@@米@@'
-          setBottomLengthM(bottomLengthM)
+          // let bottomLengthM = ',底板长度' + value + '@@米@@'
+          // setBottomLengthM(bottomLengthM)
+          if (value == '' || value == 0) {
+            let bottomLengthM = ''
+            setBottomLengthM(bottomLengthM)
+          } else {
+            let bottomLengthM = ',底板长度' + value + '@@米@@'
+            setBottomLengthM(bottomLengthM)
+          }
         } else if (name == 'hzbrmc_lb_right_length_m') {
           // 右腹板长度 - 米
-          let rightLengthM = ',右腹板长度' + value + '@@米@@'
-          setRightLengthM(rightLengthM)
+          // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          // setRightLengthM(rightLengthM)
+          if (value == '' || value == 0) {
+            let rightLengthM = ''
+            setRightLengthM(rightLengthM)
+          } else {
+            let rightLengthM = ',右腹板长度' + value + '@@米@@'
+            setRightLengthM(rightLengthM)
+          }
         } else if (name == 'hzbrmc_lb_left_width_mm') {
           // 左腹板宽度 - 毫米
-          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-          setLeftWidthMM(leftWidthMM)
+          // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          // setLeftWidthMM(leftWidthMM)
+          if (value == '' || value == 0) {
+            let leftWidthMM = ''
+            setLeftWidthMM(leftWidthMM)
+          } else {
+            let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+            setLeftWidthMM(leftWidthMM)
+          }
         } else if (name == 'hzbrmc_lb_bottom_width_mm') {
           // 底板宽度 - 毫米
-          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-          setBottomWidthMM(bottomWidthMM)
+          // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          // setBottomWidthMM(bottomWidthMM)
+          if (value == '' || value == 0) {
+            let bottomWidthMM = ''
+            setBottomWidthMM(bottomWidthMM)
+          } else {
+            let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+            setBottomWidthMM(bottomWidthMM)
+          }
         } else if (name == 'hzbrmc_lb_right_width_mm') {
           // 右腹板宽度 - 毫米
-          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-          setRightWidthMM(rightWidthMM)
+          // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          // setRightWidthMM(rightWidthMM)
+          if (value == '' || value == 0) {
+            let rightWidthMM = ''
+            setRightWidthMM(rightWidthMM)
+          } else {
+            let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+            setRightWidthMM(rightWidthMM)
+          }
         } else if (name == 'hzbrmc_slant_m') {
           // 倾斜量 - 米
-          let slantM = ',倾斜量' + value + '@@米@@'
-          setSlantM(slantM)
+          // let slantM = ',倾斜量' + value + '@@米@@'
+          // setSlantM(slantM)
+          if (value == '' || value == 0) {
+            let slantM = ''
+            setSlantM(slantM)
+          } else {
+            let slantM = ',倾斜量' + value + '@@米@@'
+            setSlantM(slantM)
+          }
         }
         setDiseaseData(_data);
       };
@@ -781,170 +1101,654 @@ export function DiseaseA({route, navigation}) {
         
       // }
 
-      const writeDesText = () => {
-        try {
-          let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                        + widthMM + heightM + heightCM + heightMM + areaFace
-                        + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                        + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                        + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                        + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                        + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                        + bottomWidthMM + rightWidthMM + slantM
-          setWriteTxt(writeTxt)
-          console.log('writeTxt', writeTxt);
-          // console.log('remark:', diseaseData.remark);
-          // console.log('route:::', route.params.thridData.checkinfoshort);
+      // const writeDesText = () => {
+      //   try {
+      //     let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+      //                   + widthMM + heightM + heightCM + heightMM + areaFace
+      //                   + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+      //                   + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+      //                   + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+      //                   + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+      //                   + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+      //                   + bottomWidthMM + rightWidthMM + slantM
+      //     setWriteTxt(writeTxt)
+      //     console.log('writeTxt', writeTxt);
+      //     // console.log('remark:', diseaseData.remark);
+      //     // console.log('route:::', route.params.thridData.checkinfoshort);
           
-          // 在remark里面查找这两位内容，取出其位置下标
-          if (diseaseData.remark !== undefined) {
-            if (writeTxt == '' || writeTxt == undefined) {
-              console.log('writeTxt没有内容~~~~~~');
-              // 当还没有输入的内容时
-              // 截取有变化的数据的二、三位内容(第一位为逗号)
-              // let sliceWrite = writeTxt.slice(1, 3)
-              // console.log('sliceWrite', sliceWrite);
-              let allText = diseaseData.remark
-              console.log('allText',allText);
+      //     // 在remark里面查找这两位内容，取出其位置下标
+      //     if (diseaseData.remark !== undefined) {
+      //       if (writeTxt == '' || writeTxt == undefined) {
+      //         console.log('writeTxt没有内容~~~~~~');
+      //         // 当还没有输入的内容时
+      //         // 截取有变化的数据的二、三位内容(第一位为逗号)
+      //         // let sliceWrite = writeTxt.slice(1, 3)
+      //         // console.log('sliceWrite', sliceWrite);
+      //         let allText = diseaseData.remark
+      //         console.log('allText',allText);
 
-              // 将remark里的中文逗号替换为英文逗号
-              // ================================
-              let num =allText.indexOf('，')
-              console.log('num',num);
-              if (num !== -1 && diseaseData.description == undefined || diseaseData.description == '') {
-                let qian = allText.slice(0,allText.indexOf('，'))
-                // console.log('qian',qian);
-                let hou = allText.slice(allText.indexOf('，')+1)
-                // console.log('hou',hou);
-                let reset = qian + ',' + hou
-                // console.log('reset',reset);
-                console.log('reset');
-                diseaseData['description'] = reset
-                handleFormChenge(reset, diseaseData.description)
-              } else if (num !== -1 && diseaseData.description !== undefined || diseaseData.description !== '') {
-                diseaseData['description'] = diseaseData.description
-                // handleFormChenge(allText, diseaseData.description)
-              } else if (num == -1) {
-                diseaseData['description'] = allText
-                handleFormChenge(allText, diseaseData.description)
-              }
-            } else if (writeTxt !== '' || writeTxt !== undefined) {
-              // 当有输入的内容时
-              console.log('=============================================================================');
-              console.log('writeTxt有内容： ',writeTxt);
-              let writeArr = []
-              // 将输入的内容按逗号分隔开
-              // 先找到逗号
-              let num = 0
-              let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
-              console.log('逗号的位置：',commaKey);
-              let writeArrNum = []
-              // 查找逗号出现的位置，将其下标存入数组
-              while (commaKey !== -1) {
-                writeArrNum.push(commaKey)
-                console.log('commaKey逗号出现的位置:',commaKey);
-                num ++
-                commaKey = writeTxt.indexOf(',', commaKey + 1)
-              }
-              console.log('逗号出现的次数:', num);
-              console.log('截取节点数组：', writeArrNum);
-              // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
-              for (let i = 0; i < writeArrNum.length; i++) {
-                writeArr.push(
-                  writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
-                )
-              }
-              console.log('截取后的数组：',writeArr);
-              // 对writeArr数组的每一项进行替换
-              for (let i = 0; i < writeArr.length; i++) {
+      //         // 将remark里的中文逗号替换为英文逗号
+      //         // ================================
+      //         let num =allText.indexOf('，')
+      //         console.log('num',num);
+      //         if (num !== -1 && diseaseData.description == undefined || diseaseData.description == '') {
+      //           let qian = allText.slice(0,allText.indexOf('，'))
+      //           // console.log('qian',qian);
+      //           let hou = allText.slice(allText.indexOf('，')+1)
+      //           // console.log('hou',hou);
+      //           let reset = qian + ',' + hou
+      //           // console.log('reset',reset);
+      //           console.log('reset');
+      //           diseaseData['description'] = reset
+      //           handleFormChenge(reset, diseaseData.description)
+      //         } else if (num !== -1 && diseaseData.description !== undefined || diseaseData.description !== '') {
+      //           diseaseData['description'] = diseaseData.description
+      //           // handleFormChenge(allText, diseaseData.description)
+      //         } else if (num == -1) {
+      //           diseaseData['description'] = allText
+      //           handleFormChenge(allText, diseaseData.description)
+      //         }
+      //       } else if (writeTxt !== '' || writeTxt !== undefined) {
+      //         // 当有输入的内容时
+      //         console.log('=============================================================================');
+      //         console.log('writeTxt有内容： ',writeTxt);
+      //         let writeArr = []
+      //         // 将输入的内容按逗号分隔开
+      //         // 先找到逗号
+      //         let num = 0
+      //         let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
+      //         console.log('逗号的位置：',commaKey);
+      //         let writeArrNum = []
+      //         // 查找逗号出现的位置，将其下标存入数组
+      //         while (commaKey !== -1) {
+      //           writeArrNum.push(commaKey)
+      //           console.log('commaKey逗号出现的位置:',commaKey);
+      //           num ++
+      //           commaKey = writeTxt.indexOf(',', commaKey + 1)
+      //         }
+      //         console.log('逗号出现的次数:', num);
+      //         console.log('截取节点数组：', writeArrNum);
+      //         // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
+      //         for (let i = 0; i < writeArrNum.length; i++) {
+      //           writeArr.push(
+      //             writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
+      //           )
+      //         }
+      //         console.log('截取后的数组：',writeArr);
+      //         // 对writeArr数组的每一项进行替换
+      //         for (let i = 0; i < writeArr.length; i++) {
                 
-                  // 截取数组每一项的二、三位内容，与原有数据对比
-                  let sliceWrite = writeArr[i].slice(1, 3)
-                  console.log('sliceWrite',sliceWrite);
-                  if (diseaseData.description == undefined || diseaseData.description == '') {
-                    var allText = diseaseData.remark
-                  } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
-                    var allText = diseaseData.description
-                  }
+      //             // 截取数组每一项的二、三位内容，与原有数据对比
+      //             let sliceWrite = writeArr[i].slice(1, 3)
+      //             console.log('sliceWrite',sliceWrite);
+      //             if (diseaseData.description == undefined || diseaseData.description == '') {
+      //               var allText = diseaseData.remark
+      //             } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
+      //               var allText = diseaseData.description
+      //             }
                   
-                  console.log('allText', allText);
-                  // console.log('sliceWrite:', sliceWrite);
-                  let numStart = allText.indexOf(sliceWrite)
-                  console.log('numStart',numStart);
-                  // 替换下标位置到其后第一个逗号之间的内容
-                  var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-                  console.log('allTextEnd', allTextEnd);
-                  let numEnd = allTextEnd.indexOf(',')
-                  console.log('numEnd', numEnd);
-                  if (numEnd !== -1) {
-                    console.log('numEnd的值1', numEnd);
-                    // 得出内容的末尾下标值
-                    let lengthAll = numStart + numEnd
-                    // console.log('lengthAll', lengthAll);
-                    let aaaa = allText.substr(0, numStart-1)
-                    // console.log('aaaa: ', aaaa);
-                    let bbbb = allText.substr(lengthAll)
-                    // console.log('bbbb', bbbb);
-                    let ccca = '' + writeArr[i].concat(bbbb)
-                    let saveDescription = aaaa.concat(ccca)
-                    setSaveDescription(saveDescription)
-                    // console.log('saveDescription: ', saveDescription);
-                    diseaseData['description'] = saveDescription
-                    handleFormChenge(saveDescription, diseaseData.description)
-                  } else {
-                    console.log('numEnd的值2', numEnd);
-                    let aaaa = ''
-                    // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-                    if (numStart == -1) {
-                      console.log('a1');
-                      aaaa = allText
-                    } else if (numStart !== -1) {
-                      console.log('a2');
-                      aaaa = allText.substr(0, numStart-1)
-                      // aaaa = allText.substr(0,allText.indexOf(','))
-                    }
+      //             console.log('allText', allText);
+      //             // console.log('sliceWrite:', sliceWrite);
+      //             let numStart = allText.indexOf(sliceWrite)
+      //             console.log('numStart',numStart);
+      //             // 替换下标位置到其后第一个逗号之间的内容
+      //             var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
+      //             console.log('allTextEnd', allTextEnd);
+      //             let numEnd = allTextEnd.indexOf(',')
+      //             console.log('numEnd', numEnd);
+      //             if (numEnd !== -1) {
+      //               console.log('numEnd的值1', numEnd);
+      //               // 得出内容的末尾下标值
+      //               let lengthAll = numStart + numEnd
+      //               // console.log('lengthAll', lengthAll);
+      //               let aaaa = allText.substr(0, numStart-1)
+      //               // console.log('aaaa: ', aaaa);
+      //               let bbbb = allText.substr(lengthAll)
+      //               // console.log('bbbb', bbbb);
+      //               let ccca = '' + writeArr[i].concat(bbbb)
+      //               let saveDescription = aaaa.concat(ccca)
+      //               setSaveDescription(saveDescription)
+      //               // console.log('saveDescription: ', saveDescription);
+      //               diseaseData['description'] = saveDescription
+      //               handleFormChenge(saveDescription, diseaseData.description)
+      //             } else {
+      //               console.log('numEnd的值2', numEnd);
+      //               let aaaa = ''
+      //               // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
+      //               if (numStart == -1) {
+      //                 console.log('a1');
+      //                 aaaa = allText
+      //               } else if (numStart !== -1) {
+      //                 console.log('a2');
+      //                 aaaa = allText.substr(0, numStart-1)
+      //                 // aaaa = allText.substr(0,allText.indexOf(','))
+      //               }
 
-                    // if (numStart !== -1) {
-                    //   console.log('a1');
-                    //   aaaa = allText.slice(0, numStart-1)
-                    // } else if (numStart == -1) {
-                    //   console.log('a2');
-                    //   // aaaa = allText.substr(0, numStart-1)
-                    //   aaaa = allText.substr(0,allText.indexOf(','))
-                    // }
+      //               // if (numStart !== -1) {
+      //               //   console.log('a1');
+      //               //   aaaa = allText.slice(0, numStart-1)
+      //               // } else if (numStart == -1) {
+      //               //   console.log('a2');
+      //               //   // aaaa = allText.substr(0, numStart-1)
+      //               //   aaaa = allText.substr(0,allText.indexOf(','))
+      //               // }
 
-                    console.log('aaaa: ', aaaa);
-                    let bbbb = ''
-                    let ccca = ''
-                    for (let i =0; i < writeArr.length; i++) {
-                      bbbb += writeArr[i]
+      //               console.log('aaaa: ', aaaa);
+      //               let bbbb = ''
+      //               let ccca = ''
+      //               for (let i =0; i < writeArr.length; i++) {
+      //                 bbbb += writeArr[i]
                       
-                    }
-                    ccca = aaaa.concat(bbbb)
-                      console.log('ccca', ccca);
-                      let saveDescription = ccca
-                      setSaveDescription(saveDescription)
-                      // console.log('saveDescription: ', saveDescription);
-                      diseaseData['description'] = saveDescription
-                      // diseaseData['remark'] = saveDescription
-                      handleFormChenge(saveDescription, diseaseData.description)
-                  }
-                  
-              }
-            }
-          } else {
-            let binghai = infoshort
-            let allText = binghai.concat(writeTxt)
-            // console.log('allText2',allText);
-            diseaseData['description'] = allText
-            handleFormChenge(allText, diseaseData.description)
-            
-          }
-        } catch (err) {
-          console.log(err);
+      //               }
+      //               ccca = aaaa.concat(bbbb)
+      //               console.log('ccca', ccca);
+      //               let saveDescription = ccca
+      //               setSaveDescription(saveDescription)
+      //               // console.log('saveDescription: ', saveDescription);
+      //               diseaseData['description'] = saveDescription
+      //               // diseaseData['remark'] = saveDescription
+      //               handleFormChenge(saveDescription, diseaseData.description)
+      //             }
+      //         }
+      //       }
+      //     } else {
+      //       let binghai = infoshort
+      //       let allText = binghai.concat(writeTxt)
+      //       // console.log('allText2',allText);
+      //       diseaseData['description'] = allText
+      //       handleFormChenge(allText, diseaseData.description)
+      //     }
+      //   } catch (err) {
+      //     console.log(err);
+      //   }
+        
+        
+      // }
+
+      const writeDesText = (name, value) => {
+        // let writeTxt = []
+        console.log('writeDesText', name, value);
+
+        if (name == 'memberLength') {
+          diseaseData['memberLength'] = value
+          handleFormChenge(value, diseaseData.memberLength)
+        } else if (name == 'memberWidth') {
+          diseaseData['memberWidth'] = value
+          handleFormChenge(value, diseaseData.memberWidth)
+        } else if (name == 'memberHeight') {
+          diseaseData['memberHeight'] = value
+          handleFormChenge(value, diseaseData.memberHeight)
         }
-        
-        
+
+        if (name == 'scale') {
+          // 标度
+          let biaodu = ',标度' + value + '@@'
+          setBiaodu(biaodu)
+        } else if (name == 'hzbrmc_length_m') {
+          //长度 - 米
+          // let lengthM = ',长度' + value + '@@米@@'
+          // setLengthM(lengthM)
+          if (value == '' || value == 0) {
+            let lengthM = ''
+            setLengthM(lengthM)
+          } else {
+            let lengthM = ',长度' + value + '@@米@@'
+            setLengthM(lengthM)
+          }
+        } else if (name == 'hzbrmc_length_cm') {
+          // 长度 - 厘米
+          // let lengthCM = ',长度' + value + '@@厘米@@'
+          // setLengthCM(lengthCM)
+          if (value == '' || value == 0) {
+            let lengthCM = ''
+            setLengthCM(lengthCM)
+          } else {
+            let lengthCM = ',长度' + value + '@@厘米@@'
+            setLengthCM(lengthCM)
+          }
+        } else if (name == 'hzbrmc_length_mm') {
+          // 长度 - 毫米
+          // let lengthMM = ',长度' + value + '@@毫米@@'
+          // setLengthMM(lengthMM)
+          if (value == '' || value == 0) {
+            let lengthMM = ''
+            setLengthMM(lengthMM)
+          } else {
+            let lengthMM = ',长度' + value + '@@毫米@@'
+            setLengthMM(lengthMM)
+          }
+        } else if (name == 'hzbrmc_width_m') {
+          // 宽度 - 米
+          // let widthM = ',宽度' + value + '@@米@@'
+          // setWidthM(widthM)
+          if (value == '' || value == 0) {
+            let widthM = ''
+            setWidthM(widthM)
+          } else {
+            let widthM = ',宽度' + value + '@@米@@'
+            setWidthM(widthM)
+          }
+        } else if (name == 'hzbrmc_width_cm') {
+          // 宽度 - 厘米
+          // let widthCM = ',宽度' + value + '@@厘米@@'
+          // setWidthCM(widthCM)
+          if (value == '' || value == 0) {
+            let widthCM = ''
+            setWidthCM(widthCM)
+          } else {
+            let widthCM = ',宽度' + value + '@@厘米@@'
+            setWidthCM(widthCM)
+          }
+        } else if (name == 'hzbrmc_width_mm') {
+          // 宽度 - 毫米
+          if (value == '' || value == 0) {
+            let widthMM = ''
+            setWidthMM(widthMM)
+          } else {
+            let widthMM = ',宽度' + value + '@@毫米@@'
+            setWidthMM(widthMM)
+          }
+        } else if (name == 'hzbrmc_height_m') {
+          // 高度 - 米
+          // let heightM = ',高度' + value + '@@米@@'
+          // setHeightM(heightM)
+          if (value == '' || value == 0) {
+            let heightM = ''
+            setHeightM(heightM)
+          } else {
+            let heightM = ',高度' + value + '@@米@@'
+            setHeightM(heightM)
+          }
+        } else if (name == 'hzbrmc_height_cm') {
+          // 高度 - 厘米
+          if (value == '' || value == 0) {
+            let heightCM = ''
+            setHeightCM(heightCM)
+          } else {
+            let heightCM = ',高度' + value + '@@厘米@@'
+            setHeightCM(heightCM)
+          }
+        } else if (name == 'hzbrmc_height_mm') {
+          // 高度 - 毫米
+          // let heightMM = ',高度' + value + '@@毫米@@'
+          // setHeightMM(heightMM)
+          if (value == '' || value == 0) {
+            let heightMM = ''
+            setHeightMM(heightMM)
+          } else {
+            let heightMM = ',高度' + value + '@@毫米@@'
+            setHeightMM(heightMM)
+          }
+        } else if (name == 'hzbrmc_area_face') {
+          // 面域 - %
+          // let areaFace = ',面域' + value + '@@%@@'
+          // setAreaFace(areaFace)
+          if (value == '' || value == 0) {
+            let areaFace = ''
+            setAreaFace(areaFace)
+          } else {
+            let areaFace = ',面域' + value + '@@%@@'
+            setAreaFace(areaFace)
+          }
+        } else if (name == 'hzbrmc_area_per') {
+          // 面积占比 - %
+          // let areaPer = ',面积占比' + value + '@@%@@'
+          // setAreaPer(areaPer)
+          if (value == '' || value == 0) {
+            let areaPer = ''
+            setAreaPer(areaPer)
+          } else {
+            let areaPer = ',面积占比' + value + '@@%@@'
+            setAreaPer(areaPer)
+          }
+        } else if (name == 'hzbrmc_area_m') {
+          // 面积 - 平方米
+          // let areaM = ',面积' + value + '@@平方米@@'
+          // setAreaM(areaM)
+          if (value == '' || value == 0) {
+            let areaM = ''
+            setAreaM(areaM)
+          } else {
+            let areaM = ',面积' + value + '@@平方米@@'
+            setAreaM(areaM)
+          }
+        } else if (name == 'hzbrmc_area_cm') {
+          // 面积 - 平方厘米
+          // let areaCM = ',面积' + value + '@@平方厘米@@'
+          // setAreaCM(areaCM)
+          if (value == '' || value == 0) {
+            let areaCM = ''
+            setAreaCM(areaCM)
+          } else {
+            let areaCM = ',面积' + value + '@@平方厘米@@'
+            setAreaCM(areaCM)
+          }
+        } else if (name == 'hzbrmc_area_mm') {
+          // 面积 - 平方毫米
+          // let areaMM = ',面积' + value + '@@平方毫米@@'
+          // setAreaMM(areaMM)
+          if (value == '' || value == 0) {
+            let areaMM = ''
+            setAreaMM(areaMM)
+          } else {
+            let areaMM = ',面积' + value + '@@平方毫米@@'
+            setAreaMM(areaMM)
+          }
+        } else if (name == 'hzbrmc_heightdiff_cm') {
+          // 高差 - 厘米
+          // let heightDiffCM = ',高差' + value + '@@厘米@@'
+          // setHeightDiffCM(heightDiffCM)
+          if (value == '' || value == 0) {
+            let heightDiffCM = ''
+            setHeightDiffCM(heightDiffCM)
+          } else {
+            let heightDiffCM = ',高差' + value + '@@厘米@@'
+            setHeightDiffCM(heightDiffCM)
+          }
+        } else if (name == 'hzbrmc_heightdiff_mm') {
+          // 高差 - 毫米
+          // let heightDiffMM = ',高差' + value + '@@毫米@@'
+          // setHeightDiffMM(heightDiffMM)
+          if (value == '' || value == 0) {
+            let heightDiffMM = ''
+            setHeightDiffMM(heightDiffMM)
+          } else {
+            let heightDiffMM = ',高差' + value + '@@毫米@@'
+            setHeightDiffMM(heightDiffMM)
+          }
+        } else if (name == 'hzbrmc_spacing_cm') {
+          // 间距 - 厘米
+          // let spacingCM = ',间距' + value + '@@厘米@@'
+          // setSpacingCM(spacingCM)
+          if (value == '' || value == 0) {
+            let spacingCM = ',间距' + value + '@@厘米@@'
+            setSpacingCM(spacingCM)
+          } else {
+            let spacingCM = ',间距' + value + '@@厘米@@'
+            setSpacingCM(spacingCM)
+          }
+        } else if (name == 'hzbrmc_deformation_mm') {
+          // 变形 - 毫米
+          // let deformationMM = ',变形' + value + '@@毫米@@'
+          // setDeformationMM(deformationMM)
+          if (value == '' || value == 0) {
+            let deformationMM = ''
+            setDeformationMM(deformationMM)
+          } else {
+            let deformationMM = ',变形' + value + '@@毫米@@'
+            setDeformationMM(deformationMM)
+          }
+        } else if (name == 'hzbrmc_num') {
+          // 个数 - 个
+          // let num = ',个数' + value + '@@个@@'
+          // setNum(num)
+          if (value == '' || value == 0) {
+            let num = ''
+            setNum(num)
+          } else {
+            let num = ',个数' + value + '@@个@@'
+            setNum(num)
+          }
+        } else if (name == 'hzbrmc_range_cm') {
+          // 距离 - 厘米
+          // let rangeCM = ',距离' + value + '@@厘米@@'
+          // setRangeCM(rangeCM)
+          if (value == '' || value == 0) {
+            let rangeCM = ''
+            setRangeCM(rangeCM)
+          } else {
+            let rangeCM = ',距离' + value + '@@厘米@@'
+            setRangeCM(rangeCM)
+          }
+        } else if (name == 'hzbrmc_range_mm') {
+          // 距离 - 毫米
+          // let rangeMM = ',距离' + value + '@@毫米@@'
+          // setRangeMM(rangeMM)
+          if (value == '' || value == 0) {
+            let rangeMM = ''
+            setRangeMM(rangeMM)
+          } else {
+            let rangeMM = ',距离' + value + '@@毫米@@'
+            setRangeMM(rangeMM)
+          }
+        } else if (name == 'hzbrmc_depth_cm') {
+          // 深度 - 厘米
+          // let depthCM = ',深度' + value + '@@厘米@@'
+          // setDepthCM(depthCM)
+          if (value == '' || value == 0) {
+            let depthCM = ''
+            setDepthCM(depthCM)
+          } else {
+            let depthCM = ',深度' + value + '@@厘米@@'
+            setDepthCM(depthCM)
+          }
+        } else if (name == 'hzbrmc_depth_mm') {
+          // 深度 - 毫米
+          // let depthMM = ',深度' + value + '@@毫米@@'
+          // setDepthMM(depthMM)
+          if (value == '' || value == 0) {
+            let depthMM = ''
+            setDepthMM(depthMM)
+          } else {
+            let depthMM = ',深度' + value + '@@毫米@@'
+            setDepthMM(depthMM)
+          }
+        } else if (name == 'hzbrmc_volume_m') {
+          // 体积 - 立方米
+          // let volumeM = ',体积' + value + '@@立方米@@'
+          // setVolumeM(volumeM)
+          if (value == '' || value == 0) {
+            let volumeM = ''
+            setVolumeM(volumeM)
+          } else {
+            let volumeM = ',体积' + value + '@@立方米@@'
+            setVolumeM(volumeM)
+          }
+        } else if (name == 'hzbrmc_volume_cm') {
+          // 体积 - 立方厘米
+          // let volumeCM = ',体积' + value + '@@立方厘米@@'
+          // setVolumeCM(volumeCM)
+          if (value == '' || value == 0) {
+            let volumeCM = ''
+            setVolumeCM(volumeCM)
+          } else {
+            let volumeCM = ',体积' + value + '@@立方厘米@@'
+            setVolumeCM(volumeCM)
+          }
+        } else if (name == 'hzbrmc_disp_cm') {
+          // 位移 - 厘米
+          // let dispCM = ',位移' + value + '@@厘米@@'
+          // setDispCM(dispCM)
+          if (value == '' || value == 0) {
+            let dispCM = ''
+            setDispCM(dispCM)
+          } else {
+            let dispCM = ',位移' + value + '@@厘米@@'
+            setDispCM(dispCM)
+          }
+        } else if (name == 'hzbrmc_disp_mm') {
+          // 位移 - 毫米
+          // let dispMM = ',位移' + value + '@@毫米@@'
+          // setDispMM(dispMM)
+          if (value == '' || value == 0) {
+            let dispMM = ''
+            setDispMM(dispMM)
+          } else {
+            let dispMM = ',位移' + value + '@@毫米@@'
+            setDispMM(dispMM)
+          }
+        } else if (name == 'hzbrmc_angle_c') {
+          // 角度 - 度
+          // let dispMM = ',角度' + value + '@@度@@'
+          // setDispMM(dispMM)
+          if (value == '' || value == 0) {
+            let dispMM = ''
+            setDispMM(dispMM)
+          } else {
+            let dispMM = ',角度' + value + '@@度@@'
+            setDispMM(dispMM)
+          }
+        } else if (name == 'hzbrmc_chu') {
+          // 处
+          // let chu = ',' + value + '@@处@@'
+          // setChu(chu)
+          if (value == '' || value == 0) {
+            let chu = ''
+            setChu(chu)
+          } else {
+            let chu = ',' + value + '@@处@@'
+            setChu(chu)
+          }
+        } else if (name == 'hzbrmc_tiao') {
+          // 条
+          // let tiao = ',' + value + '@@条@@'
+          // setTiao(tiao)
+          if (value == '' || value == 0) {
+            let tiao = ''
+            setTiao(tiao)
+          } else {
+            let tiao = ',' + value + '@@条@@'
+            setTiao(tiao)
+          }
+        } else if (name == 'hzbrmc_range_fenbu_m') {
+          // 分布范围 - 米
+          // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          // setRangeFenbuM(rangeFenbuM)
+          if (value == '' || value == 0) {
+            let rangeFenbuM = ''
+            setRangeFenbuM(rangeFenbuM)
+          } else {
+            let rangeFenbuM = ',分布范围' + value + '@@米@@'
+            setRangeFenbuM(rangeFenbuM)
+          }
+        } else if (name == 'hzbrmc_range_length_m') {
+          // 长度范围 - 米
+          // let rangeLengthM = ',长度范围' + value + '@@米@@'
+          // setRangeLengthM(rangeLengthM)
+          if (value == '' || value == 0) {
+            let rangeLengthM = ''
+            setRangeLengthM(rangeLengthM)
+          } else {
+            let rangeLengthM = ',长度范围' + value + '@@米@@'
+            setRangeLengthM(rangeLengthM)
+          }
+        } else if (name == 'hzbrmc_range_width_mm') {
+          // 宽度范围 - 毫米
+          // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          // setRangeWidthMM(rangeWidthMM)
+          if (value == '' || value == 0) {
+            let rangeWidthMM = ''
+            setRangeWidthMM(rangeWidthMM)
+          } else {
+            let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+            setRangeWidthMM(rangeWidthMM)
+          }
+        } else if (name == 'hzbrmc_range_spacing_cm') {
+          // 间距范围 - 厘米
+          // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          // setRangeSpacingCM(rangeSpacingCM)
+          if (value == '' || value == 0) {
+            let rangeSpacingCM = ''
+            setRangeSpacingCM(rangeSpacingCM)
+          } else {
+            let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+            setRangeSpacingCM(rangeSpacingCM)
+          }
+        } else if (name == 'hzbrmc_lb_left_length_m') {
+          // 左腹板长度 - 米
+          // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          // setLeftLengthM(leftLengthM)
+          if (value == '' || value == 0) {
+            let leftLengthM = ''
+            setLeftLengthM(leftLengthM)
+          } else {
+            let leftLengthM = ',左腹板长度' + value + '@@米@@'
+            setLeftLengthM(leftLengthM)
+          }
+        } else if (name == 'hzbrmc_lb_bottom_length_m') {
+          // 底板长度 - 米
+          // let bottomLengthM = ',底板长度' + value + '@@米@@'
+          // setBottomLengthM(bottomLengthM)
+          if (value == '' || value == 0) {
+            let bottomLengthM = ''
+            setBottomLengthM(bottomLengthM)
+          } else {
+            let bottomLengthM = ',底板长度' + value + '@@米@@'
+            setBottomLengthM(bottomLengthM)
+          }
+        } else if (name == 'hzbrmc_lb_right_length_m') {
+          // 右腹板长度 - 米
+          // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          // setRightLengthM(rightLengthM)
+          if (value == '' || value == 0) {
+            let rightLengthM = ''
+            setRightLengthM(rightLengthM)
+          } else {
+            let rightLengthM = ',右腹板长度' + value + '@@米@@'
+            setRightLengthM(rightLengthM)
+          }
+        } else if (name == 'hzbrmc_lb_left_width_mm') {
+          // 左腹板宽度 - 毫米
+          // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          // setLeftWidthMM(leftWidthMM)
+          if (value == '' || value == 0) {
+            let leftWidthMM = ''
+            setLeftWidthMM(leftWidthMM)
+          } else {
+            let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+            setLeftWidthMM(leftWidthMM)
+          }
+        } else if (name == 'hzbrmc_lb_bottom_width_mm') {
+          // 底板宽度 - 毫米
+          // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          // setBottomWidthMM(bottomWidthMM)
+          if (value == '' || value == 0) {
+            let bottomWidthMM = ''
+            setBottomWidthMM(bottomWidthMM)
+          } else {
+            let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+            setBottomWidthMM(bottomWidthMM)
+          }
+        } else if (name == 'hzbrmc_lb_right_width_mm') {
+          // 右腹板宽度 - 毫米
+          // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          // setRightWidthMM(rightWidthMM)
+          if (value == '' || value == 0) {
+            let rightWidthMM = ''
+            setRightWidthMM(rightWidthMM)
+          } else {
+            let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+            setRightWidthMM(rightWidthMM)
+          }
+        } else if (name == 'hzbrmc_slant_m') {
+          // 倾斜量 - 米
+          // let slantM = ',倾斜量' + value + '@@米@@'
+          // setSlantM(slantM)
+          if (value == '' || value == 0) {
+            let slantM = ''
+            setSlantM(slantM)
+          } else {
+            let slantM = ',倾斜量' + value + '@@米@@'
+            setSlantM(slantM)
+          }
+        }
+
+        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                      + widthMM + heightM + heightCM + heightMM + areaFace
+                      + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                      + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                      + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                      + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                      + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                      + bottomWidthMM + rightWidthMM + slantM
+        setWriteTxt(writeTxt)
+        console.log('writeTxt', writeTxt);
+        console.log('病害名称',itemData.diseaseName);
+        let binghai = itemData.diseaseName
+        let allText = binghai.concat(writeTxt)
+        console.log('allText', allText);
+        diseaseData['description'] = allText
+        handleFormChenge(allText, diseaseData.description)
       }
 
       // 填入位置描述内容
@@ -953,17 +1757,14 @@ export function DiseaseA({route, navigation}) {
           // console.log('diseaseData.area', diseaseData.area);
           console.log('diseaseData.lengthText',lengthText,widthText,heightText);
           if (diseaseData.area == undefined) {
-            let areaName = areaparam[0].label
+            var areaName = ''
             setAreaName(areaName)
-            handleFormChenge(areaName, diseaseData.area)
             console.log('diseaseData.area为空');
             // 墩/台描述
             // 长度描述
             if (lengthText == '0' || lengthText == '0.0') {
               var lengthNum = ''
               setLengthNum(lengthNum)
-              // let pier = ''
-              // setPier(pier)
             } else if (lengthText !== '0' || lengthText !== '0.0') {
               var lengthNum = lengthText + 'm'
               setLengthNum(lengthNum)
@@ -974,8 +1775,13 @@ export function DiseaseA({route, navigation}) {
               var widthNum = ''
               setWidthNum(widthNum)
             } else if (widthText !== '0' || widthText !== '0.0') {
-              var widthNum = ',距左侧' + widthText + 'm'
-              setWidthNum(widthNum)
+              if (lengthNum == '') {
+                var widthNum = '距左侧' + widthText + 'm'
+                setWidthNum(widthNum)
+              } else {
+                var widthNum = ',距左侧' + widthText + 'm'
+                setWidthNum(widthNum)
+              }
             }
 
             // 距顶描述
@@ -983,17 +1789,40 @@ export function DiseaseA({route, navigation}) {
               var heightNum = ''
               setHeightNum(heightNum)
             } else if (heightText !== '0' || heightText !== '0.0') {
-              var heightNum = ',距顶' + heightText + 'm'
-              setHeightNum(heightNum)
+              if (lengthNum == '' && pier == '' && widthNum == '') {
+                var heightNum = '距顶' + heightText + 'm'
+                setHeightNum(heightNum)
+              } else {
+                var heightNum = ',距顶' + heightText + 'm'
+                setHeightNum(heightNum)
+              }
             }
 
-            console.log('kankan areaName', areaName);
-            // 位置描述 = / + 病害区域 + 桥台 + 长度 + 宽度 + 距顶
-            let writePositionTxt = areaName + pier + lengthNum + widthNum + heightNum + '处'
-            setWritePositionTxt(writePositionTxt)
-            diseaseData['writePositionTxt'] = writePositionTxt
-            setDiseaseData(diseaseData)
-            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            if (lengthNum == '' && widthNum == '' && heightNum == '') {
+              let writePositionTxt = '/' + areaName
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            } else {
+              console.log('55555');
+              // console.log('kankan areaName', areaName);
+              // 位置描述 = / + 病害区域 + 桥台 + 长度
+              // console.log('pier',pier);
+              if (lengthNum == '') {
+                let writePositionTxt = areaName + widthNum + heightNum + '处'
+                setWritePositionTxt(writePositionTxt)
+                diseaseData['writePositionTxt'] = writePositionTxt
+                setDiseaseData(diseaseData)
+                handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+              } else {
+                let writePositionTxt = areaName + pier + lengthNum + widthNum + heightNum + '处'
+                setWritePositionTxt(writePositionTxt)
+                diseaseData['writePositionTxt'] = writePositionTxt
+                setDiseaseData(diseaseData)
+                handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+              }
+            }
           } else {
             console.log('有数据了');
             console.log('构件区域列表：：',areaparam);
@@ -1030,8 +1859,6 @@ export function DiseaseA({route, navigation}) {
             if (lengthText == '0' || lengthText == '0.0') {
               var lengthNum = ''
               setLengthNum(lengthNum)
-              // let pier = ''
-              // setPier(pier)
             } else if (lengthText !== '0' || lengthText !== '0.0') {
               var lengthNum = lengthText + 'm'
               setLengthNum(lengthNum)
@@ -1042,8 +1869,13 @@ export function DiseaseA({route, navigation}) {
               var widthNum = ''
               setWidthNum(widthNum)
             } else if (widthText !== '0' || widthText !== '0.0') {
-              var widthNum = ',距左侧' + widthText + 'm'
-              setWidthNum(widthNum)
+              if (lengthNum == '') {
+                var widthNum = '距左侧' + widthText + 'm'
+                setWidthNum(widthNum)
+              } else {
+                var widthNum = ',距左侧' + widthText + 'm'
+                setWidthNum(widthNum)
+              }
             }
 
             // 距顶描述
@@ -1051,17 +1883,41 @@ export function DiseaseA({route, navigation}) {
               var heightNum = ''
               setHeightNum(heightNum)
             } else if (heightText !== '0' || heightText !== '0.0') {
-              var heightNum = ',距顶' + heightText + 'm'
-              setHeightNum(heightNum)
+              if (lengthNum == '' && pier == '' && widthNum == '') {
+                var heightNum = '距顶' + heightText + 'm'
+                setHeightNum(heightNum)
+              } else {
+                var heightNum = ',距顶' + heightText + 'm'
+                setHeightNum(heightNum)
+              }
             }
 
             console.log('kankan areaName', areaName);
             // 位置描述 = / + 病害区域 + 桥台 + 长度 + 宽度 + 距顶
-            let writePositionTxt = areaName + pier + lengthNum + widthNum + heightNum + '处'
-            setWritePositionTxt(writePositionTxt)
-            diseaseData['writePositionTxt'] = writePositionTxt
-            setDiseaseData(diseaseData)
-            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            if (lengthNum == '' && widthNum == '' && heightNum == '') {
+              let writePositionTxt = areaName
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            } else {
+              console.log('65666');
+              // console.log('kankan areaName', areaName);
+              // 位置描述 = / + 病害区域 + 桥台 + 长度
+              if (lengthNum == '') {
+                let writePositionTxt = areaName + lengthNum + widthNum + heightNum + '处'
+                setWritePositionTxt(writePositionTxt)
+                diseaseData['writePositionTxt'] = writePositionTxt
+                setDiseaseData(diseaseData)
+                handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+              } else {
+                let writePositionTxt = areaName + pier + lengthNum + widthNum + heightNum + '处'
+                setWritePositionTxt(writePositionTxt)
+                diseaseData['writePositionTxt'] = writePositionTxt
+                setDiseaseData(diseaseData)
+                handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+              }
+            }
           }
         } catch (err) {
           console.log('出现错误1:',err);
@@ -1105,7 +1961,7 @@ export function DiseaseA({route, navigation}) {
           </View>
         </View>
         <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
-          <View style={{width:'30%'}}>
+          <View style={{width:'35%'}}>
              <Select
             label="构件类型"
             name="areatype"
@@ -1116,7 +1972,7 @@ export function DiseaseA({route, navigation}) {
             values={baseData.components}
           /> 
           </View>
-          <View style={{width:'40%'}}>
+          <View style={{width:'35%'}}>
             <View style={tailwind.mB2}>
               {!areaparam.length ? (
                 <TextInput
@@ -1461,10 +2317,20 @@ export function DiseaseB({route, navigation}) {
     const [widthNum, setWidthNum] = useState()
     const [heightNum, setHeightNum] = useState()
 
-    const [diseaseName, setDiseaseName] = useState('')
+    // const [diseaseName, setDiseaseName] = useState('')
     // =================================================
     React.useEffect(() => {
       saveData.current = {...diseaseData};
+      try {
+        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
+          console.log('7777');
+          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
+          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+          // setDiseaseName(route.params.thridData.checkinfoshort)
+        }
+      } catch (err){
+        console.log('err09', err);
+      }
       try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
         setLengthText(lengthText)
@@ -1486,12 +2352,18 @@ export function DiseaseB({route, navigation}) {
         }
 
 
-        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
-          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
-          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+        if (diseaseData.area == undefined) {
+
+        } else if (diseaseData.area !== '' || diseaseData.area !== undefined || diseaseData.area !== '/') {
+          var sliceArea = diseaseData.area.slice(0,5)
         }
 
-        // console.log('short',route.params.thridData.checkinfoshort);
+        if (diseaseData.areatype == 'at0000' && sliceArea == 'at000') {
+          console.log(sliceArea);
+          console.log('xu~~~~~');
+          diseaseData['area'] = '/'
+        }
+
         // 将病害位置的长宽高数据存进diseaseData
         diseaseData['lengthText'] = lengthText
         diseaseData['widthText'] = widthText
@@ -1506,7 +2378,7 @@ export function DiseaseB({route, navigation}) {
           console.log('~~~~~~~diseaseName~~~~~',diseaseName);
           diseaseData['diseaseName'] = diseaseName
           handleFormChenge(diseaseName, diseaseData.diseaseName)
-          setDiseaseName(diseaseName)
+          // setDiseaseName(diseaseName)
         }
         
         
@@ -1603,7 +2475,7 @@ export function DiseaseB({route, navigation}) {
 
       // console.log('构件区域列表：：',areaparam);
       // console.log('表单中的构件区域',diseaseData.area);
-      if (areaparam == '') {
+      if (areaparam == '' || areaparam == undefined) {
         console.log('选的其他');
         try{
          console.log('构件类型', itemData.areatype); 
@@ -1660,6 +2532,10 @@ export function DiseaseB({route, navigation}) {
         _data.scale = _data.scale || '';
       }
 
+      if (value) {
+        // 向病害描述函数里传入
+        writeDesText(name, value)
+      }
 
       if (name == 'scale') {
         // 标度
@@ -1667,350 +2543,1127 @@ export function DiseaseB({route, navigation}) {
         setBiaodu(biaodu)
       } else if (name == 'hzbrmc_length_m') {
         //长度 - 米
-        let lengthM = ',长度' + value + '@@米@@'
-        setLengthM(lengthM)
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
+        } else {
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
+        }
       } else if (name == 'hzbrmc_length_cm') {
         // 长度 - 厘米
-        let lengthCM = ',长度' + value + '@@厘米@@'
-        setLengthCM(lengthCM)
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
       } else if (name == 'hzbrmc_length_mm') {
         // 长度 - 毫米
-        let lengthMM = ',长度' + value + '@@毫米@@'
-        setLengthMM(lengthMM)
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
       } else if (name == 'hzbrmc_width_m') {
         // 宽度 - 米
-        let widthM = ',宽度' + value + '@@米@@'
-        setWidthM(widthM)
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
       } else if (name == 'hzbrmc_width_cm') {
         // 宽度 - 厘米
-        let widthCM = ',宽度' + value + '@@厘米@@'
-        setWidthCM(widthCM)
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
       } else if (name == 'hzbrmc_width_mm') {
         // 宽度 - 毫米
-        let widthMM = ',宽度' + value + '@@毫米@@'
-        setWidthMM(widthMM)
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
       } else if (name == 'hzbrmc_height_m') {
         // 高度 - 米
-        let heightM = ',高度' + value + '@@米@@'
-        setHeightM(heightM)
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
       } else if (name == 'hzbrmc_height_cm') {
         // 高度 - 厘米
-        let heightCM = ',高度' + value + '@@厘米@@'
-        setHeightCM(heightCM)
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
       } else if (name == 'hzbrmc_height_mm') {
         // 高度 - 毫米
-        let heightMM = ',高度' + value + '@@毫米@@'
-        setHeightMM(heightMM)
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
       } else if (name == 'hzbrmc_area_face') {
         // 面域 - %
-        let areaFace = ',面域' + value + '@@%@@'
-        setAreaFace(areaFace)
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
       } else if (name == 'hzbrmc_area_per') {
         // 面积占比 - %
-        let areaPer = ',面积占比' + value + '@@%@@'
-        setAreaPer(areaPer)
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
       } else if (name == 'hzbrmc_area_m') {
         // 面积 - 平方米
-        let areaM = ',面积' + value + '@@平方米@@'
-        setAreaM(areaM)
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
       } else if (name == 'hzbrmc_area_cm') {
         // 面积 - 平方厘米
-        let areaCM = ',面积' + value + '@@平方厘米@@'
-        setAreaCM(areaCM)
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
       } else if (name == 'hzbrmc_area_mm') {
         // 面积 - 平方毫米
-        let areaMM = ',面积' + value + '@@平方毫米@@'
-        setAreaMM(areaMM)
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
       } else if (name == 'hzbrmc_heightdiff_cm') {
         // 高差 - 厘米
-        let heightDiffCM = ',高差' + value + '@@厘米@@'
-        setHeightDiffCM(heightDiffCM)
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
       } else if (name == 'hzbrmc_heightdiff_mm') {
         // 高差 - 毫米
-        let heightDiffMM = ',高差' + value + '@@毫米@@'
-        setHeightDiffMM(heightDiffMM)
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
       } else if (name == 'hzbrmc_spacing_cm') {
         // 间距 - 厘米
-        let spacingCM = ',间距' + value + '@@厘米@@'
-        setSpacingCM(spacingCM)
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
       } else if (name == 'hzbrmc_deformation_mm') {
         // 变形 - 毫米
-        let deformationMM = ',变形' + value + '@@毫米@@'
-        setDeformationMM(deformationMM)
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
       } else if (name == 'hzbrmc_num') {
         // 个数 - 个
-        let num = ',个数' + value + '@@个@@'
-        setNum(num)
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
       } else if (name == 'hzbrmc_range_cm') {
         // 距离 - 厘米
-        let rangeCM = ',距离' + value + '@@厘米@@'
-        setRangeCM(rangeCM)
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
       } else if (name == 'hzbrmc_range_mm') {
         // 距离 - 毫米
-        let rangeMM = ',距离' + value + '@@毫米@@'
-        setRangeMM(rangeMM)
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
       } else if (name == 'hzbrmc_depth_cm') {
         // 深度 - 厘米
-        let depthCM = ',深度' + value + '@@厘米@@'
-        setDepthCM(depthCM)
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
       } else if (name == 'hzbrmc_depth_mm') {
         // 深度 - 毫米
-        let depthMM = ',深度' + value + '@@毫米@@'
-        setDepthMM(depthMM)
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
       } else if (name == 'hzbrmc_volume_m') {
         // 体积 - 立方米
-        let volumeM = ',体积' + value + '@@立方米@@'
-        setVolumeM(volumeM)
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
       } else if (name == 'hzbrmc_volume_cm') {
         // 体积 - 立方厘米
-        let volumeCM = ',体积' + value + '@@立方厘米@@'
-        setVolumeCM(volumeCM)
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
       } else if (name == 'hzbrmc_disp_cm') {
         // 位移 - 厘米
-        let dispCM = ',位移' + value + '@@厘米@@'
-        setDispCM(dispCM)
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
       } else if (name == 'hzbrmc_disp_mm') {
         // 位移 - 毫米
-        let dispMM = ',位移' + value + '@@毫米@@'
-        setDispMM(dispMM)
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        let dispMM = ',角度' + value + '@@度@@'
-        setDispMM(dispMM)
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_chu') {
         // 处
-        let chu = ',' + value + '@@处@@'
-        setChu(chu)
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
       } else if (name == 'hzbrmc_tiao') {
         // 条
-        let tiao = ',' + value + '@@条@@'
-        setTiao(tiao)
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
       } else if (name == 'hzbrmc_range_fenbu_m') {
         // 分布范围 - 米
-        let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        setRangeFenbuM(rangeFenbuM)
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
       } else if (name == 'hzbrmc_range_length_m') {
         // 长度范围 - 米
-        let rangeLengthM = ',长度范围' + value + '@@米@@'
-        setRangeLengthM(rangeLengthM)
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
       } else if (name == 'hzbrmc_range_width_mm') {
         // 宽度范围 - 毫米
-        let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        setRangeWidthMM(rangeWidthMM)
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
       } else if (name == 'hzbrmc_range_spacing_cm') {
         // 间距范围 - 厘米
-        let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        setRangeSpacingCM(rangeSpacingCM)
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
       } else if (name == 'hzbrmc_lb_left_length_m') {
         // 左腹板长度 - 米
-        let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        setLeftLengthM(leftLengthM)
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_length_m') {
         // 底板长度 - 米
-        let bottomLengthM = ',底板长度' + value + '@@米@@'
-        setBottomLengthM(bottomLengthM)
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
       } else if (name == 'hzbrmc_lb_right_length_m') {
         // 右腹板长度 - 米
-        let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        setRightLengthM(rightLengthM)
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
       } else if (name == 'hzbrmc_lb_left_width_mm') {
         // 左腹板宽度 - 毫米
-        let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        setLeftWidthMM(leftWidthMM)
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_width_mm') {
         // 底板宽度 - 毫米
-        let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        setBottomWidthMM(bottomWidthMM)
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_right_width_mm') {
         // 右腹板宽度 - 毫米
-        let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        setRightWidthMM(rightWidthMM)
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
       } else if (name == 'hzbrmc_slant_m') {
         // 倾斜量 - 米
-        let slantM = ',倾斜量' + value + '@@米@@'
-        setSlantM(slantM)
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
       setDiseaseData(_data);
     };
 
     // 填入病害描述内容
-    const writeDesText = () => {
-      try {
-        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                      + widthMM + heightM + heightCM + heightMM + areaFace
-                      + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                      + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                      + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                      + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                      + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                      + bottomWidthMM + rightWidthMM + slantM
-        setWriteTxt(writeTxt)
-        console.log('writeTxt', writeTxt);
-        // console.log('remark:', diseaseData.remark);
-        // console.log('route:::', route.params.thridData.checkinfoshort);
+    // const writeDesText = () => {
+    //   try {
+    //     let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+    //                   + widthMM + heightM + heightCM + heightMM + areaFace
+    //                   + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+    //                   + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+    //                   + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+    //                   + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+    //                   + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+    //                   + bottomWidthMM + rightWidthMM + slantM
+    //     setWriteTxt(writeTxt)
+    //     console.log('writeTxt', writeTxt);
+    //     // console.log('remark:', diseaseData.remark);
+    //     // console.log('route:::', route.params.thridData.checkinfoshort);
         
-        // 在remark里面查找这两位内容，取出其位置下标
-        if (diseaseData.remark !== undefined) {
-          if (writeTxt == '' || writeTxt == undefined) {
-            console.log('writeTxt没有内容~~~~~~');
-            // 当还没有输入的内容时
-            // 截取有变化的数据的二、三位内容(第一位为逗号)
-            // let sliceWrite = writeTxt.slice(1, 3)
-            // console.log('sliceWrite', sliceWrite);
-            let allText = diseaseData.remark
-            console.log('allText',allText);
+    //     console.log('病害名称:::', diseaseData.diseaseName);
 
-            // 将remark里的中文逗号替换为英文逗号
-            // ================================
-            let num =allText.indexOf('，')
-            // console.log('num',num);
-            if (num !== -1) {
-              let qian = allText.slice(0,allText.indexOf('，'))
-              // console.log('qian',qian);
-              let hou = allText.slice(allText.indexOf('，')+1)
-              // console.log('hou',hou);
-              let reset = qian + ',' + hou
-              // console.log('reset',reset);
-              diseaseData['description'] = reset
-              handleFormChenge(reset, diseaseData.description)
-            } else if (num == -1) {
-              diseaseData['description'] = allText
-              handleFormChenge(allText, diseaseData.description)
-            }
-            // ================================
+    //     // 在remark里面查找这两位内容，取出其位置下标
+    //     if (diseaseData.remark !== undefined) {
+    //       if (writeTxt == '' || writeTxt == undefined) {
+    //         console.log('writeTxt没有内容~~~~~~');
+    //         // 当还没有输入的内容时
+    //         // 截取有变化的数据的二、三位内容(第一位为逗号)
+    //         // let sliceWrite = writeTxt.slice(1, 3)
+    //         // console.log('sliceWrite', sliceWrite);
+    //         let allText = diseaseData.remark
+    //         console.log('allText',allText);
+
+    //         // 将remark里的中文逗号替换为英文逗号
+    //         // ================================
+    //         let num =allText.indexOf('，')
+    //         // console.log('num',num);
+    //         if (num !== -1) {
+    //           let qian = allText.slice(0,allText.indexOf('，'))
+    //           // console.log('qian',qian);
+    //           let hou = allText.slice(allText.indexOf('，')+1)
+    //           // console.log('hou',hou);
+    //           let reset = qian + ',' + hou
+    //           // console.log('reset',reset);
+    //           diseaseData['description'] = reset
+    //           handleFormChenge(reset, diseaseData.description)
+    //         } else if (num == -1) {
+    //           diseaseData['description'] = allText
+    //           handleFormChenge(allText, diseaseData.description)
+    //         }
+    //         // ================================
             
-            // let binghai = allText.slice(0,allText.indexOf(','))
-            // console.log('binghai',binghai);
-            // let numStart = allText.indexOf(sliceWrite)
-            // console.log(numStart);
-            // // 替换下标位置到其后第一个逗号之间的内容
-            // let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-            // console.log('allTextEnd', allTextEnd);
-            // let douhao = ','
-            // let numEnd = allTextEnd.indexOf(douhao)
-            // console.log('numEnd', numEnd);
-            // // 得出内容的末尾下标值
-            // let lengthAll = numStart + numEnd
-            // console.log('lengthAll', lengthAll);
-            // // diseaseData['description'] = writeTxt
-            // let aaaa = allText.substr(0, numStart-1)
-            // console.log('aaaa: ', aaaa);
-            // let bbbb = allText.substr(lengthAll)
-            // console.log('bbbb', bbbb);
-            // let cccc = aaaa.concat(bbbb)
-            // console.log('cccc: ', cccc);
-            // let ccca = '' + writeTxt
-            // // let saveDescription = cccc.concat(ccca)
-            // let saveDescription = binghai.concat(ccca)
-            // setSaveDescription(saveDescription)
-            // console.log('saveDescription: ', saveDescription);
-            // diseaseData['description'] = allText
-            // handleFormChenge(allText, diseaseData.description)
-          } else if (writeTxt !== '' || writeTxt !== undefined) {
-            // 当有输入的内容时
-            console.log('=============================================================================');
-            console.log('writeTxt有内容： ',writeTxt);
-            let writeArr = []
-            // 将输入的内容按逗号分隔开
-            // 先找到逗号
-            let num = 0
-            let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
-            console.log('逗号的位置：',commaKey);
-            let writeArrNum = []
-            // 查找逗号出现的位置，将其下标存入数组
-            while (commaKey !== -1) {
-              writeArrNum.push(commaKey)
-              console.log('commaKey逗号出现的位置:',commaKey);
-              num ++
-              commaKey = writeTxt.indexOf(',', commaKey + 1)
-            }
-            console.log('逗号出现的次数:', num);
-            console.log('截取节点数组：', writeArrNum);
-            // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
-            for (let i = 0; i < writeArrNum.length; i++) {
-              writeArr.push(
-                writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
-              )
-            }
-            console.log('截取后的数组：',writeArr);
-            // 对writeArr数组的每一项进行替换
-            for (let i = 0; i < writeArr.length; i++) {
+    //         // let binghai = allText.slice(0,allText.indexOf(','))
+    //         // console.log('binghai',binghai);
+    //         // let numStart = allText.indexOf(sliceWrite)
+    //         // console.log(numStart);
+    //         // // 替换下标位置到其后第一个逗号之间的内容
+    //         // let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
+    //         // console.log('allTextEnd', allTextEnd);
+    //         // let douhao = ','
+    //         // let numEnd = allTextEnd.indexOf(douhao)
+    //         // console.log('numEnd', numEnd);
+    //         // // 得出内容的末尾下标值
+    //         // let lengthAll = numStart + numEnd
+    //         // console.log('lengthAll', lengthAll);
+    //         // // diseaseData['description'] = writeTxt
+    //         // let aaaa = allText.substr(0, numStart-1)
+    //         // console.log('aaaa: ', aaaa);
+    //         // let bbbb = allText.substr(lengthAll)
+    //         // console.log('bbbb', bbbb);
+    //         // let cccc = aaaa.concat(bbbb)
+    //         // console.log('cccc: ', cccc);
+    //         // let ccca = '' + writeTxt
+    //         // // let saveDescription = cccc.concat(ccca)
+    //         // let saveDescription = binghai.concat(ccca)
+    //         // setSaveDescription(saveDescription)
+    //         // console.log('saveDescription: ', saveDescription);
+    //         // diseaseData['description'] = allText
+    //         // handleFormChenge(allText, diseaseData.description)
+    //       } else if (writeTxt !== '' || writeTxt !== undefined) {
+    //         // 当有输入的内容时
+    //         console.log('=============================================================================');
+    //         console.log('writeTxt有内容： ',writeTxt);
+    //         let writeArr = []
+    //         // 将输入的内容按逗号分隔开
+    //         // 先找到逗号
+    //         let num = 0
+    //         let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
+    //         console.log('逗号的位置：',commaKey);
+    //         let writeArrNum = []
+    //         // 查找逗号出现的位置，将其下标存入数组
+    //         while (commaKey !== -1) {
+    //           writeArrNum.push(commaKey)
+    //           console.log('commaKey逗号出现的位置:',commaKey);
+    //           num ++
+    //           commaKey = writeTxt.indexOf(',', commaKey + 1)
+    //         }
+    //         console.log('逗号出现的次数:', num);
+    //         console.log('截取节点数组：', writeArrNum);
+    //         // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
+    //         for (let i = 0; i < writeArrNum.length; i++) {
+    //           writeArr.push(
+    //             writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
+    //           )
+    //         }
+    //         console.log('截取后的数组：',writeArr);
+    //         // 对writeArr数组的每一项进行替换
+    //         for (let i = 0; i < writeArr.length; i++) {
               
-                // 截取数组每一项的二、三位内容，与原有数据对比
-                let sliceWrite = writeArr[i].slice(1, 3)
-                console.log('sliceWrite',sliceWrite);
-                if (diseaseData.description == undefined || diseaseData.description == '') {
-                  var allText = diseaseData.remark
-                } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
-                  var allText = diseaseData.description
-                }
+    //             // 截取数组每一项的二、三位内容，与原有数据对比
+    //             let sliceWrite = writeArr[i].slice(1, 3)
+    //             console.log('sliceWrite',sliceWrite);
+    //             if (diseaseData.description == undefined || diseaseData.description == '') {
+    //               var allText = diseaseData.remark
+    //             } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
+    //               var allText = diseaseData.description
+    //             }
                 
-                console.log('allText', allText);
-                // console.log('sliceWrite:', sliceWrite);
-                let numStart = allText.indexOf(sliceWrite)
-                console.log('numStart',numStart);
-                // 替换下标位置到其后第一个逗号之间的内容
-                var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-                console.log('allTextEnd', allTextEnd);
-                let numEnd = allTextEnd.indexOf(',')
-                console.log('numEnd', numEnd);
-                if (numEnd !== -1) {
-                  console.log('numEnd的值1', numEnd);
-                  // 得出内容的末尾下标值
-                  let lengthAll = numStart + numEnd
-                  // console.log('lengthAll', lengthAll);
-                  let aaaa = allText.substr(0, numStart-1)
-                  // console.log('aaaa: ', aaaa);
-                  let bbbb = allText.substr(lengthAll)
-                  // console.log('bbbb', bbbb);
-                  let ccca = '' + writeArr[i].concat(bbbb)
-                  let saveDescription = aaaa.concat(ccca)
-                  setSaveDescription(saveDescription)
-                  // console.log('saveDescription: ', saveDescription);
-                  diseaseData['description'] = saveDescription
-                  handleFormChenge(saveDescription, diseaseData.description)
-                } else {
-                  console.log('numEnd的值2', numEnd);
-                  let aaaa = ''
-                  // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-                  if (numStart == -1) {
-                    aaaa = allText
-                  } else if (numStart !== -1) {
-                    // aaaa = allText.substr(0, numStart-1)
-                    aaaa = allText.substr(0,allText.indexOf(','))
-                  }
-                  console.log('aaaa: ', aaaa);
-                  let bbbb = ''
-                  let ccca = ''
-                  for (let i =0; i < writeArr.length; i++) {
-                    bbbb += writeArr[i]
+    //             console.log('allText', allText);
+    //             // console.log('sliceWrite:', sliceWrite);
+    //             let numStart = allText.indexOf(sliceWrite)
+    //             console.log('numStart',numStart);
+    //             // 替换下标位置到其后第一个逗号之间的内容
+    //             var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
+    //             console.log('allTextEnd', allTextEnd);
+    //             let numEnd = allTextEnd.indexOf(',')
+    //             console.log('numEnd', numEnd);
+    //             if (numEnd !== -1) {
+    //               console.log('numEnd的值1', numEnd);
+    //               // 得出内容的末尾下标值
+    //               let lengthAll = numStart + numEnd
+    //               // console.log('lengthAll', lengthAll);
+    //               let aaaa = allText.substr(0, numStart-1)
+    //               // console.log('aaaa: ', aaaa);
+    //               let bbbb = allText.substr(lengthAll)
+    //               // console.log('bbbb', bbbb);
+    //               let ccca = '' + writeArr[i].concat(bbbb)
+    //               let saveDescription = aaaa.concat(ccca)
+    //               setSaveDescription(saveDescription)
+    //               // console.log('saveDescription: ', saveDescription);
+    //               diseaseData['description'] = saveDescription
+    //               handleFormChenge(saveDescription, diseaseData.description)
+    //             } else {
+    //               console.log('numEnd的值2', numEnd);
+    //               let aaaa = ''
+    //               // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
+    //               if (numStart == -1) {
+    //                 aaaa = allText
+    //               } else if (numStart !== -1) {
+    //                 // aaaa = allText.substr(0, numStart-1)
+    //                 // aaaa = allText.substr(0,allText.indexOf(','))
+
+    //                 // 当病害名称里含有逗号时，截取到第二个逗号
+    //                 let doudou = diseaseData.diseaseName.indexOf('，')
+    //                 console.log('doudou', doudou);
+    //                 if (doudou !== -1) {
+    //                   let testa = allText.slice(doudou+1)
+    //                   console.log('testa',testa);
+    //                   let testb = testa.slice(0, testa.indexOf(','))
+    //                   console.log('testb',testb);
+    //                   let boubou = allText.slice(doudou,allText.indexOf(','))
+    //                   console.log('boubou', boubou);
+    //                   aaaa = allText.slice(0,doudou+1).concat(testb)
+    //                 } else if (doudou == -1) {
+    //                   aaaa = allText.substr(0,allText.indexOf(','))
+    //                 }
                     
-                  }
-                  ccca = aaaa.concat(bbbb)
-                    console.log('ccca', ccca);
-                    let saveDescription = ccca
-                    setSaveDescription(saveDescription)
-                    // console.log('saveDescription: ', saveDescription);
-                    diseaseData['description'] = saveDescription
-                    // diseaseData['remark'] = saveDescription
-                    handleFormChenge(saveDescription, diseaseData.description)
-                }
+    //               }
+    //               console.log('aaaa: ', aaaa);
+    //               let bbbb = ''
+    //               let ccca = ''
+    //               for (let i =0; i < writeArr.length; i++) {
+    //                 bbbb += writeArr[i]
+                    
+    //               }
+    //               ccca = aaaa.concat(bbbb)
+    //                 console.log('ccca', ccca);
+    //                 let saveDescription = ccca
+    //                 setSaveDescription(saveDescription)
+    //                 // console.log('saveDescription: ', saveDescription);
+    //                 diseaseData['description'] = saveDescription
+    //                 // diseaseData['remark'] = saveDescription
+    //                 handleFormChenge(saveDescription, diseaseData.description)
+    //             }
                 
-            }
-          }
-        } else {
-          let binghai = infoshort
-          let allText = binghai.concat(writeTxt)
-          // console.log('allText2',allText);
-          diseaseData['description'] = allText
-          handleFormChenge(allText, diseaseData.description)
+    //         }
+    //       }
+    //     } else {
+    //       let binghai = infoshort
+    //       let allText = binghai.concat(writeTxt)
+    //       // console.log('allText2',allText);
+    //       diseaseData['description'] = allText
+    //       handleFormChenge(allText, diseaseData.description)
           
+    //     }
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+      
+      
+    // }
+
+
+    const writeDesText = (name, value) => {
+      // let writeTxt = []
+      console.log('writeDesText', name, value);
+
+      if (name == 'scale') {
+        // 标度
+        let biaodu = ',标度' + value + '@@'
+        setBiaodu(biaodu)
+      } else if (name == 'hzbrmc_length_m') {
+        //长度 - 米
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
+        } else {
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
         }
-      } catch (err) {
-        console.log(err);
+      } else if (name == 'hzbrmc_length_cm') {
+        // 长度 - 厘米
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
+      } else if (name == 'hzbrmc_length_mm') {
+        // 长度 - 毫米
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
+      } else if (name == 'hzbrmc_width_m') {
+        // 宽度 - 米
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
+      } else if (name == 'hzbrmc_width_cm') {
+        // 宽度 - 厘米
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
+      } else if (name == 'hzbrmc_width_mm') {
+        // 宽度 - 毫米
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
+      } else if (name == 'hzbrmc_height_m') {
+        // 高度 - 米
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
+      } else if (name == 'hzbrmc_height_cm') {
+        // 高度 - 厘米
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
+      } else if (name == 'hzbrmc_height_mm') {
+        // 高度 - 毫米
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
+      } else if (name == 'hzbrmc_area_face') {
+        // 面域 - %
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
+      } else if (name == 'hzbrmc_area_per') {
+        // 面积占比 - %
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
+      } else if (name == 'hzbrmc_area_m') {
+        // 面积 - 平方米
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
+      } else if (name == 'hzbrmc_area_cm') {
+        // 面积 - 平方厘米
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
+      } else if (name == 'hzbrmc_area_mm') {
+        // 面积 - 平方毫米
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_cm') {
+        // 高差 - 厘米
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_mm') {
+        // 高差 - 毫米
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
+      } else if (name == 'hzbrmc_spacing_cm') {
+        // 间距 - 厘米
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
+      } else if (name == 'hzbrmc_deformation_mm') {
+        // 变形 - 毫米
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
+      } else if (name == 'hzbrmc_num') {
+        // 个数 - 个
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
+      } else if (name == 'hzbrmc_range_cm') {
+        // 距离 - 厘米
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
+      } else if (name == 'hzbrmc_range_mm') {
+        // 距离 - 毫米
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
+      } else if (name == 'hzbrmc_depth_cm') {
+        // 深度 - 厘米
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
+      } else if (name == 'hzbrmc_depth_mm') {
+        // 深度 - 毫米
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
+      } else if (name == 'hzbrmc_volume_m') {
+        // 体积 - 立方米
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
+      } else if (name == 'hzbrmc_volume_cm') {
+        // 体积 - 立方厘米
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
+      } else if (name == 'hzbrmc_disp_cm') {
+        // 位移 - 厘米
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
+      } else if (name == 'hzbrmc_disp_mm') {
+        // 位移 - 毫米
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_angle_c') {
+        // 角度 - 度
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_chu') {
+        // 处
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
+      } else if (name == 'hzbrmc_tiao') {
+        // 条
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
+      } else if (name == 'hzbrmc_range_fenbu_m') {
+        // 分布范围 - 米
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
+      } else if (name == 'hzbrmc_range_length_m') {
+        // 长度范围 - 米
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
+      } else if (name == 'hzbrmc_range_width_mm') {
+        // 宽度范围 - 毫米
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
+      } else if (name == 'hzbrmc_range_spacing_cm') {
+        // 间距范围 - 厘米
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
+      } else if (name == 'hzbrmc_lb_left_length_m') {
+        // 左腹板长度 - 米
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_length_m') {
+        // 底板长度 - 米
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_right_length_m') {
+        // 右腹板长度 - 米
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_left_width_mm') {
+        // 左腹板宽度 - 毫米
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
+        // 底板宽度 - 毫米
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_right_width_mm') {
+        // 右腹板宽度 - 毫米
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
+      } else if (name == 'hzbrmc_slant_m') {
+        // 倾斜量 - 米
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
-      
-      
+
+      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                    + widthMM + heightM + heightCM + heightMM + areaFace
+                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                    + bottomWidthMM + rightWidthMM + slantM
+      setWriteTxt(writeTxt)
+      console.log('writeTxt', writeTxt);
+      console.log('病害名称',itemData.diseaseName);
+      let binghai = itemData.diseaseName
+      let allText = binghai.concat(writeTxt)
+      console.log('allText', allText);
+      diseaseData['description'] = allText
+      handleFormChenge(allText, diseaseData.description)
     }
 
     // 填入位置描述内容
@@ -2096,7 +3749,7 @@ export function DiseaseB({route, navigation}) {
       </View>
       {/* 构件类型、构件区域 */}
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
-        <View style={{width:'30%'}}>
+        <View style={{width:'35%'}}>
             <Select
           label="构件类型"
           name="areatype"
@@ -2107,7 +3760,7 @@ export function DiseaseB({route, navigation}) {
           values={baseData.components}
         />
         </View>
-        <View style={{width:'40%'}}>
+        <View style={{width:'35%'}}>
           <View style={tailwind.mB2}>
             {!areaparam.length ? (
               <TextInput
@@ -2432,6 +4085,15 @@ export function DiseaseC({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
+          console.log('7777');
+          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
+          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+        }
+      } catch (err){
+        console.log('err09', err);
+      }
+      try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
@@ -2451,10 +4113,16 @@ export function DiseaseC({route, navigation}) {
           setHeightText(heightText)
         }
 
+        if (diseaseData.area == undefined) {
 
-        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
-          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
-          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+        } else if (diseaseData.area !== '' || diseaseData.area !== undefined || diseaseData.area !== '/') {
+          var sliceArea = diseaseData.area.slice(0,5)
+        }
+        
+        if (diseaseData.areatype == 'at0000' && sliceArea == 'at000') {
+          console.log(sliceArea);
+          console.log('xu~~~~~');
+          diseaseData['area'] = '/'
         }
 
         // console.log('short',route.params.thridData.checkinfoshort);
@@ -2569,7 +4237,7 @@ export function DiseaseC({route, navigation}) {
 
       // console.log('构件区域列表：：',areaparam);
       // console.log('表单中的构件区域',diseaseData.area);
-      if (areaparam == '') {
+      if (areaparam == '' || areaparam == undefined) {
         console.log('选的其他');
         try{
          console.log('构件类型', itemData.areatype); 
@@ -2627,356 +4295,940 @@ export function DiseaseC({route, navigation}) {
       }
 
 
+      if (value) {
+        // 向病害描述函数里传入
+        writeDesText(name, value)
+      }
+
       if (name == 'scale') {
         // 标度
         let biaodu = ',标度' + value + '@@'
         setBiaodu(biaodu)
       } else if (name == 'hzbrmc_length_m') {
         //长度 - 米
-        let lengthM = ',长度' + value + '@@米@@'
-        setLengthM(lengthM)
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
+        } else {
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
+        }
       } else if (name == 'hzbrmc_length_cm') {
         // 长度 - 厘米
-        let lengthCM = ',长度' + value + '@@厘米@@'
-        setLengthCM(lengthCM)
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
       } else if (name == 'hzbrmc_length_mm') {
         // 长度 - 毫米
-        let lengthMM = ',长度' + value + '@@毫米@@'
-        setLengthMM(lengthMM)
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
       } else if (name == 'hzbrmc_width_m') {
         // 宽度 - 米
-        let widthM = ',宽度' + value + '@@米@@'
-        setWidthM(widthM)
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
       } else if (name == 'hzbrmc_width_cm') {
         // 宽度 - 厘米
-        let widthCM = ',宽度' + value + '@@厘米@@'
-        setWidthCM(widthCM)
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
       } else if (name == 'hzbrmc_width_mm') {
         // 宽度 - 毫米
-        let widthMM = ',宽度' + value + '@@毫米@@'
-        setWidthMM(widthMM)
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
       } else if (name == 'hzbrmc_height_m') {
         // 高度 - 米
-        let heightM = ',高度' + value + '@@米@@'
-        setHeightM(heightM)
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
       } else if (name == 'hzbrmc_height_cm') {
         // 高度 - 厘米
-        let heightCM = ',高度' + value + '@@厘米@@'
-        setHeightCM(heightCM)
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
       } else if (name == 'hzbrmc_height_mm') {
         // 高度 - 毫米
-        let heightMM = ',高度' + value + '@@毫米@@'
-        setHeightMM(heightMM)
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
       } else if (name == 'hzbrmc_area_face') {
         // 面域 - %
-        let areaFace = ',面域' + value + '@@%@@'
-        setAreaFace(areaFace)
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
       } else if (name == 'hzbrmc_area_per') {
         // 面积占比 - %
-        let areaPer = ',面积占比' + value + '@@%@@'
-        setAreaPer(areaPer)
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
       } else if (name == 'hzbrmc_area_m') {
         // 面积 - 平方米
-        let areaM = ',面积' + value + '@@平方米@@'
-        setAreaM(areaM)
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
       } else if (name == 'hzbrmc_area_cm') {
         // 面积 - 平方厘米
-        let areaCM = ',面积' + value + '@@平方厘米@@'
-        setAreaCM(areaCM)
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
       } else if (name == 'hzbrmc_area_mm') {
         // 面积 - 平方毫米
-        let areaMM = ',面积' + value + '@@平方毫米@@'
-        setAreaMM(areaMM)
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
       } else if (name == 'hzbrmc_heightdiff_cm') {
         // 高差 - 厘米
-        let heightDiffCM = ',高差' + value + '@@厘米@@'
-        setHeightDiffCM(heightDiffCM)
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
       } else if (name == 'hzbrmc_heightdiff_mm') {
         // 高差 - 毫米
-        let heightDiffMM = ',高差' + value + '@@毫米@@'
-        setHeightDiffMM(heightDiffMM)
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
       } else if (name == 'hzbrmc_spacing_cm') {
         // 间距 - 厘米
-        let spacingCM = ',间距' + value + '@@厘米@@'
-        setSpacingCM(spacingCM)
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
       } else if (name == 'hzbrmc_deformation_mm') {
         // 变形 - 毫米
-        let deformationMM = ',变形' + value + '@@毫米@@'
-        setDeformationMM(deformationMM)
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
       } else if (name == 'hzbrmc_num') {
         // 个数 - 个
-        let num = ',个数' + value + '@@个@@'
-        setNum(num)
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
       } else if (name == 'hzbrmc_range_cm') {
         // 距离 - 厘米
-        let rangeCM = ',距离' + value + '@@厘米@@'
-        setRangeCM(rangeCM)
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
       } else if (name == 'hzbrmc_range_mm') {
         // 距离 - 毫米
-        let rangeMM = ',距离' + value + '@@毫米@@'
-        setRangeMM(rangeMM)
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
       } else if (name == 'hzbrmc_depth_cm') {
         // 深度 - 厘米
-        let depthCM = ',深度' + value + '@@厘米@@'
-        setDepthCM(depthCM)
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
       } else if (name == 'hzbrmc_depth_mm') {
         // 深度 - 毫米
-        let depthMM = ',深度' + value + '@@毫米@@'
-        setDepthMM(depthMM)
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
       } else if (name == 'hzbrmc_volume_m') {
         // 体积 - 立方米
-        let volumeM = ',体积' + value + '@@立方米@@'
-        setVolumeM(volumeM)
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
       } else if (name == 'hzbrmc_volume_cm') {
         // 体积 - 立方厘米
-        let volumeCM = ',体积' + value + '@@立方厘米@@'
-        setVolumeCM(volumeCM)
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
       } else if (name == 'hzbrmc_disp_cm') {
         // 位移 - 厘米
-        let dispCM = ',位移' + value + '@@厘米@@'
-        setDispCM(dispCM)
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
       } else if (name == 'hzbrmc_disp_mm') {
         // 位移 - 毫米
-        let dispMM = ',位移' + value + '@@毫米@@'
-        setDispMM(dispMM)
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        let dispMM = ',角度' + value + '@@度@@'
-        setDispMM(dispMM)
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_chu') {
         // 处
-        let chu = ',' + value + '@@处@@'
-        setChu(chu)
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
       } else if (name == 'hzbrmc_tiao') {
         // 条
-        let tiao = ',' + value + '@@条@@'
-        setTiao(tiao)
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
       } else if (name == 'hzbrmc_range_fenbu_m') {
         // 分布范围 - 米
-        let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        setRangeFenbuM(rangeFenbuM)
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
       } else if (name == 'hzbrmc_range_length_m') {
         // 长度范围 - 米
-        let rangeLengthM = ',长度范围' + value + '@@米@@'
-        setRangeLengthM(rangeLengthM)
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
       } else if (name == 'hzbrmc_range_width_mm') {
         // 宽度范围 - 毫米
-        let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        setRangeWidthMM(rangeWidthMM)
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
       } else if (name == 'hzbrmc_range_spacing_cm') {
         // 间距范围 - 厘米
-        let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        setRangeSpacingCM(rangeSpacingCM)
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
       } else if (name == 'hzbrmc_lb_left_length_m') {
         // 左腹板长度 - 米
-        let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        setLeftLengthM(leftLengthM)
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_length_m') {
         // 底板长度 - 米
-        let bottomLengthM = ',底板长度' + value + '@@米@@'
-        setBottomLengthM(bottomLengthM)
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
       } else if (name == 'hzbrmc_lb_right_length_m') {
         // 右腹板长度 - 米
-        let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        setRightLengthM(rightLengthM)
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
       } else if (name == 'hzbrmc_lb_left_width_mm') {
         // 左腹板宽度 - 毫米
-        let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        setLeftWidthMM(leftWidthMM)
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_width_mm') {
         // 底板宽度 - 毫米
-        let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        setBottomWidthMM(bottomWidthMM)
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_right_width_mm') {
         // 右腹板宽度 - 毫米
-        let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        setRightWidthMM(rightWidthMM)
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
       } else if (name == 'hzbrmc_slant_m') {
         // 倾斜量 - 米
-        let slantM = ',倾斜量' + value + '@@米@@'
-        setSlantM(slantM)
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
       setDiseaseData(_data);
     };
 
     // 填入病害描述内容
-    const writeDesText = () => {
-      try {
-        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                      + widthMM + heightM + heightCM + heightMM + areaFace
-                      + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                      + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                      + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                      + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                      + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                      + bottomWidthMM + rightWidthMM + slantM
-        setWriteTxt(writeTxt)
-        console.log('writeTxt', writeTxt);
-        // console.log('remark:', diseaseData.remark);
-        // console.log('route:::', route.params.thridData.checkinfoshort);
-        
-        // 在remark里面查找这两位内容，取出其位置下标
-        if (diseaseData.remark !== undefined) {
-          if (writeTxt == '' || writeTxt == undefined) {
-            console.log('writeTxt没有内容~~~~~~');
-            // 当还没有输入的内容时
-            // 截取有变化的数据的二、三位内容(第一位为逗号)
-            // let sliceWrite = writeTxt.slice(1, 3)
-            // console.log('sliceWrite', sliceWrite);
-            let allText = diseaseData.remark
-            console.log('allText',allText);
+    const writeDesText = (name, value) => {
+      // let writeTxt = []
+      console.log('writeDesText', name, value);
 
-            // 将remark里的中文逗号替换为英文逗号
-            // ================================
-            let num =allText.indexOf('，')
-            // console.log('num',num);
-            if (num !== -1) {
-              let qian = allText.slice(0,allText.indexOf('，'))
-              // console.log('qian',qian);
-              let hou = allText.slice(allText.indexOf('，')+1)
-              // console.log('hou',hou);
-              let reset = qian + ',' + hou
-              // console.log('reset',reset);
-              diseaseData['description'] = reset
-              handleFormChenge(reset, diseaseData.description)
-            } else if (num == -1) {
-              diseaseData['description'] = allText
-              handleFormChenge(allText, diseaseData.description)
-            }
-            // ================================
-            
-            // let binghai = allText.slice(0,allText.indexOf(','))
-            // console.log('binghai',binghai);
-            // let numStart = allText.indexOf(sliceWrite)
-            // console.log(numStart);
-            // // 替换下标位置到其后第一个逗号之间的内容
-            // let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-            // console.log('allTextEnd', allTextEnd);
-            // let douhao = ','
-            // let numEnd = allTextEnd.indexOf(douhao)
-            // console.log('numEnd', numEnd);
-            // // 得出内容的末尾下标值
-            // let lengthAll = numStart + numEnd
-            // console.log('lengthAll', lengthAll);
-            // // diseaseData['description'] = writeTxt
-            // let aaaa = allText.substr(0, numStart-1)
-            // console.log('aaaa: ', aaaa);
-            // let bbbb = allText.substr(lengthAll)
-            // console.log('bbbb', bbbb);
-            // let cccc = aaaa.concat(bbbb)
-            // console.log('cccc: ', cccc);
-            // let ccca = '' + writeTxt
-            // // let saveDescription = cccc.concat(ccca)
-            // let saveDescription = binghai.concat(ccca)
-            // setSaveDescription(saveDescription)
-            // console.log('saveDescription: ', saveDescription);
-            // diseaseData['description'] = allText
-            // handleFormChenge(allText, diseaseData.description)
-          } else if (writeTxt !== '' || writeTxt !== undefined) {
-            // 当有输入的内容时
-            console.log('=============================================================================');
-            console.log('writeTxt有内容： ',writeTxt);
-            let writeArr = []
-            // 将输入的内容按逗号分隔开
-            // 先找到逗号
-            let num = 0
-            let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
-            console.log('逗号的位置：',commaKey);
-            let writeArrNum = []
-            // 查找逗号出现的位置，将其下标存入数组
-            while (commaKey !== -1) {
-              writeArrNum.push(commaKey)
-              console.log('commaKey逗号出现的位置:',commaKey);
-              num ++
-              commaKey = writeTxt.indexOf(',', commaKey + 1)
-            }
-            console.log('逗号出现的次数:', num);
-            console.log('截取节点数组：', writeArrNum);
-            // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
-            for (let i = 0; i < writeArrNum.length; i++) {
-              writeArr.push(
-                writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
-              )
-            }
-            console.log('截取后的数组：',writeArr);
-            // 对writeArr数组的每一项进行替换
-            for (let i = 0; i < writeArr.length; i++) {
-              
-                // 截取数组每一项的二、三位内容，与原有数据对比
-                let sliceWrite = writeArr[i].slice(1, 3)
-                console.log('sliceWrite',sliceWrite);
-                if (diseaseData.description == undefined || diseaseData.description == '') {
-                  var allText = diseaseData.remark
-                } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
-                  var allText = diseaseData.description
-                }
-                
-                console.log('allText', allText);
-                // console.log('sliceWrite:', sliceWrite);
-                let numStart = allText.indexOf(sliceWrite)
-                console.log('numStart',numStart);
-                // 替换下标位置到其后第一个逗号之间的内容
-                var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-                console.log('allTextEnd', allTextEnd);
-                let numEnd = allTextEnd.indexOf(',')
-                console.log('numEnd', numEnd);
-                if (numEnd !== -1) {
-                  console.log('numEnd的值1', numEnd);
-                  // 得出内容的末尾下标值
-                  let lengthAll = numStart + numEnd
-                  // console.log('lengthAll', lengthAll);
-                  let aaaa = allText.substr(0, numStart-1)
-                  // console.log('aaaa: ', aaaa);
-                  let bbbb = allText.substr(lengthAll)
-                  // console.log('bbbb', bbbb);
-                  let ccca = '' + writeArr[i].concat(bbbb)
-                  let saveDescription = aaaa.concat(ccca)
-                  setSaveDescription(saveDescription)
-                  // console.log('saveDescription: ', saveDescription);
-                  diseaseData['description'] = saveDescription
-                  handleFormChenge(saveDescription, diseaseData.description)
-                } else {
-                  console.log('numEnd的值2', numEnd);
-                  let aaaa = ''
-                  // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-                  if (numStart == -1) {
-                    aaaa = allText
-                  } else if (numStart !== -1) {
-                    // aaaa = allText.substr(0, numStart-1)
-                    aaaa = allText.substr(0,allText.indexOf(','))
-                  }
-                  console.log('aaaa: ', aaaa);
-                  let bbbb = ''
-                  let ccca = ''
-                  for (let i =0; i < writeArr.length; i++) {
-                    bbbb += writeArr[i]
-                    
-                  }
-                  ccca = aaaa.concat(bbbb)
-                    console.log('ccca', ccca);
-                    let saveDescription = ccca
-                    setSaveDescription(saveDescription)
-                    // console.log('saveDescription: ', saveDescription);
-                    diseaseData['description'] = saveDescription
-                    // diseaseData['remark'] = saveDescription
-                    handleFormChenge(saveDescription, diseaseData.description)
-                }
-                
-            }
-          }
+      if (name == 'scale') {
+        // 标度
+        let biaodu = ',标度' + value + '@@'
+        setBiaodu(biaodu)
+      } else if (name == 'hzbrmc_length_m') {
+        //长度 - 米
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
         } else {
-          let binghai = infoshort
-          let allText = binghai.concat(writeTxt)
-          // console.log('allText2',allText);
-          diseaseData['description'] = allText
-          handleFormChenge(allText, diseaseData.description)
-          
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
         }
-      } catch (err) {
-        console.log(err);
+      } else if (name == 'hzbrmc_length_cm') {
+        // 长度 - 厘米
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
+      } else if (name == 'hzbrmc_length_mm') {
+        // 长度 - 毫米
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
+      } else if (name == 'hzbrmc_width_m') {
+        // 宽度 - 米
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
+      } else if (name == 'hzbrmc_width_cm') {
+        // 宽度 - 厘米
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
+      } else if (name == 'hzbrmc_width_mm') {
+        // 宽度 - 毫米
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
+      } else if (name == 'hzbrmc_height_m') {
+        // 高度 - 米
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
+      } else if (name == 'hzbrmc_height_cm') {
+        // 高度 - 厘米
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
+      } else if (name == 'hzbrmc_height_mm') {
+        // 高度 - 毫米
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
+      } else if (name == 'hzbrmc_area_face') {
+        // 面域 - %
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
+      } else if (name == 'hzbrmc_area_per') {
+        // 面积占比 - %
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
+      } else if (name == 'hzbrmc_area_m') {
+        // 面积 - 平方米
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
+      } else if (name == 'hzbrmc_area_cm') {
+        // 面积 - 平方厘米
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
+      } else if (name == 'hzbrmc_area_mm') {
+        // 面积 - 平方毫米
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_cm') {
+        // 高差 - 厘米
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_mm') {
+        // 高差 - 毫米
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
+      } else if (name == 'hzbrmc_spacing_cm') {
+        // 间距 - 厘米
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
+      } else if (name == 'hzbrmc_deformation_mm') {
+        // 变形 - 毫米
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
+      } else if (name == 'hzbrmc_num') {
+        // 个数 - 个
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
+      } else if (name == 'hzbrmc_range_cm') {
+        // 距离 - 厘米
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
+      } else if (name == 'hzbrmc_range_mm') {
+        // 距离 - 毫米
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
+      } else if (name == 'hzbrmc_depth_cm') {
+        // 深度 - 厘米
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
+      } else if (name == 'hzbrmc_depth_mm') {
+        // 深度 - 毫米
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
+      } else if (name == 'hzbrmc_volume_m') {
+        // 体积 - 立方米
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
+      } else if (name == 'hzbrmc_volume_cm') {
+        // 体积 - 立方厘米
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
+      } else if (name == 'hzbrmc_disp_cm') {
+        // 位移 - 厘米
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
+      } else if (name == 'hzbrmc_disp_mm') {
+        // 位移 - 毫米
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_angle_c') {
+        // 角度 - 度
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_chu') {
+        // 处
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
+      } else if (name == 'hzbrmc_tiao') {
+        // 条
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
+      } else if (name == 'hzbrmc_range_fenbu_m') {
+        // 分布范围 - 米
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
+      } else if (name == 'hzbrmc_range_length_m') {
+        // 长度范围 - 米
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
+      } else if (name == 'hzbrmc_range_width_mm') {
+        // 宽度范围 - 毫米
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
+      } else if (name == 'hzbrmc_range_spacing_cm') {
+        // 间距范围 - 厘米
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
+      } else if (name == 'hzbrmc_lb_left_length_m') {
+        // 左腹板长度 - 米
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_length_m') {
+        // 底板长度 - 米
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_right_length_m') {
+        // 右腹板长度 - 米
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_left_width_mm') {
+        // 左腹板宽度 - 毫米
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
+        // 底板宽度 - 毫米
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_right_width_mm') {
+        // 右腹板宽度 - 毫米
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
+      } else if (name == 'hzbrmc_slant_m') {
+        // 倾斜量 - 米
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
-      
-      
+
+      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                    + widthMM + heightM + heightCM + heightMM + areaFace
+                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                    + bottomWidthMM + rightWidthMM + slantM
+      setWriteTxt(writeTxt)
+      console.log('writeTxt', writeTxt);
+      console.log('病害名称',itemData.diseaseName);
+      let binghai = itemData.diseaseName
+      let allText = binghai.concat(writeTxt)
+      console.log('allText', allText);
+      diseaseData['description'] = allText
+      handleFormChenge(allText, diseaseData.description)
     }
 
     // 填入位置描述内容
@@ -2984,47 +5236,12 @@ export function DiseaseC({route, navigation}) {
       try {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
-        if (diseaseData.area == undefined || diseaseData.area == '') {
-          let areaName = ''
-            console.log('diseaseData.area为空');
-            // 墩/台描述
-            // 长度描述
-            if (lengthText == '0' || lengthText == '0.0') {
-              var lengthNum = ''
-              setLengthNum(lengthNum)
-              // let pier = ''
-              // setPier(pier)
-            } else if (lengthText !== '0' || lengthText !== '0.0') {
-              var lengthNum = lengthText + 'm'
-              setLengthNum(lengthNum)
-            }
-            
-            // 宽度描述
-            // if (widthText == '0' || widthText == '0.0') {
-            //   var widthNum = ''
-            //   setWidthNum(widthNum)
-            // } else if (widthText !== '0' || widthText !== '0.0') {
-            //   var widthNum = ',距左侧' + widthText + 'm'
-            //   setWidthNum(widthNum)
-            // }
-
-            // 距顶描述
-            // if (heightText == '0' || heightText == '0.0') {
-            //   var heightNum = ''
-            //   setHeightNum(heightNum)
-            // } else if (heightText !== '0' || heightText !== '0.0') {
-            //   var heightNum = ',距顶' + heightText + 'm'
-            //   setHeightNum(heightNum)
-            // }
-
-            // console.log('kankan areaName', areaName);
-            // 位置描述 = / + 病害区域 + 桥台 + 长度
-            let writePositionTxt = areaName + pier + lengthNum + '处'
-            setWritePositionTxt(writePositionTxt)
-            diseaseData['writePositionTxt'] = writePositionTxt
-            setDiseaseData(diseaseData)
-            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
-        } else {
+        if (diseaseData.area == undefined) {
+          let writePositionTxt = ''
+          setWritePositionTxt(writePositionTxt)
+          diseaseData['writePositionTxt'] = writePositionTxt
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+        } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0) {
             console.log('有数据了');
             console.log('构件区域列表：：',areaparam);
             console.log('表单中的构件区域',diseaseData.area);
@@ -3067,31 +5284,21 @@ export function DiseaseC({route, navigation}) {
               setLengthNum(lengthNum)
             }
             
-            // 宽度描述
-            // if (widthText == '0' || widthText == '0.0') {
-            //   var widthNum = ''
-            //   setWidthNum(widthNum)
-            // } else if (widthText !== '0' || widthText !== '0.0') {
-            //   var widthNum = ',距左侧' + widthText + 'm'
-            //   setWidthNum(widthNum)
-            // }
-
-            // 距顶描述
-            // if (heightText == '0' || heightText == '0.0') {
-            //   var heightNum = ''
-            //   setHeightNum(heightNum)
-            // } else if (heightText !== '0' || heightText !== '0.0') {
-            //   var heightNum = ',距顶' + heightText + 'm'
-            //   setHeightNum(heightNum)
-            // }
-
             console.log('kankan areaName', areaName);
-            // 位置描述 = / + 病害区域 + 桥台 + 长度 + 宽度 + 距顶
-            let writePositionTxt = areaName + pier + lengthNum + '处'
-            setWritePositionTxt(writePositionTxt)
-            diseaseData['writePositionTxt'] = writePositionTxt
-            setDiseaseData(diseaseData)
-            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            if (lengthNum == '0' || lengthNum == '') {
+              // 位置描述 = / + 病害区域 + 桥台 + 长度
+              let writePositionTxt = areaName
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            } else if (lengthNum !== '0' || lengthNum !== '') {
+              let writePositionTxt = areaName + pier + lengthNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            }
         }
       } catch (err) {
         console.log('出现错误1:',err);
@@ -3136,7 +5343,7 @@ export function DiseaseC({route, navigation}) {
       </View>
       {/* 构件类型、构件区域 */}
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
-        <View style={{width:'30%'}}>
+        <View style={{width:'35%'}}>
             <Select
           label="构件类型"
           name="areatype"
@@ -3147,7 +5354,7 @@ export function DiseaseC({route, navigation}) {
           values={baseData.components}
         />
         </View>
-        <View style={{width:'40%'}}>
+        <View style={{width:'35%'}}>
           <View style={tailwind.mB2}>
             {!areaparam.length ? (
               <TextInput
@@ -3472,6 +5679,38 @@ export function DiseaseD({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
+          console.log('7777');
+          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
+          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+        }
+      } catch (err){
+        console.log('err09', err);
+      }
+      try {
+        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
+        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
+        for (let i =0; i < areaparam.length; i ++) {
+          if (diseaseData.area == undefined) {
+            diseaseData.area = areaparam[0].value
+            handleFormChenge(areaparam[0].value, diseaseData.area)
+            setAreaName(areaparam[0].label)
+          } else if (diseaseData.area !== undefined) {
+            let sliceArea = diseaseData.area.slice(0,6)
+            if (sliceArea !== diseaseData.areatype) {
+              for (let k = 0; k < baseData.components.length; k++) {
+                if (diseaseData.areatype == baseData.components[k].areatype) {
+                  diseaseData['areatype'] = baseData.components[k].areatype
+                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('err08', err);
+      }
+      try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
@@ -3491,12 +5730,10 @@ export function DiseaseD({route, navigation}) {
           setHeightText(heightText)
         }
 
-        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
-          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
-          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
-        }
 
-        if (diseaseData.area !== '' || diseaseData.area !== undefined) {
+        if (diseaseData.area == undefined) {
+
+        } else if (diseaseData.area !== '' || diseaseData.area !== undefined || diseaseData.area !== '/') {
           var sliceArea = diseaseData.area.slice(0,5)
         }
         
@@ -3532,6 +5769,12 @@ export function DiseaseD({route, navigation}) {
         }
         if (diseaseData.description == '' || diseaseData.description == undefined) {
           diseaseData['description'] = diseaseData.remark
+        }
+
+        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+          let writePositionTxt = '/'
+          setWritePositionTxt(writePositionTxt)
+          diseaseData['writePositionTxt'] = writePositionTxt
         }
       } catch {
       }
@@ -3613,7 +5856,7 @@ export function DiseaseD({route, navigation}) {
 
       console.log('构件区域列表：：',areaparam);
       // console.log('表单中的构件区域',diseaseData.area);
-      if (areaparam == '') {
+      if (areaparam == '' || areaparam == undefined) {
         console.log('选的其他');
         try{
          console.log('构件类型', itemData.areatype); 
@@ -3671,356 +5914,940 @@ export function DiseaseD({route, navigation}) {
       }
 
 
+      if (value) {
+        // 向病害描述函数里传入
+        writeDesText(name, value)
+      }
+
       if (name == 'scale') {
         // 标度
         let biaodu = ',标度' + value + '@@'
         setBiaodu(biaodu)
       } else if (name == 'hzbrmc_length_m') {
         //长度 - 米
-        let lengthM = ',长度' + value + '@@米@@'
-        setLengthM(lengthM)
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
+        } else {
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
+        }
       } else if (name == 'hzbrmc_length_cm') {
         // 长度 - 厘米
-        let lengthCM = ',长度' + value + '@@厘米@@'
-        setLengthCM(lengthCM)
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
       } else if (name == 'hzbrmc_length_mm') {
         // 长度 - 毫米
-        let lengthMM = ',长度' + value + '@@毫米@@'
-        setLengthMM(lengthMM)
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
       } else if (name == 'hzbrmc_width_m') {
         // 宽度 - 米
-        let widthM = ',宽度' + value + '@@米@@'
-        setWidthM(widthM)
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
       } else if (name == 'hzbrmc_width_cm') {
         // 宽度 - 厘米
-        let widthCM = ',宽度' + value + '@@厘米@@'
-        setWidthCM(widthCM)
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
       } else if (name == 'hzbrmc_width_mm') {
         // 宽度 - 毫米
-        let widthMM = ',宽度' + value + '@@毫米@@'
-        setWidthMM(widthMM)
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
       } else if (name == 'hzbrmc_height_m') {
         // 高度 - 米
-        let heightM = ',高度' + value + '@@米@@'
-        setHeightM(heightM)
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
       } else if (name == 'hzbrmc_height_cm') {
         // 高度 - 厘米
-        let heightCM = ',高度' + value + '@@厘米@@'
-        setHeightCM(heightCM)
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
       } else if (name == 'hzbrmc_height_mm') {
         // 高度 - 毫米
-        let heightMM = ',高度' + value + '@@毫米@@'
-        setHeightMM(heightMM)
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
       } else if (name == 'hzbrmc_area_face') {
         // 面域 - %
-        let areaFace = ',面域' + value + '@@%@@'
-        setAreaFace(areaFace)
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
       } else if (name == 'hzbrmc_area_per') {
         // 面积占比 - %
-        let areaPer = ',面积占比' + value + '@@%@@'
-        setAreaPer(areaPer)
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
       } else if (name == 'hzbrmc_area_m') {
         // 面积 - 平方米
-        let areaM = ',面积' + value + '@@平方米@@'
-        setAreaM(areaM)
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
       } else if (name == 'hzbrmc_area_cm') {
         // 面积 - 平方厘米
-        let areaCM = ',面积' + value + '@@平方厘米@@'
-        setAreaCM(areaCM)
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
       } else if (name == 'hzbrmc_area_mm') {
         // 面积 - 平方毫米
-        let areaMM = ',面积' + value + '@@平方毫米@@'
-        setAreaMM(areaMM)
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
       } else if (name == 'hzbrmc_heightdiff_cm') {
         // 高差 - 厘米
-        let heightDiffCM = ',高差' + value + '@@厘米@@'
-        setHeightDiffCM(heightDiffCM)
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
       } else if (name == 'hzbrmc_heightdiff_mm') {
         // 高差 - 毫米
-        let heightDiffMM = ',高差' + value + '@@毫米@@'
-        setHeightDiffMM(heightDiffMM)
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
       } else if (name == 'hzbrmc_spacing_cm') {
         // 间距 - 厘米
-        let spacingCM = ',间距' + value + '@@厘米@@'
-        setSpacingCM(spacingCM)
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
       } else if (name == 'hzbrmc_deformation_mm') {
         // 变形 - 毫米
-        let deformationMM = ',变形' + value + '@@毫米@@'
-        setDeformationMM(deformationMM)
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
       } else if (name == 'hzbrmc_num') {
         // 个数 - 个
-        let num = ',个数' + value + '@@个@@'
-        setNum(num)
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
       } else if (name == 'hzbrmc_range_cm') {
         // 距离 - 厘米
-        let rangeCM = ',距离' + value + '@@厘米@@'
-        setRangeCM(rangeCM)
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
       } else if (name == 'hzbrmc_range_mm') {
         // 距离 - 毫米
-        let rangeMM = ',距离' + value + '@@毫米@@'
-        setRangeMM(rangeMM)
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
       } else if (name == 'hzbrmc_depth_cm') {
         // 深度 - 厘米
-        let depthCM = ',深度' + value + '@@厘米@@'
-        setDepthCM(depthCM)
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
       } else if (name == 'hzbrmc_depth_mm') {
         // 深度 - 毫米
-        let depthMM = ',深度' + value + '@@毫米@@'
-        setDepthMM(depthMM)
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
       } else if (name == 'hzbrmc_volume_m') {
         // 体积 - 立方米
-        let volumeM = ',体积' + value + '@@立方米@@'
-        setVolumeM(volumeM)
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
       } else if (name == 'hzbrmc_volume_cm') {
         // 体积 - 立方厘米
-        let volumeCM = ',体积' + value + '@@立方厘米@@'
-        setVolumeCM(volumeCM)
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
       } else if (name == 'hzbrmc_disp_cm') {
         // 位移 - 厘米
-        let dispCM = ',位移' + value + '@@厘米@@'
-        setDispCM(dispCM)
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
       } else if (name == 'hzbrmc_disp_mm') {
         // 位移 - 毫米
-        let dispMM = ',位移' + value + '@@毫米@@'
-        setDispMM(dispMM)
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        let dispMM = ',角度' + value + '@@度@@'
-        setDispMM(dispMM)
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_chu') {
         // 处
-        let chu = ',' + value + '@@处@@'
-        setChu(chu)
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
       } else if (name == 'hzbrmc_tiao') {
         // 条
-        let tiao = ',' + value + '@@条@@'
-        setTiao(tiao)
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
       } else if (name == 'hzbrmc_range_fenbu_m') {
         // 分布范围 - 米
-        let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        setRangeFenbuM(rangeFenbuM)
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
       } else if (name == 'hzbrmc_range_length_m') {
         // 长度范围 - 米
-        let rangeLengthM = ',长度范围' + value + '@@米@@'
-        setRangeLengthM(rangeLengthM)
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
       } else if (name == 'hzbrmc_range_width_mm') {
         // 宽度范围 - 毫米
-        let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        setRangeWidthMM(rangeWidthMM)
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
       } else if (name == 'hzbrmc_range_spacing_cm') {
         // 间距范围 - 厘米
-        let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        setRangeSpacingCM(rangeSpacingCM)
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
       } else if (name == 'hzbrmc_lb_left_length_m') {
         // 左腹板长度 - 米
-        let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        setLeftLengthM(leftLengthM)
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_length_m') {
         // 底板长度 - 米
-        let bottomLengthM = ',底板长度' + value + '@@米@@'
-        setBottomLengthM(bottomLengthM)
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
       } else if (name == 'hzbrmc_lb_right_length_m') {
         // 右腹板长度 - 米
-        let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        setRightLengthM(rightLengthM)
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
       } else if (name == 'hzbrmc_lb_left_width_mm') {
         // 左腹板宽度 - 毫米
-        let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        setLeftWidthMM(leftWidthMM)
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_width_mm') {
         // 底板宽度 - 毫米
-        let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        setBottomWidthMM(bottomWidthMM)
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_right_width_mm') {
         // 右腹板宽度 - 毫米
-        let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        setRightWidthMM(rightWidthMM)
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
       } else if (name == 'hzbrmc_slant_m') {
         // 倾斜量 - 米
-        let slantM = ',倾斜量' + value + '@@米@@'
-        setSlantM(slantM)
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
       setDiseaseData(_data);
     };
 
     // 填入病害描述内容
-    const writeDesText = () => {
-      try {
-        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                      + widthMM + heightM + heightCM + heightMM + areaFace
-                      + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                      + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                      + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                      + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                      + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                      + bottomWidthMM + rightWidthMM + slantM
-        setWriteTxt(writeTxt)
-        console.log('writeTxt', writeTxt);
-        // console.log('remark:', diseaseData.remark);
-        // console.log('route:::', route.params.thridData.checkinfoshort);
-        
-        // 在remark里面查找这两位内容，取出其位置下标
-        if (diseaseData.remark !== undefined) {
-          if (writeTxt == '' || writeTxt == undefined) {
-            console.log('writeTxt没有内容~~~~~~');
-            // 当还没有输入的内容时
-            // 截取有变化的数据的二、三位内容(第一位为逗号)
-            // let sliceWrite = writeTxt.slice(1, 3)
-            // console.log('sliceWrite', sliceWrite);
-            let allText = diseaseData.remark
-            console.log('allText',allText);
+    const writeDesText = (name, value) => {
+      // let writeTxt = []
+      console.log('writeDesText', name, value);
 
-            // 将remark里的中文逗号替换为英文逗号
-            // ================================
-            let num =allText.indexOf('，')
-            // console.log('num',num);
-            if (num !== -1) {
-              let qian = allText.slice(0,allText.indexOf('，'))
-              // console.log('qian',qian);
-              let hou = allText.slice(allText.indexOf('，')+1)
-              // console.log('hou',hou);
-              let reset = qian + ',' + hou
-              // console.log('reset',reset);
-              diseaseData['description'] = reset
-              handleFormChenge(reset, diseaseData.description)
-            } else if (num == -1) {
-              diseaseData['description'] = allText
-              handleFormChenge(allText, diseaseData.description)
-            }
-            // ================================
-            
-            // let binghai = allText.slice(0,allText.indexOf(','))
-            // console.log('binghai',binghai);
-            // let numStart = allText.indexOf(sliceWrite)
-            // console.log(numStart);
-            // // 替换下标位置到其后第一个逗号之间的内容
-            // let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-            // console.log('allTextEnd', allTextEnd);
-            // let douhao = ','
-            // let numEnd = allTextEnd.indexOf(douhao)
-            // console.log('numEnd', numEnd);
-            // // 得出内容的末尾下标值
-            // let lengthAll = numStart + numEnd
-            // console.log('lengthAll', lengthAll);
-            // // diseaseData['description'] = writeTxt
-            // let aaaa = allText.substr(0, numStart-1)
-            // console.log('aaaa: ', aaaa);
-            // let bbbb = allText.substr(lengthAll)
-            // console.log('bbbb', bbbb);
-            // let cccc = aaaa.concat(bbbb)
-            // console.log('cccc: ', cccc);
-            // let ccca = '' + writeTxt
-            // // let saveDescription = cccc.concat(ccca)
-            // let saveDescription = binghai.concat(ccca)
-            // setSaveDescription(saveDescription)
-            // console.log('saveDescription: ', saveDescription);
-            // diseaseData['description'] = allText
-            // handleFormChenge(allText, diseaseData.description)
-          } else if (writeTxt !== '' || writeTxt !== undefined) {
-            // 当有输入的内容时
-            console.log('=============================================================================');
-            console.log('writeTxt有内容： ',writeTxt);
-            let writeArr = []
-            // 将输入的内容按逗号分隔开
-            // 先找到逗号
-            let num = 0
-            let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
-            console.log('逗号的位置：',commaKey);
-            let writeArrNum = []
-            // 查找逗号出现的位置，将其下标存入数组
-            while (commaKey !== -1) {
-              writeArrNum.push(commaKey)
-              console.log('commaKey逗号出现的位置:',commaKey);
-              num ++
-              commaKey = writeTxt.indexOf(',', commaKey + 1)
-            }
-            console.log('逗号出现的次数:', num);
-            console.log('截取节点数组：', writeArrNum);
-            // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
-            for (let i = 0; i < writeArrNum.length; i++) {
-              writeArr.push(
-                writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
-              )
-            }
-            console.log('截取后的数组：',writeArr);
-            // 对writeArr数组的每一项进行替换
-            for (let i = 0; i < writeArr.length; i++) {
-              
-                // 截取数组每一项的二、三位内容，与原有数据对比
-                let sliceWrite = writeArr[i].slice(1, 3)
-                console.log('sliceWrite',sliceWrite);
-                if (diseaseData.description == undefined || diseaseData.description == '') {
-                  var allText = diseaseData.remark
-                } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
-                  var allText = diseaseData.description
-                }
-                
-                console.log('allText', allText);
-                // console.log('sliceWrite:', sliceWrite);
-                let numStart = allText.indexOf(sliceWrite)
-                console.log('numStart',numStart);
-                // 替换下标位置到其后第一个逗号之间的内容
-                var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-                console.log('allTextEnd', allTextEnd);
-                let numEnd = allTextEnd.indexOf(',')
-                console.log('numEnd', numEnd);
-                if (numEnd !== -1) {
-                  console.log('numEnd的值1', numEnd);
-                  // 得出内容的末尾下标值
-                  let lengthAll = numStart + numEnd
-                  // console.log('lengthAll', lengthAll);
-                  let aaaa = allText.substr(0, numStart-1)
-                  // console.log('aaaa: ', aaaa);
-                  let bbbb = allText.substr(lengthAll)
-                  // console.log('bbbb', bbbb);
-                  let ccca = '' + writeArr[i].concat(bbbb)
-                  let saveDescription = aaaa.concat(ccca)
-                  setSaveDescription(saveDescription)
-                  // console.log('saveDescription: ', saveDescription);
-                  diseaseData['description'] = saveDescription
-                  handleFormChenge(saveDescription, diseaseData.description)
-                } else {
-                  console.log('numEnd的值2', numEnd);
-                  let aaaa = ''
-                  // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-                  if (numStart == -1) {
-                    aaaa = allText
-                  } else if (numStart !== -1) {
-                    // aaaa = allText.substr(0, numStart-1)
-                    aaaa = allText.substr(0,allText.indexOf(','))
-                  }
-                  console.log('aaaa: ', aaaa);
-                  let bbbb = ''
-                  let ccca = ''
-                  for (let i =0; i < writeArr.length; i++) {
-                    bbbb += writeArr[i]
-                    
-                  }
-                  ccca = aaaa.concat(bbbb)
-                    console.log('ccca', ccca);
-                    let saveDescription = ccca
-                    setSaveDescription(saveDescription)
-                    // console.log('saveDescription: ', saveDescription);
-                    diseaseData['description'] = saveDescription
-                    // diseaseData['remark'] = saveDescription
-                    handleFormChenge(saveDescription, diseaseData.description)
-                }
-                
-            }
-          }
+      if (name == 'scale') {
+        // 标度
+        let biaodu = ',标度' + value + '@@'
+        setBiaodu(biaodu)
+      } else if (name == 'hzbrmc_length_m') {
+        //长度 - 米
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
         } else {
-          let binghai = infoshort
-          let allText = binghai.concat(writeTxt)
-          // console.log('allText2',allText);
-          diseaseData['description'] = allText
-          handleFormChenge(allText, diseaseData.description)
-          
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
         }
-      } catch (err) {
-        console.log(err);
+      } else if (name == 'hzbrmc_length_cm') {
+        // 长度 - 厘米
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
+      } else if (name == 'hzbrmc_length_mm') {
+        // 长度 - 毫米
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
+      } else if (name == 'hzbrmc_width_m') {
+        // 宽度 - 米
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
+      } else if (name == 'hzbrmc_width_cm') {
+        // 宽度 - 厘米
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
+      } else if (name == 'hzbrmc_width_mm') {
+        // 宽度 - 毫米
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
+      } else if (name == 'hzbrmc_height_m') {
+        // 高度 - 米
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
+      } else if (name == 'hzbrmc_height_cm') {
+        // 高度 - 厘米
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
+      } else if (name == 'hzbrmc_height_mm') {
+        // 高度 - 毫米
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
+      } else if (name == 'hzbrmc_area_face') {
+        // 面域 - %
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
+      } else if (name == 'hzbrmc_area_per') {
+        // 面积占比 - %
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
+      } else if (name == 'hzbrmc_area_m') {
+        // 面积 - 平方米
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
+      } else if (name == 'hzbrmc_area_cm') {
+        // 面积 - 平方厘米
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
+      } else if (name == 'hzbrmc_area_mm') {
+        // 面积 - 平方毫米
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_cm') {
+        // 高差 - 厘米
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_mm') {
+        // 高差 - 毫米
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
+      } else if (name == 'hzbrmc_spacing_cm') {
+        // 间距 - 厘米
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
+      } else if (name == 'hzbrmc_deformation_mm') {
+        // 变形 - 毫米
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
+      } else if (name == 'hzbrmc_num') {
+        // 个数 - 个
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
+      } else if (name == 'hzbrmc_range_cm') {
+        // 距离 - 厘米
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
+      } else if (name == 'hzbrmc_range_mm') {
+        // 距离 - 毫米
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
+      } else if (name == 'hzbrmc_depth_cm') {
+        // 深度 - 厘米
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
+      } else if (name == 'hzbrmc_depth_mm') {
+        // 深度 - 毫米
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
+      } else if (name == 'hzbrmc_volume_m') {
+        // 体积 - 立方米
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
+      } else if (name == 'hzbrmc_volume_cm') {
+        // 体积 - 立方厘米
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
+      } else if (name == 'hzbrmc_disp_cm') {
+        // 位移 - 厘米
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
+      } else if (name == 'hzbrmc_disp_mm') {
+        // 位移 - 毫米
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_angle_c') {
+        // 角度 - 度
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_chu') {
+        // 处
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
+      } else if (name == 'hzbrmc_tiao') {
+        // 条
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
+      } else if (name == 'hzbrmc_range_fenbu_m') {
+        // 分布范围 - 米
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
+      } else if (name == 'hzbrmc_range_length_m') {
+        // 长度范围 - 米
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
+      } else if (name == 'hzbrmc_range_width_mm') {
+        // 宽度范围 - 毫米
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
+      } else if (name == 'hzbrmc_range_spacing_cm') {
+        // 间距范围 - 厘米
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
+      } else if (name == 'hzbrmc_lb_left_length_m') {
+        // 左腹板长度 - 米
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_length_m') {
+        // 底板长度 - 米
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_right_length_m') {
+        // 右腹板长度 - 米
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_left_width_mm') {
+        // 左腹板宽度 - 毫米
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
+        // 底板宽度 - 毫米
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_right_width_mm') {
+        // 右腹板宽度 - 毫米
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
+      } else if (name == 'hzbrmc_slant_m') {
+        // 倾斜量 - 米
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
-      
-      
+
+      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                    + widthMM + heightM + heightCM + heightMM + areaFace
+                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                    + bottomWidthMM + rightWidthMM + slantM
+      setWriteTxt(writeTxt)
+      console.log('writeTxt', writeTxt);
+      console.log('病害名称',itemData.diseaseName);
+      let binghai = itemData.diseaseName
+      let allText = binghai.concat(writeTxt)
+      console.log('allText', allText);
+      diseaseData['description'] = allText
+      handleFormChenge(allText, diseaseData.description)
     }
 
     // 填入位置描述内容
@@ -4049,7 +6876,7 @@ export function DiseaseD({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== '') {
+          if (areaparam !== []) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -4057,44 +6884,13 @@ export function DiseaseD({route, navigation}) {
               if (inputArea == areaArr[i].value) {
                 console.log('此时选中的构件是：',areaArr[i].label);
                 var areaName = areaArr[i].label
-                console.log(areaName);
+                // console.log(areaName);
                 setAreaName(areaName)
               }
             }
           }
-          
-          
-          // 墩/台描述
-          // 长度描述
-          // if (lengthText == '0') {
-          //   var lengthNum = ''
-          //   setLengthNum(lengthNum)
-          //   // let pier = ''
-          //   // setPier(pier)
-          // } else if (lengthText !== '0') {
-          //   var lengthNum = '距左侧' + lengthText + 'm,'
-          //   setLengthNum(lengthNum)
-          // }
-          
-          // 宽度描述
-          // if (widthText == '0' || widthText == '') {
-          //   var widthNum = ''
-          //   setWidthNum(widthNum)
-          // } else if (widthText !== '0') {
-          //   var widthNum = '距左侧' + widthText + 'm'
-          //   setWidthNum(widthNum)
-          // }
 
-          // 距顶描述
-          // if (heightText == '0') {
-          //   var heightNum = ''
-          //   setHeightNum(heightNum)
-          // } else if (heightText !== '0') {
-          //   var heightNum = ',距顶部' + heightText + 'm'
-          //   setHeightNum(heightNum)
-          // }
-
-          // 位置描述 = / + 病害区域 + 桥台 + 长度 + 宽度 + 距顶
+          // 位置描述 = / + 病害区域
           let writePositionTxt = areaName
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
@@ -4143,7 +6939,7 @@ export function DiseaseD({route, navigation}) {
         </View>
       </View>
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
-        <View style={{width:'30%'}}>
+        <View style={{width:'35%'}}>
            <Select
           label="构件类型"
           name="areatype"
@@ -4154,7 +6950,7 @@ export function DiseaseD({route, navigation}) {
           values={baseData.components}
         /> 
         </View>
-        <View style={{width:'40%'}}>
+        <View style={{width:'35%'}}>
           <View style={tailwind.mB2}>
             {!areaparam.length ? (
               <TextInput
@@ -4504,6 +7300,38 @@ export function DiseaseE({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
+          console.log('7777');
+          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
+          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+        }
+      } catch (err){
+        console.log('err09', err);
+      }
+      try {
+        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
+        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
+        for (let i =0; i < areaparam.length; i ++) {
+          if (diseaseData.area == undefined) {
+            diseaseData.area = areaparam[0].value
+            handleFormChenge(areaparam[0].value, diseaseData.area)
+            setAreaName(areaparam[0].label)
+          } else if (diseaseData.area !== undefined) {
+            let sliceArea = diseaseData.area.slice(0,6)
+            if (sliceArea !== diseaseData.areatype) {
+              for (let k = 0; k < baseData.components.length; k++) {
+                if (diseaseData.areatype == baseData.components[k].areatype) {
+                  diseaseData['areatype'] = baseData.components[k].areatype
+                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('err08', err);
+      }
+      try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
@@ -4523,9 +7351,22 @@ export function DiseaseE({route, navigation}) {
           setHeightText(heightText)
         }
 
-        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
-          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
-          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+        if (diseaseData.area == undefined) {
+
+        } else if (diseaseData.area !== '' || diseaseData.area !== undefined || diseaseData.area !== '/') {
+          var sliceArea = diseaseData.area.slice(0,5)
+        }
+        
+        if (diseaseData.areatype == 'at0000' && sliceArea == 'at000') {
+          console.log(sliceArea);
+          console.log('xu~~~~~');
+          diseaseData['area'] = '/'
+        }
+
+        if (diseaseData.areatype == 'at0008' && sliceArea == 'at000') {
+          console.log(sliceArea);
+          console.log('xu11~~~~~');
+          diseaseData['area'] = '/'
         }
         
         // 将病害位置的长宽高数据存进diseaseData
@@ -4554,6 +7395,12 @@ export function DiseaseE({route, navigation}) {
         }
         if (diseaseData.description == '' || diseaseData.description == undefined) {
           diseaseData['description'] = diseaseData.remark
+        }
+
+        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+          let writePositionTxt = '/'
+          setWritePositionTxt(writePositionTxt)
+          diseaseData['writePositionTxt'] = writePositionTxt
         }
       } catch {
       }
@@ -4636,7 +7483,7 @@ export function DiseaseE({route, navigation}) {
       console.log('构件区域列表：：',areaparam);
       console.log('构件类型：：', itemData.areatype);
       // console.log('表单中的构件区域',diseaseData.area);
-      if (areaparam == '') {
+      if (areaparam == '' || areaparam == undefined) {
         console.log('选的其他');
         try{
          console.log('构件类型', itemData.areatype); 
@@ -4695,356 +7542,940 @@ export function DiseaseE({route, navigation}) {
 
       // console.log('构件类型22：：', itemData.areatype);
 
+      if (value) {
+        // 向病害描述函数里传入
+        writeDesText(name, value)
+      }
+
       if (name == 'scale') {
         // 标度
         let biaodu = ',标度' + value + '@@'
         setBiaodu(biaodu)
       } else if (name == 'hzbrmc_length_m') {
         //长度 - 米
-        let lengthM = ',长度' + value + '@@米@@'
-        setLengthM(lengthM)
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
+        } else {
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
+        }
       } else if (name == 'hzbrmc_length_cm') {
         // 长度 - 厘米
-        let lengthCM = ',长度' + value + '@@厘米@@'
-        setLengthCM(lengthCM)
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
       } else if (name == 'hzbrmc_length_mm') {
         // 长度 - 毫米
-        let lengthMM = ',长度' + value + '@@毫米@@'
-        setLengthMM(lengthMM)
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
       } else if (name == 'hzbrmc_width_m') {
         // 宽度 - 米
-        let widthM = ',宽度' + value + '@@米@@'
-        setWidthM(widthM)
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
       } else if (name == 'hzbrmc_width_cm') {
         // 宽度 - 厘米
-        let widthCM = ',宽度' + value + '@@厘米@@'
-        setWidthCM(widthCM)
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
       } else if (name == 'hzbrmc_width_mm') {
         // 宽度 - 毫米
-        let widthMM = ',宽度' + value + '@@毫米@@'
-        setWidthMM(widthMM)
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
       } else if (name == 'hzbrmc_height_m') {
         // 高度 - 米
-        let heightM = ',高度' + value + '@@米@@'
-        setHeightM(heightM)
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
       } else if (name == 'hzbrmc_height_cm') {
         // 高度 - 厘米
-        let heightCM = ',高度' + value + '@@厘米@@'
-        setHeightCM(heightCM)
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
       } else if (name == 'hzbrmc_height_mm') {
         // 高度 - 毫米
-        let heightMM = ',高度' + value + '@@毫米@@'
-        setHeightMM(heightMM)
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
       } else if (name == 'hzbrmc_area_face') {
         // 面域 - %
-        let areaFace = ',面域' + value + '@@%@@'
-        setAreaFace(areaFace)
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
       } else if (name == 'hzbrmc_area_per') {
         // 面积占比 - %
-        let areaPer = ',面积占比' + value + '@@%@@'
-        setAreaPer(areaPer)
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
       } else if (name == 'hzbrmc_area_m') {
         // 面积 - 平方米
-        let areaM = ',面积' + value + '@@平方米@@'
-        setAreaM(areaM)
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
       } else if (name == 'hzbrmc_area_cm') {
         // 面积 - 平方厘米
-        let areaCM = ',面积' + value + '@@平方厘米@@'
-        setAreaCM(areaCM)
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
       } else if (name == 'hzbrmc_area_mm') {
         // 面积 - 平方毫米
-        let areaMM = ',面积' + value + '@@平方毫米@@'
-        setAreaMM(areaMM)
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
       } else if (name == 'hzbrmc_heightdiff_cm') {
         // 高差 - 厘米
-        let heightDiffCM = ',高差' + value + '@@厘米@@'
-        setHeightDiffCM(heightDiffCM)
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
       } else if (name == 'hzbrmc_heightdiff_mm') {
         // 高差 - 毫米
-        let heightDiffMM = ',高差' + value + '@@毫米@@'
-        setHeightDiffMM(heightDiffMM)
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
       } else if (name == 'hzbrmc_spacing_cm') {
         // 间距 - 厘米
-        let spacingCM = ',间距' + value + '@@厘米@@'
-        setSpacingCM(spacingCM)
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
       } else if (name == 'hzbrmc_deformation_mm') {
         // 变形 - 毫米
-        let deformationMM = ',变形' + value + '@@毫米@@'
-        setDeformationMM(deformationMM)
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
       } else if (name == 'hzbrmc_num') {
         // 个数 - 个
-        let num = ',个数' + value + '@@个@@'
-        setNum(num)
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
       } else if (name == 'hzbrmc_range_cm') {
         // 距离 - 厘米
-        let rangeCM = ',距离' + value + '@@厘米@@'
-        setRangeCM(rangeCM)
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
       } else if (name == 'hzbrmc_range_mm') {
         // 距离 - 毫米
-        let rangeMM = ',距离' + value + '@@毫米@@'
-        setRangeMM(rangeMM)
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
       } else if (name == 'hzbrmc_depth_cm') {
         // 深度 - 厘米
-        let depthCM = ',深度' + value + '@@厘米@@'
-        setDepthCM(depthCM)
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
       } else if (name == 'hzbrmc_depth_mm') {
         // 深度 - 毫米
-        let depthMM = ',深度' + value + '@@毫米@@'
-        setDepthMM(depthMM)
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
       } else if (name == 'hzbrmc_volume_m') {
         // 体积 - 立方米
-        let volumeM = ',体积' + value + '@@立方米@@'
-        setVolumeM(volumeM)
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
       } else if (name == 'hzbrmc_volume_cm') {
         // 体积 - 立方厘米
-        let volumeCM = ',体积' + value + '@@立方厘米@@'
-        setVolumeCM(volumeCM)
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
       } else if (name == 'hzbrmc_disp_cm') {
         // 位移 - 厘米
-        let dispCM = ',位移' + value + '@@厘米@@'
-        setDispCM(dispCM)
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
       } else if (name == 'hzbrmc_disp_mm') {
         // 位移 - 毫米
-        let dispMM = ',位移' + value + '@@毫米@@'
-        setDispMM(dispMM)
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        let dispMM = ',角度' + value + '@@度@@'
-        setDispMM(dispMM)
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_chu') {
         // 处
-        let chu = ',' + value + '@@处@@'
-        setChu(chu)
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
       } else if (name == 'hzbrmc_tiao') {
         // 条
-        let tiao = ',' + value + '@@条@@'
-        setTiao(tiao)
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
       } else if (name == 'hzbrmc_range_fenbu_m') {
         // 分布范围 - 米
-        let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        setRangeFenbuM(rangeFenbuM)
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
       } else if (name == 'hzbrmc_range_length_m') {
         // 长度范围 - 米
-        let rangeLengthM = ',长度范围' + value + '@@米@@'
-        setRangeLengthM(rangeLengthM)
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
       } else if (name == 'hzbrmc_range_width_mm') {
         // 宽度范围 - 毫米
-        let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        setRangeWidthMM(rangeWidthMM)
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
       } else if (name == 'hzbrmc_range_spacing_cm') {
         // 间距范围 - 厘米
-        let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        setRangeSpacingCM(rangeSpacingCM)
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
       } else if (name == 'hzbrmc_lb_left_length_m') {
         // 左腹板长度 - 米
-        let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        setLeftLengthM(leftLengthM)
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_length_m') {
         // 底板长度 - 米
-        let bottomLengthM = ',底板长度' + value + '@@米@@'
-        setBottomLengthM(bottomLengthM)
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
       } else if (name == 'hzbrmc_lb_right_length_m') {
         // 右腹板长度 - 米
-        let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        setRightLengthM(rightLengthM)
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
       } else if (name == 'hzbrmc_lb_left_width_mm') {
         // 左腹板宽度 - 毫米
-        let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        setLeftWidthMM(leftWidthMM)
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_width_mm') {
         // 底板宽度 - 毫米
-        let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        setBottomWidthMM(bottomWidthMM)
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_right_width_mm') {
         // 右腹板宽度 - 毫米
-        let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        setRightWidthMM(rightWidthMM)
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
       } else if (name == 'hzbrmc_slant_m') {
         // 倾斜量 - 米
-        let slantM = ',倾斜量' + value + '@@米@@'
-        setSlantM(slantM)
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
       setDiseaseData(_data);
     };
 
     // 填入病害描述内容
-    const writeDesText = () => {
-      try {
-        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                      + widthMM + heightM + heightCM + heightMM + areaFace
-                      + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                      + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                      + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                      + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                      + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                      + bottomWidthMM + rightWidthMM + slantM
-        setWriteTxt(writeTxt)
-        console.log('writeTxt', writeTxt);
-        // console.log('remark:', diseaseData.remark);
-        // console.log('route:::', route.params.thridData.checkinfoshort);
-        
-        // 在remark里面查找这两位内容，取出其位置下标
-        if (diseaseData.remark !== undefined) {
-          if (writeTxt == '' || writeTxt == undefined) {
-            console.log('writeTxt没有内容~~~~~~');
-            // 当还没有输入的内容时
-            // 截取有变化的数据的二、三位内容(第一位为逗号)
-            // let sliceWrite = writeTxt.slice(1, 3)
-            // console.log('sliceWrite', sliceWrite);
-            let allText = diseaseData.remark
-            console.log('allText',allText);
+    const writeDesText = (name, value) => {
+      // let writeTxt = []
+      console.log('writeDesText', name, value);
 
-            // 将remark里的中文逗号替换为英文逗号
-            // ================================
-            let num =allText.indexOf('，')
-            // console.log('num',num);
-            if (num !== -1) {
-              let qian = allText.slice(0,allText.indexOf('，'))
-              // console.log('qian',qian);
-              let hou = allText.slice(allText.indexOf('，')+1)
-              // console.log('hou',hou);
-              let reset = qian + ',' + hou
-              // console.log('reset',reset);
-              diseaseData['description'] = reset
-              handleFormChenge(reset, diseaseData.description)
-            } else if (num == -1) {
-              diseaseData['description'] = allText
-              handleFormChenge(allText, diseaseData.description)
-            }
-            // ================================
-            
-            // let binghai = allText.slice(0,allText.indexOf(','))
-            // console.log('binghai',binghai);
-            // let numStart = allText.indexOf(sliceWrite)
-            // console.log(numStart);
-            // // 替换下标位置到其后第一个逗号之间的内容
-            // let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-            // console.log('allTextEnd', allTextEnd);
-            // let douhao = ','
-            // let numEnd = allTextEnd.indexOf(douhao)
-            // console.log('numEnd', numEnd);
-            // // 得出内容的末尾下标值
-            // let lengthAll = numStart + numEnd
-            // console.log('lengthAll', lengthAll);
-            // // diseaseData['description'] = writeTxt
-            // let aaaa = allText.substr(0, numStart-1)
-            // console.log('aaaa: ', aaaa);
-            // let bbbb = allText.substr(lengthAll)
-            // console.log('bbbb', bbbb);
-            // let cccc = aaaa.concat(bbbb)
-            // console.log('cccc: ', cccc);
-            // let ccca = '' + writeTxt
-            // // let saveDescription = cccc.concat(ccca)
-            // let saveDescription = binghai.concat(ccca)
-            // setSaveDescription(saveDescription)
-            // console.log('saveDescription: ', saveDescription);
-            // diseaseData['description'] = allText
-            // handleFormChenge(allText, diseaseData.description)
-          } else if (writeTxt !== '' || writeTxt !== undefined) {
-            // 当有输入的内容时
-            console.log('=============================================================================');
-            console.log('writeTxt有内容： ',writeTxt);
-            let writeArr = []
-            // 将输入的内容按逗号分隔开
-            // 先找到逗号
-            let num = 0
-            let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
-            console.log('逗号的位置：',commaKey);
-            let writeArrNum = []
-            // 查找逗号出现的位置，将其下标存入数组
-            while (commaKey !== -1) {
-              writeArrNum.push(commaKey)
-              console.log('commaKey逗号出现的位置:',commaKey);
-              num ++
-              commaKey = writeTxt.indexOf(',', commaKey + 1)
-            }
-            console.log('逗号出现的次数:', num);
-            console.log('截取节点数组：', writeArrNum);
-            // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
-            for (let i = 0; i < writeArrNum.length; i++) {
-              writeArr.push(
-                writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
-              )
-            }
-            console.log('截取后的数组：',writeArr);
-            // 对writeArr数组的每一项进行替换
-            for (let i = 0; i < writeArr.length; i++) {
-              
-                // 截取数组每一项的二、三位内容，与原有数据对比
-                let sliceWrite = writeArr[i].slice(1, 3)
-                console.log('sliceWrite',sliceWrite);
-                if (diseaseData.description == undefined || diseaseData.description == '') {
-                  var allText = diseaseData.remark
-                } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
-                  var allText = diseaseData.description
-                }
-                
-                console.log('allText', allText);
-                // console.log('sliceWrite:', sliceWrite);
-                let numStart = allText.indexOf(sliceWrite)
-                console.log('numStart',numStart);
-                // 替换下标位置到其后第一个逗号之间的内容
-                var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-                console.log('allTextEnd', allTextEnd);
-                let numEnd = allTextEnd.indexOf(',')
-                console.log('numEnd', numEnd);
-                if (numEnd !== -1) {
-                  console.log('numEnd的值1', numEnd);
-                  // 得出内容的末尾下标值
-                  let lengthAll = numStart + numEnd
-                  // console.log('lengthAll', lengthAll);
-                  let aaaa = allText.substr(0, numStart-1)
-                  // console.log('aaaa: ', aaaa);
-                  let bbbb = allText.substr(lengthAll)
-                  // console.log('bbbb', bbbb);
-                  let ccca = '' + writeArr[i].concat(bbbb)
-                  let saveDescription = aaaa.concat(ccca)
-                  setSaveDescription(saveDescription)
-                  // console.log('saveDescription: ', saveDescription);
-                  diseaseData['description'] = saveDescription
-                  handleFormChenge(saveDescription, diseaseData.description)
-                } else {
-                  console.log('numEnd的值2', numEnd);
-                  let aaaa = ''
-                  // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-                  if (numStart == -1) {
-                    aaaa = allText
-                  } else if (numStart !== -1) {
-                    // aaaa = allText.substr(0, numStart-1)
-                    aaaa = allText.substr(0,allText.indexOf(','))
-                  }
-                  console.log('aaaa: ', aaaa);
-                  let bbbb = ''
-                  let ccca = ''
-                  for (let i =0; i < writeArr.length; i++) {
-                    bbbb += writeArr[i]
-                    
-                  }
-                  ccca = aaaa.concat(bbbb)
-                    console.log('ccca', ccca);
-                    let saveDescription = ccca
-                    setSaveDescription(saveDescription)
-                    // console.log('saveDescription: ', saveDescription);
-                    diseaseData['description'] = saveDescription
-                    // diseaseData['remark'] = saveDescription
-                    handleFormChenge(saveDescription, diseaseData.description)
-                }
-                
-            }
-          }
+      if (name == 'scale') {
+        // 标度
+        let biaodu = ',标度' + value + '@@'
+        setBiaodu(biaodu)
+      } else if (name == 'hzbrmc_length_m') {
+        //长度 - 米
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
         } else {
-          let binghai = infoshort
-          let allText = binghai.concat(writeTxt)
-          // console.log('allText2',allText);
-          diseaseData['description'] = allText
-          handleFormChenge(allText, diseaseData.description)
-          
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
         }
-      } catch (err) {
-        console.log(err);
+      } else if (name == 'hzbrmc_length_cm') {
+        // 长度 - 厘米
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
+      } else if (name == 'hzbrmc_length_mm') {
+        // 长度 - 毫米
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
+      } else if (name == 'hzbrmc_width_m') {
+        // 宽度 - 米
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
+      } else if (name == 'hzbrmc_width_cm') {
+        // 宽度 - 厘米
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
+      } else if (name == 'hzbrmc_width_mm') {
+        // 宽度 - 毫米
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
+      } else if (name == 'hzbrmc_height_m') {
+        // 高度 - 米
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
+      } else if (name == 'hzbrmc_height_cm') {
+        // 高度 - 厘米
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
+      } else if (name == 'hzbrmc_height_mm') {
+        // 高度 - 毫米
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
+      } else if (name == 'hzbrmc_area_face') {
+        // 面域 - %
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
+      } else if (name == 'hzbrmc_area_per') {
+        // 面积占比 - %
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
+      } else if (name == 'hzbrmc_area_m') {
+        // 面积 - 平方米
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
+      } else if (name == 'hzbrmc_area_cm') {
+        // 面积 - 平方厘米
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
+      } else if (name == 'hzbrmc_area_mm') {
+        // 面积 - 平方毫米
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_cm') {
+        // 高差 - 厘米
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_mm') {
+        // 高差 - 毫米
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
+      } else if (name == 'hzbrmc_spacing_cm') {
+        // 间距 - 厘米
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
+      } else if (name == 'hzbrmc_deformation_mm') {
+        // 变形 - 毫米
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
+      } else if (name == 'hzbrmc_num') {
+        // 个数 - 个
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
+      } else if (name == 'hzbrmc_range_cm') {
+        // 距离 - 厘米
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
+      } else if (name == 'hzbrmc_range_mm') {
+        // 距离 - 毫米
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
+      } else if (name == 'hzbrmc_depth_cm') {
+        // 深度 - 厘米
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
+      } else if (name == 'hzbrmc_depth_mm') {
+        // 深度 - 毫米
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
+      } else if (name == 'hzbrmc_volume_m') {
+        // 体积 - 立方米
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
+      } else if (name == 'hzbrmc_volume_cm') {
+        // 体积 - 立方厘米
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
+      } else if (name == 'hzbrmc_disp_cm') {
+        // 位移 - 厘米
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
+      } else if (name == 'hzbrmc_disp_mm') {
+        // 位移 - 毫米
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_angle_c') {
+        // 角度 - 度
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_chu') {
+        // 处
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
+      } else if (name == 'hzbrmc_tiao') {
+        // 条
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
+      } else if (name == 'hzbrmc_range_fenbu_m') {
+        // 分布范围 - 米
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
+      } else if (name == 'hzbrmc_range_length_m') {
+        // 长度范围 - 米
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
+      } else if (name == 'hzbrmc_range_width_mm') {
+        // 宽度范围 - 毫米
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
+      } else if (name == 'hzbrmc_range_spacing_cm') {
+        // 间距范围 - 厘米
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
+      } else if (name == 'hzbrmc_lb_left_length_m') {
+        // 左腹板长度 - 米
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_length_m') {
+        // 底板长度 - 米
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_right_length_m') {
+        // 右腹板长度 - 米
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_left_width_mm') {
+        // 左腹板宽度 - 毫米
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
+        // 底板宽度 - 毫米
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_right_width_mm') {
+        // 右腹板宽度 - 毫米
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
+      } else if (name == 'hzbrmc_slant_m') {
+        // 倾斜量 - 米
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
-      
-      
+
+      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                    + widthMM + heightM + heightCM + heightMM + areaFace
+                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                    + bottomWidthMM + rightWidthMM + slantM
+      setWriteTxt(writeTxt)
+      console.log('writeTxt', writeTxt);
+      console.log('病害名称',itemData.diseaseName);
+      let binghai = itemData.diseaseName
+      let allText = binghai.concat(writeTxt)
+      console.log('allText', allText);
+      diseaseData['description'] = allText
+      handleFormChenge(allText, diseaseData.description)
     }
 
     // 填入位置描述内容
@@ -5061,13 +8492,19 @@ export function DiseaseE({route, navigation}) {
           console.log('有数据了');
           console.log('构件区域列表：：',areaparam);
           console.log('表单中的构件区域',diseaseData.area);
-          console.log('构件类型',labelName);
-          // if (labelName == 'at0000' || labelName == undefined && areaparam == '') {
-          //   var areaName = ''
-          //   diseaseData['area'] = areaName
-          //   // handleFormChenge(areaName, diseaseData.area)
-          // }
-          if (areaparam !== '') {
+          console.log('构件类型',diseaseData.areatype);
+          if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
+            console.log('empty~~~');
+            var areaName = ''
+            diseaseData['area'] = areaName
+            handleFormChenge(areaName, diseaseData.area)
+          } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
+            console.log('not empty~~~~');
+            var areaName = diseaseData.area
+            diseaseData['area'] = areaName
+            handleFormChenge(areaName, diseaseData.area)
+          }
+          if (areaparam !== []) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -5075,48 +8512,29 @@ export function DiseaseE({route, navigation}) {
               if (inputArea == areaArr[i].value) {
                 console.log('此时选中的构件是：',areaArr[i].label);
                 var areaName = areaArr[i].label
-                console.log(areaName);
+                // console.log(areaName);
+                setAreaName(areaName)
               }
             }
           }
-          setAreaName(areaName)
-          
-          // 墩/台描述
-          // 长度描述
-          if (lengthText == '0') {
-            var lengthNum = ''
-            setLengthNum(lengthNum)
-            // let pier = ''
-            // setPier(pier)
-          } else if (lengthText !== '0') {
-            var lengthNum = '距左侧' + lengthText + 'm,'
-            setLengthNum(lengthNum)
-          }
-          
-          // 宽度描述
-          // if (widthText == '0' || widthText == '') {
-          //   var widthNum = ''
-          //   setWidthNum(widthNum)
-          // } else if (widthText !== '0') {
-          //   var widthNum = '距左侧' + widthText + 'm'
-          //   setWidthNum(widthNum)
-          // }
 
-          // 距顶描述
-          if (heightText == '0') {
-            var heightNum = ''
-            setHeightNum(heightNum)
-          } else if (heightText !== '0') {
-            var heightNum = ',距顶部' + heightText + 'm'
-            setHeightNum(heightNum)
+          if (diseaseData.areatype == 'at0008') {
+            // 位置描述 = / + 病害区域
+            let writePositionTxt = areaName + '#孔位置处'
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            setDiseaseData(diseaseData)
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else {
+            // 位置描述 = / + 病害区域
+            let writePositionTxt = areaName
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            setDiseaseData(diseaseData)
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
           }
 
-          // 位置描述 = / + 病害区域 + 桥台 + 长度 + 宽度 + 距顶
-          let writePositionTxt = areaName
-          setWritePositionTxt(writePositionTxt)
-          diseaseData['writePositionTxt'] = writePositionTxt
-          setDiseaseData(diseaseData)
-          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          
         }
       } catch (err) {
         console.log('出现错误1:',err);
@@ -5160,7 +8578,7 @@ export function DiseaseE({route, navigation}) {
         </View>
       </View>
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
-        <View style={{width:'30%'}}>
+        <View style={{width:'35%'}}>
            <Select
           label="构件类型"
           name="areatype"
@@ -5171,7 +8589,7 @@ export function DiseaseE({route, navigation}) {
           values={baseData.components}
         /> 
         </View>
-        <View style={{width:'40%'}}>
+        <View style={{width:'35%'}}>
           <View style={tailwind.mB2}>
             {!areaparam.length ? (
               <TextInput
@@ -5512,14 +8930,46 @@ export function DiseaseK({route, navigation}) {
     // 位置描述 墩台
     const [pier,  setPier] = useState()
     // 位置描述 长、宽、距顶
-    const [lengthNum, setLengthNum] = useState()
-    const [widthNum, setWidthNum] = useState()
-    const [heightNum, setHeightNum] = useState()
+    const [lengthNum, setLengthNum] = useState('')
+    const [widthNum, setWidthNum] = useState('')
+    const [heightNum, setHeightNum] = useState('')
 
     const [diseaseName, setDiseaseName] = useState('')
     // =================================================
     React.useEffect(() => {
       saveData.current = {...diseaseData};
+      try {
+        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
+          console.log('7777');
+          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
+          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+        }
+      } catch (err){
+        console.log('err09', err);
+      }
+      try {
+        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
+        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
+        for (let i =0; i < areaparam.length; i ++) {
+          if (diseaseData.area == undefined) {
+            diseaseData.area = areaparam[0].value
+            handleFormChenge(areaparam[0].value, diseaseData.area)
+            setAreaName(areaparam[0].label)
+          } else if (diseaseData.area !== undefined) {
+            let sliceArea = diseaseData.area.slice(0,6)
+            if (sliceArea !== diseaseData.areatype) {
+              for (let k = 0; k < baseData.components.length; k++) {
+                if (diseaseData.areatype == baseData.components[k].areatype) {
+                  diseaseData['areatype'] = baseData.components[k].areatype
+                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('err08', err);
+      }
       try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
         setLengthText(lengthText)
@@ -5540,12 +8990,9 @@ export function DiseaseK({route, navigation}) {
           setHeightText(heightText)
         }
 
-        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
-            diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
-            handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
-        }
+        if (diseaseData.area == undefined) {
 
-        if (diseaseData.area !== '' || diseaseData.area !== undefined) {
+        } else if (diseaseData.area !== '' || diseaseData.area !== undefined || diseaseData.area !== '/') {
           var sliceArea = diseaseData.area.slice(0,5)
         }
         
@@ -5662,7 +9109,7 @@ export function DiseaseK({route, navigation}) {
 
       console.log('构件区域列表：：',areaparam);
       // console.log('表单中的构件区域',diseaseData.area);
-      if (areaparam == '') {
+      if (areaparam == '' || areaparam == undefined) {
         console.log('选的其他');
         try{
          console.log('构件类型', itemData.areatype); 
@@ -5720,434 +9167,943 @@ export function DiseaseK({route, navigation}) {
       }
 
 
+      if (value) {
+        // 向病害描述函数里传入
+        writeDesText(name, value)
+      }
+
       if (name == 'scale') {
         // 标度
         let biaodu = ',标度' + value + '@@'
         setBiaodu(biaodu)
       } else if (name == 'hzbrmc_length_m') {
         //长度 - 米
-        let lengthM = ',长度' + value + '@@米@@'
-        setLengthM(lengthM)
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
+        } else {
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
+        }
       } else if (name == 'hzbrmc_length_cm') {
         // 长度 - 厘米
-        let lengthCM = ',长度' + value + '@@厘米@@'
-        setLengthCM(lengthCM)
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
       } else if (name == 'hzbrmc_length_mm') {
         // 长度 - 毫米
-        let lengthMM = ',长度' + value + '@@毫米@@'
-        setLengthMM(lengthMM)
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
       } else if (name == 'hzbrmc_width_m') {
         // 宽度 - 米
-        let widthM = ',宽度' + value + '@@米@@'
-        setWidthM(widthM)
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
       } else if (name == 'hzbrmc_width_cm') {
         // 宽度 - 厘米
-        let widthCM = ',宽度' + value + '@@厘米@@'
-        setWidthCM(widthCM)
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
       } else if (name == 'hzbrmc_width_mm') {
         // 宽度 - 毫米
-        let widthMM = ',宽度' + value + '@@毫米@@'
-        setWidthMM(widthMM)
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
       } else if (name == 'hzbrmc_height_m') {
         // 高度 - 米
-        let heightM = ',高度' + value + '@@米@@'
-        setHeightM(heightM)
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
       } else if (name == 'hzbrmc_height_cm') {
         // 高度 - 厘米
-        let heightCM = ',高度' + value + '@@厘米@@'
-        setHeightCM(heightCM)
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
       } else if (name == 'hzbrmc_height_mm') {
         // 高度 - 毫米
-        let heightMM = ',高度' + value + '@@毫米@@'
-        setHeightMM(heightMM)
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
       } else if (name == 'hzbrmc_area_face') {
         // 面域 - %
-        let areaFace = ',面域' + value + '@@%@@'
-        setAreaFace(areaFace)
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
       } else if (name == 'hzbrmc_area_per') {
         // 面积占比 - %
-        let areaPer = ',面积占比' + value + '@@%@@'
-        setAreaPer(areaPer)
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
       } else if (name == 'hzbrmc_area_m') {
         // 面积 - 平方米
-        let areaM = ',面积' + value + '@@平方米@@'
-        setAreaM(areaM)
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
       } else if (name == 'hzbrmc_area_cm') {
         // 面积 - 平方厘米
-        let areaCM = ',面积' + value + '@@平方厘米@@'
-        setAreaCM(areaCM)
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
       } else if (name == 'hzbrmc_area_mm') {
         // 面积 - 平方毫米
-        let areaMM = ',面积' + value + '@@平方毫米@@'
-        setAreaMM(areaMM)
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
       } else if (name == 'hzbrmc_heightdiff_cm') {
         // 高差 - 厘米
-        let heightDiffCM = ',高差' + value + '@@厘米@@'
-        setHeightDiffCM(heightDiffCM)
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
       } else if (name == 'hzbrmc_heightdiff_mm') {
         // 高差 - 毫米
-        let heightDiffMM = ',高差' + value + '@@毫米@@'
-        setHeightDiffMM(heightDiffMM)
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
       } else if (name == 'hzbrmc_spacing_cm') {
         // 间距 - 厘米
-        let spacingCM = ',间距' + value + '@@厘米@@'
-        setSpacingCM(spacingCM)
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
       } else if (name == 'hzbrmc_deformation_mm') {
         // 变形 - 毫米
-        let deformationMM = ',变形' + value + '@@毫米@@'
-        setDeformationMM(deformationMM)
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
       } else if (name == 'hzbrmc_num') {
         // 个数 - 个
-        let num = ',个数' + value + '@@个@@'
-        setNum(num)
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
       } else if (name == 'hzbrmc_range_cm') {
         // 距离 - 厘米
-        let rangeCM = ',距离' + value + '@@厘米@@'
-        setRangeCM(rangeCM)
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
       } else if (name == 'hzbrmc_range_mm') {
         // 距离 - 毫米
-        let rangeMM = ',距离' + value + '@@毫米@@'
-        setRangeMM(rangeMM)
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
       } else if (name == 'hzbrmc_depth_cm') {
         // 深度 - 厘米
-        let depthCM = ',深度' + value + '@@厘米@@'
-        setDepthCM(depthCM)
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
       } else if (name == 'hzbrmc_depth_mm') {
         // 深度 - 毫米
-        let depthMM = ',深度' + value + '@@毫米@@'
-        setDepthMM(depthMM)
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
       } else if (name == 'hzbrmc_volume_m') {
         // 体积 - 立方米
-        let volumeM = ',体积' + value + '@@立方米@@'
-        setVolumeM(volumeM)
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
       } else if (name == 'hzbrmc_volume_cm') {
         // 体积 - 立方厘米
-        let volumeCM = ',体积' + value + '@@立方厘米@@'
-        setVolumeCM(volumeCM)
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
       } else if (name == 'hzbrmc_disp_cm') {
         // 位移 - 厘米
-        let dispCM = ',位移' + value + '@@厘米@@'
-        setDispCM(dispCM)
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
       } else if (name == 'hzbrmc_disp_mm') {
         // 位移 - 毫米
-        let dispMM = ',位移' + value + '@@毫米@@'
-        setDispMM(dispMM)
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        let dispMM = ',角度' + value + '@@度@@'
-        setDispMM(dispMM)
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_chu') {
         // 处
-        let chu = ',' + value + '@@处@@'
-        setChu(chu)
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
       } else if (name == 'hzbrmc_tiao') {
         // 条
-        let tiao = ',' + value + '@@条@@'
-        setTiao(tiao)
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
       } else if (name == 'hzbrmc_range_fenbu_m') {
         // 分布范围 - 米
-        let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        setRangeFenbuM(rangeFenbuM)
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
       } else if (name == 'hzbrmc_range_length_m') {
         // 长度范围 - 米
-        let rangeLengthM = ',长度范围' + value + '@@米@@'
-        setRangeLengthM(rangeLengthM)
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
       } else if (name == 'hzbrmc_range_width_mm') {
         // 宽度范围 - 毫米
-        let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        setRangeWidthMM(rangeWidthMM)
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
       } else if (name == 'hzbrmc_range_spacing_cm') {
         // 间距范围 - 厘米
-        let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        setRangeSpacingCM(rangeSpacingCM)
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
       } else if (name == 'hzbrmc_lb_left_length_m') {
         // 左腹板长度 - 米
-        let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        setLeftLengthM(leftLengthM)
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_length_m') {
         // 底板长度 - 米
-        let bottomLengthM = ',底板长度' + value + '@@米@@'
-        setBottomLengthM(bottomLengthM)
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
       } else if (name == 'hzbrmc_lb_right_length_m') {
         // 右腹板长度 - 米
-        let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        setRightLengthM(rightLengthM)
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
       } else if (name == 'hzbrmc_lb_left_width_mm') {
         // 左腹板宽度 - 毫米
-        let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        setLeftWidthMM(leftWidthMM)
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_width_mm') {
         // 底板宽度 - 毫米
-        let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        setBottomWidthMM(bottomWidthMM)
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_right_width_mm') {
         // 右腹板宽度 - 毫米
-        let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        setRightWidthMM(rightWidthMM)
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
       } else if (name == 'hzbrmc_slant_m') {
         // 倾斜量 - 米
-        let slantM = ',倾斜量' + value + '@@米@@'
-        setSlantM(slantM)
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
       setDiseaseData(_data);
     };
 
     // 填入病害描述内容
-    const writeDesText = () => {
-      try {
-        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                      + widthMM + heightM + heightCM + heightMM + areaFace
-                      + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                      + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                      + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                      + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                      + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                      + bottomWidthMM + rightWidthMM + slantM
-        setWriteTxt(writeTxt)
-        console.log('writeTxt', writeTxt);
-        // console.log('remark:', diseaseData.remark);
-        // console.log('route:::', route.params.thridData.checkinfoshort);
-        
-        // 在remark里面查找这两位内容，取出其位置下标
-        if (diseaseData.remark !== undefined) {
-          if (writeTxt == '' || writeTxt == undefined) {
-            console.log('writeTxt没有内容~~~~~~');
-            // 当还没有输入的内容时
-            // 截取有变化的数据的二、三位内容(第一位为逗号)
-            // let sliceWrite = writeTxt.slice(1, 3)
-            // console.log('sliceWrite', sliceWrite);
-            let allText = diseaseData.remark
-            console.log('allText',allText);
+    const writeDesText = (name, value) => {
+      // let writeTxt = []
+      console.log('writeDesText', name, value);
 
-            // 将remark里的中文逗号替换为英文逗号
-            // ================================
-            let num =allText.indexOf('，')
-            // console.log('num',num);
-            if (num !== -1) {
-              let qian = allText.slice(0,allText.indexOf('，'))
-              // console.log('qian',qian);
-              let hou = allText.slice(allText.indexOf('，')+1)
-              // console.log('hou',hou);
-              let reset = qian + ',' + hou
-              // console.log('reset',reset);
-              diseaseData['description'] = reset
-              handleFormChenge(reset, diseaseData.description)
-            } else if (num == -1) {
-              diseaseData['description'] = allText
-              handleFormChenge(allText, diseaseData.description)
-            }
-            // ================================
-            
-            // let binghai = allText.slice(0,allText.indexOf(','))
-            // console.log('binghai',binghai);
-            // let numStart = allText.indexOf(sliceWrite)
-            // console.log(numStart);
-            // // 替换下标位置到其后第一个逗号之间的内容
-            // let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-            // console.log('allTextEnd', allTextEnd);
-            // let douhao = ','
-            // let numEnd = allTextEnd.indexOf(douhao)
-            // console.log('numEnd', numEnd);
-            // // 得出内容的末尾下标值
-            // let lengthAll = numStart + numEnd
-            // console.log('lengthAll', lengthAll);
-            // // diseaseData['description'] = writeTxt
-            // let aaaa = allText.substr(0, numStart-1)
-            // console.log('aaaa: ', aaaa);
-            // let bbbb = allText.substr(lengthAll)
-            // console.log('bbbb', bbbb);
-            // let cccc = aaaa.concat(bbbb)
-            // console.log('cccc: ', cccc);
-            // let ccca = '' + writeTxt
-            // // let saveDescription = cccc.concat(ccca)
-            // let saveDescription = binghai.concat(ccca)
-            // setSaveDescription(saveDescription)
-            // console.log('saveDescription: ', saveDescription);
-            // diseaseData['description'] = allText
-            // handleFormChenge(allText, diseaseData.description)
-          } else if (writeTxt !== '' || writeTxt !== undefined) {
-            // 当有输入的内容时
-            console.log('=============================================================================');
-            console.log('writeTxt有内容： ',writeTxt);
-            let writeArr = []
-            // 将输入的内容按逗号分隔开
-            // 先找到逗号
-            let num = 0
-            let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
-            console.log('逗号的位置：',commaKey);
-            let writeArrNum = []
-            // 查找逗号出现的位置，将其下标存入数组
-            while (commaKey !== -1) {
-              writeArrNum.push(commaKey)
-              console.log('commaKey逗号出现的位置:',commaKey);
-              num ++
-              commaKey = writeTxt.indexOf(',', commaKey + 1)
-            }
-            console.log('逗号出现的次数:', num);
-            console.log('截取节点数组：', writeArrNum);
-            // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
-            for (let i = 0; i < writeArrNum.length; i++) {
-              writeArr.push(
-                writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
-              )
-            }
-            console.log('截取后的数组：',writeArr);
-            // 对writeArr数组的每一项进行替换
-            for (let i = 0; i < writeArr.length; i++) {
-              
-                // 截取数组每一项的二、三位内容，与原有数据对比
-                let sliceWrite = writeArr[i].slice(1, 3)
-                console.log('sliceWrite',sliceWrite);
-                if (diseaseData.description == undefined || diseaseData.description == '') {
-                  var allText = diseaseData.remark
-                } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
-                  var allText = diseaseData.description
-                }
-                
-                console.log('allText', allText);
-                // console.log('sliceWrite:', sliceWrite);
-                let numStart = allText.indexOf(sliceWrite)
-                console.log('numStart',numStart);
-                // 替换下标位置到其后第一个逗号之间的内容
-                var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-                console.log('allTextEnd', allTextEnd);
-                let numEnd = allTextEnd.indexOf(',')
-                console.log('numEnd', numEnd);
-                if (numEnd !== -1) {
-                  console.log('numEnd的值1', numEnd);
-                  // 得出内容的末尾下标值
-                  let lengthAll = numStart + numEnd
-                  // console.log('lengthAll', lengthAll);
-                  let aaaa = allText.substr(0, numStart-1)
-                  // console.log('aaaa: ', aaaa);
-                  let bbbb = allText.substr(lengthAll)
-                  // console.log('bbbb', bbbb);
-                  let ccca = '' + writeArr[i].concat(bbbb)
-                  let saveDescription = aaaa.concat(ccca)
-                  setSaveDescription(saveDescription)
-                  // console.log('saveDescription: ', saveDescription);
-                  diseaseData['description'] = saveDescription
-                  handleFormChenge(saveDescription, diseaseData.description)
-                } else {
-                  console.log('numEnd的值2', numEnd);
-                  let aaaa = ''
-                  // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-                  if (numStart == -1) {
-                    aaaa = allText
-                  } else if (numStart !== -1) {
-                    // aaaa = allText.substr(0, numStart-1)
-                    aaaa = allText.substr(0,allText.indexOf(','))
-                  }
-                  console.log('aaaa: ', aaaa);
-                  let bbbb = ''
-                  let ccca = ''
-                  for (let i =0; i < writeArr.length; i++) {
-                    bbbb += writeArr[i]
-                    
-                  }
-                  ccca = aaaa.concat(bbbb)
-                    console.log('ccca', ccca);
-                    let saveDescription = ccca
-                    setSaveDescription(saveDescription)
-                    // console.log('saveDescription: ', saveDescription);
-                    diseaseData['description'] = saveDescription
-                    // diseaseData['remark'] = saveDescription
-                    handleFormChenge(saveDescription, diseaseData.description)
-                }
-                
-            }
-          }
+      if (name == 'scale') {
+        // 标度
+        let biaodu = ',标度' + value + '@@'
+        setBiaodu(biaodu)
+      } else if (name == 'hzbrmc_length_m') {
+        //长度 - 米
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
         } else {
-          let binghai = infoshort
-          let allText = binghai.concat(writeTxt)
-          // console.log('allText2',allText);
-          diseaseData['description'] = allText
-          handleFormChenge(allText, diseaseData.description)
-          
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
         }
-      } catch (err) {
-        console.log(err);
+      } else if (name == 'hzbrmc_length_cm') {
+        // 长度 - 厘米
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
+      } else if (name == 'hzbrmc_length_mm') {
+        // 长度 - 毫米
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
+      } else if (name == 'hzbrmc_width_m') {
+        // 宽度 - 米
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
+      } else if (name == 'hzbrmc_width_cm') {
+        // 宽度 - 厘米
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
+      } else if (name == 'hzbrmc_width_mm') {
+        // 宽度 - 毫米
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
+      } else if (name == 'hzbrmc_height_m') {
+        // 高度 - 米
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
+      } else if (name == 'hzbrmc_height_cm') {
+        // 高度 - 厘米
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
+      } else if (name == 'hzbrmc_height_mm') {
+        // 高度 - 毫米
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
+      } else if (name == 'hzbrmc_area_face') {
+        // 面域 - %
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
+      } else if (name == 'hzbrmc_area_per') {
+        // 面积占比 - %
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
+      } else if (name == 'hzbrmc_area_m') {
+        // 面积 - 平方米
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
+      } else if (name == 'hzbrmc_area_cm') {
+        // 面积 - 平方厘米
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
+      } else if (name == 'hzbrmc_area_mm') {
+        // 面积 - 平方毫米
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_cm') {
+        // 高差 - 厘米
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_mm') {
+        // 高差 - 毫米
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
+      } else if (name == 'hzbrmc_spacing_cm') {
+        // 间距 - 厘米
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
+      } else if (name == 'hzbrmc_deformation_mm') {
+        // 变形 - 毫米
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
+      } else if (name == 'hzbrmc_num') {
+        // 个数 - 个
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
+      } else if (name == 'hzbrmc_range_cm') {
+        // 距离 - 厘米
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
+      } else if (name == 'hzbrmc_range_mm') {
+        // 距离 - 毫米
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
+      } else if (name == 'hzbrmc_depth_cm') {
+        // 深度 - 厘米
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
+      } else if (name == 'hzbrmc_depth_mm') {
+        // 深度 - 毫米
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
+      } else if (name == 'hzbrmc_volume_m') {
+        // 体积 - 立方米
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
+      } else if (name == 'hzbrmc_volume_cm') {
+        // 体积 - 立方厘米
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
+      } else if (name == 'hzbrmc_disp_cm') {
+        // 位移 - 厘米
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
+      } else if (name == 'hzbrmc_disp_mm') {
+        // 位移 - 毫米
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_angle_c') {
+        // 角度 - 度
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_chu') {
+        // 处
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
+      } else if (name == 'hzbrmc_tiao') {
+        // 条
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
+      } else if (name == 'hzbrmc_range_fenbu_m') {
+        // 分布范围 - 米
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
+      } else if (name == 'hzbrmc_range_length_m') {
+        // 长度范围 - 米
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
+      } else if (name == 'hzbrmc_range_width_mm') {
+        // 宽度范围 - 毫米
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
+      } else if (name == 'hzbrmc_range_spacing_cm') {
+        // 间距范围 - 厘米
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
+      } else if (name == 'hzbrmc_lb_left_length_m') {
+        // 左腹板长度 - 米
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_length_m') {
+        // 底板长度 - 米
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_right_length_m') {
+        // 右腹板长度 - 米
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_left_width_mm') {
+        // 左腹板宽度 - 毫米
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
+        // 底板宽度 - 毫米
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_right_width_mm') {
+        // 右腹板宽度 - 毫米
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
+      } else if (name == 'hzbrmc_slant_m') {
+        // 倾斜量 - 米
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
-      
-      
+
+      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                    + widthMM + heightM + heightCM + heightMM + areaFace
+                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                    + bottomWidthMM + rightWidthMM + slantM
+      setWriteTxt(writeTxt)
+      console.log('writeTxt', writeTxt);
+      console.log('病害名称',itemData.diseaseName);
+      let binghai = itemData.diseaseName
+      let allText = binghai.concat(writeTxt)
+      console.log('allText', allText);
+      diseaseData['description'] = allText
+      handleFormChenge(allText, diseaseData.description)
     }
 
     // 填入位置描述内容
-    // const writePositionText = () => {
-    //   try {
-    //     // console.log('diseaseData.area', diseaseData.area);
-    //     console.log('diseaseData.lengthText',lengthText,widthText,heightText);
-    //     if (diseaseData.area == undefined) {
-    //       let writePositionTxt = ''
-    //       setWritePositionTxt(writePositionTxt)
-    //       diseaseData['writePositionTxt'] = writePositionTxt
-    //       handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
-    //     } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0){
-    //       console.log('有数据了');
-    //       console.log('构件区域列表：：',areaparam);
-    //       console.log('表单中的构件区域',diseaseData.area);
-    //       console.log('构件类型',labelName);
-    //       if (labelName == 'at0000' || labelName == undefined && areaparam == '') {
-    //         var areaName = ''
-    //         diseaseData['area'] = areaName
-    //         // handleFormChenge(areaName, diseaseData.area)
-    //       }
-    //       if (areaparam !== '') {
-    //         let areaArr = areaparam
-    //         let inputArea = diseaseData.area
-    //         console.log('inputArea',inputArea);
-    //         for (let i = 0; i < areaArr.length; i++) {
-    //           if (inputArea == areaArr[i].value) {
-    //             console.log('此时选中的构件是：',areaArr[i].label);
-    //             var areaName = areaArr[i].label
-    //             console.log(areaName);
-    //           }
-    //         }
-    //       }
-    //       setAreaName(areaName)
-          
-    //       // 墩/台描述
-    //       // 长度描述
-    //       if (lengthText == '0') {
-    //         var lengthNum = ''
-    //         setLengthNum(lengthNum)
-    //         // let pier = ''
-    //         // setPier(pier)
-    //       } else if (lengthText !== '0') {
-    //         var lengthNum = lengthText + 'm,'
-    //         setLengthNum(lengthNum)
-    //       }
-          
-    //       // 宽度描述
-    //       if (widthText == '0' || widthText == '') {
-    //         var widthNum = ''
-    //         setWidthNum(widthNum)
-    //       } else if (widthText !== '0') {
-    //         var widthNum = '距左侧' + widthText + 'm'
-    //         setWidthNum(widthNum)
-    //       }
-
-    //       // 距顶描述
-    //       // if (heightText == '0') {
-    //       //   var heightNum = ''
-    //       //   setHeightNum(heightNum)
-    //       // } else if (heightText !== '0') {
-    //       //   var heightNum = ',距顶部' + heightText + 'm'
-    //       //   setHeightNum(heightNum)
-    //       // }
-
-    //       // 位置描述 = / + 病害区域 + 桥台 + 长度 + 宽度 + 距顶
-    //       let writePositionTxt = areaName + pier + lengthNum + widthNum + '处'
-    //       setWritePositionTxt(writePositionTxt)
-    //       diseaseData['writePositionTxt'] = writePositionTxt
-    //       setDiseaseData(diseaseData)
-    //       handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
-    //     }
-    //   } catch (err) {
-    //     console.log('出现错误1:',err);
-    //   }
-    // }
-
     const writePositionText = () => {
       try {
         // console.log('diseaseData.area', diseaseData.area);
@@ -6172,8 +10128,13 @@ export function DiseaseK({route, navigation}) {
               var widthNum = ''
               setWidthNum(widthNum)
             } else if (widthText !== '0' || widthText !== '0.0') {
-              var widthNum = ',距左侧' + widthText + 'm'
-              setWidthNum(widthNum)
+              if (lengthNum == '') {
+                var widthNum = '距左侧' + widthText + 'm'
+                setWidthNum(widthNum)
+              } else {
+                var widthNum = ',距左侧' + widthText + 'm'
+                setWidthNum(widthNum)
+              }
             }
 
             // 距顶描述
@@ -6194,46 +10155,51 @@ export function DiseaseK({route, navigation}) {
             } else {
               console.log('55555');
               // console.log('kankan areaName', areaName);
-              // 位置描述 = / + 病害区域 + 桥台 + 长度
-              let writePositionTxt = areaName + pier + lengthNum + widthNum + '处'
-              setWritePositionTxt(writePositionTxt)
-              diseaseData['writePositionTxt'] = writePositionTxt
-              setDiseaseData(diseaseData)
-              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
-            }
-            
 
-            
-            
-        } else {
-            console.log('有数据了');
-            console.log('构件区域列表：：',areaparam);
-            console.log('表单中的构件区域',diseaseData.area);
-            console.log('构件类型',labelName);
-            if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
-              console.log('empty~~~');
-              var areaName = ''
-              diseaseData['area'] = areaName
-              handleFormChenge(areaName, diseaseData.area)
-            } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
-              console.log('not empty~~~~');
-              var areaName = diseaseData.area
-              diseaseData['area'] = areaName
-              handleFormChenge(areaName, diseaseData.area)
-            }
-            if (areaparam !== []) {
-              let areaArr = areaparam
-              let inputArea = diseaseData.area
-              console.log('inputArea',inputArea);
-              for (let i = 0; i < areaArr.length; i++) {
-                if (inputArea == areaArr[i].value) {
-                  console.log('此时选中的构件是：',areaArr[i].label);
-                  var areaName = areaArr[i].label
-                  console.log(areaName);
-                  setAreaName(areaName)
-                }
+              if (lengthNum == '') {
+                let writePositionTxt = areaName + widthNum + '处'
+                setWritePositionTxt(writePositionTxt)
+                diseaseData['writePositionTxt'] = writePositionTxt
+                setDiseaseData(diseaseData)
+                handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+              } else {
+                // 位置描述 = / + 病害区域 + 桥台 + 长度
+                let writePositionTxt = areaName + pier + lengthNum + widthNum + '处'
+                setWritePositionTxt(writePositionTxt)
+                diseaseData['writePositionTxt'] = writePositionTxt
+                setDiseaseData(diseaseData)
+                handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
               }
             }
+        } else {
+          console.log('有数据了');
+          console.log('构件区域列表：：',areaparam);
+          console.log('表单中的构件区域',diseaseData.area);
+          console.log('构件类型',labelName);
+          if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
+            console.log('empty~~~');
+            var areaName = ''
+            diseaseData['area'] = areaName
+            handleFormChenge(areaName, diseaseData.area)
+          } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
+            console.log('not empty~~~~');
+            var areaName = diseaseData.area
+            diseaseData['area'] = areaName
+            handleFormChenge(areaName, diseaseData.area)
+          }
+          if (areaparam !== []) {
+            let areaArr = areaparam
+            let inputArea = diseaseData.area
+            console.log('inputArea',inputArea);
+            for (let i = 0; i < areaArr.length; i++) {
+              if (inputArea == areaArr[i].value) {
+                console.log('此时选中的构件是：',areaArr[i].label);
+                var areaName = areaArr[i].label
+                console.log(areaName);
+                setAreaName(areaName)
+              }
+            }
+          }
             
             
             // 墩/台描述
@@ -6241,8 +10207,6 @@ export function DiseaseK({route, navigation}) {
             if (lengthText == '0' || lengthText == '0.0') {
               var lengthNum = ''
               setLengthNum(lengthNum)
-              // let pier = ''
-              // setPier(pier)
             } else if (lengthText !== '0' || lengthText !== '0.0') {
               var lengthNum = lengthText + 'm'
               setLengthNum(lengthNum)
@@ -6253,8 +10217,13 @@ export function DiseaseK({route, navigation}) {
               var widthNum = ''
               setWidthNum(widthNum)
             } else if (widthText !== '0' || widthText !== '0.0') {
-              var widthNum = ',距左侧' + widthText + 'm'
-              setWidthNum(widthNum)
+              if (lengthNum == '') {
+                var widthNum = '距左侧' + widthText + 'm'
+                setWidthNum(widthNum)
+              } else {
+                var widthNum = ',距左侧' + widthText + 'm'
+                setWidthNum(widthNum)
+              }
             }
 
             // 距顶描述
@@ -6276,12 +10245,19 @@ export function DiseaseK({route, navigation}) {
             } else {
               console.log('65666');
               // console.log('kankan areaName', areaName);
-              // 位置描述 = / + 病害区域 + 桥台 + 长度
-              let writePositionTxt = areaName + pier + lengthNum + widthNum + '处'
-              setWritePositionTxt(writePositionTxt)
-              diseaseData['writePositionTxt'] = writePositionTxt
-              setDiseaseData(diseaseData)
-              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+              if (lengthNum == '') {
+                let writePositionTxt = areaName + lengthNum + widthNum + '处'
+                setWritePositionTxt(writePositionTxt)
+                diseaseData['writePositionTxt'] = writePositionTxt
+                setDiseaseData(diseaseData)
+                handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+              } else {
+                let writePositionTxt = areaName + pier + lengthNum + widthNum + '处'
+                setWritePositionTxt(writePositionTxt)
+                diseaseData['writePositionTxt'] = writePositionTxt
+                setDiseaseData(diseaseData)
+                handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+              }
             }
         }
       } catch (err) {
@@ -6326,7 +10302,7 @@ export function DiseaseK({route, navigation}) {
         </View>
       </View>
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
-        <View style={{width:'30%'}}>
+        <View style={{width:'35%'}}>
            <Select
           label="构件类型"
           name="areatype"
@@ -6337,7 +10313,7 @@ export function DiseaseK({route, navigation}) {
           values={baseData.components}
         /> 
         </View>
-        <View style={{width:'40%'}}>
+        <View style={{width:'35%'}}>
           <View style={tailwind.mB2}>
             {!areaparam.length ? (
               <TextInput
@@ -6678,14 +10654,46 @@ export function DiseaseG({route, navigation}) {
     // 位置描述 墩台
     const [pier,  setPier] = useState()
     // 位置描述 长、宽、距顶
-    const [lengthNum, setLengthNum] = useState()
-    const [widthNum, setWidthNum] = useState()
-    const [heightNum, setHeightNum] = useState()
+    const [lengthNum, setLengthNum] = useState('')
+    const [widthNum, setWidthNum] = useState('')
+    const [heightNum, setHeightNum] = useState('')
 
     const [diseaseName, setDiseaseName] = useState('')
     // =================================================
     React.useEffect(() => {
       saveData.current = {...diseaseData};
+      try {
+        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
+          console.log('7777');
+          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
+          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+        }
+      } catch (err){
+        console.log('err09', err);
+      }
+      try {
+        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
+        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
+        for (let i =0; i < areaparam.length; i ++) {
+          if (diseaseData.area == undefined) {
+            diseaseData.area = areaparam[0].value
+            handleFormChenge(areaparam[0].value, diseaseData.area)
+            setAreaName(areaparam[0].label)
+          } else if (diseaseData.area !== undefined) {
+            let sliceArea = diseaseData.area.slice(0,6)
+            if (sliceArea !== diseaseData.areatype) {
+              for (let k = 0; k < baseData.components.length; k++) {
+                if (diseaseData.areatype == baseData.components[k].areatype) {
+                  diseaseData['areatype'] = baseData.components[k].areatype
+                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('err08', err);
+      }
       try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
         setLengthText(lengthText)
@@ -6706,9 +10714,17 @@ export function DiseaseG({route, navigation}) {
           setHeightText(heightText)
         }
 
-        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
-          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
-          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+
+        if (diseaseData.area == undefined) {
+
+        } else if (diseaseData.area !== '' || diseaseData.area !== undefined || diseaseData.area !== '/') {
+          var sliceArea = diseaseData.area.slice(0,5)
+        }
+        
+        if (diseaseData.areatype == 'at0000' && sliceArea == 'at000') {
+          console.log(sliceArea);
+          console.log('xu~~~~~');
+          diseaseData['area'] = '/'
         }
         
         // 将病害位置的长宽高数据存进diseaseData
@@ -6737,6 +10753,12 @@ export function DiseaseG({route, navigation}) {
         }
         if (diseaseData.description == '' || diseaseData.description == undefined) {
           diseaseData['description'] = diseaseData.remark
+        }
+
+        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+          let writePositionTxt = '/'
+          setWritePositionTxt(writePositionTxt)
+          diseaseData['writePositionTxt'] = writePositionTxt
         }
       } catch {
       }
@@ -6818,7 +10840,7 @@ export function DiseaseG({route, navigation}) {
 
       console.log('构件区域列表：：',areaparam);
       // console.log('表单中的构件区域',diseaseData.area);
-      if (areaparam == '') {
+      if (areaparam == '' || areaparam == undefined) {
         console.log('选的其他');
         try{
          console.log('构件类型', itemData.areatype); 
@@ -6876,356 +10898,940 @@ export function DiseaseG({route, navigation}) {
       }
 
 
+      if (value) {
+        // 向病害描述函数里传入
+        writeDesText(name, value)
+      }
+
       if (name == 'scale') {
         // 标度
         let biaodu = ',标度' + value + '@@'
         setBiaodu(biaodu)
       } else if (name == 'hzbrmc_length_m') {
         //长度 - 米
-        let lengthM = ',长度' + value + '@@米@@'
-        setLengthM(lengthM)
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
+        } else {
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
+        }
       } else if (name == 'hzbrmc_length_cm') {
         // 长度 - 厘米
-        let lengthCM = ',长度' + value + '@@厘米@@'
-        setLengthCM(lengthCM)
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
       } else if (name == 'hzbrmc_length_mm') {
         // 长度 - 毫米
-        let lengthMM = ',长度' + value + '@@毫米@@'
-        setLengthMM(lengthMM)
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
       } else if (name == 'hzbrmc_width_m') {
         // 宽度 - 米
-        let widthM = ',宽度' + value + '@@米@@'
-        setWidthM(widthM)
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
       } else if (name == 'hzbrmc_width_cm') {
         // 宽度 - 厘米
-        let widthCM = ',宽度' + value + '@@厘米@@'
-        setWidthCM(widthCM)
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
       } else if (name == 'hzbrmc_width_mm') {
         // 宽度 - 毫米
-        let widthMM = ',宽度' + value + '@@毫米@@'
-        setWidthMM(widthMM)
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
       } else if (name == 'hzbrmc_height_m') {
         // 高度 - 米
-        let heightM = ',高度' + value + '@@米@@'
-        setHeightM(heightM)
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
       } else if (name == 'hzbrmc_height_cm') {
         // 高度 - 厘米
-        let heightCM = ',高度' + value + '@@厘米@@'
-        setHeightCM(heightCM)
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
       } else if (name == 'hzbrmc_height_mm') {
         // 高度 - 毫米
-        let heightMM = ',高度' + value + '@@毫米@@'
-        setHeightMM(heightMM)
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
       } else if (name == 'hzbrmc_area_face') {
         // 面域 - %
-        let areaFace = ',面域' + value + '@@%@@'
-        setAreaFace(areaFace)
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
       } else if (name == 'hzbrmc_area_per') {
         // 面积占比 - %
-        let areaPer = ',面积占比' + value + '@@%@@'
-        setAreaPer(areaPer)
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
       } else if (name == 'hzbrmc_area_m') {
         // 面积 - 平方米
-        let areaM = ',面积' + value + '@@平方米@@'
-        setAreaM(areaM)
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
       } else if (name == 'hzbrmc_area_cm') {
         // 面积 - 平方厘米
-        let areaCM = ',面积' + value + '@@平方厘米@@'
-        setAreaCM(areaCM)
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
       } else if (name == 'hzbrmc_area_mm') {
         // 面积 - 平方毫米
-        let areaMM = ',面积' + value + '@@平方毫米@@'
-        setAreaMM(areaMM)
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
       } else if (name == 'hzbrmc_heightdiff_cm') {
         // 高差 - 厘米
-        let heightDiffCM = ',高差' + value + '@@厘米@@'
-        setHeightDiffCM(heightDiffCM)
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
       } else if (name == 'hzbrmc_heightdiff_mm') {
         // 高差 - 毫米
-        let heightDiffMM = ',高差' + value + '@@毫米@@'
-        setHeightDiffMM(heightDiffMM)
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
       } else if (name == 'hzbrmc_spacing_cm') {
         // 间距 - 厘米
-        let spacingCM = ',间距' + value + '@@厘米@@'
-        setSpacingCM(spacingCM)
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
       } else if (name == 'hzbrmc_deformation_mm') {
         // 变形 - 毫米
-        let deformationMM = ',变形' + value + '@@毫米@@'
-        setDeformationMM(deformationMM)
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
       } else if (name == 'hzbrmc_num') {
         // 个数 - 个
-        let num = ',个数' + value + '@@个@@'
-        setNum(num)
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
       } else if (name == 'hzbrmc_range_cm') {
         // 距离 - 厘米
-        let rangeCM = ',距离' + value + '@@厘米@@'
-        setRangeCM(rangeCM)
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
       } else if (name == 'hzbrmc_range_mm') {
         // 距离 - 毫米
-        let rangeMM = ',距离' + value + '@@毫米@@'
-        setRangeMM(rangeMM)
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
       } else if (name == 'hzbrmc_depth_cm') {
         // 深度 - 厘米
-        let depthCM = ',深度' + value + '@@厘米@@'
-        setDepthCM(depthCM)
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
       } else if (name == 'hzbrmc_depth_mm') {
         // 深度 - 毫米
-        let depthMM = ',深度' + value + '@@毫米@@'
-        setDepthMM(depthMM)
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
       } else if (name == 'hzbrmc_volume_m') {
         // 体积 - 立方米
-        let volumeM = ',体积' + value + '@@立方米@@'
-        setVolumeM(volumeM)
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
       } else if (name == 'hzbrmc_volume_cm') {
         // 体积 - 立方厘米
-        let volumeCM = ',体积' + value + '@@立方厘米@@'
-        setVolumeCM(volumeCM)
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
       } else if (name == 'hzbrmc_disp_cm') {
         // 位移 - 厘米
-        let dispCM = ',位移' + value + '@@厘米@@'
-        setDispCM(dispCM)
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
       } else if (name == 'hzbrmc_disp_mm') {
         // 位移 - 毫米
-        let dispMM = ',位移' + value + '@@毫米@@'
-        setDispMM(dispMM)
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        let dispMM = ',角度' + value + '@@度@@'
-        setDispMM(dispMM)
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_chu') {
         // 处
-        let chu = ',' + value + '@@处@@'
-        setChu(chu)
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
       } else if (name == 'hzbrmc_tiao') {
         // 条
-        let tiao = ',' + value + '@@条@@'
-        setTiao(tiao)
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
       } else if (name == 'hzbrmc_range_fenbu_m') {
         // 分布范围 - 米
-        let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        setRangeFenbuM(rangeFenbuM)
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
       } else if (name == 'hzbrmc_range_length_m') {
         // 长度范围 - 米
-        let rangeLengthM = ',长度范围' + value + '@@米@@'
-        setRangeLengthM(rangeLengthM)
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
       } else if (name == 'hzbrmc_range_width_mm') {
         // 宽度范围 - 毫米
-        let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        setRangeWidthMM(rangeWidthMM)
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
       } else if (name == 'hzbrmc_range_spacing_cm') {
         // 间距范围 - 厘米
-        let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        setRangeSpacingCM(rangeSpacingCM)
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
       } else if (name == 'hzbrmc_lb_left_length_m') {
         // 左腹板长度 - 米
-        let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        setLeftLengthM(leftLengthM)
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_length_m') {
         // 底板长度 - 米
-        let bottomLengthM = ',底板长度' + value + '@@米@@'
-        setBottomLengthM(bottomLengthM)
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
       } else if (name == 'hzbrmc_lb_right_length_m') {
         // 右腹板长度 - 米
-        let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        setRightLengthM(rightLengthM)
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
       } else if (name == 'hzbrmc_lb_left_width_mm') {
         // 左腹板宽度 - 毫米
-        let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        setLeftWidthMM(leftWidthMM)
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_width_mm') {
         // 底板宽度 - 毫米
-        let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        setBottomWidthMM(bottomWidthMM)
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_right_width_mm') {
         // 右腹板宽度 - 毫米
-        let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        setRightWidthMM(rightWidthMM)
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
       } else if (name == 'hzbrmc_slant_m') {
         // 倾斜量 - 米
-        let slantM = ',倾斜量' + value + '@@米@@'
-        setSlantM(slantM)
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
       setDiseaseData(_data);
     };
 
     // 填入病害描述内容
-    const writeDesText = () => {
-      try {
-        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                      + widthMM + heightM + heightCM + heightMM + areaFace
-                      + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                      + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                      + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                      + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                      + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                      + bottomWidthMM + rightWidthMM + slantM
-        setWriteTxt(writeTxt)
-        console.log('writeTxt', writeTxt);
-        // console.log('remark:', diseaseData.remark);
-        // console.log('route:::', route.params.thridData.checkinfoshort);
-        
-        // 在remark里面查找这两位内容，取出其位置下标
-        if (diseaseData.remark !== undefined) {
-          if (writeTxt == '' || writeTxt == undefined) {
-            console.log('writeTxt没有内容~~~~~~');
-            // 当还没有输入的内容时
-            // 截取有变化的数据的二、三位内容(第一位为逗号)
-            // let sliceWrite = writeTxt.slice(1, 3)
-            // console.log('sliceWrite', sliceWrite);
-            let allText = diseaseData.remark
-            console.log('allText',allText);
+    const writeDesText = (name, value) => {
+      // let writeTxt = []
+      console.log('writeDesText', name, value);
 
-            // 将remark里的中文逗号替换为英文逗号
-            // ================================
-            let num =allText.indexOf('，')
-            // console.log('num',num);
-            if (num !== -1) {
-              let qian = allText.slice(0,allText.indexOf('，'))
-              // console.log('qian',qian);
-              let hou = allText.slice(allText.indexOf('，')+1)
-              // console.log('hou',hou);
-              let reset = qian + ',' + hou
-              // console.log('reset',reset);
-              diseaseData['description'] = reset
-              handleFormChenge(reset, diseaseData.description)
-            } else if (num == -1) {
-              diseaseData['description'] = allText
-              handleFormChenge(allText, diseaseData.description)
-            }
-            // ================================
-            
-            // let binghai = allText.slice(0,allText.indexOf(','))
-            // console.log('binghai',binghai);
-            // let numStart = allText.indexOf(sliceWrite)
-            // console.log(numStart);
-            // // 替换下标位置到其后第一个逗号之间的内容
-            // let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-            // console.log('allTextEnd', allTextEnd);
-            // let douhao = ','
-            // let numEnd = allTextEnd.indexOf(douhao)
-            // console.log('numEnd', numEnd);
-            // // 得出内容的末尾下标值
-            // let lengthAll = numStart + numEnd
-            // console.log('lengthAll', lengthAll);
-            // // diseaseData['description'] = writeTxt
-            // let aaaa = allText.substr(0, numStart-1)
-            // console.log('aaaa: ', aaaa);
-            // let bbbb = allText.substr(lengthAll)
-            // console.log('bbbb', bbbb);
-            // let cccc = aaaa.concat(bbbb)
-            // console.log('cccc: ', cccc);
-            // let ccca = '' + writeTxt
-            // // let saveDescription = cccc.concat(ccca)
-            // let saveDescription = binghai.concat(ccca)
-            // setSaveDescription(saveDescription)
-            // console.log('saveDescription: ', saveDescription);
-            // diseaseData['description'] = allText
-            // handleFormChenge(allText, diseaseData.description)
-          } else if (writeTxt !== '' || writeTxt !== undefined) {
-            // 当有输入的内容时
-            console.log('=============================================================================');
-            console.log('writeTxt有内容： ',writeTxt);
-            let writeArr = []
-            // 将输入的内容按逗号分隔开
-            // 先找到逗号
-            let num = 0
-            let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
-            console.log('逗号的位置：',commaKey);
-            let writeArrNum = []
-            // 查找逗号出现的位置，将其下标存入数组
-            while (commaKey !== -1) {
-              writeArrNum.push(commaKey)
-              console.log('commaKey逗号出现的位置:',commaKey);
-              num ++
-              commaKey = writeTxt.indexOf(',', commaKey + 1)
-            }
-            console.log('逗号出现的次数:', num);
-            console.log('截取节点数组：', writeArrNum);
-            // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
-            for (let i = 0; i < writeArrNum.length; i++) {
-              writeArr.push(
-                writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
-              )
-            }
-            console.log('截取后的数组：',writeArr);
-            // 对writeArr数组的每一项进行替换
-            for (let i = 0; i < writeArr.length; i++) {
-              
-                // 截取数组每一项的二、三位内容，与原有数据对比
-                let sliceWrite = writeArr[i].slice(1, 3)
-                console.log('sliceWrite',sliceWrite);
-                if (diseaseData.description == undefined || diseaseData.description == '') {
-                  var allText = diseaseData.remark
-                } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
-                  var allText = diseaseData.description
-                }
-                
-                console.log('allText', allText);
-                // console.log('sliceWrite:', sliceWrite);
-                let numStart = allText.indexOf(sliceWrite)
-                console.log('numStart',numStart);
-                // 替换下标位置到其后第一个逗号之间的内容
-                var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-                console.log('allTextEnd', allTextEnd);
-                let numEnd = allTextEnd.indexOf(',')
-                console.log('numEnd', numEnd);
-                if (numEnd !== -1) {
-                  console.log('numEnd的值1', numEnd);
-                  // 得出内容的末尾下标值
-                  let lengthAll = numStart + numEnd
-                  // console.log('lengthAll', lengthAll);
-                  let aaaa = allText.substr(0, numStart-1)
-                  // console.log('aaaa: ', aaaa);
-                  let bbbb = allText.substr(lengthAll)
-                  // console.log('bbbb', bbbb);
-                  let ccca = '' + writeArr[i].concat(bbbb)
-                  let saveDescription = aaaa.concat(ccca)
-                  setSaveDescription(saveDescription)
-                  // console.log('saveDescription: ', saveDescription);
-                  diseaseData['description'] = saveDescription
-                  handleFormChenge(saveDescription, diseaseData.description)
-                } else {
-                  console.log('numEnd的值2', numEnd);
-                  let aaaa = ''
-                  // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-                  if (numStart == -1) {
-                    aaaa = allText
-                  } else if (numStart !== -1) {
-                    // aaaa = allText.substr(0, numStart-1)
-                    aaaa = allText.substr(0,allText.indexOf(','))
-                  }
-                  console.log('aaaa: ', aaaa);
-                  let bbbb = ''
-                  let ccca = ''
-                  for (let i =0; i < writeArr.length; i++) {
-                    bbbb += writeArr[i]
-                    
-                  }
-                  ccca = aaaa.concat(bbbb)
-                    console.log('ccca', ccca);
-                    let saveDescription = ccca
-                    setSaveDescription(saveDescription)
-                    // console.log('saveDescription: ', saveDescription);
-                    diseaseData['description'] = saveDescription
-                    // diseaseData['remark'] = saveDescription
-                    handleFormChenge(saveDescription, diseaseData.description)
-                }
-                
-            }
-          }
+      if (name == 'scale') {
+        // 标度
+        let biaodu = ',标度' + value + '@@'
+        setBiaodu(biaodu)
+      } else if (name == 'hzbrmc_length_m') {
+        //长度 - 米
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
         } else {
-          let binghai = infoshort
-          let allText = binghai.concat(writeTxt)
-          // console.log('allText2',allText);
-          diseaseData['description'] = allText
-          handleFormChenge(allText, diseaseData.description)
-          
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
         }
-      } catch (err) {
-        console.log(err);
+      } else if (name == 'hzbrmc_length_cm') {
+        // 长度 - 厘米
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
+      } else if (name == 'hzbrmc_length_mm') {
+        // 长度 - 毫米
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
+      } else if (name == 'hzbrmc_width_m') {
+        // 宽度 - 米
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
+      } else if (name == 'hzbrmc_width_cm') {
+        // 宽度 - 厘米
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
+      } else if (name == 'hzbrmc_width_mm') {
+        // 宽度 - 毫米
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
+      } else if (name == 'hzbrmc_height_m') {
+        // 高度 - 米
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
+      } else if (name == 'hzbrmc_height_cm') {
+        // 高度 - 厘米
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
+      } else if (name == 'hzbrmc_height_mm') {
+        // 高度 - 毫米
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
+      } else if (name == 'hzbrmc_area_face') {
+        // 面域 - %
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
+      } else if (name == 'hzbrmc_area_per') {
+        // 面积占比 - %
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
+      } else if (name == 'hzbrmc_area_m') {
+        // 面积 - 平方米
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
+      } else if (name == 'hzbrmc_area_cm') {
+        // 面积 - 平方厘米
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
+      } else if (name == 'hzbrmc_area_mm') {
+        // 面积 - 平方毫米
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_cm') {
+        // 高差 - 厘米
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_mm') {
+        // 高差 - 毫米
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
+      } else if (name == 'hzbrmc_spacing_cm') {
+        // 间距 - 厘米
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
+      } else if (name == 'hzbrmc_deformation_mm') {
+        // 变形 - 毫米
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
+      } else if (name == 'hzbrmc_num') {
+        // 个数 - 个
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
+      } else if (name == 'hzbrmc_range_cm') {
+        // 距离 - 厘米
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
+      } else if (name == 'hzbrmc_range_mm') {
+        // 距离 - 毫米
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
+      } else if (name == 'hzbrmc_depth_cm') {
+        // 深度 - 厘米
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
+      } else if (name == 'hzbrmc_depth_mm') {
+        // 深度 - 毫米
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
+      } else if (name == 'hzbrmc_volume_m') {
+        // 体积 - 立方米
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
+      } else if (name == 'hzbrmc_volume_cm') {
+        // 体积 - 立方厘米
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
+      } else if (name == 'hzbrmc_disp_cm') {
+        // 位移 - 厘米
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
+      } else if (name == 'hzbrmc_disp_mm') {
+        // 位移 - 毫米
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_angle_c') {
+        // 角度 - 度
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_chu') {
+        // 处
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
+      } else if (name == 'hzbrmc_tiao') {
+        // 条
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
+      } else if (name == 'hzbrmc_range_fenbu_m') {
+        // 分布范围 - 米
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
+      } else if (name == 'hzbrmc_range_length_m') {
+        // 长度范围 - 米
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
+      } else if (name == 'hzbrmc_range_width_mm') {
+        // 宽度范围 - 毫米
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
+      } else if (name == 'hzbrmc_range_spacing_cm') {
+        // 间距范围 - 厘米
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
+      } else if (name == 'hzbrmc_lb_left_length_m') {
+        // 左腹板长度 - 米
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_length_m') {
+        // 底板长度 - 米
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_right_length_m') {
+        // 右腹板长度 - 米
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_left_width_mm') {
+        // 左腹板宽度 - 毫米
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
+        // 底板宽度 - 毫米
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_right_width_mm') {
+        // 右腹板宽度 - 毫米
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
+      } else if (name == 'hzbrmc_slant_m') {
+        // 倾斜量 - 米
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
-      
-      
+
+      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                    + widthMM + heightM + heightCM + heightMM + areaFace
+                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                    + bottomWidthMM + rightWidthMM + slantM
+      setWriteTxt(writeTxt)
+      console.log('writeTxt', writeTxt);
+      console.log('病害名称',itemData.diseaseName);
+      let binghai = itemData.diseaseName
+      let allText = binghai.concat(writeTxt)
+      console.log('allText', allText);
+      diseaseData['description'] = allText
+      handleFormChenge(allText, diseaseData.description)
     }
 
     // 填入位置描述内容
@@ -7234,21 +11840,72 @@ export function DiseaseG({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          let writePositionTxt = ''
-          setWritePositionTxt(writePositionTxt)
-          diseaseData['writePositionTxt'] = writePositionTxt
-          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
-        } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0){
+          var areaName = ''
+          setAreaName(areaName)
+          console.log('diseaseData.area为空');
+
+          // 宽度描述
+          if (widthText == '0' || widthText == '0.0') {
+            var widthNum = ''
+            setWidthNum(widthNum)
+          } else if (widthText !== '0' || widthText !== '0.0') {
+            var widthNum = '距左侧' + widthText + 'm'
+            setWidthNum(widthNum)
+          }
+
+          // 距顶描述
+          if (heightText == '0' || heightText == '0.0') {
+            var heightNum = ''
+            setHeightNum(heightNum)
+          } else if (heightText !== '0' || heightText !== '0.0') {
+            if (widthNum == '') {
+              var heightNum = '距顶部' + heightText + 'm'
+              setHeightNum(heightNum)
+            } else {
+              var heightNum = ',距顶部' + heightText + 'm'
+              setHeightNum(heightNum)
+            }
+          }
+
+          if (heightNum == '' && widthNum == '') {
+            let writePositionTxt = '/' + areaName
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            setDiseaseData(diseaseData)
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else {
+            if (widthNum == '') {
+              let writePositionTxt = areaName + widthNum + heightNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            } else {
+              // 位置描述 = / + 病害区域 + 桥台 + 宽度 + 高度
+              let writePositionTxt = areaName + widthNum + heightNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            }
+          }
+        } else {
           console.log('有数据了');
           console.log('构件区域列表：：',areaparam);
           console.log('表单中的构件区域',diseaseData.area);
           console.log('构件类型',labelName);
-          if (labelName == 'at0000' || labelName == undefined && areaparam == '') {
+          if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
+            console.log('empty~~~');
             var areaName = ''
             diseaseData['area'] = areaName
-            // handleFormChenge(areaName, diseaseData.area)
+            handleFormChenge(areaName, diseaseData.area)
+          } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
+            console.log('not empty~~~~');
+            var areaName = diseaseData.area
+            diseaseData['area'] = areaName
+            handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== '') {
+          if (areaparam !== []) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -7257,10 +11914,10 @@ export function DiseaseG({route, navigation}) {
                 console.log('此时选中的构件是：',areaArr[i].label);
                 var areaName = areaArr[i].label
                 console.log(areaName);
+                setAreaName(areaName)
               }
             }
           }
-          setAreaName(areaName)
           
           // 墩/台描述
           // 长度描述
@@ -7275,29 +11932,54 @@ export function DiseaseG({route, navigation}) {
           // }
           
           // 宽度描述
-          if (widthText == '0' || widthText == '') {
+          if (widthText == '0' || widthText == '0.0') {
             var widthNum = ''
             setWidthNum(widthNum)
-          } else if (widthText !== '0') {
+          } else if (widthText !== '0' || widthText !== '0.0') {
             var widthNum = '距左侧' + widthText + 'm'
             setWidthNum(widthNum)
           }
 
           // 距顶描述
-          if (heightText == '0') {
+          if (heightText == '0' || heightText == '0.0') {
             var heightNum = ''
             setHeightNum(heightNum)
-          } else if (heightText !== '0') {
-            var heightNum = ',距顶部' + heightText + 'm'
-            setHeightNum(heightNum)
+          } else if (heightText !== '0' || heightText !== '0.0') {
+            if (widthNum == '') {
+              var heightNum = '距顶部' + heightText + 'm'
+              setHeightNum(heightNum)
+            } else {
+              var heightNum = ',距顶部' + heightText + 'm'
+              setHeightNum(heightNum)
+            }
           }
 
-          // 位置描述 = / + 病害区域 + 桥台 + 长度 + 宽度 + 距顶
-          let writePositionTxt = areaName + widthNum + heightNum + '处'
-          setWritePositionTxt(writePositionTxt)
-          diseaseData['writePositionTxt'] = writePositionTxt
-          setDiseaseData(diseaseData)
-          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+
+          if (heightNum == '' && widthNum == '') {
+            let writePositionTxt = areaName
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            setDiseaseData(diseaseData)
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else {
+
+            if (widthNum == '') {
+              let writePositionTxt = areaName + widthNum + heightNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            } else {
+              // 位置描述 = / + 病害区域 + 桥台 + 宽度 + 高度
+              let writePositionTxt = areaName + widthNum + heightNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            }
+
+            
+          }
         }
       } catch (err) {
         console.log('出现错误1:',err);
@@ -7341,7 +12023,7 @@ export function DiseaseG({route, navigation}) {
         </View>
       </View>
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
-        <View style={{width:'30%'}}>
+        <View style={{width:'35%'}}>
            <Select
           label="构件类型"
           name="areatype"
@@ -7352,7 +12034,7 @@ export function DiseaseG({route, navigation}) {
           values={baseData.components}
         /> 
         </View>
-        <View style={{width:'40%'}}>
+        <View style={{width:'35%'}}>
           <View style={tailwind.mB2}>
             {!areaparam.length ? (
               <TextInput
@@ -7702,6 +12384,38 @@ export function DiseaseH({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
+          console.log('7777');
+          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
+          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+        }
+      } catch (err){
+        console.log('err09', err);
+      }
+      try {
+        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
+        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
+        for (let i =0; i < areaparam.length; i ++) {
+          if (diseaseData.area == undefined) {
+            diseaseData.area = areaparam[0].value
+            handleFormChenge(areaparam[0].value, diseaseData.area)
+            setAreaName(areaparam[0].label)
+          } else if (diseaseData.area !== undefined) {
+            let sliceArea = diseaseData.area.slice(0,6)
+            if (sliceArea !== diseaseData.areatype) {
+              for (let k = 0; k < baseData.components.length; k++) {
+                if (diseaseData.areatype == baseData.components[k].areatype) {
+                  diseaseData['areatype'] = baseData.components[k].areatype
+                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('err08', err);
+      }
+      try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
@@ -7721,9 +12435,16 @@ export function DiseaseH({route, navigation}) {
           setHeightText(heightText)
         }
 
-        if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
-          diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
-          handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
+        if (diseaseData.area == undefined) {
+
+        } else if (diseaseData.area !== '' || diseaseData.area !== undefined || diseaseData.area !== '/') {
+          var sliceArea = diseaseData.area.slice(0,5)
+        }
+        
+        if (diseaseData.areatype == 'at0000' && sliceArea == 'at000') {
+          console.log(sliceArea);
+          console.log('xu~~~~~');
+          diseaseData['area'] = '/'
         }
         
         // 将病害位置的长宽高数据存进diseaseData
@@ -7752,6 +12473,12 @@ export function DiseaseH({route, navigation}) {
         }
         if (diseaseData.description == '' || diseaseData.description == undefined) {
           diseaseData['description'] = diseaseData.remark
+        }
+
+        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+          let writePositionTxt = '/'
+          setWritePositionTxt(writePositionTxt)
+          diseaseData['writePositionTxt'] = writePositionTxt
         }
       } catch {
       }
@@ -7833,7 +12560,7 @@ export function DiseaseH({route, navigation}) {
 
       console.log('构件区域列表：：',areaparam);
       // console.log('表单中的构件区域',diseaseData.area);
-      if (areaparam == '') {
+      if (areaparam == '' || areaparam == undefined) {
         console.log('选的其他');
         try{
          console.log('构件类型', itemData.areatype); 
@@ -7891,356 +12618,940 @@ export function DiseaseH({route, navigation}) {
       }
 
 
+      if (value) {
+        // 向病害描述函数里传入
+        writeDesText(name, value)
+      }
+
       if (name == 'scale') {
         // 标度
         let biaodu = ',标度' + value + '@@'
         setBiaodu(biaodu)
       } else if (name == 'hzbrmc_length_m') {
         //长度 - 米
-        let lengthM = ',长度' + value + '@@米@@'
-        setLengthM(lengthM)
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
+        } else {
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
+        }
       } else if (name == 'hzbrmc_length_cm') {
         // 长度 - 厘米
-        let lengthCM = ',长度' + value + '@@厘米@@'
-        setLengthCM(lengthCM)
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
       } else if (name == 'hzbrmc_length_mm') {
         // 长度 - 毫米
-        let lengthMM = ',长度' + value + '@@毫米@@'
-        setLengthMM(lengthMM)
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
       } else if (name == 'hzbrmc_width_m') {
         // 宽度 - 米
-        let widthM = ',宽度' + value + '@@米@@'
-        setWidthM(widthM)
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
       } else if (name == 'hzbrmc_width_cm') {
         // 宽度 - 厘米
-        let widthCM = ',宽度' + value + '@@厘米@@'
-        setWidthCM(widthCM)
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
       } else if (name == 'hzbrmc_width_mm') {
         // 宽度 - 毫米
-        let widthMM = ',宽度' + value + '@@毫米@@'
-        setWidthMM(widthMM)
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
       } else if (name == 'hzbrmc_height_m') {
         // 高度 - 米
-        let heightM = ',高度' + value + '@@米@@'
-        setHeightM(heightM)
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
       } else if (name == 'hzbrmc_height_cm') {
         // 高度 - 厘米
-        let heightCM = ',高度' + value + '@@厘米@@'
-        setHeightCM(heightCM)
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
       } else if (name == 'hzbrmc_height_mm') {
         // 高度 - 毫米
-        let heightMM = ',高度' + value + '@@毫米@@'
-        setHeightMM(heightMM)
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
       } else if (name == 'hzbrmc_area_face') {
         // 面域 - %
-        let areaFace = ',面域' + value + '@@%@@'
-        setAreaFace(areaFace)
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
       } else if (name == 'hzbrmc_area_per') {
         // 面积占比 - %
-        let areaPer = ',面积占比' + value + '@@%@@'
-        setAreaPer(areaPer)
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
       } else if (name == 'hzbrmc_area_m') {
         // 面积 - 平方米
-        let areaM = ',面积' + value + '@@平方米@@'
-        setAreaM(areaM)
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
       } else if (name == 'hzbrmc_area_cm') {
         // 面积 - 平方厘米
-        let areaCM = ',面积' + value + '@@平方厘米@@'
-        setAreaCM(areaCM)
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
       } else if (name == 'hzbrmc_area_mm') {
         // 面积 - 平方毫米
-        let areaMM = ',面积' + value + '@@平方毫米@@'
-        setAreaMM(areaMM)
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
       } else if (name == 'hzbrmc_heightdiff_cm') {
         // 高差 - 厘米
-        let heightDiffCM = ',高差' + value + '@@厘米@@'
-        setHeightDiffCM(heightDiffCM)
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
       } else if (name == 'hzbrmc_heightdiff_mm') {
         // 高差 - 毫米
-        let heightDiffMM = ',高差' + value + '@@毫米@@'
-        setHeightDiffMM(heightDiffMM)
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
       } else if (name == 'hzbrmc_spacing_cm') {
         // 间距 - 厘米
-        let spacingCM = ',间距' + value + '@@厘米@@'
-        setSpacingCM(spacingCM)
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
       } else if (name == 'hzbrmc_deformation_mm') {
         // 变形 - 毫米
-        let deformationMM = ',变形' + value + '@@毫米@@'
-        setDeformationMM(deformationMM)
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
       } else if (name == 'hzbrmc_num') {
         // 个数 - 个
-        let num = ',个数' + value + '@@个@@'
-        setNum(num)
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
       } else if (name == 'hzbrmc_range_cm') {
         // 距离 - 厘米
-        let rangeCM = ',距离' + value + '@@厘米@@'
-        setRangeCM(rangeCM)
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
       } else if (name == 'hzbrmc_range_mm') {
         // 距离 - 毫米
-        let rangeMM = ',距离' + value + '@@毫米@@'
-        setRangeMM(rangeMM)
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
       } else if (name == 'hzbrmc_depth_cm') {
         // 深度 - 厘米
-        let depthCM = ',深度' + value + '@@厘米@@'
-        setDepthCM(depthCM)
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
       } else if (name == 'hzbrmc_depth_mm') {
         // 深度 - 毫米
-        let depthMM = ',深度' + value + '@@毫米@@'
-        setDepthMM(depthMM)
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
       } else if (name == 'hzbrmc_volume_m') {
         // 体积 - 立方米
-        let volumeM = ',体积' + value + '@@立方米@@'
-        setVolumeM(volumeM)
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
       } else if (name == 'hzbrmc_volume_cm') {
         // 体积 - 立方厘米
-        let volumeCM = ',体积' + value + '@@立方厘米@@'
-        setVolumeCM(volumeCM)
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
       } else if (name == 'hzbrmc_disp_cm') {
         // 位移 - 厘米
-        let dispCM = ',位移' + value + '@@厘米@@'
-        setDispCM(dispCM)
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
       } else if (name == 'hzbrmc_disp_mm') {
         // 位移 - 毫米
-        let dispMM = ',位移' + value + '@@毫米@@'
-        setDispMM(dispMM)
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        let dispMM = ',角度' + value + '@@度@@'
-        setDispMM(dispMM)
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
       } else if (name == 'hzbrmc_chu') {
         // 处
-        let chu = ',' + value + '@@处@@'
-        setChu(chu)
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
       } else if (name == 'hzbrmc_tiao') {
         // 条
-        let tiao = ',' + value + '@@条@@'
-        setTiao(tiao)
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
       } else if (name == 'hzbrmc_range_fenbu_m') {
         // 分布范围 - 米
-        let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        setRangeFenbuM(rangeFenbuM)
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
       } else if (name == 'hzbrmc_range_length_m') {
         // 长度范围 - 米
-        let rangeLengthM = ',长度范围' + value + '@@米@@'
-        setRangeLengthM(rangeLengthM)
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
       } else if (name == 'hzbrmc_range_width_mm') {
         // 宽度范围 - 毫米
-        let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        setRangeWidthMM(rangeWidthMM)
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
       } else if (name == 'hzbrmc_range_spacing_cm') {
         // 间距范围 - 厘米
-        let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        setRangeSpacingCM(rangeSpacingCM)
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
       } else if (name == 'hzbrmc_lb_left_length_m') {
         // 左腹板长度 - 米
-        let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        setLeftLengthM(leftLengthM)
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_length_m') {
         // 底板长度 - 米
-        let bottomLengthM = ',底板长度' + value + '@@米@@'
-        setBottomLengthM(bottomLengthM)
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
       } else if (name == 'hzbrmc_lb_right_length_m') {
         // 右腹板长度 - 米
-        let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        setRightLengthM(rightLengthM)
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
       } else if (name == 'hzbrmc_lb_left_width_mm') {
         // 左腹板宽度 - 毫米
-        let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        setLeftWidthMM(leftWidthMM)
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_bottom_width_mm') {
         // 底板宽度 - 毫米
-        let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        setBottomWidthMM(bottomWidthMM)
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
       } else if (name == 'hzbrmc_lb_right_width_mm') {
         // 右腹板宽度 - 毫米
-        let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        setRightWidthMM(rightWidthMM)
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
       } else if (name == 'hzbrmc_slant_m') {
         // 倾斜量 - 米
-        let slantM = ',倾斜量' + value + '@@米@@'
-        setSlantM(slantM)
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
       setDiseaseData(_data);
     };
 
     // 填入病害描述内容
-    const writeDesText = () => {
-      try {
-        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                      + widthMM + heightM + heightCM + heightMM + areaFace
-                      + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                      + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                      + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                      + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                      + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                      + bottomWidthMM + rightWidthMM + slantM
-        setWriteTxt(writeTxt)
-        console.log('writeTxt', writeTxt);
-        // console.log('remark:', diseaseData.remark);
-        // console.log('route:::', route.params.thridData.checkinfoshort);
-        
-        // 在remark里面查找这两位内容，取出其位置下标
-        if (diseaseData.remark !== undefined) {
-          if (writeTxt == '' || writeTxt == undefined) {
-            console.log('writeTxt没有内容~~~~~~');
-            // 当还没有输入的内容时
-            // 截取有变化的数据的二、三位内容(第一位为逗号)
-            // let sliceWrite = writeTxt.slice(1, 3)
-            // console.log('sliceWrite', sliceWrite);
-            let allText = diseaseData.remark
-            console.log('allText',allText);
+    const writeDesText = (name, value) => {
+      // let writeTxt = []
+      console.log('writeDesText', name, value);
 
-            // 将remark里的中文逗号替换为英文逗号
-            // ================================
-            let num =allText.indexOf('，')
-            // console.log('num',num);
-            if (num !== -1) {
-              let qian = allText.slice(0,allText.indexOf('，'))
-              // console.log('qian',qian);
-              let hou = allText.slice(allText.indexOf('，')+1)
-              // console.log('hou',hou);
-              let reset = qian + ',' + hou
-              // console.log('reset',reset);
-              diseaseData['description'] = reset
-              handleFormChenge(reset, diseaseData.description)
-            } else if (num == -1) {
-              diseaseData['description'] = allText
-              handleFormChenge(allText, diseaseData.description)
-            }
-            // ================================
-            
-            // let binghai = allText.slice(0,allText.indexOf(','))
-            // console.log('binghai',binghai);
-            // let numStart = allText.indexOf(sliceWrite)
-            // console.log(numStart);
-            // // 替换下标位置到其后第一个逗号之间的内容
-            // let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-            // console.log('allTextEnd', allTextEnd);
-            // let douhao = ','
-            // let numEnd = allTextEnd.indexOf(douhao)
-            // console.log('numEnd', numEnd);
-            // // 得出内容的末尾下标值
-            // let lengthAll = numStart + numEnd
-            // console.log('lengthAll', lengthAll);
-            // // diseaseData['description'] = writeTxt
-            // let aaaa = allText.substr(0, numStart-1)
-            // console.log('aaaa: ', aaaa);
-            // let bbbb = allText.substr(lengthAll)
-            // console.log('bbbb', bbbb);
-            // let cccc = aaaa.concat(bbbb)
-            // console.log('cccc: ', cccc);
-            // let ccca = '' + writeTxt
-            // // let saveDescription = cccc.concat(ccca)
-            // let saveDescription = binghai.concat(ccca)
-            // setSaveDescription(saveDescription)
-            // console.log('saveDescription: ', saveDescription);
-            // diseaseData['description'] = allText
-            // handleFormChenge(allText, diseaseData.description)
-          } else if (writeTxt !== '' || writeTxt !== undefined) {
-            // 当有输入的内容时
-            console.log('=============================================================================');
-            console.log('writeTxt有内容： ',writeTxt);
-            let writeArr = []
-            // 将输入的内容按逗号分隔开
-            // 先找到逗号
-            let num = 0
-            let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
-            console.log('逗号的位置：',commaKey);
-            let writeArrNum = []
-            // 查找逗号出现的位置，将其下标存入数组
-            while (commaKey !== -1) {
-              writeArrNum.push(commaKey)
-              console.log('commaKey逗号出现的位置:',commaKey);
-              num ++
-              commaKey = writeTxt.indexOf(',', commaKey + 1)
-            }
-            console.log('逗号出现的次数:', num);
-            console.log('截取节点数组：', writeArrNum);
-            // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
-            for (let i = 0; i < writeArrNum.length; i++) {
-              writeArr.push(
-                writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
-              )
-            }
-            console.log('截取后的数组：',writeArr);
-            // 对writeArr数组的每一项进行替换
-            for (let i = 0; i < writeArr.length; i++) {
-              
-                // 截取数组每一项的二、三位内容，与原有数据对比
-                let sliceWrite = writeArr[i].slice(1, 3)
-                console.log('sliceWrite',sliceWrite);
-                if (diseaseData.description == undefined || diseaseData.description == '') {
-                  var allText = diseaseData.remark
-                } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
-                  var allText = diseaseData.description
-                }
-                
-                console.log('allText', allText);
-                // console.log('sliceWrite:', sliceWrite);
-                let numStart = allText.indexOf(sliceWrite)
-                console.log('numStart',numStart);
-                // 替换下标位置到其后第一个逗号之间的内容
-                var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-                console.log('allTextEnd', allTextEnd);
-                let numEnd = allTextEnd.indexOf(',')
-                console.log('numEnd', numEnd);
-                if (numEnd !== -1) {
-                  console.log('numEnd的值1', numEnd);
-                  // 得出内容的末尾下标值
-                  let lengthAll = numStart + numEnd
-                  // console.log('lengthAll', lengthAll);
-                  let aaaa = allText.substr(0, numStart-1)
-                  // console.log('aaaa: ', aaaa);
-                  let bbbb = allText.substr(lengthAll)
-                  // console.log('bbbb', bbbb);
-                  let ccca = '' + writeArr[i].concat(bbbb)
-                  let saveDescription = aaaa.concat(ccca)
-                  setSaveDescription(saveDescription)
-                  // console.log('saveDescription: ', saveDescription);
-                  diseaseData['description'] = saveDescription
-                  handleFormChenge(saveDescription, diseaseData.description)
-                } else {
-                  console.log('numEnd的值2', numEnd);
-                  let aaaa = ''
-                  // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-                  if (numStart == -1) {
-                    aaaa = allText
-                  } else if (numStart !== -1) {
-                    // aaaa = allText.substr(0, numStart-1)
-                    aaaa = allText.substr(0,allText.indexOf(','))
-                  }
-                  console.log('aaaa: ', aaaa);
-                  let bbbb = ''
-                  let ccca = ''
-                  for (let i =0; i < writeArr.length; i++) {
-                    bbbb += writeArr[i]
-                    
-                  }
-                  ccca = aaaa.concat(bbbb)
-                    console.log('ccca', ccca);
-                    let saveDescription = ccca
-                    setSaveDescription(saveDescription)
-                    // console.log('saveDescription: ', saveDescription);
-                    diseaseData['description'] = saveDescription
-                    // diseaseData['remark'] = saveDescription
-                    handleFormChenge(saveDescription, diseaseData.description)
-                }
-                
-            }
-          }
+      if (name == 'scale') {
+        // 标度
+        let biaodu = ',标度' + value + '@@'
+        setBiaodu(biaodu)
+      } else if (name == 'hzbrmc_length_m') {
+        //长度 - 米
+        // let lengthM = ',长度' + value + '@@米@@'
+        // setLengthM(lengthM)
+        if (value == '' || value == 0) {
+          let lengthM = ''
+          setLengthM(lengthM)
         } else {
-          let binghai = infoshort
-          let allText = binghai.concat(writeTxt)
-          // console.log('allText2',allText);
-          diseaseData['description'] = allText
-          handleFormChenge(allText, diseaseData.description)
-          
+          let lengthM = ',长度' + value + '@@米@@'
+          setLengthM(lengthM)
         }
-      } catch (err) {
-        console.log(err);
+      } else if (name == 'hzbrmc_length_cm') {
+        // 长度 - 厘米
+        // let lengthCM = ',长度' + value + '@@厘米@@'
+        // setLengthCM(lengthCM)
+        if (value == '' || value == 0) {
+          let lengthCM = ''
+          setLengthCM(lengthCM)
+        } else {
+          let lengthCM = ',长度' + value + '@@厘米@@'
+          setLengthCM(lengthCM)
+        }
+      } else if (name == 'hzbrmc_length_mm') {
+        // 长度 - 毫米
+        // let lengthMM = ',长度' + value + '@@毫米@@'
+        // setLengthMM(lengthMM)
+        if (value == '' || value == 0) {
+          let lengthMM = ''
+          setLengthMM(lengthMM)
+        } else {
+          let lengthMM = ',长度' + value + '@@毫米@@'
+          setLengthMM(lengthMM)
+        }
+      } else if (name == 'hzbrmc_width_m') {
+        // 宽度 - 米
+        // let widthM = ',宽度' + value + '@@米@@'
+        // setWidthM(widthM)
+        if (value == '' || value == 0) {
+          let widthM = ''
+          setWidthM(widthM)
+        } else {
+          let widthM = ',宽度' + value + '@@米@@'
+          setWidthM(widthM)
+        }
+      } else if (name == 'hzbrmc_width_cm') {
+        // 宽度 - 厘米
+        // let widthCM = ',宽度' + value + '@@厘米@@'
+        // setWidthCM(widthCM)
+        if (value == '' || value == 0) {
+          let widthCM = ''
+          setWidthCM(widthCM)
+        } else {
+          let widthCM = ',宽度' + value + '@@厘米@@'
+          setWidthCM(widthCM)
+        }
+      } else if (name == 'hzbrmc_width_mm') {
+        // 宽度 - 毫米
+        if (value == '' || value == 0) {
+          let widthMM = ''
+          setWidthMM(widthMM)
+        } else {
+          let widthMM = ',宽度' + value + '@@毫米@@'
+          setWidthMM(widthMM)
+        }
+      } else if (name == 'hzbrmc_height_m') {
+        // 高度 - 米
+        // let heightM = ',高度' + value + '@@米@@'
+        // setHeightM(heightM)
+        if (value == '' || value == 0) {
+          let heightM = ''
+          setHeightM(heightM)
+        } else {
+          let heightM = ',高度' + value + '@@米@@'
+          setHeightM(heightM)
+        }
+      } else if (name == 'hzbrmc_height_cm') {
+        // 高度 - 厘米
+        if (value == '' || value == 0) {
+          let heightCM = ''
+          setHeightCM(heightCM)
+        } else {
+          let heightCM = ',高度' + value + '@@厘米@@'
+          setHeightCM(heightCM)
+        }
+      } else if (name == 'hzbrmc_height_mm') {
+        // 高度 - 毫米
+        // let heightMM = ',高度' + value + '@@毫米@@'
+        // setHeightMM(heightMM)
+        if (value == '' || value == 0) {
+          let heightMM = ''
+          setHeightMM(heightMM)
+        } else {
+          let heightMM = ',高度' + value + '@@毫米@@'
+          setHeightMM(heightMM)
+        }
+      } else if (name == 'hzbrmc_area_face') {
+        // 面域 - %
+        // let areaFace = ',面域' + value + '@@%@@'
+        // setAreaFace(areaFace)
+        if (value == '' || value == 0) {
+          let areaFace = ''
+          setAreaFace(areaFace)
+        } else {
+          let areaFace = ',面域' + value + '@@%@@'
+          setAreaFace(areaFace)
+        }
+      } else if (name == 'hzbrmc_area_per') {
+        // 面积占比 - %
+        // let areaPer = ',面积占比' + value + '@@%@@'
+        // setAreaPer(areaPer)
+        if (value == '' || value == 0) {
+          let areaPer = ''
+          setAreaPer(areaPer)
+        } else {
+          let areaPer = ',面积占比' + value + '@@%@@'
+          setAreaPer(areaPer)
+        }
+      } else if (name == 'hzbrmc_area_m') {
+        // 面积 - 平方米
+        // let areaM = ',面积' + value + '@@平方米@@'
+        // setAreaM(areaM)
+        if (value == '' || value == 0) {
+          let areaM = ''
+          setAreaM(areaM)
+        } else {
+          let areaM = ',面积' + value + '@@平方米@@'
+          setAreaM(areaM)
+        }
+      } else if (name == 'hzbrmc_area_cm') {
+        // 面积 - 平方厘米
+        // let areaCM = ',面积' + value + '@@平方厘米@@'
+        // setAreaCM(areaCM)
+        if (value == '' || value == 0) {
+          let areaCM = ''
+          setAreaCM(areaCM)
+        } else {
+          let areaCM = ',面积' + value + '@@平方厘米@@'
+          setAreaCM(areaCM)
+        }
+      } else if (name == 'hzbrmc_area_mm') {
+        // 面积 - 平方毫米
+        // let areaMM = ',面积' + value + '@@平方毫米@@'
+        // setAreaMM(areaMM)
+        if (value == '' || value == 0) {
+          let areaMM = ''
+          setAreaMM(areaMM)
+        } else {
+          let areaMM = ',面积' + value + '@@平方毫米@@'
+          setAreaMM(areaMM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_cm') {
+        // 高差 - 厘米
+        // let heightDiffCM = ',高差' + value + '@@厘米@@'
+        // setHeightDiffCM(heightDiffCM)
+        if (value == '' || value == 0) {
+          let heightDiffCM = ''
+          setHeightDiffCM(heightDiffCM)
+        } else {
+          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          setHeightDiffCM(heightDiffCM)
+        }
+      } else if (name == 'hzbrmc_heightdiff_mm') {
+        // 高差 - 毫米
+        // let heightDiffMM = ',高差' + value + '@@毫米@@'
+        // setHeightDiffMM(heightDiffMM)
+        if (value == '' || value == 0) {
+          let heightDiffMM = ''
+          setHeightDiffMM(heightDiffMM)
+        } else {
+          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          setHeightDiffMM(heightDiffMM)
+        }
+      } else if (name == 'hzbrmc_spacing_cm') {
+        // 间距 - 厘米
+        // let spacingCM = ',间距' + value + '@@厘米@@'
+        // setSpacingCM(spacingCM)
+        if (value == '' || value == 0) {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        } else {
+          let spacingCM = ',间距' + value + '@@厘米@@'
+          setSpacingCM(spacingCM)
+        }
+      } else if (name == 'hzbrmc_deformation_mm') {
+        // 变形 - 毫米
+        // let deformationMM = ',变形' + value + '@@毫米@@'
+        // setDeformationMM(deformationMM)
+        if (value == '' || value == 0) {
+          let deformationMM = ''
+          setDeformationMM(deformationMM)
+        } else {
+          let deformationMM = ',变形' + value + '@@毫米@@'
+          setDeformationMM(deformationMM)
+        }
+      } else if (name == 'hzbrmc_num') {
+        // 个数 - 个
+        // let num = ',个数' + value + '@@个@@'
+        // setNum(num)
+        if (value == '' || value == 0) {
+          let num = ''
+          setNum(num)
+        } else {
+          let num = ',个数' + value + '@@个@@'
+          setNum(num)
+        }
+      } else if (name == 'hzbrmc_range_cm') {
+        // 距离 - 厘米
+        // let rangeCM = ',距离' + value + '@@厘米@@'
+        // setRangeCM(rangeCM)
+        if (value == '' || value == 0) {
+          let rangeCM = ''
+          setRangeCM(rangeCM)
+        } else {
+          let rangeCM = ',距离' + value + '@@厘米@@'
+          setRangeCM(rangeCM)
+        }
+      } else if (name == 'hzbrmc_range_mm') {
+        // 距离 - 毫米
+        // let rangeMM = ',距离' + value + '@@毫米@@'
+        // setRangeMM(rangeMM)
+        if (value == '' || value == 0) {
+          let rangeMM = ''
+          setRangeMM(rangeMM)
+        } else {
+          let rangeMM = ',距离' + value + '@@毫米@@'
+          setRangeMM(rangeMM)
+        }
+      } else if (name == 'hzbrmc_depth_cm') {
+        // 深度 - 厘米
+        // let depthCM = ',深度' + value + '@@厘米@@'
+        // setDepthCM(depthCM)
+        if (value == '' || value == 0) {
+          let depthCM = ''
+          setDepthCM(depthCM)
+        } else {
+          let depthCM = ',深度' + value + '@@厘米@@'
+          setDepthCM(depthCM)
+        }
+      } else if (name == 'hzbrmc_depth_mm') {
+        // 深度 - 毫米
+        // let depthMM = ',深度' + value + '@@毫米@@'
+        // setDepthMM(depthMM)
+        if (value == '' || value == 0) {
+          let depthMM = ''
+          setDepthMM(depthMM)
+        } else {
+          let depthMM = ',深度' + value + '@@毫米@@'
+          setDepthMM(depthMM)
+        }
+      } else if (name == 'hzbrmc_volume_m') {
+        // 体积 - 立方米
+        // let volumeM = ',体积' + value + '@@立方米@@'
+        // setVolumeM(volumeM)
+        if (value == '' || value == 0) {
+          let volumeM = ''
+          setVolumeM(volumeM)
+        } else {
+          let volumeM = ',体积' + value + '@@立方米@@'
+          setVolumeM(volumeM)
+        }
+      } else if (name == 'hzbrmc_volume_cm') {
+        // 体积 - 立方厘米
+        // let volumeCM = ',体积' + value + '@@立方厘米@@'
+        // setVolumeCM(volumeCM)
+        if (value == '' || value == 0) {
+          let volumeCM = ''
+          setVolumeCM(volumeCM)
+        } else {
+          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          setVolumeCM(volumeCM)
+        }
+      } else if (name == 'hzbrmc_disp_cm') {
+        // 位移 - 厘米
+        // let dispCM = ',位移' + value + '@@厘米@@'
+        // setDispCM(dispCM)
+        if (value == '' || value == 0) {
+          let dispCM = ''
+          setDispCM(dispCM)
+        } else {
+          let dispCM = ',位移' + value + '@@厘米@@'
+          setDispCM(dispCM)
+        }
+      } else if (name == 'hzbrmc_disp_mm') {
+        // 位移 - 毫米
+        // let dispMM = ',位移' + value + '@@毫米@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',位移' + value + '@@毫米@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_angle_c') {
+        // 角度 - 度
+        // let dispMM = ',角度' + value + '@@度@@'
+        // setDispMM(dispMM)
+        if (value == '' || value == 0) {
+          let dispMM = ''
+          setDispMM(dispMM)
+        } else {
+          let dispMM = ',角度' + value + '@@度@@'
+          setDispMM(dispMM)
+        }
+      } else if (name == 'hzbrmc_chu') {
+        // 处
+        // let chu = ',' + value + '@@处@@'
+        // setChu(chu)
+        if (value == '' || value == 0) {
+          let chu = ''
+          setChu(chu)
+        } else {
+          let chu = ',' + value + '@@处@@'
+          setChu(chu)
+        }
+      } else if (name == 'hzbrmc_tiao') {
+        // 条
+        // let tiao = ',' + value + '@@条@@'
+        // setTiao(tiao)
+        if (value == '' || value == 0) {
+          let tiao = ''
+          setTiao(tiao)
+        } else {
+          let tiao = ',' + value + '@@条@@'
+          setTiao(tiao)
+        }
+      } else if (name == 'hzbrmc_range_fenbu_m') {
+        // 分布范围 - 米
+        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+        // setRangeFenbuM(rangeFenbuM)
+        if (value == '' || value == 0) {
+          let rangeFenbuM = ''
+          setRangeFenbuM(rangeFenbuM)
+        } else {
+          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          setRangeFenbuM(rangeFenbuM)
+        }
+      } else if (name == 'hzbrmc_range_length_m') {
+        // 长度范围 - 米
+        // let rangeLengthM = ',长度范围' + value + '@@米@@'
+        // setRangeLengthM(rangeLengthM)
+        if (value == '' || value == 0) {
+          let rangeLengthM = ''
+          setRangeLengthM(rangeLengthM)
+        } else {
+          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          setRangeLengthM(rangeLengthM)
+        }
+      } else if (name == 'hzbrmc_range_width_mm') {
+        // 宽度范围 - 毫米
+        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+        // setRangeWidthMM(rangeWidthMM)
+        if (value == '' || value == 0) {
+          let rangeWidthMM = ''
+          setRangeWidthMM(rangeWidthMM)
+        } else {
+          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          setRangeWidthMM(rangeWidthMM)
+        }
+      } else if (name == 'hzbrmc_range_spacing_cm') {
+        // 间距范围 - 厘米
+        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+        // setRangeSpacingCM(rangeSpacingCM)
+        if (value == '' || value == 0) {
+          let rangeSpacingCM = ''
+          setRangeSpacingCM(rangeSpacingCM)
+        } else {
+          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          setRangeSpacingCM(rangeSpacingCM)
+        }
+      } else if (name == 'hzbrmc_lb_left_length_m') {
+        // 左腹板长度 - 米
+        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+        // setLeftLengthM(leftLengthM)
+        if (value == '' || value == 0) {
+          let leftLengthM = ''
+          setLeftLengthM(leftLengthM)
+        } else {
+          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          setLeftLengthM(leftLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_length_m') {
+        // 底板长度 - 米
+        // let bottomLengthM = ',底板长度' + value + '@@米@@'
+        // setBottomLengthM(bottomLengthM)
+        if (value == '' || value == 0) {
+          let bottomLengthM = ''
+          setBottomLengthM(bottomLengthM)
+        } else {
+          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          setBottomLengthM(bottomLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_right_length_m') {
+        // 右腹板长度 - 米
+        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+        // setRightLengthM(rightLengthM)
+        if (value == '' || value == 0) {
+          let rightLengthM = ''
+          setRightLengthM(rightLengthM)
+        } else {
+          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          setRightLengthM(rightLengthM)
+        }
+      } else if (name == 'hzbrmc_lb_left_width_mm') {
+        // 左腹板宽度 - 毫米
+        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+        // setLeftWidthMM(leftWidthMM)
+        if (value == '' || value == 0) {
+          let leftWidthMM = ''
+          setLeftWidthMM(leftWidthMM)
+        } else {
+          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          setLeftWidthMM(leftWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
+        // 底板宽度 - 毫米
+        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+        // setBottomWidthMM(bottomWidthMM)
+        if (value == '' || value == 0) {
+          let bottomWidthMM = ''
+          setBottomWidthMM(bottomWidthMM)
+        } else {
+          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          setBottomWidthMM(bottomWidthMM)
+        }
+      } else if (name == 'hzbrmc_lb_right_width_mm') {
+        // 右腹板宽度 - 毫米
+        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+        // setRightWidthMM(rightWidthMM)
+        if (value == '' || value == 0) {
+          let rightWidthMM = ''
+          setRightWidthMM(rightWidthMM)
+        } else {
+          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          setRightWidthMM(rightWidthMM)
+        }
+      } else if (name == 'hzbrmc_slant_m') {
+        // 倾斜量 - 米
+        // let slantM = ',倾斜量' + value + '@@米@@'
+        // setSlantM(slantM)
+        if (value == '' || value == 0) {
+          let slantM = ''
+          setSlantM(slantM)
+        } else {
+          let slantM = ',倾斜量' + value + '@@米@@'
+          setSlantM(slantM)
+        }
       }
-      
-      
+
+      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                    + widthMM + heightM + heightCM + heightMM + areaFace
+                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                    + bottomWidthMM + rightWidthMM + slantM
+      setWriteTxt(writeTxt)
+      console.log('writeTxt', writeTxt);
+      console.log('病害名称',itemData.diseaseName);
+      let binghai = itemData.diseaseName
+      let allText = binghai.concat(writeTxt)
+      console.log('allText', allText);
+      diseaseData['description'] = allText
+      handleFormChenge(allText, diseaseData.description)
     }
 
     // 填入位置描述内容
@@ -8249,21 +13560,72 @@ export function DiseaseH({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          let writePositionTxt = ''
-          setWritePositionTxt(writePositionTxt)
-          diseaseData['writePositionTxt'] = writePositionTxt
-          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
-        } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0){
+          var areaName = ''
+          setAreaName(areaName)
+          console.log('diseaseData.area为空');
+
+          // 左侧描述
+          if (lengthText == '0' || lengthText == '0.0') {
+            var lengthNum = ''
+            setLengthNum(lengthNum)
+          } else if (lengthText !== '0' || lengthText !== '0.0') {
+            var lengthNum = '距左侧' + lengthText + 'm'
+            setLengthNum(lengthNum)
+          }
+
+          // 距顶描述
+          if (heightText == '0' || heightText == '0.0') {
+            var heightNum = ''
+            setHeightNum(heightNum)
+          } else if (heightText !== '0' || heightText !== '0.0') {
+            if (lengthNum == '') {
+              var heightNum = '距顶部' + heightText + 'm'
+              setHeightNum(heightNum)
+            } else {
+              var heightNum = ',距顶部' + heightText + 'm'
+              setHeightNum(heightNum)
+            }
+          }
+
+          if (heightNum == '' && lengthNum == '') {
+            let writePositionTxt = '/' + areaName
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            setDiseaseData(diseaseData)
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else {
+            if (lengthNum == '') {
+              let writePositionTxt = areaName + lengthNum + heightNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            } else {
+              // 位置描述 = / + 病害区域 + 桥台 + 长度 + 高度
+              let writePositionTxt = areaName + lengthNum + heightNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            }
+          }
+        } else {
           console.log('有数据了');
           console.log('构件区域列表：：',areaparam);
           console.log('表单中的构件区域',diseaseData.area);
           console.log('构件类型',labelName);
-          if (labelName == 'at0000' || labelName == undefined && areaparam == '') {
+          if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
+            console.log('empty~~~');
             var areaName = ''
             diseaseData['area'] = areaName
-            // handleFormChenge(areaName, diseaseData.area)
+            handleFormChenge(areaName, diseaseData.area)
+          } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
+            console.log('not empty~~~~');
+            var areaName = diseaseData.area
+            diseaseData['area'] = areaName
+            handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== '') {
+          if (areaparam !== []) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -8272,20 +13634,20 @@ export function DiseaseH({route, navigation}) {
                 console.log('此时选中的构件是：',areaArr[i].label);
                 var areaName = areaArr[i].label
                 console.log(areaName);
+                setAreaName(areaName)
               }
             }
           }
-          setAreaName(areaName)
           
           // 墩/台描述
           // 长度描述
-          if (lengthText == '0') {
+          if (lengthText == '0' || lengthText == '0.0') {
             var lengthNum = ''
             setLengthNum(lengthNum)
             // let pier = ''
             // setPier(pier)
-          } else if (lengthText !== '0') {
-            var lengthNum = '距左侧' + lengthText + 'm,'
+          } else if (lengthText !== '0' || lengthText !== '0.0') {
+            var lengthNum = '距左侧' + lengthText + 'm'
             setLengthNum(lengthNum)
           }
           
@@ -8299,20 +13661,42 @@ export function DiseaseH({route, navigation}) {
           // }
 
           // 距顶描述
-          if (heightText == '0') {
+          if (heightText == '0' || heightText == '0.0') {
             var heightNum = ''
             setHeightNum(heightNum)
-          } else if (heightText !== '0') {
-            var heightNum = ',距顶部' + heightText + 'm'
-            setHeightNum(heightNum)
+          } else if (heightText !== '0' || heightText !== '0.0') {
+            if (lengthNum == '') {
+              var heightNum = '距顶部' + heightText + 'm'
+              setHeightNum(heightNum)
+            } else {
+              var heightNum = ',距顶部' + heightText + 'm'
+              setHeightNum(heightNum)
+            }
           }
 
-          // 位置描述 = / + 病害区域 + 桥台 + 长度 + 宽度 + 距顶
-          let writePositionTxt = areaName + lengthNum + heightNum + '处'
-          setWritePositionTxt(writePositionTxt)
-          diseaseData['writePositionTxt'] = writePositionTxt
-          setDiseaseData(diseaseData)
-          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          if (heightNum == '' && lengthNum == '') {
+            let writePositionTxt = areaName
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            setDiseaseData(diseaseData)
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else {
+
+            if (lengthNum == '') {
+              let writePositionTxt = areaName + lengthNum + heightNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            } else {
+              // 位置描述 = / + 病害区域 + 桥台 + 长度 + 高度
+              let writePositionTxt = areaName + lengthNum + heightNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            }
+          }
         }
       } catch (err) {
         console.log('出现错误1:',err);
@@ -8356,7 +13740,7 @@ export function DiseaseH({route, navigation}) {
         </View>
       </View>
       <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
-        <View style={{width:'30%'}}>
+        <View style={{width:'35%'}}>
            <Select
           label="构件类型"
           name="areatype"
@@ -8367,7 +13751,7 @@ export function DiseaseH({route, navigation}) {
           values={baseData.components}
         /> 
         </View>
-        <View style={{width:'40%'}}>
+        <View style={{width:'35%'}}>
           <View style={tailwind.mB2}>
             {!areaparam.length ? (
               <TextInput
@@ -8445,7 +13829,7 @@ export function DiseaseH({route, navigation}) {
         </View>
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow]}>
-          <LabelItem label="长度" />
+          <LabelItem label="左侧" />
           <KeyboardInput
             name="memberLength"
             value={diseaseData?.memberLength}
@@ -8475,7 +13859,7 @@ export function DiseaseH({route, navigation}) {
         </View> */}
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow,tailwind.mB3]}>
-          <LabelItem label="台高" style={tailwind.w18} />
+          <LabelItem label="顶部" style={tailwind.w18} />
           <KeyboardInput
             name="memberHeight"
             value={diseaseData?.memberHeight}

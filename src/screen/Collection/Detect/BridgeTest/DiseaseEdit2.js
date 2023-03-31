@@ -37,7 +37,7 @@ export default function DiseaseEdit2({route, navigation}) {
 
   const scaleInfoRef = React.useRef();
 
-  const [baseData, itemData, version, headerItems] = hooks.useP1002Init({
+  const [baseData, itemData, version, headerItems, cacheNum] = hooks.useP1002Init({
     route,
     navigation,
   });
@@ -59,6 +59,9 @@ export default function DiseaseEdit2({route, navigation}) {
   }, [itemData]);
 
   React.useEffect(() => {
+  }, [cacheNum]);
+
+  React.useEffect(() => {
     saveData.current = {...diseaseData};
   }, [diseaseData]);
 
@@ -66,6 +69,7 @@ export default function DiseaseEdit2({route, navigation}) {
     // route内容为DiseaseList文件handleModelCallBack传入的data数据
     // console.log('route', route);
     // console.log('route.params.cacheNum',route.params.data.cacheNum);
+    console.log('Edit2 cacheNum', cacheNum);
     console.log('当前选择的membertype： ', route.params.routeParams.membertype + ' - ' + route.params.routeParams.title);
     console.log('params: ', navigation.routeParams);
     return () => {
@@ -124,7 +128,7 @@ export default function DiseaseEdit2({route, navigation}) {
   }, [baseData, saveData, version, route.params, dispatch]);
 
   React.useEffect(()=>{
-    console.log('routeroute:', route.params.data.jsondata);
+    console.log('routeroute9 jsondata:', route.params.data.jsondata);
     // console.log('memberLength:', route.params.data.jsondata.memberLength);
     let list = []
     if(baseData.membercheckdata&&route.params.thridData){
