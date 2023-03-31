@@ -57,6 +57,16 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
     } else {
       setNowEdit({});
     }
+    try {
+      // console.log('bigData data', data);
+      // console.log('-----------');
+      // console.log('bigData data[0].list', data[0].list);
+      // console.log('------');
+      // console.log('bigData data[0].list', data[0].list[0]);
+    } catch (err) {
+      console.log('err000',err);
+    }
+    
   }, [data]);
 
   const handleColor = ({memberstatus}) => {
@@ -195,6 +205,8 @@ export default function Member({route, navigation}) {
 
   const {data} = route.params;
 
+  const [resetCacheNum, setResetCacheNum] = React.useState('')
+
   useFocusEffect(
     React.useCallback(() => {
       editLog
@@ -202,11 +214,15 @@ export default function Member({route, navigation}) {
           projectid: project.projectid,
           bridgeid: bridge.bridgeid,
         })
-        .then(res => setEditLogList(res));
+        .then(res => {
+          // console.log('res9',res);
+          setEditLogList(res)
+        });
     }, [project, bridge]),
   );
 
   React.useEffect(() => {
+    // console.log('member route11111', route);
     if (!partsList || !data || !basememberinfo) {
       return;
     }
@@ -244,6 +260,10 @@ export default function Member({route, navigation}) {
     setNowGroup(_list ? _list[0].stepno : null);
     setList(_list);
     setParts(_parts);
+    // console.log('datadata2',route);
+    console.log('datadata2 cachenumjson',route.params.cachenumjson);
+    setResetCacheNum(route.params.cachenumjson)
+    console.log('memberList resetCacheNum',resetCacheNum);
   }, [partsList, data, basememberinfo]);
 
   const getHeaderItems = () => {
@@ -317,47 +337,54 @@ export default function Member({route, navigation}) {
       list: parts.filter(item => checkedList.has(item.id)),
       dataGroupId: checkedList.size > 1 ? uuid.v4() : '',
       routeParams: data,
+      // route.params.cachenumjson 为 Disasehooks路由传入
+      cacheNum:route.params.cachenumjson
     });
   };
 
   const getMedia = () => {
-    const nowEdit = parts.find(item => checkedList.has(item.id));
-    const dataid = nowEdit
-      ? nowEdit.memberid
-      : data.type === 'member'
-      ? data.membertype
-      : nowGroup;
-    const categoryList =
-      checkedList.size === 0
-        ? [
-            {
-              value: `member-${
-                data.type === 'member' ? data.membertype : nowGroup
-              }`,
-              label: '结构照片',
-            },
-          ]
-        : [
-            {
-              value: `member-${nowEdit?.memberid}`,
-              label: '结构照片',
-            },
-          ];
-    const defaultFileName =
-      checkedList.size === 0
-        ? data.type === 'member'
-          ? data.title
-          : basememberinfo.find(item => item.membertype === nowGroup)
-              ?.membername
-        : nowEdit.membername;
-    return (
-      <Media
-        dataid={dataid}
-        type={checkedList.size === 0 ? 'member' : 'parts'}
-        defaultFileName={`${defaultFileName}状况`}
-        categoryList={categoryList}
-      />
-    );
+    try {
+      const nowEdit = parts.find(item => checkedList.has(item.id));
+      const dataid = nowEdit
+        ? nowEdit.memberid
+        : data.type === 'member'
+        ? data.membertype
+        : nowGroup;
+      const categoryList =
+        checkedList.size === 0
+          ? [
+              {
+                value: `member-${
+                  data.type === 'member' ? data.membertype : nowGroup
+                }`,
+                label: '结构照片',
+              },
+            ]
+          : [
+              {
+                value: `member-${nowEdit?.memberid}`,
+                label: '结构照片',
+              },
+            ];
+      const defaultFileName =
+        checkedList.size === 0
+          ? data.type === 'member'
+            ? data.title
+            : basememberinfo.find(item => item.membertype === nowGroup)
+                ?.membername
+          : nowEdit.membername;
+      return (
+        <Media
+          dataid={dataid}
+          type={checkedList.size === 0 ? 'member' : 'parts'}
+          defaultFileName={`${defaultFileName}状况`}
+          categoryList={categoryList}
+        />
+      );
+    } catch (err) {
+      console.log('getMedia err',err);
+    }
+    
   };
 
   return (

@@ -297,7 +297,7 @@ export default function DiseaseList({route, navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log('123321');
+      // console.log('123321');
       if (!list || isLoading) {
         return;
       }
@@ -361,24 +361,48 @@ export default function DiseaseList({route, navigation}) {
           //   {memberHeight: res[0].jsondata.memberHeight}
           // ]
 
+          console.log('DiseaseList route', route);
+          console.log('res[0].jsondata', route.params.title);
+          console.log('DiseaseList cacheNum', route.params.cacheNum);
+
           // 将一片梁下最初始填的长宽高数据传给这片梁下后续的病害填写表单，使其成为默认值
+          // try {
+          //   let cacheNum = []
+          //   if (res[0].jsondata !== undefined || res[0].jsondata !== '') {
+          //     cacheNum = [
+          //       {
+          //         title:route.params.title,
+          //         memberLength: res[0].jsondata.memberLength,
+          //         memberWidth: res[0].jsondata.memberWidth,
+          //         memberHeight: res[0].jsondata.memberHeight
+          //       }
+          //     ]
+          //     console.log('cacheNum000',cacheNum);
+          //     console.log('diseaseList route', route);
+          //     setCacheNum(cacheNum)
+          //   } else {
+          //     console.log('jsondata为空');
+          //   }
+          // } catch {}
+
           try {
-            if (res[0].jsondata !== undefined || res[0].jsondata !== '') {
-              let cacheNum = [
+            let cacheNum = []
+            if (route.params.cacheNum !== undefined) {
+              cacheNum = [
                 {
-                  memberLength: res[0].jsondata.memberLength,
-                  memberWidth: res[0].jsondata.memberWidth,
-                  memberHeight: res[0].jsondata.memberHeight
+                  title:route.params.cacheNum[0].title,
+                  memberLength: route.params.cacheNum[0].memberLength,
+                  memberWidth: route.params.cacheNum[0].memberWidth,
+                  memberHeight: route.params.cacheNum[0].memberHeight !== undefined ? route.params.cacheNum[0].memberHeight : '0'
                 }
               ]
-              console.log('cacheNum',cacheNum);
+              console.log('cacheNum000',cacheNum);
+              console.log('diseaseList route', route);
               setCacheNum(cacheNum)
             } else {
               console.log('jsondata为空');
             }
           } catch {}
-          
-          
         });
     }, [list, isLoading, dataGroupId]),
   );
@@ -411,7 +435,12 @@ export default function DiseaseList({route, navigation}) {
       },
       {
         name: title,
-        onPress: () => navigation.goBack(),
+        // onPress: () => navigation.goBack(),
+        onPress: () =>
+          navigation.navigate('Collection/Detect/BridgeTest/Member', {
+            data: route.params.routeParams,
+            cachenumjson: cacheNum
+          }),
       },
       {
         name:
@@ -430,9 +459,9 @@ export default function DiseaseList({route, navigation}) {
       setGroup(a)
     }
     typeModelRef.current.open();
-    data['cacheNum'] = cacheNum
+    data['cacheNum'] = cacheNum  // route.params.cacheNum
     setWaitingData(data);
-    console.log('datadata',data);
+    console.log('datadata6',data);
   };
 
   const handleEdit = data => {
@@ -453,7 +482,7 @@ export default function DiseaseList({route, navigation}) {
       data: data,
       memberList: list,
       dataGroupId,
-      routeParams
+      routeParams,
     });
   };
 
@@ -475,7 +504,8 @@ export default function DiseaseList({route, navigation}) {
   }; */
 
   const handleModelCallBack = data => {
-    console.log("data",data.secondDisTypeData.paneltype);
+    console.log("data6661",data.secondDisTypeData.paneltype);
+    console.log("data6662",waitingData);
     const url =
       data.secondDisTypeData.paneltype === 'p1001'
         ? 'Collection/Detect/BridgeTest/Member/DiseaseEdit'
@@ -487,7 +517,7 @@ export default function DiseaseList({route, navigation}) {
       data: waitingData,
       memberList: list,
       dataGroupId,
-      routeParams
+      routeParams,
     });
     setWaitingData({});
   };
