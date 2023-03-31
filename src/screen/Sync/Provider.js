@@ -8,6 +8,10 @@ import {Context as GlobalContext} from '../../providers/GlobalProvider';
 import {alert} from '../../utils/alert';
 import storage from '../../utils/storage';
 import * as createData from './createData';
+import { BucketName_storeTestData } from '../../assets/OBSConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import fs from '../../utils/fs'
+import RNFS from 'react-native-fs';
 
 const Context = React.createContext();
 
@@ -29,7 +33,7 @@ const getBaseData = async () => {
 
 function Provider({children}) {
   const {
-    state: {userInfo},
+    state: {userInfo,basememberinfo},
   } = React.useContext(GlobalContext);
 
   const [state, dispatch] = React.useReducer(reducer, {
@@ -94,7 +98,6 @@ function Provider({children}) {
               [data],
               userInfo.token.access_token,
             );
-
             if (success) {
               const res = await uploadData.syncCreateBridgeMemberList(
                 member,
@@ -167,28 +170,154 @@ function Provider({children}) {
         alert('上传完成');
       } else {
         const upload = async () => {
+          console.log("1111");
           try {
-            const data = await createData.getTestData(
+            // 获取数据
+            const allData = await createData.getData(
               state.testDataUploadingIds[inx],
               state.planMeta,
               state.genesisMate,
               state.membercheckdata,
+              basememberinfo
+            );
+            const data = allData.data
+            const mediaData = allData.mediaData
+            
+            //---------对检测数据操作
+            //---文件夹
+            // 文件夹地址，根据 桥id 建立文件夹
+            let dirPath = RNFS.DocumentDirectoryPath + '/testData/' + data.bridgeid
+            // 创建文件夹
+            await fs.mkdir(dirPath)
+            //---写入本地
+            // 文件地址 = 桥梁文件夹 + 检测id
+            let dataPath = dirPath + '/' + data.testData.bridgereportid + '.txt'
+            // 将数据存入本地
+            await fs.write(dataPath,JSON.stringify(data),'utf8')
+            //---获取文件信息
+            //文件大小
+            let fileSize = 0
+            //文件创建时间
+            let fileCTime = ''
+            await fs.getFileInfo(dataPath).then(res=>{
+              fileSize = res.size
+              fileCTime = res.ctime
+            })
+            //--将GMT时间 转换为 yyyy-mm-dd
+            let date = new Date(fileCTime)
+            fileCTime = date.getFullYear() + '-' +
+            (date.getMonth() + 1) + '-' + 
+            date.getDate() + ' ' + 
+            date.getHours() + ':' + 
+            date.getMinutes() + ':' + 
+            date.getSeconds()
+
+            //---------存储到华为云的键值
+            // 获取用户信息
+            const userInfo = JSON.parse(await AsyncStorage.getItem('userInfo'))
+            // 企业编号/用户编号/桥梁编号/桥梁检测编号/对象文件编号
+            let ObsReportDataKey = userInfo.company.companyid + '/'
+                        + data.testData.userid + '/'
+                        + data.bridgeid + '/'
+                        + data.testData.bridgereportid + '/'
+                        + 'reportData.txt'
+            
+            //---------上传反馈数据
+            let feedbackParams = {
+              bucketname:BucketName_storeTestData,
+              objectkey:ObsReportDataKey,
+              obsstorage:1,
+              objecttype:'txt',
+              objectsize:fileSize,
+              downserver:'00000000-0000-0000-0000-bcaec5b80c54',
+              projectkey:data.testData.projectid,
+              objectinfo:{
+                companyid:userInfo.company.companyid,
+                userid:data.testData.userid,
+                filenameuser:data.testData.bridgereportid,
+                filenamesys:data.testData.bridgereportid,
+                filesize:Math.floor(fileSize/1024*100)/100,
+                filetypes:'.json',
+                dirpath:ObsReportDataKey.replace("reportData.txt",""),
+                fileinfo:'',
+                filemd5:'',//obs反馈的etag
+                projectkey:data.testData.projectid,
+                createtime:fileCTime+"",
+                checkbridgeid:data.testData.bridgereportid,
+                bridgename:data.bridgename
+              }
+            }
+            //---------上传检测数据到云
+            uploadData.syncUploadTestDataToObs(ObsReportDataKey,JSON.stringify(data)).then(res=>{
+              let newFeedbackParams = feedbackParams
+              newFeedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
+              //---------反馈
+              uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+                //console.log("res",res);
+              }).catch(err=>console.log("err",err))
+            }).catch(err=>console.log("err",err))
+
+            //---------上传媒体数据到云
+            await Promise.all(
+              mediaData
+                .filter(({filepath}) => filepath)
+                .map(async item => {
+                  //将文件地址分割获取文件名
+                  let arr = item.filepath.split('/')
+                  //拼接key
+                  let key = userInfo.company.companyid + '/'
+                    + data.testData.userid + '/'
+                    + data.bridgeid + '/'
+                    + data.testData.bridgereportid + '/'
+                    + arr[arr.length-1].replace("jpg","jpeg")
+                  return await uploadData.uploadImageToObs(key,item.filepath).then(res=>{
+                    //设置反馈参数
+                    let newFeedbackParams = {
+                      ...feedbackParams,
+                      objectkey:key,
+                      objecttype:'img',
+                      objectsize:item.filesize,
+                      objectinfo:{
+                        ...feedbackParams.objectinfo,
+                        filenameuser:item.filename + '.' + item.filetypes.replace("jpg","jpeg"),
+                        filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
+                        filesize:Math.floor(item.filesize/1024*100)/100,
+                        filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
+                        filemd5:(res.InterfaceResult.ETag.replace("\"","")).replace("\"",""),
+                        createtime:item.u_date
+                      }
+                    }
+                    //---------反馈
+                    uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+                      console.log("res",res);
+                    }).catch(err=>console.log("err",err))
+                  }).catch(err=>console.log("err",err))
+                }),
             );
 
-            if (data) {
+            //------以下注释为 原上传逻辑
+            /* const data = await createData.getTestData(
+              state.testDataUploadingIds[inx],
+              state.planMeta,
+              state.genesisMate,
+              state.membercheckdata,
+              basememberinfo
+            ); */
+             // console.log("data",data);
+         /*   if (data) {
               // 桥梁项目关联数据
-              await uploadData.syncCreateReportList(
+              await uploadData.syncCreateReportListToObs(
                 state.testDataUploadProject.projectid,
                 data.bridgeReportData ? [data.bridgeReportData] : [],
                 userInfo.token.access_token,
               );
               // 桥梁项目关联构件数据
-              await uploadData.syncCreateReportMemberList(
+              await uploadData.syncCreateReportMemberListToObs(
                 data.bridgeReportMemberData,
                 userInfo.token.access_token,
               );
               // 检测记录
-              await uploadData.syncCreateMemberCheckStatus(
+              await uploadData.syncCreateMemberCheckStatusToObs(
                 data.membercheckstatus,
                 userInfo.token.access_token,
               );
@@ -202,25 +331,25 @@ function Provider({children}) {
                   updata.push(item);
                 }
               });
-              await uploadData.syncCreateCheckStatusDataJson(
+              await uploadData.syncCreateCheckStatusDataJsonToObs(
                 updata,
                 userInfo.token.access_token,
               );
 
               // 裂缝数据
-              await uploadData.syncCreateMemberCheckStatusC1003(
+              await uploadData.syncCreateMemberCheckStatusC1003ToObs(
                 data.testData.filter(({datatype}) => datatype === 'c1003'),
                 userInfo.token.access_token,
               );
 
               // 病害程度值
-              await uploadData.syncCreateCheckStatusDataStrValue(
+              await uploadData.syncCreateCheckStatusDataStrValueToObs(
                 data.strvaluearr,
                 userInfo.token.access_token,
               );
 
               // 媒体数据
-              await uploadData.syncCreateCheckStatusMedia(
+              await uploadData.syncCreateCheckStatusMediaToObs(
                 data.mediaData,
                 userInfo.token.access_token,
               );
@@ -230,7 +359,7 @@ function Provider({children}) {
                 data.mediaData
                   .filter(({filepath}) => filepath)
                   .map(async item => {
-                    return await uploadData.upload(
+                    return await uploadData.uploadImageToObs(
                       {
                         uri: item.filepath,
                         type: item.filename.split('.').pop(),
@@ -248,12 +377,12 @@ function Provider({children}) {
                 to_projcet_id: state.testDataUploadProject.projectid,
                 to_projcet_name: state.testDataUploadProject.projectname,
               });
-            }
+            } */
 
-            dispatch({
+            /* dispatch({
               type: 'testDataUploadEndIds',
               payload: state.testDataUploadingIds?.slice(0, inx + 1),
-            });
+            }); */
           } catch (err) {
             console.info(err);
           } finally {

@@ -13,7 +13,7 @@ import {
   Keyboard,
   ImageBackground,
 } from 'react-native';
-import {fetchAuthorize, fetchUsersProfile} from '../utils/user';
+import {fetchAuthorize, fetchUsersProfile, fetchInitAccessToken, fetchRegisterApplication, fetchoOtainAccessToken, fetchObtainUserInfo} from '../utils/user';
 import {TextInput, Password} from '../components/Input';
 import Button from '../components/Button';
 import {Context} from '../providers/GlobalProvider';
@@ -75,6 +75,42 @@ export default function Login() {
       };
       await user.login(userData);
       await setUserInfo(userData);
+
+    /*   //---1、获取应用注册初始化令牌
+      const token = await fetchInitAccessToken(credentials)
+      console.log("token",token);
+      //---2、注册应用
+      //注册应用的body
+      const RegisterAppBody = {
+        client_name: "user_test_mobile_app",
+        client_uri: "http://a.test.net",
+        scope: "user",
+        redirect_uris: ["http://a.test.net/callback"],
+        grant_types: ["password"],
+        response_types: ["code"],
+        token_endpoint_auth_method: "client_secret_basic"
+      }
+      let ApplicationInfo = await fetchRegisterApplication(token.access_token,RegisterAppBody)
+      console.log("ApplicationInfo",ApplicationInfo);
+      //---3、获取访问令牌
+      //获取访问令牌的body
+      const GetAccessTokenBody = {
+        grant_type:"password",
+        password:password,
+        username:username,
+        scope:"user"
+      }
+      const arr = []
+      for(let key in GetAccessTokenBody){
+       arr.push(`${encodeURIComponent(key)}=${encodeURIComponent(GetAccessTokenBody[key])}`)
+      }
+      //clientInfo
+      const clientInfo = new Buffer.from(`${ApplicationInfo.client_id}:${ApplicationInfo.client_secret}`).toString('base64',)
+      let accessTokenInfo = await fetchoOtainAccessToken(clientInfo,arr.join('&'))
+      console.log("accessTokenInfo",accessTokenInfo);
+      //---4、获取用户信息
+      const userInfo = await fetchObtainUserInfo(accessTokenInfo.access_token)
+      console.log("userInfo",userInfo); */
     } catch (err) {
       console.info(err);
       setIsLoading(false);

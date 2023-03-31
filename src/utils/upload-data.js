@@ -1,7 +1,9 @@
 import axios from 'axios';
 import RNFetchBlob from 'rn-fetch-blob';
+import { uploadTestDataToObs } from './OBS';
 
 const host = 'http://testdata.api.jianlide.cn:1088';
+const feedbackHost = 'http://114.116.196.47:10807'; 
 
 /*
  * 获取桥梁项目列表
@@ -146,6 +148,17 @@ export const syncCreateReportList = (project_id, objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateReportList("test_project_id", []));
+export const syncCreateReportListToObs = (project_id, objects, access_token) =>
+  new Promise((resolve, reject) => {
+    console.info('桥梁项目关联数据');
+    console.log("project_id",project_id);
+    console.log("objects",objects);
+   /*  uploadTestDataToObs(project_id,{project_id, objects}).then(res=>{
+      resolve(res);
+    }).catch(err=>{
+      reject(err);
+    }) */
+  }); 
 
 /*
  * 创建桥梁检测构件列表
@@ -177,6 +190,15 @@ export const syncCreateReportMemberList = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateReportMemberList([]));
+export const syncCreateReportMemberListToObs = (objects, access_token) =>
+  new Promise((resolve, reject) => {
+    console.info('桥梁项目关联构件数据');
+    /* uploadTestDataToObs('ReportMemberList',objects).then(res=>{
+      resolve(res);
+    }).catch(err=>{
+      reject(err);
+    }) */
+  });
 
 /*
  * 创建检测构件检测记录
@@ -209,6 +231,15 @@ export const syncCreateMemberCheckStatus = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateMemberCheckStatus([]));
+export const syncCreateMemberCheckStatusToObs = (objects, access_token) =>
+  new Promise((resolve, reject) => {
+    console.info('检测记录');
+    uploadTestDataToObs('MemberCheckStatus',objects).then(res=>{
+      resolve(res);
+    }).catch(err=>{
+      reject(err);
+    })
+  });
 
 /*
  * 创建数据记录
@@ -240,6 +271,15 @@ export const syncCreateCheckStatusDataJson = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateMemberCheckStatus([]));
+export const syncCreateCheckStatusDataJsonToObs = (objects, access_token) =>
+  new Promise((resolve, reject) => {
+    console.info('检测记录扩展数据');
+    uploadTestDataToObs('CheckStatusDataJson',objects).then(res=>{
+      resolve(res);
+    }).catch(err=>{
+      reject(err);
+    })
+  });
 
 /*
  * 创建病害程度值
@@ -271,6 +311,15 @@ export const syncCreateCheckStatusDataStrValue = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateCheckStatusDataStrValue([]));
+export const syncCreateCheckStatusDataStrValueToObs = (objects, access_token) =>
+  new Promise((resolve, reject) => {
+    console.info('病害程度值');
+    uploadTestDataToObs('CheckStatusDataStrValue',objects).then(res=>{
+      resolve(res);
+    }).catch(err=>{
+      reject(err);
+    })
+  });
 
 /*
  * 创建裂缝记录
@@ -302,6 +351,15 @@ export const syncCreateMemberCheckStatusC1003 = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateMemberCheckStatusC1003([]));
+export const syncCreateMemberCheckStatusC1003ToObs = (objects, access_token) =>
+  new Promise((resolve, reject) => {
+    console.info('裂缝数据');
+    uploadTestDataToObs('MemberCheckStatusC1003',objects).then(res=>{
+      resolve(res);
+    }).catch(err=>{
+      reject(err);
+    })
+  });
 
 /*
  * 创建媒体数据
@@ -333,6 +391,15 @@ export const syncCreateCheckStatusMedia = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateCheckStatusMedia([]));
+export const syncCreateCheckStatusMediaToObs = (objects, access_token) =>
+  new Promise((resolve, reject) => {
+    console.info('媒体数据');
+    uploadTestDataToObs('MemberCheckStatusC1003',objects).then(res=>{
+      resolve(res);
+    }).catch(err=>{
+      reject(err);
+    })
+  });
 
 /*
  * 文件上传
@@ -372,3 +439,52 @@ export const upload = (file, filename, access_token) =>
       .catch(err => console.info(err));
   });
 //console.log(await upload(fs.createReadStream("package.mp4")));
+
+
+  //上传检测数据到云
+  export const syncUploadTestDataToObs = (key,objects) =>
+  new Promise((resolve, reject) => {
+    uploadTestDataToObs(key,objects).then(res=>{
+      resolve(res);
+    }).catch(err=>{
+      reject(err);
+    })
+  });
+  //上传媒体数据到云
+export const uploadImageToObs = (key,filePath) =>
+new Promise(async (resolve, reject) => {
+  console.info('文件上传');
+  let data = ''
+  RNFetchBlob.fs.readStream(filePath,'base64',4095).then((ifstream)=>{
+    ifstream.open()
+    ifstream.onData((chunk) => {
+      // when encoding is `ascii`, chunk will be an array contains numbers
+      // otherwise it will be a string
+      data += chunk
+    })
+    ifstream.onError((err) => {
+      console.log('oops', err)
+    })
+    ifstream.onEnd(() => {
+      uploadTestDataToObs(key,data).then(res=>{
+        resolve(res);
+      }).catch(err=>{
+        reject(err);
+      })
+    })
+  })
+});
+  //上传到云后，反馈到后端
+  export const syncUploadToObsAfterFeedback = (params) =>
+  new Promise((resolve, reject) => {
+      fetch('http://114.116.196.47:10807/api/obs/object-upload-notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body:JSON.stringify(params)
+      })
+        .then(res => res.json())
+        .then(resolve)
+        .catch(err => reject(err));
+  });

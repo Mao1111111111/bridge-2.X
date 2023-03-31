@@ -12,6 +12,7 @@ import {syncGetProject, syncGroups} from '../../../utils/upload-data';
 import {Context} from '../Provider';
 import NotSync from './NotSync';
 import Synced from './Synced';
+import { uploadToObs } from '../../../utils/OBS';
 
 const ProjectModel = React.forwardRef(({projectList, callBack}, ref) => {
   const {
