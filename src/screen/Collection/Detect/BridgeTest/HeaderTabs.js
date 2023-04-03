@@ -1,3 +1,7 @@
+/* 
+  桥梁检测页面的 顶部tab
+  年份tab + 数据/影音tab
+ */
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {tailwind} from 'react-native-tailwindcss';
@@ -32,13 +36,16 @@ export default function HeaderTabs({onChangeTab, style, disabled}) {
 
   return (
     <View style={[styles.tabsBox, style]}>
+      {/* 年份tabs */}
       <Tabs style={[tailwind.mB1,{position:'absolute',left:80}]} defaultActive="2022" tabs={yaer} />
+      {/* 数据影音tabs */}
       <Tabs
         tabs={page}
         type="button"
         disabled={disabled}
         defaultActive="数据"
         style={[tailwind.mB1, tailwind.mR1, {position:'absolute',right:80}]}
+        // 点击tab时
         onChangeTab={onChangeTab}
       />
       <View style={[tailwind.mY4]}></View>

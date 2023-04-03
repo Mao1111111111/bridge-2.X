@@ -1,3 +1,6 @@
+/* 
+  桥梁检测的 媒体组件
+ */
 import React from 'react';
 import _ from 'lodash';
 import uuid from 'react-native-uuid';
@@ -144,11 +147,14 @@ const RowMediaComponent = ({item, onPress, isActive}) => {
   );
 };
 
+// 媒体组件
 export default function Media({categoryList, type, dataid, defaultFileName}) {
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 桥梁检测全局参数 -- 文件列表
   const {
     state: {fileList},
     dispatch,
@@ -367,6 +373,7 @@ export default function Media({categoryList, type, dataid, defaultFileName}) {
   }, 500);
 
   return (
+    // Content 外部盒子
     <Content
       onAdd={handleAdd}
       onCopy={list.length === 1 ? null : handleCopy}

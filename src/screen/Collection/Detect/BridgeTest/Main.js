@@ -22,27 +22,38 @@ import MemberEdit from './MemberEdit';
 import Media from './Media';
 
 export default function Main({navigation}) {
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 桥梁检测的全局参数
   const {
     state: {
+      // 项目信息 -- 从前面的项目表中传过来的
       project,
+      // 检测桥梁的部件列表
       memberList,
+      // 检测id
       bridgereportid,
+      // 检测桥梁的跨列表
       kuaList,
+      // 当前桥梁检测 的 媒体文件
       fileList,
+      // 检测构件列表
       partsList,
+      // 桥梁信息 -- 从前面的桥梁表中传过来的
       bridge,
     },
     dispatch,
   } = React.useContext(Context);
 
+  // 全局参数 -- 桥幅属性
   const {
     state: {bridgeside},
   } = React.useContext(GlobalContext);
 
+  // 当前tab
   const [pageType, setPageType] = React.useState('数据');
 
   const [nowEdit, setNowEdit] = React.useState(null);
@@ -144,10 +155,13 @@ export default function Main({navigation}) {
     );
   };
 
+  // 获取 顶部导航项
   const getHeaderItems = () => {
+    // 没有项目名时，返回 []
     if (!project.projectname) {
       return [];
     }
+    // 桥幅属性名
     let paramname = '';
     if (bridgeside && bridge) {
       paramname =
@@ -161,11 +175,13 @@ export default function Main({navigation}) {
       //   onPress: () => navigation.navigate('Collection/Detect/Project'),
       // },
       {
+        // 项目名称 -- 点击返回项目下的，桥梁列表
         name: `${project.projectname}`,
         onPress: () =>
           navigation.navigate('Collection/Detect/ProjectDetail', {project}),
       },
       {
+        // 桥梁桩号 - 桥梁名称 - 桥幅属性
         name: `${bridge.bridgestation}-${bridge.bridgename}-${paramname}`,
       },
     ];
@@ -221,9 +237,12 @@ export default function Main({navigation}) {
   };
 
   return (
+    // 外部盒子 = 样式 + 顶部导航 + 导航左侧标签
     <Box headerItems={getHeaderItems()} pid="P1301">
+      {/* 年份tab + 数据/影音tab，onChangeTab 为点击数据/影音tab时 */}
       <HeaderTabs onChangeTab={setPageType} />
       {pageType !== '数据' ? (
+        //---------影音---------
         <Media
           type="bridge"
           dataid={bridge.bridgeid}
@@ -243,6 +262,7 @@ export default function Main({navigation}) {
           ]}
         />
       ) : (
+        //---------数据---------
         <Content
           operations={[
             {

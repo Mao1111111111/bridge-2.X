@@ -6,11 +6,14 @@ import Headerbar from './Headerbar';
 import EditMenu from './EditMenu';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 
+// 盒子
 export function Box({pid, children, headerItems}) {
   return (
+    // 点击空白处，收起键盘
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={[tailwind.flex1]}>
         <View style={[tailwind.mX19,{position:'absolute',top:13,left:70}]}>
+          {/* 顶部导航 */}
           <Headerbar items={headerItems || []} pid={pid || ''} />
         </View>
         <View style={[tailwind.mY6]}></View>
@@ -20,6 +23,7 @@ export function Box({pid, children, headerItems}) {
   );
 }
 
+// 用于影音
 export function Content({
   children,
   onAdd,
@@ -117,6 +121,7 @@ export function Content({
   return (
     <View
       style={[tailwind.flex1, tailwind.flexRow, tailwind.pX4, tailwind.mB3]}>
+      {/* 左侧菜单 */}
       {!hideMenu ? (
         <View style={[tailwind.mR3,tailwind.pX1]}>
           <EditMenu
@@ -131,18 +136,23 @@ export function Content({
       ) : (
         <></>
       )}
+      {/* 内容 */}
       <View style={tailwind.flex1}>{children}</View>
+      {/* 右侧菜单 */}
       {!hideMenu ? (
         <View style={tailwind.mL3}>
           {/* <CircleButton name="help" /> */}
           {/* <View style={tailwind.mY10} /> */}
+          {/* 父组件传入的组件 */}
           {operationsComponents ? operationsComponents : <></>}
+          {/* 操作列表 */}
           {operations ? (
             operations.map((operation, index) => (
               <React.Fragment key={index}>
                 <View style={tailwind.mY1} />
                 {/* <CircleButton {...operation} /> */}
                 <View>
+                    {/* Pressable 按钮点击效果 */}
                     <Pressable {...operation} onPressIn={() => imgPulldown(operation.img)} onPressOut={() => imgPullup(operation.img)}>
                       <Image style={
                       { height: 45, width: 45, alignItems: 'center' }}

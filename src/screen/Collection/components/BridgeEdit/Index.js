@@ -214,6 +214,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
     return `${values.bridgestation} ${values.bridgename} ${paramname} 已存在`;
   };
 
+  // 新增桥梁时
   const add = async (_values, parts) => {
     try {
       // 检测数据库中 桥梁名字 和 桥幅属性 是否存在
@@ -222,14 +223,17 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         setLoading(false);
         return;
       }
+      // 随机数作为 bridgeid
       const UUID = uuid.v4();
       console.info('add');
+      // 将桥梁存入 bridge 表
       await bridge.save({
         ..._values,
         bridgeid: UUID,
         userid: userInfo.userid,
         username: userInfo.nickname,
       });
+      // 将当前桥梁的 所有构件存入 桥梁构件表
       await Promise.all(
         parts.map(
           it =>
@@ -244,7 +248,9 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
             }),
         ),
       );
+      // 如果是在项目中新建的桥梁，那么将桥梁和项目绑定 
       if (project.id) {
+        // 如果 bridgereportid 不存在，那么存入数据库的 bridgereportid 是 随机数
         await bridgeProjectBind.save({
           projectid: project.projectid,
           bridgeid: UUID,
@@ -253,6 +259,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
       }
       Alert.alert('消息', '保存成功');
       setLoading(false);
+      // 父组件的onSubmitOver
       await onSubmitOver();
       onClose();
     } catch (error) {
@@ -262,15 +269,20 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
     }
   };
 
+  // 修改桥梁时
   const update = async (_values, parts) => {
     try {
+      // 检测数据库中 桥梁名字 和 桥幅属性 是否存
       if (!(await bridge.checkNameAndCode(values))) {
         Alert.alert('消息', getMessage());
         setLoading(false);
         return;
       }
+      // 更新数据库中的桥梁数据
       await bridge.update(_values);
+      // 桥梁构件表中移除当前桥梁的数据
       await bridgeMember.remove(_values.bridgeid);
+      // 将构件数据重新存入
       await Promise.all(
         parts.map(
           it =>
@@ -299,6 +311,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
   // 克隆
   const clone = async (_values, parts) => {
     try {
+      // 检测数据库中 桥梁名字 和 桥幅属性 是否存在
       if (
         !(await bridge.checkNameAndCode({
           ...values,
@@ -309,13 +322,16 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         setLoading(false);
         return;
       }
+      // 桥梁id 为 随机数
       const UUID = uuid.v4();
+      // 将桥梁数据存入数据库
       await bridge.save({
         ..._values,
         bridgeid: UUID,
         userid: userInfo.userid,
         username: userInfo.nickname,
       });
+      // 存入当前桥梁的所有构件
       await Promise.all(
         parts.map(
           it =>
@@ -330,6 +346,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
             }),
         ),
       );
+      // 如果是在项目中克隆的桥梁，那么将数据存入桥梁项目绑定表
       if (project.id) {
         if (project.id) {
           await bridgeProjectBind.save({

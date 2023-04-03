@@ -83,7 +83,9 @@ const Provider = props => {
     // 桥墩形式
     // bridgepier :[]
     // 支座编号
-    // bridgepadno :[]
+    // bridgepadno :[],
+    // 桥梁桩号
+    // bridgestation：''
     //*********后续添加的参数 end **********/
   });
 

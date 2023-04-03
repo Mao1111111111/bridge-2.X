@@ -1,3 +1,6 @@
+/* 
+  桥梁检测路由
+ */
 import React from 'react';
 import NavigatorStack from '../../../../components/NavigatorStack';
 import {Provider} from './Provider';
@@ -14,6 +17,7 @@ export default function Index({route}) {
   const {project, bridge} = route.params;
 
   return (
+    // bridge是这条桥梁的数据，project是项目信息
     <Provider bridge={bridge} project={project}>
       <NavigatorStack
         routes={[
