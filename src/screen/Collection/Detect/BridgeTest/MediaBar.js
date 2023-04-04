@@ -6,18 +6,29 @@ import Camera from '../../../../components/Camera';
 import Album from '../../../../components/Album';
 import {CircleButton} from '../../../../components/Button';
 
+// 媒体按钮组
 export default function MediaBar({
+  // 打开文件夹按钮 -- 禁用
   disableAlbum,
-  disableCamera,
-  disableExternal,
-  disableRecording,
-  disableVideo,
-  // disableText,
+  // 打开文件夹按钮 -- 选中文件后
   albumChange,
+  // 打开文件夹按钮 -- 照片 还是 mixed
+  disableVideo,
+  // 拍照是否可用
+  disableCamera,
+  // 拍照后
   cameraChange,
-  externalChange,
-  recordingChange,
+  // 录像后
   videoChange,
+  // 虚拟照片按钮是否可用
+  disableExternal,
+  // 虚拟照片点击后
+  externalChange,
+  // 录音按钮是否可用
+  disableRecording,
+  // disableText,
+  // 录音按钮点击后
+  recordingChange
   // textChange,
 }) {
 

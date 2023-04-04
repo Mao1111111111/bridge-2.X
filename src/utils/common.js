@@ -31,6 +31,7 @@ export function groupMap(group, callback) {
   return result;
 }
 
+// 列表数据分页
 export function listToPage(list, pageRow) {
   const pageNum = Math.ceil(list.length / pageRow);
   const pageData = [];

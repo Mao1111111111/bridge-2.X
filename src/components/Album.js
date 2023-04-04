@@ -5,16 +5,20 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {CircleButton} from './Button';
 
 export default function Album({onChange, type, disabled}) {
+  // 打开本地文件夹
   const openCamera = async () => {
     try {
       // type 'photo' or 'video'
+      // 打开本地文件夹
       const res = await launchImageLibrary({
         mediaType: type || 'photo',
       });
+      // 如果没有选中照片那么返回
       if (!res.assets[0]) {
         return;
       }
       const file = res.assets[0];
+      // 执行父组件的函数,并将 文件地址、类型、文件大小传回
       onChange &&
         onChange({
           uri: file.uri.replace('file://', ''),
@@ -26,6 +30,7 @@ export default function Album({onChange, type, disabled}) {
     }
   };
 
+  // 设置按钮图片
   const [fileImg, setFileImg] = useState()
   const [fileDisImg, setFileDisImg] = useState()
 
@@ -36,11 +41,13 @@ export default function Album({onChange, type, disabled}) {
     setFileDisImg(fileDisImg)
   },[])
 
+  // 按下时
   const albumPulldown = () => {
     let fileImg = require('../iconImg/filePull.png')
     setFileImg(fileImg)
   }
 
+  // 手移开时
   const albumPullup = () => {
     let fileImg = require('../iconImg/file.png')
     setFileImg(fileImg)

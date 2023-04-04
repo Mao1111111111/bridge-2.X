@@ -1,3 +1,6 @@
+/* 
+  拍照
+ */
 import React,{useState,useEffect} from 'react';
 import {View, Pressable, Image, ImageBackground} from 'react-native';
 import RNFS from 'react-native-fs';
@@ -7,6 +10,7 @@ import {launchCamera} from 'react-native-image-picker';
 import fs from '../utils/fs';
 
 export default function Camera({onChange, type, disabled}) {
+  // 打开相机
   const openCamera = async () => {
     try {
       const res = await launchCamera({
@@ -18,11 +22,14 @@ export default function Camera({onChange, type, disabled}) {
       }
       const file = res.assets[0];
       const documentDir = RNFS.DocumentDirectoryPath;
+      // 文件名为随机数
       const UUID = uuid.v4();
+      // 将图片复制到本地文件夹
       await fs.copyFile(
         file.uri,
         `file://${documentDir}/${UUID}.${file.uri.split('.').pop()}`,
       );
+      // 执行父组件的函数
       onChange &&
         onChange({
           uri: `${documentDir}/${UUID}.${file.uri.split('.').pop()}`,
@@ -80,6 +87,7 @@ export default function Camera({onChange, type, disabled}) {
     //   onPress={openCamera}
     //   name={type === 'photo' ? 'camera' : 'video'}
     // />
+    // 圆形按钮
     <Pressable disabled={disabled} onPress={openCamera}
     onPressIn={() => cameraPulldown(type)}
     onPressOut={() => cameraPullup(type)}>

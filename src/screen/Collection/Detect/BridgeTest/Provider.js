@@ -64,6 +64,9 @@ const Provider = ({bridge, project, children}) => {
     groupList: [],
     // 全部的部件信息 b10 b20 b30分组
     memberInfo: {},
+
+    //刷新
+    //reflush
   });
 
   // 获取 病害分组列表和病害明细表
@@ -198,7 +201,7 @@ const Provider = ({bridge, project, children}) => {
     });
   }, [state.isInit, state.partsList, basememberinfo]);
 
-  // 跨/构件视角 数据
+  // 跨/构件视角 数据 -- 
   React.useEffect(() => {
     if (!state.reflush || !basememberinfo || !state.bridgereportid) {
       return;
@@ -319,6 +322,7 @@ const Provider = ({bridge, project, children}) => {
         // 桥梁报告文件表，保存数据
         await bridgeReportFile.save(data);
       }
+      // 更新 -- 即 对图片位置添加图片
       if (state.cacheFileData.isUpdate) {
         // 检测桥梁构件状态的媒体表bridge_report_member_checkstatus_media ，更新数据
         await bridgeReportFile.update(data);
@@ -336,6 +340,7 @@ const Provider = ({bridge, project, children}) => {
           });
         }
       }
+      // 删除媒体
       if (state.cacheFileData.isDelete) {
         await checkstatusMedia.remove(data.mediaid);
         await bridgeReportFile.remove(data.mediaid);
