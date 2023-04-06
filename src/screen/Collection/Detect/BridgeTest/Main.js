@@ -618,6 +618,7 @@ export default function Main({navigation}) {
           </View>
         </Content>
       )}
+      {/* 部件编辑组件 */}
       <MemberEdit ref={memberEditRef} onClose={handleEditClose} />
     </Box>
   );

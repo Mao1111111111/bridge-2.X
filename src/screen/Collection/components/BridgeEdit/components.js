@@ -4,6 +4,7 @@ import {View, Text, TouchableNativeFeedback} from 'react-native';
 import {tailwind} from 'react-native-tailwindcss';
 import {Divider, Checkbox} from 'react-native-paper';
 
+// 部件选择盒子
 export const BujianCheckbox = ({label, checked, disabled, onCheck, style}) => {
   return (
     <TouchableNativeFeedback onPress={disabled ? () => {} : onCheck}>
