@@ -72,11 +72,6 @@ export default function Login() {
     try {
       // 根据凭证获取 access_token
       const token = await fetchAuthorize(credentials);
-      // token 数据结构
-      /* token = {
-        "access_token": "...", 
-        "refresh_token": "..."
-      } */
       // 当授权失败时，显示登录失败，并取消按钮loading，取消同步
       if (token.resultCode) {
         alert('登录失败');
@@ -87,61 +82,70 @@ export default function Login() {
       // 当授权成功时，继续执行以下代码
       // 获取用户信息
       const {resultJson} = await fetchUsersProfile(token.access_token);
-      // resultJsons 数据结构
-      /* resultJson = {
-        "company": {
-          "companyid": "10000",
-          "companyname": "test_co"
-        },
-        "groups": [
-          {
-            "default": true,
-            "group": {
-              "groupid": "1000010",
-              "groupname": "default group"
-            }
-          }
-        ],
-        "nickname": "未命名",
-        "roles": [],
-        "userid": "1000010",
-        "username": "test_user"
+
+      //============权限============
+      const credentials_1 = new Buffer.from(`${'test'}:${'test'}`).toString(
+        'base64',
+      );
+      //---1、获取应用注册初始化令牌
+      const token_1 = await fetchInitAccessToken(credentials_1)
+      //---2、注册应用
+      //注册应用的body
+      const RegisterAppBody = {
+        client_name: "user_test_mobile_app",
+        client_uri: "http://a.test.net",
+        scope: "user disarm",
+        redirect_uris: ["http://a.test.net/callback"],
+        grant_types: ["password"],
+        response_types: ["code"],
+        token_endpoint_auth_method: "client_secret_basic"
+      }
+      let ApplicationInfo = await fetchRegisterApplication(token_1.access_token,RegisterAppBody)
+      //---3、获取访问令牌
+      //获取访问令牌的body
+      /* const GetAccessTokenBody = {
+        grant_type:"password",
+        password:password,
+        username:username,
+        scope:"user disarm"
       } */
+      const GetAccessTokenBody = {
+        grant_type:"password",
+        password:'test',
+        username:'test',
+        scope:"user disarm"
+      }
+      const arr = []
+      for(let key in GetAccessTokenBody){
+       arr.push(`${encodeURIComponent(key)}=${encodeURIComponent(GetAccessTokenBody[key])}`)
+      }
+      //clientInfo
+      const clientInfo = new Buffer.from(`${'6ATSUozZMswx8dmWGFUQiiTwJSf3BLI5zzQ1PPtwka'}:${'77e30374ba9335e045fcb504eb31419cb91a838c89fb29e0'}`).toString('base64',)
+      //const clientInfo = new Buffer.from(`${ApplicationInfo.client_id}:${ApplicationInfo.client_secret}`).toString('base64',)
+      let accessTokenInfo = await fetchoOtainAccessToken(clientInfo,arr.join('&'))
+      console.log("accessTokenInfo",accessTokenInfo);
+      //---4、获取用户信息
+     /*  const userInfo = await fetchObtainUserInfo(accessTokenInfo.access_token)
+      console.log("userInfo",userInfo); */
+
       // 登录时间
       const loginDate = dayjs().format('YYYY-MM-DD HH:mm:ss');
       // 整理用户信息
       const userData = {
         ...resultJson,
         loginDate,
-        token,
+        token:{
+          ...token,
+          auth_access_token:accessTokenInfo.access_token,
+          /* client_id:ApplicationInfo.client_id,
+          client_secret:ApplicationInfo.client_secret */
+          client_id:'6ATSUozZMswx8dmWGFUQiiTwJSf3BLI5zzQ1PPtwka',
+          client_secret:'77e30374ba9335e045fcb504eb31419cb91a838c89fb29e0'
+        },
         password,
         islogin: 1,
         pin: password,
       };
-      //userData 数据结构
-      /* userData = {
-        "company": {
-          "companyid": "10000",
-          "companyname": "test_company"
-        },
-        "groups": [{
-          "default": true,
-          "group": [Object]
-        }],
-        "islogin": 1,
-        "loginDate": "2023-03-27 14:31:56",
-        "nickname": "测试用户",
-        "password": "12345678",
-        "pin": "12345678",
-        "roles": [],
-        "token": {
-          "access_token": "...",
-          "refresh_token": "..."
-        },
-        "userid": "1000010",
-        "username": "test_user"
-      } */
-      
       // 将用户信息存入数据库中
       //如果数据库中有这个用户,那么更新数据;如果没有这个用户,那么插入这个用户信息到数据库
       await user.login(userData);
@@ -150,42 +154,6 @@ export default function Login() {
       // 2、将是否登录 设置为 true，隐藏登录页面
       // 3、如果基础数据不存在，那么同步数据
       await setUserInfo(userData);
-
-    /*   //---1、获取应用注册初始化令牌
-      const token = await fetchInitAccessToken(credentials)
-      console.log("token",token);
-      //---2、注册应用
-      //注册应用的body
-      const RegisterAppBody = {
-        client_name: "user_test_mobile_app",
-        client_uri: "http://a.test.net",
-        scope: "user",
-        redirect_uris: ["http://a.test.net/callback"],
-        grant_types: ["password"],
-        response_types: ["code"],
-        token_endpoint_auth_method: "client_secret_basic"
-      }
-      let ApplicationInfo = await fetchRegisterApplication(token.access_token,RegisterAppBody)
-      console.log("ApplicationInfo",ApplicationInfo);
-      //---3、获取访问令牌
-      //获取访问令牌的body
-      const GetAccessTokenBody = {
-        grant_type:"password",
-        password:password,
-        username:username,
-        scope:"user"
-      }
-      const arr = []
-      for(let key in GetAccessTokenBody){
-       arr.push(`${encodeURIComponent(key)}=${encodeURIComponent(GetAccessTokenBody[key])}`)
-      }
-      //clientInfo
-      const clientInfo = new Buffer.from(`${ApplicationInfo.client_id}:${ApplicationInfo.client_secret}`).toString('base64',)
-      let accessTokenInfo = await fetchoOtainAccessToken(clientInfo,arr.join('&'))
-      console.log("accessTokenInfo",accessTokenInfo);
-      //---4、获取用户信息
-      const userInfo = await fetchObtainUserInfo(accessTokenInfo.access_token)
-      console.log("userInfo",userInfo); */
     } catch (err) {
       console.info(err);
       setIsLoading(false);
@@ -260,7 +228,7 @@ export default function Login() {
       // 通过接口获取数据，将基础数据和养护区数据存入数据库中，将所有数据存入本地
       await syncCommonData(
         userData?.company?.companyid,
-        userData?.token.access_token,
+        userData?.token.auth_access_token,
         res => setMassage(res.name),
       );
       // 设置更新数据库的标志，触发全局提供者中的useEffect2
