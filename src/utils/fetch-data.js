@@ -46,7 +46,8 @@ export const fetchBasememberinfo_auth = access_token =>
     const url = [
       auth_host,
       auth_prefix,
-      'basememberinfo'
+      'basememberinfo',
+      '?standardid=JTG-TH21-2011'
     ];
     axios
       .get(url.join(''), {
@@ -384,7 +385,8 @@ export const fetchBasestandardtable_auth = access_token =>
     const url = [
       auth_host,
       auth_prefix,
-      'basestandardtable'
+      'basestandardtable',
+      '?standard=JTG-TH21-2011'
     ];
     axios
       .get(url.join(''), {
@@ -767,7 +769,8 @@ export const baseclientinit_auth = access_token =>
     const url = [
       auth_host,
       auth_prefix,
-      'baseclientinit'
+      'baseclientinit',
+      '?datatype=bridge'
     ];
     axios
       .get(url.join(''), {
