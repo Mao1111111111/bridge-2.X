@@ -1,3 +1,6 @@
+/* 
+  构件管理
+ */
 import React from 'react';
 import dayjs from 'dayjs';
 import uuid from 'react-native-uuid';
@@ -42,16 +45,24 @@ const Item = ({title, color, checked, onPress}) => {
   );
 };
 
+// 左侧构件列表
 const BigData = ({title, data, onChange, onGroupChange}) => {
+  // title-部件名称
+  //data-部件进来时，data是跨列表;跨进来时，data是部件列表
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 当前选中的构件列表 
   const [checked, setChecked] = React.useState(new Set());
 
+  // 当前编辑的 部件 或 是跨
   const [nowEdit, setNowEdit] = React.useState({});
 
+  // 初始化数据
   React.useEffect(() => {
+    // 初始化当前选中的 组
     if (data.length) {
       setNowEdit(data[0]);
     } else {
@@ -69,6 +80,7 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
     
   }, [data]);
 
+  // 设置构件颜色
   const handleColor = ({memberstatus}) => {
     switch (memberstatus) {
       case '0':
@@ -82,6 +94,7 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
     }
   };
 
+  // 点击构件时
   const handleCheck = id => {
     const _checked = new Set(checked);
     if (_checked.has(id)) {
@@ -89,34 +102,45 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
     } else {
       _checked.add(id);
     }
+    // 设置当前选中的构件列表
     setChecked(_checked);
+    // 触发构件变化函数
     handleChange(_checked);
   };
 
+  // 全选
   const handleCheckAll = () => {
     if (checked.size === nowEdit.list.length) {
+      // 当已经全选时,设置全不选
       setChecked(new Set());
+      // 触发 构件选中变化 的 函数
       handleChange(new Set());
     } else {
+      // 选中全部
       setChecked(new Set(nowEdit.list.map(({id}) => id)));
+      // 触发 构件选中变化 的 函数
       handleChange(new Set(nowEdit.list.map(({id}) => id)));
     }
   };
 
+  // 选中的构件变化时
   const handleChange = _checked => {
     const _data = {};
     data
       .map(({list}) => list)
       .flat()
       .forEach(item => (_data[item.id] = _checked.has(item.id)));
+    //执行父组件的函数,并将选择的构件数据传入 
     onChange && onChange(_data);
   };
 
   return (
     <View style={[tailwind.flex1, tailwind.flexRow]}>
+      {/* 左侧 */}
       <View style={[tailwind.flexCol, tailwind.p2]}>
         <View style={[tailwind.mB1]}>
           <Text style={[styles.memberListTitle, {color:'#2b427d'}]}>
+            {/* 这里的title是部件名称 或者 跨名称 */}
             {title}
           </Text>
         </View>
@@ -128,8 +152,11 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
           renderItem={({item, index}) => (
             <TouchableOpacity
               onPress={() => {
+                // 执行父组件的函数
                 onGroupChange && onGroupChange(item);
+                // 清空选中的构件
                 setChecked(new Set());
+                // 设置当前选中的 部件 或 跨
                 setNowEdit(item);
               }}>
               <View key={index} style={[styles.memberListItem]}>
@@ -152,6 +179,7 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
           )}
         />
       </View>
+      {/* 右侧 */}
       <View style={[styles.memberItem]}>
         <View style={[tailwind.mB1, tailwind.flexRow, tailwind.justifyBetween]}>
           <Text style={[styles.memberListTitle, {color:'#2b427d'}]}>
@@ -178,31 +206,39 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
 };
 
 export default function Member({route, navigation}) {
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 全局参数 -- 桥幅属性、桥梁结构数据、用户信息
   const {
     state: {bridgeside, basememberinfo, userInfo},
   } = React.useContext(GlobalContext);
 
+  // 桥梁检测全局参数 -- 桥梁信息、检测构件列表、项目信息
   const {
     state: {bridge, partsList, project},
     dispatch,
   } = React.useContext(Context);
 
+  // 当前页面 数据 还是 影音
   const [pageType, setPageType] = React.useState('数据');
 
+  // 组列表 ,部件 或 跨 列表
   const [list, setList] = React.useState([]);
 
   const [parts, setParts] = React.useState([]);
 
   const [editLogList, setEditLogList] = React.useState([]);
 
+  // 选中的构件列表
   const [checkedList, setCheckedList] = React.useState(new Set());
 
+  // 当前选中的跨编号
   const [nowGroup, setNowGroup] = React.useState(null);
 
+  // data是部件数据 data = {"done": 2, "lastEditDate": "2023-04-06 14:27:13", "membertype": "b200001", "title": "桥台", "total": 2, "type": "member"}
   const {data} = route.params;
 
   const [resetCacheNum, setResetCacheNum] = React.useState('')
@@ -266,6 +302,7 @@ export default function Member({route, navigation}) {
     console.log('memberList resetCacheNum',resetCacheNum);
   }, [partsList, data, basememberinfo]);
 
+  // 顶部导航
   const getHeaderItems = () => {
     let paramname = '';
     if (bridgeside && bridge) {
@@ -294,6 +331,7 @@ export default function Member({route, navigation}) {
     ];
   };
 
+  // 选中的构件改变时
   const handleCheckedChange = e => {
     const _checkedList = new Set();
     Array.from(parts).forEach(item => {
@@ -306,6 +344,7 @@ export default function Member({route, navigation}) {
     setCheckedList(_checkedList);
   };
 
+  // 全部标记为良好
   const handleGoodAll = () => {
     const _parts = [...parts];
     const version = uuid.v4();
@@ -328,6 +367,7 @@ export default function Member({route, navigation}) {
     dispatch({type: 'cachePartsList', payload: cachePartsList});
   };
 
+  // 页面跳转
   const handleEditPage = path => {
     if (!checkedList.size) {
       return;
@@ -342,6 +382,7 @@ export default function Member({route, navigation}) {
     });
   };
 
+  // 影音组件
   const getMedia = () => {
     try {
       const nowEdit = parts.find(item => checkedList.has(item.id));
@@ -353,6 +394,7 @@ export default function Member({route, navigation}) {
       const categoryList =
         checkedList.size === 0
           ? [
+              //只有这一个 
               {
                 value: `member-${
                   data.type === 'member' ? data.membertype : nowGroup
@@ -361,11 +403,13 @@ export default function Member({route, navigation}) {
               },
             ]
           : [
+              //不会显示这个 
               {
                 value: `member-${nowEdit?.memberid}`,
                 label: '结构照片',
               },
             ];
+      // 默认名 -- 这里默认名即 部件名
       const defaultFileName =
         checkedList.size === 0
           ? data.type === 'member'
@@ -374,8 +418,10 @@ export default function Member({route, navigation}) {
                 ?.membername
           : nowEdit.membername;
       return (
+        // 媒体组件
         <Media
           dataid={dataid}
+          // 目前类型只能为 member
           type={checkedList.size === 0 ? 'member' : 'parts'}
           defaultFileName={`${defaultFileName}状况`}
           categoryList={categoryList}
@@ -389,15 +435,20 @@ export default function Member({route, navigation}) {
 
   return (
     <Box pid="P1501" headerItems={getHeaderItems()}>
+      {/* 年份 + 数据影音 tab，当选中构件时，数据影音tab禁用 */}
       <HeaderTabs onChangeTab={setPageType} disabled={checkedList.size} />
+      {/* 影音 */}
       <View style={[pageType === '数据' ? tailwind.hidden : tailwind.flex1]}>
         {getMedia()}
       </View>
+      {/* 数据 */}
       <View style={[pageType !== '数据' ? tailwind.hidden : tailwind.flex1]}>
         <Content
+          // 右侧按钮组
           operations={[
             {
               // name: 'eye',
+              // 查看构件 跳转到病害管理
               img:'look',
               disabled: checkedList.size < 1,
               onPress: () =>
@@ -407,6 +458,7 @@ export default function Member({route, navigation}) {
             },
             {
               // name: 'thumb-up',
+              // 设置好构件
               img:'singleGood',
               color: colors.green600,
               onPress: () =>
@@ -414,6 +466,7 @@ export default function Member({route, navigation}) {
             },
             {
               // name: 'thumb-up',
+              // 全部设置为好构件
               img:'allGood',
               color: colors.green600,
               border: true,
@@ -421,20 +474,29 @@ export default function Member({route, navigation}) {
             },
           ]}>
           <View style={[theme.primaryBgStyle, styles.card, tailwind.flex1]}>
+            {/* 左侧构件列表 */}
             <View style={[styles.listBox]}>
               <BigData
                 title={data.title}
+                // 组列表 ,部件 或 跨 列表
                 data={list}
+                // 组改变时，即点击左侧列表时
                 onGroupChange={item => {
+                  console.log("item",item);
+                  // 如果跨编号存在
                   if (item.stepno) {
                     console.info('???');
+                    // 设置当前选中的跨编号
                     setNowGroup(item.stepno);
                   }
+                  // 重置选中的构件列表
                   setCheckedList(new Set());
                 }}
+                // 选中的构件改变时
                 onChange={handleCheckedChange}
               />
             </View>
+            {/* 右侧 操作历史 */}
             <LogList list={editLogList} />
           </View>
         </Content>
