@@ -15,6 +15,7 @@ import Caiji from '../../src/screen/Collection/Index';
 import Shuju from '../../src/screen/Sync/Index';
 import Tongji from '../../src/screen/Chart';
 import Shezhi from '../../src/screen/Setting';
+import { log } from 'react-native-reanimated';
 
 const Tab = createBottomTabNavigator();
 
@@ -114,12 +115,14 @@ const TabBar = ({state, navigation, descriptors}) => {
   
   const [toPage, setToPage] = useState()
   // 分类选择
-  _selectType = (index,value) => {
-    console.log(index + '--' + value)
-    // this.setState({
-    //   areaIndex: index
-    // })
-    console.log('toPage');
+  _selectType = (indexA, value) => {
+    // console.log('---', indexA, value)
+      {state.routes.map((route, index) =>(
+        indexA == '0' && indexA == index ? handlePress(route, index) :
+        indexA == '1' && indexA == index ? handlePress(route, index) :
+        indexA == '2' && indexA == index ? handlePress(route, index) :
+        indexA == '3' && indexA == index ? handlePress(route, index) : <></>
+      ))}
   }
   // 下拉列表分隔符
   _separator = () => {
@@ -155,12 +158,12 @@ const TabBar = ({state, navigation, descriptors}) => {
       ]}
       >
       {/* logo */}
-      <Image style={
+      {/* <Image style={
         { height: 55, width: 180, alignItems: 'center' }}
         source={require('../iconImg/logo.png')}
-      />
+      /> */}
       {/* 软件版本 */}
-      <Text
+      {/* <Text
         style={
           [
             {
@@ -172,9 +175,9 @@ const TabBar = ({state, navigation, descriptors}) => {
             }
           ]
         }
-      >v1.083</Text>
+      >v1.083</Text> */}
       {/* 中间导航按钮 */}
-      {state.routes.map((route, index) => (
+      {/* {state.routes.map((route, index) => (
         <TouchableOpacity
           key={index}
           onPress={() => handlePress(route, index)}
@@ -190,7 +193,8 @@ const TabBar = ({state, navigation, descriptors}) => {
             isActive={state.index === index}
           />
         </TouchableOpacity>
-      ))}
+      ))} */}
+
       {/* 用户信息 */}
       {/* <Pressable onPress={() => menuList()}>
         <View style={styles.user}>
@@ -201,7 +205,18 @@ const TabBar = ({state, navigation, descriptors}) => {
           <Text>{userInfo?.nickname}</Text>
         </View>
       </Pressable> */}
-      {/* <ModalDropdown style={[styles.user,{top:0}]}
+      {/* <View style={styles.user}> */}
+        {/* 用户头像 */}
+        {/* <Image style={{ height: 24, width: 24, alignItems: 'center' }}
+            source={require('../iconImg/user.png')}
+        /> */}
+        {/* 整个小间隔 */}
+        {/* <Text>{' '}</Text>
+        <Text>{userInfo?.nickname}</Text> */}
+      {/* </View> */}
+
+      {/* 下拉式一级导航菜单 */}
+      <ModalDropdown style={[styles.user,{top:0}]}
         adjustFrame={this._adjustType}
         options={type} // 选项内容
         dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
@@ -209,26 +224,16 @@ const TabBar = ({state, navigation, descriptors}) => {
         dropdownTextStyle={[{width:80,textAlign:'center'}]}
         onSelect={this._selectType} // 点击选项时，执行的方法
         defaultValue={'采集平台'}
-      > */}
+      >
+        
         <View style={styles.user}>
-          
-          {/* <Icon name="account-circle" size={24} style={tailwind.mR1} /> */}
-          {/* 用户头像 */}
           <Image style={{ height: 24, width: 24, alignItems: 'center' }}
               source={require('../iconImg/user.png')}
           />
-          {/* 整个小间隔 */}
           <Text>{' '}</Text>
           <Text>{userInfo?.nickname}</Text>
         </View>
-      {/* </ModalDropdown> */}
-      
-      
-      {/* <Image style={
-        { height: 50, width: 200, alignItems: 'center' }}
-        // source={require('../iconImg/logo.png')}
-      /> */}
-      {/* <Headerbar items={[{name: ''}]} /> */}
+      </ModalDropdown>
       
     </Animated.View>
     

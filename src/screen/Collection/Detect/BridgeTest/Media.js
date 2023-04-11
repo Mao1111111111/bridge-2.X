@@ -13,7 +13,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
-import {TextInput, Textarea} from '../../../../components/Input';
+import {TextInput, Textarea, WriteInput} from '../../../../components/Input';
 import VideoPlayer from '../../../../components/VideoPlayer';
 import {CircleButton} from '../../../../components/Button';
 import {Content} from '../../../../components/CommonView';
@@ -144,7 +144,7 @@ const RowMediaComponent = ({item, onPress, isActive}) => {
   );
 };
 
-export default function Media({categoryList, type, dataid, defaultFileName}) {
+export default function Media({categoryList, type, dataid, defaultFileName, pileTitle, pileNum}) {
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
@@ -196,6 +196,7 @@ export default function Media({categoryList, type, dataid, defaultFileName}) {
       setNowEdit(fileList[0]?.mediaid || '');
       setIsInit(false);
     }
+    // console.log('图片标题来源defaultFileName',defaultFileName,categoryList[0].label);
   }, [type, fileList, categoryList, dataid, isInit]);
 
   React.useEffect(() => {
@@ -206,10 +207,23 @@ export default function Media({categoryList, type, dataid, defaultFileName}) {
     if (!data) {
       return;
     }
+    // console.log('form.current.filename',form.current.filename.value);
     form.current.inx.setValue(data.inx);
     form.current.filename.setValue(data.filename);
     form.current.category.setValue(data.category);
     form.current.remark.setValue(data.remark);
+    // if (form.current.inx.value == '' || form.current.inx.value == undefined) {
+    //   form.current.inx.setValue(data.inx);
+    // }
+    // if (form.current.filename.value == '' || form.current.filename.value == undefined) {
+    //   form.current.filename.setValue(data.filename);
+    // }
+    // if (form.current.category.value == '' || form.current.category.value == undefined) {
+    //   form.current.category.setValue(data.category);
+    // }
+    // if (form.current.remark.value == '' || form.current.remark.value == undefined) {
+    //   form.current.remark.setValue(data.remark);
+    // }
   }, [list, nowEdit]);
 
   const getExternalPath = () => {
@@ -221,8 +235,22 @@ export default function Media({categoryList, type, dataid, defaultFileName}) {
     return 'P' + code;
   };
 
+  // 图片标题
   const getFileName = () => {
     if (defaultFileName) {
+      if (pileTitle == '主梁' || pileTitle == '挂梁') {
+        defaultFileName = pileNum + '梁' + defaultFileName 
+      } else if (pileTitle == '横隔板' || pileTitle == '湿接段' || pileTitle == '铰缝'
+        || pileTitle == '湿接缝' || pileTitle == '支座' || pileTitle == '人行道') {
+        defaultFileName = pileNum + pileTitle + defaultFileName
+      } else if (pileTitle == '墩台基础') {
+        defaultFileName = pileNum + '台基础' + defaultFileName
+      } else if (pileTitle == '桥面铺装') {
+        defaultFileName = pileNum + '跨桥面' + defaultFileName
+      } else {
+        defaultFileName = pileTitle
+      }
+      console.log('???',defaultFileName);
       return defaultFileName;
     }
     return categoryList[0].label;
@@ -485,7 +513,7 @@ export default function Media({categoryList, type, dataid, defaultFileName}) {
                 onChange={handleChenge}
               />
               <View style={tailwind.mY2} />
-              <TextInput
+              <WriteInput
                 ref={e => (form.current.filename = e)}
                 name="filename"
                 label="标题："
@@ -534,11 +562,12 @@ export default function Media({categoryList, type, dataid, defaultFileName}) {
               <></>
             )}
             <View style={tailwind.flex1}>
-              <Textarea
+              <WriteInput
                 ref={e => (form.current.remark = e)}
                 label="描述："
                 onChange={handleChenge}
                 name="remark"
+                lines={6}
               />
             </View>
           </View>

@@ -37,7 +37,7 @@ export default function DiseaseEdit2({route, navigation}) {
 
   const scaleInfoRef = React.useRef();
 
-  const [baseData, itemData, version, headerItems, cacheNum] = hooks.useP1002Init({
+  const [baseData, itemData, version, headerItems] = hooks.useP1002Init({
     route,
     navigation,
   });
@@ -47,6 +47,9 @@ export default function DiseaseEdit2({route, navigation}) {
   const infoList = hooks.useInfoComponents({diseaseData, baseData});
 
   const defaultFileName = hooks.useDefaultFileName({diseaseData, baseData});
+
+  const [pileTitle, setPileTitle] = React.useState('');
+  const [pileNum, setPileNum] = React.useState('');
 
   const [scale, scaleInfo] = hooks.useScale({
     diseaseData,
@@ -58,8 +61,6 @@ export default function DiseaseEdit2({route, navigation}) {
     setDiseaseData(itemData);
   }, [itemData]);
 
-  React.useEffect(() => {
-  }, [cacheNum]);
 
   React.useEffect(() => {
     saveData.current = {...diseaseData};
@@ -68,8 +69,6 @@ export default function DiseaseEdit2({route, navigation}) {
   React.useEffect(() => {
     // route内容为DiseaseList文件handleModelCallBack传入的data数据
     // console.log('route', route);
-    // console.log('route.params.cacheNum',route.params.data.cacheNum);
-    console.log('Edit2 cacheNum', cacheNum);
     console.log('当前选择的membertype： ', route.params.routeParams.membertype + ' - ' + route.params.routeParams.title);
     console.log('params: ', navigation.routeParams);
     return () => {
@@ -128,7 +127,11 @@ export default function DiseaseEdit2({route, navigation}) {
   }, [baseData, saveData, version, route.params, dispatch]);
 
   React.useEffect(()=>{
-    console.log('routeroute9 jsondata:', route.params.data.jsondata);
+    console.log('routeroute9 jsondata:', route.params);
+    console.log('构件:', route.params.title);
+    setPileTitle(route.params.title)
+    console.log('桩号:', route.params.memberList[0].membername);
+    setPileNum(route.params.memberList[0].membername)
     // console.log('memberLength:', route.params.data.jsondata.memberLength);
     let list = []
     if(baseData.membercheckdata&&route.params.thridData){
@@ -204,6 +207,8 @@ export default function DiseaseEdit2({route, navigation}) {
           type="diseaseParts"
           dataid={version}
           defaultFileName={defaultFileName}
+          pileTitle={pileTitle}
+          pileNum={pileNum}
           categoryList={[
             {
               value: 'disease',

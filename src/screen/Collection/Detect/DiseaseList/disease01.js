@@ -22,6 +22,10 @@ import * as hooks from '../BridgeTest/DiseaseHooks';
 import {RadioGroup} from '../../../../components/Radio';
 import ScaleInfo from '../BridgeTest/ScaleInfo';
 // import RadioGroup from 'react-native-radio-buttons-group';
+// 引入
+import AsyncStorage from '@react-native-community/async-storage';
+import { log } from 'react-native-reanimated';
+
 
 export function DiseaseA({route, navigation}) {
     const {
@@ -58,11 +62,7 @@ export function DiseaseA({route, navigation}) {
 
       React.useEffect(() => {
         setDiseaseData(itemData);
-        console.log('itemData:',route);
-        console.log('itemData:',route.params.data.cacheNum);
-        // route.params.thridData.checkinfoshort
-        // console.log('456',route.params.thridData.checkinfoshort);
-        // diseaseData['remark'] = route.params.thridData.checkinfoshort
+        // console.log('route.params.data.jsondata',route.params.data.jsondata);
       }, [itemData]);
     
       const [lengthText, setLengthText] = useState(0)
@@ -181,6 +181,12 @@ export function DiseaseA({route, navigation}) {
       const [diseaseName, setDiseaseName] = useState('')
       const [memberName, setMemberName] = useState('')
 
+      // 桥梁id
+      const [bridgeId, setBridgeId] = useState(route.params.memberList[0].bridgeid)
+      // 部件名称
+      const [storageMemberName, setStorageMemberName] =useState(route.params.routeParams.title)
+
+
       // =================================================
       React.useEffect(() => {
         saveData.current = {...diseaseData};
@@ -193,6 +199,7 @@ export function DiseaseA({route, navigation}) {
         } catch (err){
           console.log('err09', err);
         }
+        
         try {
           // console.log('选择的构件区域6', areaName)
           // console.log('构件区域',diseaseData.area);
@@ -249,31 +256,6 @@ export function DiseaseA({route, navigation}) {
           // }
           // console.log('12333233');
 
-          console.log('=====route',route);
-          console.log('-------------------route.params.data.cacheNum',route.params.data.cacheNum);
-          console.log('-------------------route.params.data.cacheNum',route.params.data.jsondata);
-
-          // console.log('表单填写页面的route',route.params.title);
-
-          if (route.params.data.cacheNum == undefined) {
-            console.log('cacheNum为空');
-            diseaseData['memberLength'] = diseaseData.memberLength == undefined ? '0' : diseaseData.memberLength
-            diseaseData['memberWidth'] = diseaseData.memberWidth == undefined ? '0' : diseaseData.memberWidth
-            diseaseData['memberHeight'] = diseaseData.memberHeight == undefined ? '0' : diseaseData.memberHeight
-          } else if (route.params.data.cacheNum !== '' || route.params.data.cacheNum !== undefined) {
-            diseaseData['memberLength'] = diseaseData.memberLength == undefined ?
-                                          route.params.data.cacheNum[0].memberLength !== undefined ?
-                                          route.params.data.cacheNum[0].memberLength : '0'
-                                          : diseaseData.memberLength
-            diseaseData['memberWidth'] = diseaseData.memberWidth == undefined ?
-                                          route.params.data.cacheNum[0].memberWidth !== undefined ?
-                                          route.params.data.cacheNum[0].memberWidth : '0'
-                                          : diseaseData.memberWidth
-            diseaseData['memberHeight'] = diseaseData.memberHeight == undefined ?
-                                          route.params.data.cacheNum[0].memberHeight !== undefined ?
-                                          route.params.data.cacheNum[0].memberHeight : '0'
-                                          : diseaseData.memberHeight
-          }
 
           let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
           setLengthText(lengthText)
@@ -413,9 +395,14 @@ export function DiseaseA({route, navigation}) {
           }
         };
       }, [baseData, saveData, version, route.params, dispatch]);
-
+    
       useEffect(() => {
+        console.log('disea111',diseaseData);
+        // console.log('route',route);
         // console.log('桥跨：：',route.params.memberList);
+        // console.log('桥梁id::',route.params.memberList[0].bridgeid);
+        // console.log('部件',route.params.routeParams.title);
+        
         let defaultPier = route.params.memberList[0].membername
         // 提取第一个字符进行判断（表示墩台的数据）
         let firstDefaultPier = defaultPier.slice(0,1)
@@ -449,7 +436,7 @@ export function DiseaseA({route, navigation}) {
       },[])
 
       const handleScaleOpen = () => scaleInfoRef.current.open();
-      const handleFormChenge = ({name, value}) => {
+      const handleFormChenge = ({name,value}) => {
         const _data = {
           ...diseaseData,
           [name]: value,
@@ -490,6 +477,8 @@ export function DiseaseA({route, navigation}) {
         }
 
         if (value) {
+          console.log('调用了writeDes', name,value);
+          console.log('lengthM',lengthM);
           // 向病害描述函数里传入
           writeDesText(name, value)
         }
@@ -502,11 +491,10 @@ export function DiseaseA({route, navigation}) {
           setBiaodu(biaodu)
         } else if (name == 'hzbrmc_length_m') {
           //长度 - 米
-          // let lengthM = ',长度' + value + '@@米@@'
-          // setLengthM(lengthM)
           if (value == '' || value == 0) {
             let lengthM = ''
             setLengthM(lengthM)
+            // handleFormChenge(diseaseData.lengthM,lengthM)
           } else {
             let lengthM = ',长度' + value + '@@米@@'
             setLengthM(lengthM)
@@ -558,6 +546,7 @@ export function DiseaseA({route, navigation}) {
         } else if (name == 'hzbrmc_width_mm') {
           // 宽度 - 毫米
           if (value == '' || value == 0) {
+            // console.log('宽度毫米设为0');
             let widthMM = ''
             setWidthMM(widthMM)
           } else {
@@ -798,11 +787,11 @@ export function DiseaseA({route, navigation}) {
           // let dispMM = ',角度' + value + '@@度@@'
           // setDispMM(dispMM)
           if (value == '' || value == 0) {
-            let dispMM = ''
-            setDispMM(dispMM)
+            let angle = ''
+            setAngle(angle)
           } else {
-            let dispMM = ',角度' + value + '@@度@@'
-            setDispMM(dispMM)
+            let angle = ',角度' + value + '@@度@@'
+            setAngle(angle)
           }
         } else if (name == 'hzbrmc_chu') {
           // 处
@@ -1265,9 +1254,12 @@ export function DiseaseA({route, navigation}) {
         
       // }
 
+      const [writeDesTextValue, setWriteDesTextValue] = useState('')
       const writeDesText = (name, value) => {
         // let writeTxt = []
+        console.log('长度lengthM',diseaseData);
         console.log('writeDesText', name, value);
+        setWriteDesTextValue(value)
 
         if (name == 'memberLength') {
           diseaseData['memberLength'] = value
@@ -1280,482 +1272,438 @@ export function DiseaseA({route, navigation}) {
           handleFormChenge(value, diseaseData.memberHeight)
         }
 
-        if (name == 'scale') {
-          // 标度
-          let biaodu = ',标度' + value + '@@'
-          setBiaodu(biaodu)
-        } else if (name == 'hzbrmc_length_m') {
-          //长度 - 米
-          // let lengthM = ',长度' + value + '@@米@@'
-          // setLengthM(lengthM)
-          if (value == '' || value == 0) {
-            let lengthM = ''
+
+        console.log('diseaseData.memberLength1',diseaseData.memberLength, diseaseData.memberWidth, diseaseData.memberHeight);
+        console.log('name value1', name, value);
+
+        // 当数据是长宽高的时候，进行数据存储
+        if (name == 'memberLength' || name == 'memberWidth' || name == 'memberHeight') {
+          setStorage(name, value)
+        }
+
+        
+        if (true) {
+          if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
+            var biaodu = ',标度' + diseaseData.scale + '@@'
+            setBiaodu(biaodu)
+          } else {
+            var biaodu = ''
+            setBiaodu(biaodu)
+          }
+          if (diseaseData.hzbrmc_length_m !== undefined && diseaseData.hzbrmc_length_m !== '0' && diseaseData.hzbrmc_length_m !== '') {
+            var lengthM = ',长度' + diseaseData.hzbrmc_length_m + '@@米@@'
             setLengthM(lengthM)
           } else {
-            let lengthM = ',长度' + value + '@@米@@'
+            var lengthM = ''
             setLengthM(lengthM)
           }
-        } else if (name == 'hzbrmc_length_cm') {
-          // 长度 - 厘米
-          // let lengthCM = ',长度' + value + '@@厘米@@'
-          // setLengthCM(lengthCM)
-          if (value == '' || value == 0) {
-            let lengthCM = ''
+          if (diseaseData.hzbrmc_length_cm !== undefined && diseaseData.hzbrmc_length_cm !== '0' && diseaseData.hzbrmc_length_cm !== '') {
+            var lengthCM = ',长度' + diseaseData.hzbrmc_length_cm + '@@厘米@@'
             setLengthCM(lengthCM)
           } else {
-            let lengthCM = ',长度' + value + '@@厘米@@'
+            var lengthCM = ''
             setLengthCM(lengthCM)
           }
-        } else if (name == 'hzbrmc_length_mm') {
-          // 长度 - 毫米
-          // let lengthMM = ',长度' + value + '@@毫米@@'
-          // setLengthMM(lengthMM)
-          if (value == '' || value == 0) {
-            let lengthMM = ''
+          if (diseaseData.hzbrmc_length_mm !== undefined && diseaseData.hzbrmc_length_mm !== '0' && diseaseData.hzbrmc_length_mm !== '') {
+            var lengthMM = ',长度' + diseaseData.hzbrmc_length_mm + '@@毫米@@'
             setLengthMM(lengthMM)
           } else {
-            let lengthMM = ',长度' + value + '@@毫米@@'
+            var lengthMM = ''
             setLengthMM(lengthMM)
           }
-        } else if (name == 'hzbrmc_width_m') {
-          // 宽度 - 米
-          // let widthM = ',宽度' + value + '@@米@@'
-          // setWidthM(widthM)
-          if (value == '' || value == 0) {
-            let widthM = ''
+          if (diseaseData.hzbrmc_width_m !== undefined && diseaseData.hzbrmc_width_m !== '0' && diseaseData.hzbrmc_width_m !== '') {
+            var widthM = ',宽度' + diseaseData.hzbrmc_width_m + '@@米@@'
             setWidthM(widthM)
           } else {
-            let widthM = ',宽度' + value + '@@米@@'
+            var widthM = ''
             setWidthM(widthM)
           }
-        } else if (name == 'hzbrmc_width_cm') {
-          // 宽度 - 厘米
-          // let widthCM = ',宽度' + value + '@@厘米@@'
-          // setWidthCM(widthCM)
-          if (value == '' || value == 0) {
-            let widthCM = ''
+          if (diseaseData.hzbrmc_width_cm !== undefined && diseaseData.hzbrmc_width_cm !== '0' && diseaseData.hzbrmc_width_cm !== '') {
+            var widthCM = ',宽度' + diseaseData.hzbrmc_width_cm + '@@厘米@@'
             setWidthCM(widthCM)
           } else {
-            let widthCM = ',宽度' + value + '@@厘米@@'
+            var widthCM = ''
             setWidthCM(widthCM)
           }
-        } else if (name == 'hzbrmc_width_mm') {
-          // 宽度 - 毫米
-          if (value == '' || value == 0) {
-            let widthMM = ''
+          if (diseaseData.hzbrmc_width_mm !== undefined && diseaseData.hzbrmc_width_mm !== '0' && diseaseData.hzbrmc_width_mm !== '') {
+            console.log('diseaseData.hzbrmc_width_mm',diseaseData.hzbrmc_width_mm == '');
+            var widthMM = ',宽度' + diseaseData.hzbrmc_width_mm + '@@毫米@@'
             setWidthMM(widthMM)
           } else {
-            let widthMM = ',宽度' + value + '@@毫米@@'
+            // diseaseData.hzbrmc_width_mm == undefined || diseaseData.hzbrmc_width_mm == 0 || diseaseData.hzbrmc_width_mm == ''
+            var widthMM = ''
             setWidthMM(widthMM)
           }
-        } else if (name == 'hzbrmc_height_m') {
-          // 高度 - 米
-          // let heightM = ',高度' + value + '@@米@@'
-          // setHeightM(heightM)
-          if (value == '' || value == 0) {
-            let heightM = ''
+          if (diseaseData.hzbrmc_height_m !== undefined && diseaseData.hzbrmc_height_m !== '0' && diseaseData.hzbrmc_height_m !== '') {
+            var heightM = ',高度' + diseaseData.hzbrmc_height_m + '@@米@@'
             setHeightM(heightM)
           } else {
-            let heightM = ',高度' + value + '@@米@@'
+            var heightM = ''
             setHeightM(heightM)
           }
-        } else if (name == 'hzbrmc_height_cm') {
-          // 高度 - 厘米
-          if (value == '' || value == 0) {
-            let heightCM = ''
+          if (diseaseData.hzbrmc_height_cm !== undefined && diseaseData.hzbrmc_height_cm !== '0' && diseaseData.hzbrmc_height_cm !== '') {
+            var heightCM = ',高度' + diseaseData.hzbrmc_height_cm + '@@厘米@@'
             setHeightCM(heightCM)
           } else {
-            let heightCM = ',高度' + value + '@@厘米@@'
+            var heightCM = ''
             setHeightCM(heightCM)
           }
-        } else if (name == 'hzbrmc_height_mm') {
-          // 高度 - 毫米
-          // let heightMM = ',高度' + value + '@@毫米@@'
-          // setHeightMM(heightMM)
-          if (value == '' || value == 0) {
-            let heightMM = ''
+          if (diseaseData.hzbrmc_height_mm !== undefined && diseaseData.hzbrmc_height_mm !== '0' && diseaseData.hzbrmc_height_mm !== '') {
+            var heightMM = ',高度' + diseaseData.hzbrmc_height_mm + '@@毫米@@'
             setHeightMM(heightMM)
           } else {
-            let heightMM = ',高度' + value + '@@毫米@@'
+            var heightMM = ''
             setHeightMM(heightMM)
           }
-        } else if (name == 'hzbrmc_area_face') {
-          // 面域 - %
-          // let areaFace = ',面域' + value + '@@%@@'
-          // setAreaFace(areaFace)
-          if (value == '' || value == 0) {
-            let areaFace = ''
+          if (diseaseData.hzbrmc_area_face !== undefined && diseaseData.hzbrmc_area_face !== '0' && diseaseData.hzbrmc_area_face !== '') {
+            var areaFace = ',面域' + diseaseData.hzbrmc_area_face + '@@%@@'
             setAreaFace(areaFace)
           } else {
-            let areaFace = ',面域' + value + '@@%@@'
+            var areaFace = ''
             setAreaFace(areaFace)
           }
-        } else if (name == 'hzbrmc_area_per') {
-          // 面积占比 - %
-          // let areaPer = ',面积占比' + value + '@@%@@'
-          // setAreaPer(areaPer)
-          if (value == '' || value == 0) {
-            let areaPer = ''
+          if (diseaseData.hzbrmc_area_per !== undefined && diseaseData.hzbrmc_area_per !== '0' && diseaseData.hzbrmc_area_per !== '') {
+            var areaPer = ',面积占比' + diseaseData.hzbrmc_area_per + '@@%@@'
             setAreaPer(areaPer)
           } else {
-            let areaPer = ',面积占比' + value + '@@%@@'
+            var areaPer = ''
             setAreaPer(areaPer)
           }
-        } else if (name == 'hzbrmc_area_m') {
-          // 面积 - 平方米
-          // let areaM = ',面积' + value + '@@平方米@@'
-          // setAreaM(areaM)
-          if (value == '' || value == 0) {
-            let areaM = ''
+          if (diseaseData.hzbrmc_area_m !== undefined && diseaseData.hzbrmc_area_m !== '0' && diseaseData.hzbrmc_area_m !== '') {
+            var areaM = ',面积' + diseaseData.hzbrmc_area_m + '@@平方米@@'
             setAreaM(areaM)
           } else {
-            let areaM = ',面积' + value + '@@平方米@@'
+            var areaM = ''
             setAreaM(areaM)
           }
-        } else if (name == 'hzbrmc_area_cm') {
-          // 面积 - 平方厘米
-          // let areaCM = ',面积' + value + '@@平方厘米@@'
-          // setAreaCM(areaCM)
-          if (value == '' || value == 0) {
-            let areaCM = ''
+          if (diseaseData.hzbrmc_area_cm !== undefined && diseaseData.hzbrmc_area_cm !== '0' && diseaseData.hzbrmc_area_cm !== '') {
+            var areaCM = ',面积' + diseaseData.hzbrmc_area_cm + '@@平方厘米@@'
             setAreaCM(areaCM)
           } else {
-            let areaCM = ',面积' + value + '@@平方厘米@@'
+            var areaCM = ''
             setAreaCM(areaCM)
           }
-        } else if (name == 'hzbrmc_area_mm') {
-          // 面积 - 平方毫米
-          // let areaMM = ',面积' + value + '@@平方毫米@@'
-          // setAreaMM(areaMM)
-          if (value == '' || value == 0) {
-            let areaMM = ''
+          if (diseaseData.hzbrmc_area_mm !== undefined && diseaseData.hzbrmc_area_mm !== '0' && diseaseData.hzbrmc_area_mm !== '') {
+            var areaMM = ',面积' + diseaseData.hzbrmc_area_mm + '@@平方毫米@@'
             setAreaMM(areaMM)
           } else {
-            let areaMM = ',面积' + value + '@@平方毫米@@'
+            var areaMM = ''
             setAreaMM(areaMM)
           }
-        } else if (name == 'hzbrmc_heightdiff_cm') {
-          // 高差 - 厘米
-          // let heightDiffCM = ',高差' + value + '@@厘米@@'
-          // setHeightDiffCM(heightDiffCM)
-          if (value == '' || value == 0) {
-            let heightDiffCM = ''
+          if (diseaseData.hzbrmc_heightdiff_cm !== undefined && diseaseData.hzbrmc_heightdiff_cm !== '0' && diseaseData.hzbrmc_heightdiff_cm !== '') {
+            var heightDiffCM = ',高差' + diseaseData.hzbrmc_heightdiff_cm + '@@厘米@@'
             setHeightDiffCM(heightDiffCM)
           } else {
-            let heightDiffCM = ',高差' + value + '@@厘米@@'
+            var heightDiffCM = ''
             setHeightDiffCM(heightDiffCM)
           }
-        } else if (name == 'hzbrmc_heightdiff_mm') {
-          // 高差 - 毫米
-          // let heightDiffMM = ',高差' + value + '@@毫米@@'
-          // setHeightDiffMM(heightDiffMM)
-          if (value == '' || value == 0) {
-            let heightDiffMM = ''
+          if (diseaseData.hzbrmc_heightdiff_mm !== undefined && diseaseData.hzbrmc_heightdiff_mm !== '0' && diseaseData.hzbrmc_heightdiff_mm !== '') {
+            var heightDiffMM = ',高差' + diseaseData.hzbrmc_heightdiff_mm + '@@毫米@@'
             setHeightDiffMM(heightDiffMM)
           } else {
-            let heightDiffMM = ',高差' + value + '@@毫米@@'
+            var heightDiffMM = ''
             setHeightDiffMM(heightDiffMM)
           }
-        } else if (name == 'hzbrmc_spacing_cm') {
-          // 间距 - 厘米
-          // let spacingCM = ',间距' + value + '@@厘米@@'
-          // setSpacingCM(spacingCM)
-          if (value == '' || value == 0) {
-            let spacingCM = ',间距' + value + '@@厘米@@'
+          if (diseaseData.hzbrmc_spacing_cm !== undefined && diseaseData.hzbrmc_spacing_cm !== '0' && diseaseData.hzbrmc_spacing_cm !== '') {
+            var spacingCM = ',间距' + diseaseData.hzbrmc_spacing_cm + '@@厘米@@'
             setSpacingCM(spacingCM)
           } else {
-            let spacingCM = ',间距' + value + '@@厘米@@'
+            var spacingCM = ''
             setSpacingCM(spacingCM)
           }
-        } else if (name == 'hzbrmc_deformation_mm') {
-          // 变形 - 毫米
-          // let deformationMM = ',变形' + value + '@@毫米@@'
-          // setDeformationMM(deformationMM)
-          if (value == '' || value == 0) {
-            let deformationMM = ''
+          if (diseaseData.hzbrmc_deformation_mm !== undefined && diseaseData.hzbrmc_deformation_mm !== '0' && diseaseData.hzbrmc_deformation_mm !== '') {
+            var deformationMM = ',变形' + diseaseData.hzbrmc_deformation_mm + '@@毫米@@'
             setDeformationMM(deformationMM)
           } else {
-            let deformationMM = ',变形' + value + '@@毫米@@'
+            var deformationMM = ''
             setDeformationMM(deformationMM)
           }
-        } else if (name == 'hzbrmc_num') {
-          // 个数 - 个
-          // let num = ',个数' + value + '@@个@@'
-          // setNum(num)
-          if (value == '' || value == 0) {
-            let num = ''
+          if (diseaseData.hzbrmc_num !== undefined && diseaseData.hzbrmc_num !== '0' && diseaseData.hzbrmc_num !== '') {
+            var num = ',个数' + diseaseData.hzbrmc_num + '@@个@@'
             setNum(num)
           } else {
-            let num = ',个数' + value + '@@个@@'
+            var num = ''
             setNum(num)
           }
-        } else if (name == 'hzbrmc_range_cm') {
-          // 距离 - 厘米
-          // let rangeCM = ',距离' + value + '@@厘米@@'
-          // setRangeCM(rangeCM)
-          if (value == '' || value == 0) {
-            let rangeCM = ''
+          if (diseaseData.hzbrmc_range_cm !== undefined && diseaseData.hzbrmc_range_cm !== '0' && diseaseData.hzbrmc_range_cm !== '') {
+            var rangeCM = ',距离' + diseaseData.hzbrmc_range_cm + '@@厘米@@'
             setRangeCM(rangeCM)
           } else {
-            let rangeCM = ',距离' + value + '@@厘米@@'
+            var rangeCM = ''
             setRangeCM(rangeCM)
           }
-        } else if (name == 'hzbrmc_range_mm') {
-          // 距离 - 毫米
-          // let rangeMM = ',距离' + value + '@@毫米@@'
-          // setRangeMM(rangeMM)
-          if (value == '' || value == 0) {
-            let rangeMM = ''
+          if (diseaseData.hzbrmc_range_mm !== undefined && diseaseData.hzbrmc_range_mm !== '0' && diseaseData.hzbrmc_range_mm !== '') {
+            var rangeMM = ',距离' + diseaseData.hzbrmc_range_mm + '@@毫米@@'
             setRangeMM(rangeMM)
           } else {
-            let rangeMM = ',距离' + value + '@@毫米@@'
+            var rangeMM = ''
             setRangeMM(rangeMM)
           }
-        } else if (name == 'hzbrmc_depth_cm') {
-          // 深度 - 厘米
-          // let depthCM = ',深度' + value + '@@厘米@@'
-          // setDepthCM(depthCM)
-          if (value == '' || value == 0) {
-            let depthCM = ''
+          if (diseaseData.hzbrmc_depth_cm !== undefined && diseaseData.hzbrmc_depth_cm !== '0' && diseaseData.hzbrmc_depth_cm !== '') {
+            var depthCM = ',深度' + diseaseData.hzbrmc_depth_cm + '@@厘米@@'
             setDepthCM(depthCM)
           } else {
-            let depthCM = ',深度' + value + '@@厘米@@'
+            var depthCM = ''
             setDepthCM(depthCM)
           }
-        } else if (name == 'hzbrmc_depth_mm') {
-          // 深度 - 毫米
-          // let depthMM = ',深度' + value + '@@毫米@@'
-          // setDepthMM(depthMM)
-          if (value == '' || value == 0) {
-            let depthMM = ''
+          if (diseaseData.hzbrmc_depth_mm !== undefined && diseaseData.hzbrmc_depth_mm !== '0' && diseaseData.hzbrmc_depth_mm !== '') {
+            var depthMM = ',深度' + diseaseData.hzbrmc_depth_mm + '@@毫米@@'
             setDepthMM(depthMM)
           } else {
-            let depthMM = ',深度' + value + '@@毫米@@'
+            var depthMM = ''
             setDepthMM(depthMM)
           }
-        } else if (name == 'hzbrmc_volume_m') {
-          // 体积 - 立方米
-          // let volumeM = ',体积' + value + '@@立方米@@'
-          // setVolumeM(volumeM)
-          if (value == '' || value == 0) {
-            let volumeM = ''
+          if (diseaseData.hzbrmc_volume_m !== undefined && diseaseData.hzbrmc_volume_m !== '0' && diseaseData.hzbrmc_volume_m !== '') {
+            var volumeM = ',体积' + diseaseData.hzbrmc_volume_m + '@@立方米@@'
             setVolumeM(volumeM)
           } else {
-            let volumeM = ',体积' + value + '@@立方米@@'
+            var volumeM = ''
             setVolumeM(volumeM)
           }
-        } else if (name == 'hzbrmc_volume_cm') {
-          // 体积 - 立方厘米
-          // let volumeCM = ',体积' + value + '@@立方厘米@@'
-          // setVolumeCM(volumeCM)
-          if (value == '' || value == 0) {
-            let volumeCM = ''
+          if (diseaseData.hzbrmc_volume_cm !== undefined && diseaseData.hzbrmc_volume_cm !== '0' && diseaseData.hzbrmc_volume_cm !== '') {
+            var volumeCM = ',体积' + diseaseData.hzbrmc_volume_cm + '@@立方厘米@@'
             setVolumeCM(volumeCM)
           } else {
-            let volumeCM = ',体积' + value + '@@立方厘米@@'
+            var volumeCM = ''
             setVolumeCM(volumeCM)
           }
-        } else if (name == 'hzbrmc_disp_cm') {
-          // 位移 - 厘米
-          // let dispCM = ',位移' + value + '@@厘米@@'
-          // setDispCM(dispCM)
-          if (value == '' || value == 0) {
-            let dispCM = ''
+          if (diseaseData.hzbrmc_disp_cm !== undefined && diseaseData.hzbrmc_disp_cm !== '0' && diseaseData.hzbrmc_disp_cm !== '') {
+            var dispCM = ',位移' + diseaseData.hzbrmc_disp_cm + '@@厘米@@'
             setDispCM(dispCM)
           } else {
-            let dispCM = ',位移' + value + '@@厘米@@'
+            var dispCM = ''
             setDispCM(dispCM)
           }
-        } else if (name == 'hzbrmc_disp_mm') {
-          // 位移 - 毫米
-          // let dispMM = ',位移' + value + '@@毫米@@'
-          // setDispMM(dispMM)
-          if (value == '' || value == 0) {
-            let dispMM = ''
+          if (diseaseData.hzbrmc_disp_mm !== undefined && diseaseData.hzbrmc_disp_mm !== '0' && diseaseData.hzbrmc_disp_mm !== '') {
+            var dispMM = ',位移' + diseaseData.hzbrmc_disp_mm + '@@毫米@@'
             setDispMM(dispMM)
           } else {
-            let dispMM = ',位移' + value + '@@毫米@@'
+            var dispMM = ''
             setDispMM(dispMM)
           }
-        } else if (name == 'hzbrmc_angle_c') {
-          // 角度 - 度
-          // let dispMM = ',角度' + value + '@@度@@'
-          // setDispMM(dispMM)
-          if (value == '' || value == 0) {
-            let dispMM = ''
-            setDispMM(dispMM)
+          if (diseaseData.hzbrmc_angle_c !== undefined && diseaseData.hzbrmc_angle_c !== '0' && diseaseData.hzbrmc_angle_c !== '') {
+            var angle = ',角度' + diseaseData.hzbrmc_angle_c + '@@度@@'
+            setAngle(angle)
           } else {
-            let dispMM = ',角度' + value + '@@度@@'
-            setDispMM(dispMM)
+            var angle = ''
+            setAngle(angle)
           }
-        } else if (name == 'hzbrmc_chu') {
-          // 处
-          // let chu = ',' + value + '@@处@@'
-          // setChu(chu)
-          if (value == '' || value == 0) {
-            let chu = ''
+          if (diseaseData.hzbrmc_chu !== undefined && diseaseData.hzbrmc_chu !== '0' && diseaseData.hzbrmc_chu !== '') {
+            var chu = ',' + diseaseData.hzbrmc_chu + '@@处@@'
             setChu(chu)
           } else {
-            let chu = ',' + value + '@@处@@'
+            var chu = ''
             setChu(chu)
           }
-        } else if (name == 'hzbrmc_tiao') {
-          // 条
-          // let tiao = ',' + value + '@@条@@'
-          // setTiao(tiao)
-          if (value == '' || value == 0) {
-            let tiao = ''
+          if (diseaseData.hzbrmc_tiao !== undefined && diseaseData.hzbrmc_tiao !== '0' && diseaseData.hzbrmc_tiao !== '') {
+            var tiao = ',' + diseaseData.hzbrmc_tiao + '@@条@@'
             setTiao(tiao)
           } else {
-            let tiao = ',' + value + '@@条@@'
+            var tiao = ''
             setTiao(tiao)
           }
-        } else if (name == 'hzbrmc_range_fenbu_m') {
-          // 分布范围 - 米
-          // let rangeFenbuM = ',分布范围' + value + '@@米@@'
-          // setRangeFenbuM(rangeFenbuM)
-          if (value == '' || value == 0) {
-            let rangeFenbuM = ''
+          if (diseaseData.hzbrmc_range_fenbu_m !== undefined && diseaseData.hzbrmc_range_fenbu_m !== '0' && diseaseData.hzbrmc_range_fenbu_m !== '') {
+            var rangeFenbuM = ',分布范围' + diseaseData.hzbrmc_range_fenbu_m + '@@米@@'
             setRangeFenbuM(rangeFenbuM)
           } else {
-            let rangeFenbuM = ',分布范围' + value + '@@米@@'
+            var rangeFenbuM = ''
             setRangeFenbuM(rangeFenbuM)
           }
-        } else if (name == 'hzbrmc_range_length_m') {
-          // 长度范围 - 米
-          // let rangeLengthM = ',长度范围' + value + '@@米@@'
-          // setRangeLengthM(rangeLengthM)
-          if (value == '' || value == 0) {
-            let rangeLengthM = ''
+          if (diseaseData.hzbrmc_range_length_m !== undefined && diseaseData.hzbrmc_range_length_m !== '0' && diseaseData.hzbrmc_range_length_m !== '') {
+            var rangeLengthM = ',长度范围' + diseaseData.hzbrmc_range_length_m + '@@米@@'
             setRangeLengthM(rangeLengthM)
           } else {
-            let rangeLengthM = ',长度范围' + value + '@@米@@'
+            var rangeLengthM = ''
             setRangeLengthM(rangeLengthM)
           }
-        } else if (name == 'hzbrmc_range_width_mm') {
-          // 宽度范围 - 毫米
-          // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-          // setRangeWidthMM(rangeWidthMM)
-          if (value == '' || value == 0) {
-            let rangeWidthMM = ''
+          if (diseaseData.hzbrmc_range_width_mm !== undefined && diseaseData.hzbrmc_range_width_mm !== '0' && diseaseData.hzbrmc_range_width_mm !== '') {
+            var rangeWidthMM = ',宽度范围'+ diseaseData.hzbrmc_range_width_mm + '@@毫米@@'
             setRangeWidthMM(rangeWidthMM)
           } else {
-            let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+            var rangeWidthMM = ''
             setRangeWidthMM(rangeWidthMM)
           }
-        } else if (name == 'hzbrmc_range_spacing_cm') {
-          // 间距范围 - 厘米
-          // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-          // setRangeSpacingCM(rangeSpacingCM)
-          if (value == '' || value == 0) {
-            let rangeSpacingCM = ''
+          if (diseaseData.hzbrmc_range_spacing_cm !== undefined && diseaseData.hzbrmc_range_spacing_cm !== '0' && diseaseData.hzbrmc_range_spacing_cm !== '') {
+            var rangeSpacingCM = ',间距范围' + diseaseData.hzbrmc_range_spacing_cm + '@@厘米@@'
             setRangeSpacingCM(rangeSpacingCM)
           } else {
-            let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+            var rangeSpacingCM = ''
             setRangeSpacingCM(rangeSpacingCM)
           }
-        } else if (name == 'hzbrmc_lb_left_length_m') {
-          // 左腹板长度 - 米
-          // let leftLengthM = ',左腹板长度' + value + '@@米@@'
-          // setLeftLengthM(leftLengthM)
-          if (value == '' || value == 0) {
-            let leftLengthM = ''
+          if (diseaseData.hzbrmc_lb_left_length_m !== undefined && diseaseData.hzbrmc_lb_left_length_m !== '0' && diseaseData.hzbrmc_lb_left_length_m !== '') {
+            var leftLengthM = ',左腹板长度' + diseaseData.hzbrmc_lb_left_length_m + '@@米@@'
             setLeftLengthM(leftLengthM)
           } else {
-            let leftLengthM = ',左腹板长度' + value + '@@米@@'
+            var leftLengthM = ''
             setLeftLengthM(leftLengthM)
           }
-        } else if (name == 'hzbrmc_lb_bottom_length_m') {
-          // 底板长度 - 米
-          // let bottomLengthM = ',底板长度' + value + '@@米@@'
-          // setBottomLengthM(bottomLengthM)
-          if (value == '' || value == 0) {
-            let bottomLengthM = ''
+          if (diseaseData.hzbrmc_lb_bottom_length_m !== undefined && diseaseData.hzbrmc_lb_bottom_length_m !== '0' && diseaseData.hzbrmc_lb_bottom_length_m !== '') {
+            var bottomLengthM = ',底板长度' + diseaseData.hzbrmc_lb_bottom_length_m + '@@米@@'
             setBottomLengthM(bottomLengthM)
           } else {
-            let bottomLengthM = ',底板长度' + value + '@@米@@'
+            var bottomLengthM = ''
             setBottomLengthM(bottomLengthM)
           }
-        } else if (name == 'hzbrmc_lb_right_length_m') {
-          // 右腹板长度 - 米
-          // let rightLengthM = ',右腹板长度' + value + '@@米@@'
-          // setRightLengthM(rightLengthM)
-          if (value == '' || value == 0) {
-            let rightLengthM = ''
+          if (diseaseData.hzbrmc_lb_right_length_m !== undefined && diseaseData.hzbrmc_lb_right_length_m !== '0' && diseaseData.hzbrmc_lb_right_length_m !== '') {
+            var rightLengthM = ',右腹板长度' + diseaseData.hzbrmc_lb_right_length_m + '@@米@@'
             setRightLengthM(rightLengthM)
           } else {
-            let rightLengthM = ',右腹板长度' + value + '@@米@@'
+            var rightLengthM = ''
             setRightLengthM(rightLengthM)
           }
-        } else if (name == 'hzbrmc_lb_left_width_mm') {
-          // 左腹板宽度 - 毫米
-          // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-          // setLeftWidthMM(leftWidthMM)
-          if (value == '' || value == 0) {
-            let leftWidthMM = ''
+          if (diseaseData.hzbrmc_lb_left_width_mm !== undefined && diseaseData.hzbrmc_lb_left_width_mm !== '0' && diseaseData.hzbrmc_lb_left_width_mm !== '') {
+            var leftWidthMM = ',左腹板宽度' + diseaseData.hzbrmc_lb_left_width_mm + '@@毫米@@'
             setLeftWidthMM(leftWidthMM)
           } else {
-            let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+            var leftWidthMM = ''
             setLeftWidthMM(leftWidthMM)
           }
-        } else if (name == 'hzbrmc_lb_bottom_width_mm') {
-          // 底板宽度 - 毫米
-          // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-          // setBottomWidthMM(bottomWidthMM)
-          if (value == '' || value == 0) {
-            let bottomWidthMM = ''
+          if (diseaseData.hzbrmc_lb_bottom_width_mm !== undefined && diseaseData.hzbrmc_lb_bottom_width_mm !== '0' && diseaseData.hzbrmc_lb_bottom_width_mm !== '') {
+            var bottomWidthMM = ',底板宽度' + diseaseData.hzbrmc_lb_bottom_width_mm + '@@毫米@@'
             setBottomWidthMM(bottomWidthMM)
           } else {
-            let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+            var bottomWidthMM = ''
             setBottomWidthMM(bottomWidthMM)
           }
-        } else if (name == 'hzbrmc_lb_right_width_mm') {
-          // 右腹板宽度 - 毫米
-          // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-          // setRightWidthMM(rightWidthMM)
-          if (value == '' || value == 0) {
-            let rightWidthMM = ''
+          if (diseaseData.hzbrmc_lb_right_width_mm !== undefined && diseaseData.hzbrmc_lb_right_width_mm !== '0' && diseaseData.hzbrmc_lb_right_width_mm !== '') {
+            var rightWidthMM = ',右腹板宽度' + diseaseData.hzbrmc_lb_right_width_mm + '@@毫米@@'
             setRightWidthMM(rightWidthMM)
           } else {
-            let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+            var rightWidthMM = ''
             setRightWidthMM(rightWidthMM)
           }
-        } else if (name == 'hzbrmc_slant_m') {
-          // 倾斜量 - 米
-          // let slantM = ',倾斜量' + value + '@@米@@'
-          // setSlantM(slantM)
-          if (value == '' || value == 0) {
-            let slantM = ''
+          if (diseaseData.hzbrmc_slant_m !== undefined && diseaseData.hzbrmc_slant_m !== '0' && diseaseData.hzbrmc_slant_m !== '') {
+            var slantM = ',倾斜量' + diseaseData.hzbrmc_slant_m + '@@米@@'
             setSlantM(slantM)
           } else {
-            let slantM = ',倾斜量' + value + '@@米@@'
+            var slantM = ''
             setSlantM(slantM)
           }
         }
 
-        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                      + widthMM + heightM + heightCM + heightMM + areaFace
-                      + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                      + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                      + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                      + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                      + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                      + bottomWidthMM + rightWidthMM + slantM
-        setWriteTxt(writeTxt)
-        console.log('writeTxt', writeTxt);
-        console.log('病害名称',itemData.diseaseName);
-        let binghai = itemData.diseaseName
-        let allText = binghai.concat(writeTxt)
-        console.log('allText', allText);
-        diseaseData['description'] = allText
-        handleFormChenge(allText, diseaseData.description)
+        if (writeDesTextValue == '' || writeDesTextValue == undefined) {
+          console.log('没有修改数据');
+          if (diseaseData.description == '' || diseaseData.description == undefined) {
+            diseaseData['description'] = itemData.diseaseName
+          } else if (diseaseData.description !== '' || diseaseData.description !== undefined) {
+            let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                    + widthMM + heightM + heightCM + heightMM + areaFace
+                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                    + bottomWidthMM + rightWidthMM + slantM
+            // let writeTxt = diseaseData.hzbrmc_length_m
+            setWriteTxt(writeTxt)
+            // console.log('writeTxt', writeTxt);
+            // console.log('病害名称',itemData.diseaseName);
+            let binghai = itemData.diseaseName
+            let allText = binghai.concat(writeTxt)
+            console.log('allText', allText);
+            diseaseData['description'] = allText
+            handleFormChenge(allText, diseaseData.description)
+          }
+        } else {
+          let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                    + widthMM + heightM + heightCM + heightMM + areaFace
+                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                    + bottomWidthMM + rightWidthMM + slantM
+          // let writeTxt = diseaseData.hzbrmc_length_m
+          setWriteTxt(writeTxt)
+          // console.log('writeTxt', writeTxt);
+          // console.log('病害名称',itemData.diseaseName);
+          let binghai = itemData.diseaseName
+          let allText = binghai.concat(writeTxt)
+          console.log('allText', allText);
+          diseaseData['description'] = allText
+          handleFormChenge(allText, diseaseData.description)
+        }
       }
+
+      // 存入数据
+      const setStorage = async(name, value) => {
+        console.log('存储长宽高数据的函数~~', name, value);
+        // 桥梁id + 部件名称 + 长/宽/高
+        const REname = bridgeId + '_' + storageMemberName + '_' + name
+        try {
+          await AsyncStorage.setItem(REname, value)
+        } catch (err) {
+          console.log('存入数据失败!', err);
+        }
+      }
+
+      const writeNum = () => {
+        try {
+          console.log('长宽高的数据::',diseaseData.memberLength,diseaseData.memberWidth,diseaseData.memberHeight);
+          const lengthName = bridgeId + '_' + storageMemberName + '_' + 'memberLength'
+          const lengthValue = AsyncStorage.getItem(lengthName)
+          const widthName = bridgeId + '_' + storageMemberName + '_' + 'memberWidth'
+          const widthValue = AsyncStorage.getItem(widthName)
+          const heightName = bridgeId + '_' + storageMemberName + '_' + 'memberHeight'
+          const heightValue = AsyncStorage.getItem(heightName)
+          // if (diseaseData.memberLength == undefined || diseaseData.memberLength !== lengthValue) {
+          //   // console.log('长度数据为空');
+          //   getStorage(lengthName)
+          // } else if (diseaseData.memberWidth == undefined || diseaseData.memberWidth !== widthValue) {
+          //   // console.log('宽度数据为空');
+          //   getStorage(widthName)
+          // } else if (diseaseData.memberHeight == undefined || diseaseData.memberHeight !== heightValue) {
+          //   // console.log('高度数据为空');
+          //   getStorage(heightName)
+          // }
+          getStorage(lengthName)
+          getStorage(widthName)
+          getStorage(heightName)
+        } catch (e) {
+          console.log('writeNum错误',e);
+        }
+      }
+
+      // 读取数据
+      const getStorage = async(name) => {
+        console.log('读取存储的长宽高的数据~',name);
+        // console.log('diseaseData 有无',diseaseData);
+        try {
+          const value = await AsyncStorage.getItem(name)
+          console.log('value~~~',value);
+          if (value !== null) {
+            console.log('读取到的数据',name,value);
+            if (name == bridgeId + '_' + storageMemberName + '_' + 'memberLength') {
+              console.log('length99999');
+              diseaseData['memberLength'] = value
+              setDiseaseData(diseaseData)
+              handleFormChenge(value, diseaseData.memberLength)
+            } else if (name == bridgeId + '_' + storageMemberName + '_' + 'memberWidth') {
+              console.log('Width99999');
+              diseaseData['memberWidth'] = value
+              setDiseaseData(diseaseData)
+              handleFormChenge(value, diseaseData.memberWidth)
+            } else if (name == bridgeId + '_' + storageMemberName + '_' + 'memberHeight') {
+              console.log('Height99999');
+              diseaseData['memberHeight'] = value
+              setDiseaseData(diseaseData)
+              handleFormChenge(value, diseaseData.memberHeight)
+            }
+          }
+        } catch (err) {
+          console.log('读取失败~', err);
+        }
+      }
+
 
       // 填入位置描述内容
       const writePositionText = () => {
         try {
           // console.log('diseaseData.area', diseaseData.area);
           console.log('diseaseData.lengthText',lengthText,widthText,heightText);
+          
+          
+
           if (diseaseData.area == undefined) {
             var areaName = ''
             setAreaName(areaName)
@@ -1784,16 +1732,24 @@ export function DiseaseA({route, navigation}) {
               }
             }
 
+            console.log('diseaseData.lengthNum',lengthNum,widthNum,heightNum);
             // 距顶描述
             if (heightText == '0' || heightText == '0.0') {
               var heightNum = ''
               setHeightNum(heightNum)
             } else if (heightText !== '0' || heightText !== '0.0') {
-              if (lengthNum == '' && pier == '' && widthNum == '') {
-                var heightNum = '距顶' + heightText + 'm'
+              // if (lengthNum == '' || lengthNum == undefined && pier == '' && widthNum == '' || widthNum == undefined) {
+              //   var heightNum = '距顶' + heightText + 'm'
+              //   setHeightNum(heightNum)
+              // } else {
+              //   var heightNum = ',距顶' + heightText + 'm'
+              //   setHeightNum(heightNum)
+              // }
+              if (lengthNum !== '' || widthNum !== '') {
+                var heightNum = ',距顶部' + heightText + 'm'
                 setHeightNum(heightNum)
               } else {
-                var heightNum = ',距顶' + heightText + 'm'
+                var heightNum = '距顶部' + heightText + 'm'
                 setHeightNum(heightNum)
               }
             }
@@ -1883,11 +1839,11 @@ export function DiseaseA({route, navigation}) {
               var heightNum = ''
               setHeightNum(heightNum)
             } else if (heightText !== '0' || heightText !== '0.0') {
-              if (lengthNum == '' && pier == '' && widthNum == '') {
-                var heightNum = '距顶' + heightText + 'm'
+              if (lengthNum !== '' || widthNum !== '') {
+                var heightNum = ',距顶部' + heightText + 'm'
                 setHeightNum(heightNum)
               } else {
-                var heightNum = ',距顶' + heightText + 'm'
+                var heightNum = '距顶部' + heightText + 'm'
                 setHeightNum(heightNum)
               }
             }
@@ -2047,6 +2003,14 @@ export function DiseaseA({route, navigation}) {
           <View style={[tailwind.flexRow]}>
             <LabelItem label="病害位置(米)" style={tailwind.w18} />
             <Text>长度{lengthText}米; 宽度{widthText}米; 距顶{heightText}米</Text>
+            <Text>  </Text>
+            <TouchableOpacity style={{width:80,height:20,borderRadius: 5,
+              backgroundColor: '#2b427d',
+              justifyContent: 'center',
+              overflow: 'hidden'}}
+              onPress={writeNum}>
+              <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>填入基础数据</Text>
+            </TouchableOpacity>
           </View>
           <View style={tailwind.mT2} />
           <View style={[tailwind.flexRow]}>
@@ -2836,14 +2800,14 @@ export function DiseaseB({route, navigation}) {
         }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
+        // let angle = ',角度' + value + '@@度@@'
+        // setAngle(angle)
         if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+          let angle = ''
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          let angle = ',角度' + value + '@@度@@'
+          setAngle(angle)
         }
       } else if (name == 'hzbrmc_chu') {
         // 处
@@ -3190,480 +3154,353 @@ export function DiseaseB({route, navigation}) {
       
     // }
 
+    const [writeDesTextValue, setWriteDesTextValue] = useState('')
 
     const writeDesText = (name, value) => {
       // let writeTxt = []
       console.log('writeDesText', name, value);
+      setWriteDesTextValue(value)
 
-      if (name == 'scale') {
-        // 标度
-        let biaodu = ',标度' + value + '@@'
-        setBiaodu(biaodu)
-      } else if (name == 'hzbrmc_length_m') {
-        //长度 - 米
-        // let lengthM = ',长度' + value + '@@米@@'
-        // setLengthM(lengthM)
-        if (value == '' || value == 0) {
-          let lengthM = ''
+      if (true) {
+        if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
+          var biaodu = ',标度' + diseaseData.scale + '@@'
+          setBiaodu(biaodu)
+        } else {
+          var biaodu = ''
+          setBiaodu(biaodu)
+        }
+        if (diseaseData.hzbrmc_length_m !== undefined && diseaseData.hzbrmc_length_m !== '0' && diseaseData.hzbrmc_length_m !== '') {
+          var lengthM = ',长度' + diseaseData.hzbrmc_length_m + '@@米@@'
           setLengthM(lengthM)
         } else {
-          let lengthM = ',长度' + value + '@@米@@'
+          var lengthM = ''
           setLengthM(lengthM)
         }
-      } else if (name == 'hzbrmc_length_cm') {
-        // 长度 - 厘米
-        // let lengthCM = ',长度' + value + '@@厘米@@'
-        // setLengthCM(lengthCM)
-        if (value == '' || value == 0) {
-          let lengthCM = ''
+        if (diseaseData.hzbrmc_length_cm !== undefined && diseaseData.hzbrmc_length_cm !== '0' && diseaseData.hzbrmc_length_cm !== '') {
+          var lengthCM = ',长度' + diseaseData.hzbrmc_length_cm + '@@厘米@@'
           setLengthCM(lengthCM)
         } else {
-          let lengthCM = ',长度' + value + '@@厘米@@'
+          var lengthCM = ''
           setLengthCM(lengthCM)
         }
-      } else if (name == 'hzbrmc_length_mm') {
-        // 长度 - 毫米
-        // let lengthMM = ',长度' + value + '@@毫米@@'
-        // setLengthMM(lengthMM)
-        if (value == '' || value == 0) {
-          let lengthMM = ''
+        if (diseaseData.hzbrmc_length_mm !== undefined && diseaseData.hzbrmc_length_mm !== '0' && diseaseData.hzbrmc_length_mm !== '') {
+          var lengthMM = ',长度' + diseaseData.hzbrmc_length_mm + '@@毫米@@'
           setLengthMM(lengthMM)
         } else {
-          let lengthMM = ',长度' + value + '@@毫米@@'
+          var lengthMM = ''
           setLengthMM(lengthMM)
         }
-      } else if (name == 'hzbrmc_width_m') {
-        // 宽度 - 米
-        // let widthM = ',宽度' + value + '@@米@@'
-        // setWidthM(widthM)
-        if (value == '' || value == 0) {
-          let widthM = ''
+        if (diseaseData.hzbrmc_width_m !== undefined && diseaseData.hzbrmc_width_m !== '0' && diseaseData.hzbrmc_width_m !== '') {
+          var widthM = ',宽度' + diseaseData.hzbrmc_width_m + '@@米@@'
           setWidthM(widthM)
         } else {
-          let widthM = ',宽度' + value + '@@米@@'
+          var widthM = ''
           setWidthM(widthM)
         }
-      } else if (name == 'hzbrmc_width_cm') {
-        // 宽度 - 厘米
-        // let widthCM = ',宽度' + value + '@@厘米@@'
-        // setWidthCM(widthCM)
-        if (value == '' || value == 0) {
-          let widthCM = ''
+        if (diseaseData.hzbrmc_width_cm !== undefined && diseaseData.hzbrmc_width_cm !== '0' && diseaseData.hzbrmc_width_cm !== '') {
+          var widthCM = ',宽度' + diseaseData.hzbrmc_width_cm + '@@厘米@@'
           setWidthCM(widthCM)
         } else {
-          let widthCM = ',宽度' + value + '@@厘米@@'
+          var widthCM = ''
           setWidthCM(widthCM)
         }
-      } else if (name == 'hzbrmc_width_mm') {
-        // 宽度 - 毫米
-        if (value == '' || value == 0) {
-          let widthMM = ''
+        if (diseaseData.hzbrmc_width_mm !== undefined && diseaseData.hzbrmc_width_mm !== '0' && diseaseData.hzbrmc_width_mm !== '') {
+          console.log('diseaseData.hzbrmc_width_mm',diseaseData.hzbrmc_width_mm == '');
+          var widthMM = ',宽度' + diseaseData.hzbrmc_width_mm + '@@毫米@@'
           setWidthMM(widthMM)
         } else {
-          let widthMM = ',宽度' + value + '@@毫米@@'
+          // diseaseData.hzbrmc_width_mm == undefined || diseaseData.hzbrmc_width_mm == 0 || diseaseData.hzbrmc_width_mm == ''
+          var widthMM = ''
           setWidthMM(widthMM)
         }
-      } else if (name == 'hzbrmc_height_m') {
-        // 高度 - 米
-        // let heightM = ',高度' + value + '@@米@@'
-        // setHeightM(heightM)
-        if (value == '' || value == 0) {
-          let heightM = ''
+        if (diseaseData.hzbrmc_height_m !== undefined && diseaseData.hzbrmc_height_m !== '0' && diseaseData.hzbrmc_height_m !== '') {
+          var heightM = ',高度' + diseaseData.hzbrmc_height_m + '@@米@@'
           setHeightM(heightM)
         } else {
-          let heightM = ',高度' + value + '@@米@@'
+          var heightM = ''
           setHeightM(heightM)
         }
-      } else if (name == 'hzbrmc_height_cm') {
-        // 高度 - 厘米
-        if (value == '' || value == 0) {
-          let heightCM = ''
+        if (diseaseData.hzbrmc_height_cm !== undefined && diseaseData.hzbrmc_height_cm !== '0' && diseaseData.hzbrmc_height_cm !== '') {
+          var heightCM = ',高度' + diseaseData.hzbrmc_height_cm + '@@厘米@@'
           setHeightCM(heightCM)
         } else {
-          let heightCM = ',高度' + value + '@@厘米@@'
+          var heightCM = ''
           setHeightCM(heightCM)
         }
-      } else if (name == 'hzbrmc_height_mm') {
-        // 高度 - 毫米
-        // let heightMM = ',高度' + value + '@@毫米@@'
-        // setHeightMM(heightMM)
-        if (value == '' || value == 0) {
-          let heightMM = ''
+        if (diseaseData.hzbrmc_height_mm !== undefined && diseaseData.hzbrmc_height_mm !== '0' && diseaseData.hzbrmc_height_mm !== '') {
+          var heightMM = ',高度' + diseaseData.hzbrmc_height_mm + '@@毫米@@'
           setHeightMM(heightMM)
         } else {
-          let heightMM = ',高度' + value + '@@毫米@@'
+          var heightMM = ''
           setHeightMM(heightMM)
         }
-      } else if (name == 'hzbrmc_area_face') {
-        // 面域 - %
-        // let areaFace = ',面域' + value + '@@%@@'
-        // setAreaFace(areaFace)
-        if (value == '' || value == 0) {
-          let areaFace = ''
+        if (diseaseData.hzbrmc_area_face !== undefined && diseaseData.hzbrmc_area_face !== '0' && diseaseData.hzbrmc_area_face !== '') {
+          var areaFace = ',面域' + diseaseData.hzbrmc_area_face + '@@%@@'
           setAreaFace(areaFace)
         } else {
-          let areaFace = ',面域' + value + '@@%@@'
+          var areaFace = ''
           setAreaFace(areaFace)
         }
-      } else if (name == 'hzbrmc_area_per') {
-        // 面积占比 - %
-        // let areaPer = ',面积占比' + value + '@@%@@'
-        // setAreaPer(areaPer)
-        if (value == '' || value == 0) {
-          let areaPer = ''
+        if (diseaseData.hzbrmc_area_per !== undefined && diseaseData.hzbrmc_area_per !== '0' && diseaseData.hzbrmc_area_per !== '') {
+          var areaPer = ',面积占比' + diseaseData.hzbrmc_area_per + '@@%@@'
           setAreaPer(areaPer)
         } else {
-          let areaPer = ',面积占比' + value + '@@%@@'
+          var areaPer = ''
           setAreaPer(areaPer)
         }
-      } else if (name == 'hzbrmc_area_m') {
-        // 面积 - 平方米
-        // let areaM = ',面积' + value + '@@平方米@@'
-        // setAreaM(areaM)
-        if (value == '' || value == 0) {
-          let areaM = ''
+        if (diseaseData.hzbrmc_area_m !== undefined && diseaseData.hzbrmc_area_m !== '0' && diseaseData.hzbrmc_area_m !== '') {
+          var areaM = ',面积' + diseaseData.hzbrmc_area_m + '@@平方米@@'
           setAreaM(areaM)
         } else {
-          let areaM = ',面积' + value + '@@平方米@@'
+          var areaM = ''
           setAreaM(areaM)
         }
-      } else if (name == 'hzbrmc_area_cm') {
-        // 面积 - 平方厘米
-        // let areaCM = ',面积' + value + '@@平方厘米@@'
-        // setAreaCM(areaCM)
-        if (value == '' || value == 0) {
-          let areaCM = ''
+        if (diseaseData.hzbrmc_area_cm !== undefined && diseaseData.hzbrmc_area_cm !== '0' && diseaseData.hzbrmc_area_cm !== '') {
+          var areaCM = ',面积' + diseaseData.hzbrmc_area_cm + '@@平方厘米@@'
           setAreaCM(areaCM)
         } else {
-          let areaCM = ',面积' + value + '@@平方厘米@@'
+          var areaCM = ''
           setAreaCM(areaCM)
         }
-      } else if (name == 'hzbrmc_area_mm') {
-        // 面积 - 平方毫米
-        // let areaMM = ',面积' + value + '@@平方毫米@@'
-        // setAreaMM(areaMM)
-        if (value == '' || value == 0) {
-          let areaMM = ''
+        if (diseaseData.hzbrmc_area_mm !== undefined && diseaseData.hzbrmc_area_mm !== '0' && diseaseData.hzbrmc_area_mm !== '') {
+          var areaMM = ',面积' + diseaseData.hzbrmc_area_mm + '@@平方毫米@@'
           setAreaMM(areaMM)
         } else {
-          let areaMM = ',面积' + value + '@@平方毫米@@'
+          var areaMM = ''
           setAreaMM(areaMM)
         }
-      } else if (name == 'hzbrmc_heightdiff_cm') {
-        // 高差 - 厘米
-        // let heightDiffCM = ',高差' + value + '@@厘米@@'
-        // setHeightDiffCM(heightDiffCM)
-        if (value == '' || value == 0) {
-          let heightDiffCM = ''
+        if (diseaseData.hzbrmc_heightdiff_cm !== undefined && diseaseData.hzbrmc_heightdiff_cm !== '0' && diseaseData.hzbrmc_heightdiff_cm !== '') {
+          var heightDiffCM = ',高差' + diseaseData.hzbrmc_heightdiff_cm + '@@厘米@@'
           setHeightDiffCM(heightDiffCM)
         } else {
-          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          var heightDiffCM = ''
           setHeightDiffCM(heightDiffCM)
         }
-      } else if (name == 'hzbrmc_heightdiff_mm') {
-        // 高差 - 毫米
-        // let heightDiffMM = ',高差' + value + '@@毫米@@'
-        // setHeightDiffMM(heightDiffMM)
-        if (value == '' || value == 0) {
-          let heightDiffMM = ''
+        if (diseaseData.hzbrmc_heightdiff_mm !== undefined && diseaseData.hzbrmc_heightdiff_mm !== '0' && diseaseData.hzbrmc_heightdiff_mm !== '') {
+          var heightDiffMM = ',高差' + diseaseData.hzbrmc_heightdiff_mm + '@@毫米@@'
           setHeightDiffMM(heightDiffMM)
         } else {
-          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          var heightDiffMM = ''
           setHeightDiffMM(heightDiffMM)
         }
-      } else if (name == 'hzbrmc_spacing_cm') {
-        // 间距 - 厘米
-        // let spacingCM = ',间距' + value + '@@厘米@@'
-        // setSpacingCM(spacingCM)
-        if (value == '' || value == 0) {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+        if (diseaseData.hzbrmc_spacing_cm !== undefined && diseaseData.hzbrmc_spacing_cm !== '0' && diseaseData.hzbrmc_spacing_cm !== '') {
+          var spacingCM = ',间距' + diseaseData.hzbrmc_spacing_cm + '@@厘米@@'
           setSpacingCM(spacingCM)
         } else {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+          var spacingCM = ''
           setSpacingCM(spacingCM)
         }
-      } else if (name == 'hzbrmc_deformation_mm') {
-        // 变形 - 毫米
-        // let deformationMM = ',变形' + value + '@@毫米@@'
-        // setDeformationMM(deformationMM)
-        if (value == '' || value == 0) {
-          let deformationMM = ''
+        if (diseaseData.hzbrmc_deformation_mm !== undefined && diseaseData.hzbrmc_deformation_mm !== '0' && diseaseData.hzbrmc_deformation_mm !== '') {
+          var deformationMM = ',变形' + diseaseData.hzbrmc_deformation_mm + '@@毫米@@'
           setDeformationMM(deformationMM)
         } else {
-          let deformationMM = ',变形' + value + '@@毫米@@'
+          var deformationMM = ''
           setDeformationMM(deformationMM)
         }
-      } else if (name == 'hzbrmc_num') {
-        // 个数 - 个
-        // let num = ',个数' + value + '@@个@@'
-        // setNum(num)
-        if (value == '' || value == 0) {
-          let num = ''
+        if (diseaseData.hzbrmc_num !== undefined && diseaseData.hzbrmc_num !== '0' && diseaseData.hzbrmc_num !== '') {
+          var num = ',个数' + diseaseData.hzbrmc_num + '@@个@@'
           setNum(num)
         } else {
-          let num = ',个数' + value + '@@个@@'
+          var num = ''
           setNum(num)
         }
-      } else if (name == 'hzbrmc_range_cm') {
-        // 距离 - 厘米
-        // let rangeCM = ',距离' + value + '@@厘米@@'
-        // setRangeCM(rangeCM)
-        if (value == '' || value == 0) {
-          let rangeCM = ''
+        if (diseaseData.hzbrmc_range_cm !== undefined && diseaseData.hzbrmc_range_cm !== '0' && diseaseData.hzbrmc_range_cm !== '') {
+          var rangeCM = ',距离' + diseaseData.hzbrmc_range_cm + '@@厘米@@'
           setRangeCM(rangeCM)
         } else {
-          let rangeCM = ',距离' + value + '@@厘米@@'
+          var rangeCM = ''
           setRangeCM(rangeCM)
         }
-      } else if (name == 'hzbrmc_range_mm') {
-        // 距离 - 毫米
-        // let rangeMM = ',距离' + value + '@@毫米@@'
-        // setRangeMM(rangeMM)
-        if (value == '' || value == 0) {
-          let rangeMM = ''
+        if (diseaseData.hzbrmc_range_mm !== undefined && diseaseData.hzbrmc_range_mm !== '0' && diseaseData.hzbrmc_range_mm !== '') {
+          var rangeMM = ',距离' + diseaseData.hzbrmc_range_mm + '@@毫米@@'
           setRangeMM(rangeMM)
         } else {
-          let rangeMM = ',距离' + value + '@@毫米@@'
+          var rangeMM = ''
           setRangeMM(rangeMM)
         }
-      } else if (name == 'hzbrmc_depth_cm') {
-        // 深度 - 厘米
-        // let depthCM = ',深度' + value + '@@厘米@@'
-        // setDepthCM(depthCM)
-        if (value == '' || value == 0) {
-          let depthCM = ''
+        if (diseaseData.hzbrmc_depth_cm !== undefined && diseaseData.hzbrmc_depth_cm !== '0' && diseaseData.hzbrmc_depth_cm !== '') {
+          var depthCM = ',深度' + diseaseData.hzbrmc_depth_cm + '@@厘米@@'
           setDepthCM(depthCM)
         } else {
-          let depthCM = ',深度' + value + '@@厘米@@'
+          var depthCM = ''
           setDepthCM(depthCM)
         }
-      } else if (name == 'hzbrmc_depth_mm') {
-        // 深度 - 毫米
-        // let depthMM = ',深度' + value + '@@毫米@@'
-        // setDepthMM(depthMM)
-        if (value == '' || value == 0) {
-          let depthMM = ''
+        if (diseaseData.hzbrmc_depth_mm !== undefined && diseaseData.hzbrmc_depth_mm !== '0' && diseaseData.hzbrmc_depth_mm !== '') {
+          var depthMM = ',深度' + diseaseData.hzbrmc_depth_mm + '@@毫米@@'
           setDepthMM(depthMM)
         } else {
-          let depthMM = ',深度' + value + '@@毫米@@'
+          var depthMM = ''
           setDepthMM(depthMM)
         }
-      } else if (name == 'hzbrmc_volume_m') {
-        // 体积 - 立方米
-        // let volumeM = ',体积' + value + '@@立方米@@'
-        // setVolumeM(volumeM)
-        if (value == '' || value == 0) {
-          let volumeM = ''
+        if (diseaseData.hzbrmc_volume_m !== undefined && diseaseData.hzbrmc_volume_m !== '0' && diseaseData.hzbrmc_volume_m !== '') {
+          var volumeM = ',体积' + diseaseData.hzbrmc_volume_m + '@@立方米@@'
           setVolumeM(volumeM)
         } else {
-          let volumeM = ',体积' + value + '@@立方米@@'
+          var volumeM = ''
           setVolumeM(volumeM)
         }
-      } else if (name == 'hzbrmc_volume_cm') {
-        // 体积 - 立方厘米
-        // let volumeCM = ',体积' + value + '@@立方厘米@@'
-        // setVolumeCM(volumeCM)
-        if (value == '' || value == 0) {
-          let volumeCM = ''
+        if (diseaseData.hzbrmc_volume_cm !== undefined && diseaseData.hzbrmc_volume_cm !== '0' && diseaseData.hzbrmc_volume_cm !== '') {
+          var volumeCM = ',体积' + diseaseData.hzbrmc_volume_cm + '@@立方厘米@@'
           setVolumeCM(volumeCM)
         } else {
-          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          var volumeCM = ''
           setVolumeCM(volumeCM)
         }
-      } else if (name == 'hzbrmc_disp_cm') {
-        // 位移 - 厘米
-        // let dispCM = ',位移' + value + '@@厘米@@'
-        // setDispCM(dispCM)
-        if (value == '' || value == 0) {
-          let dispCM = ''
+        if (diseaseData.hzbrmc_disp_cm !== undefined && diseaseData.hzbrmc_disp_cm !== '0' && diseaseData.hzbrmc_disp_cm !== '') {
+          var dispCM = ',位移' + diseaseData.hzbrmc_disp_cm + '@@厘米@@'
           setDispCM(dispCM)
         } else {
-          let dispCM = ',位移' + value + '@@厘米@@'
+          var dispCM = ''
           setDispCM(dispCM)
         }
-      } else if (name == 'hzbrmc_disp_mm') {
-        // 位移 - 毫米
-        // let dispMM = ',位移' + value + '@@毫米@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
+        if (diseaseData.hzbrmc_disp_mm !== undefined && diseaseData.hzbrmc_disp_mm !== '0' && diseaseData.hzbrmc_disp_mm !== '') {
+          var dispMM = ',位移' + diseaseData.hzbrmc_disp_mm + '@@毫米@@'
           setDispMM(dispMM)
         } else {
-          let dispMM = ',位移' + value + '@@毫米@@'
+          var dispMM = ''
           setDispMM(dispMM)
         }
-      } else if (name == 'hzbrmc_angle_c') {
-        // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+        if (diseaseData.hzbrmc_angle_c !== undefined && diseaseData.hzbrmc_angle_c !== '0' && diseaseData.hzbrmc_angle_c !== '') {
+          var angle = ',角度' + diseaseData.hzbrmc_angle_c + '@@度@@'
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          var angle = ''
+          setAngle(angle)
         }
-      } else if (name == 'hzbrmc_chu') {
-        // 处
-        // let chu = ',' + value + '@@处@@'
-        // setChu(chu)
-        if (value == '' || value == 0) {
-          let chu = ''
+        if (diseaseData.hzbrmc_chu !== undefined && diseaseData.hzbrmc_chu !== '0' && diseaseData.hzbrmc_chu !== '') {
+          var chu = ',' + diseaseData.hzbrmc_chu + '@@处@@'
           setChu(chu)
         } else {
-          let chu = ',' + value + '@@处@@'
+          var chu = ''
           setChu(chu)
         }
-      } else if (name == 'hzbrmc_tiao') {
-        // 条
-        // let tiao = ',' + value + '@@条@@'
-        // setTiao(tiao)
-        if (value == '' || value == 0) {
-          let tiao = ''
+        if (diseaseData.hzbrmc_tiao !== undefined && diseaseData.hzbrmc_tiao !== '0' && diseaseData.hzbrmc_tiao !== '') {
+          var tiao = ',' + diseaseData.hzbrmc_tiao + '@@条@@'
           setTiao(tiao)
         } else {
-          let tiao = ',' + value + '@@条@@'
+          var tiao = ''
           setTiao(tiao)
         }
-      } else if (name == 'hzbrmc_range_fenbu_m') {
-        // 分布范围 - 米
-        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        // setRangeFenbuM(rangeFenbuM)
-        if (value == '' || value == 0) {
-          let rangeFenbuM = ''
+        if (diseaseData.hzbrmc_range_fenbu_m !== undefined && diseaseData.hzbrmc_range_fenbu_m !== '0' && diseaseData.hzbrmc_range_fenbu_m !== '') {
+          var rangeFenbuM = ',分布范围' + diseaseData.hzbrmc_range_fenbu_m + '@@米@@'
           setRangeFenbuM(rangeFenbuM)
         } else {
-          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          var rangeFenbuM = ''
           setRangeFenbuM(rangeFenbuM)
         }
-      } else if (name == 'hzbrmc_range_length_m') {
-        // 长度范围 - 米
-        // let rangeLengthM = ',长度范围' + value + '@@米@@'
-        // setRangeLengthM(rangeLengthM)
-        if (value == '' || value == 0) {
-          let rangeLengthM = ''
+        if (diseaseData.hzbrmc_range_length_m !== undefined && diseaseData.hzbrmc_range_length_m !== '0' && diseaseData.hzbrmc_range_length_m !== '') {
+          var rangeLengthM = ',长度范围' + diseaseData.hzbrmc_range_length_m + '@@米@@'
           setRangeLengthM(rangeLengthM)
         } else {
-          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          var rangeLengthM = ''
           setRangeLengthM(rangeLengthM)
         }
-      } else if (name == 'hzbrmc_range_width_mm') {
-        // 宽度范围 - 毫米
-        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        // setRangeWidthMM(rangeWidthMM)
-        if (value == '' || value == 0) {
-          let rangeWidthMM = ''
+        if (diseaseData.hzbrmc_range_width_mm !== undefined && diseaseData.hzbrmc_range_width_mm !== '0' && diseaseData.hzbrmc_range_width_mm !== '') {
+          var rangeWidthMM = ',宽度范围'+ diseaseData.hzbrmc_range_width_mm + '@@毫米@@'
           setRangeWidthMM(rangeWidthMM)
         } else {
-          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          var rangeWidthMM = ''
           setRangeWidthMM(rangeWidthMM)
         }
-      } else if (name == 'hzbrmc_range_spacing_cm') {
-        // 间距范围 - 厘米
-        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        // setRangeSpacingCM(rangeSpacingCM)
-        if (value == '' || value == 0) {
-          let rangeSpacingCM = ''
+        if (diseaseData.hzbrmc_range_spacing_cm !== undefined && diseaseData.hzbrmc_range_spacing_cm !== '0' && diseaseData.hzbrmc_range_spacing_cm !== '') {
+          var rangeSpacingCM = ',间距范围' + diseaseData.hzbrmc_range_spacing_cm + '@@厘米@@'
           setRangeSpacingCM(rangeSpacingCM)
         } else {
-          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          var rangeSpacingCM = ''
           setRangeSpacingCM(rangeSpacingCM)
         }
-      } else if (name == 'hzbrmc_lb_left_length_m') {
-        // 左腹板长度 - 米
-        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        // setLeftLengthM(leftLengthM)
-        if (value == '' || value == 0) {
-          let leftLengthM = ''
+        if (diseaseData.hzbrmc_lb_left_length_m !== undefined && diseaseData.hzbrmc_lb_left_length_m !== '0' && diseaseData.hzbrmc_lb_left_length_m !== '') {
+          var leftLengthM = ',左腹板长度' + diseaseData.hzbrmc_lb_left_length_m + '@@米@@'
           setLeftLengthM(leftLengthM)
         } else {
-          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          var leftLengthM = ''
           setLeftLengthM(leftLengthM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_length_m') {
-        // 底板长度 - 米
-        // let bottomLengthM = ',底板长度' + value + '@@米@@'
-        // setBottomLengthM(bottomLengthM)
-        if (value == '' || value == 0) {
-          let bottomLengthM = ''
+        if (diseaseData.hzbrmc_lb_bottom_length_m !== undefined && diseaseData.hzbrmc_lb_bottom_length_m !== '0' && diseaseData.hzbrmc_lb_bottom_length_m !== '') {
+          var bottomLengthM = ',底板长度' + diseaseData.hzbrmc_lb_bottom_length_m + '@@米@@'
           setBottomLengthM(bottomLengthM)
         } else {
-          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          var bottomLengthM = ''
           setBottomLengthM(bottomLengthM)
         }
-      } else if (name == 'hzbrmc_lb_right_length_m') {
-        // 右腹板长度 - 米
-        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        // setRightLengthM(rightLengthM)
-        if (value == '' || value == 0) {
-          let rightLengthM = ''
+        if (diseaseData.hzbrmc_lb_right_length_m !== undefined && diseaseData.hzbrmc_lb_right_length_m !== '0' && diseaseData.hzbrmc_lb_right_length_m !== '') {
+          var rightLengthM = ',右腹板长度' + diseaseData.hzbrmc_lb_right_length_m + '@@米@@'
           setRightLengthM(rightLengthM)
         } else {
-          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          var rightLengthM = ''
           setRightLengthM(rightLengthM)
         }
-      } else if (name == 'hzbrmc_lb_left_width_mm') {
-        // 左腹板宽度 - 毫米
-        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        // setLeftWidthMM(leftWidthMM)
-        if (value == '' || value == 0) {
-          let leftWidthMM = ''
+        if (diseaseData.hzbrmc_lb_left_width_mm !== undefined && diseaseData.hzbrmc_lb_left_width_mm !== '0' && diseaseData.hzbrmc_lb_left_width_mm !== '') {
+          var leftWidthMM = ',左腹板宽度' + diseaseData.hzbrmc_lb_left_width_mm + '@@毫米@@'
           setLeftWidthMM(leftWidthMM)
         } else {
-          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          var leftWidthMM = ''
           setLeftWidthMM(leftWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
-        // 底板宽度 - 毫米
-        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        // setBottomWidthMM(bottomWidthMM)
-        if (value == '' || value == 0) {
-          let bottomWidthMM = ''
+        if (diseaseData.hzbrmc_lb_bottom_width_mm !== undefined && diseaseData.hzbrmc_lb_bottom_width_mm !== '0' && diseaseData.hzbrmc_lb_bottom_width_mm !== '') {
+          var bottomWidthMM = ',底板宽度' + diseaseData.hzbrmc_lb_bottom_width_mm + '@@毫米@@'
           setBottomWidthMM(bottomWidthMM)
         } else {
-          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          var bottomWidthMM = ''
           setBottomWidthMM(bottomWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_right_width_mm') {
-        // 右腹板宽度 - 毫米
-        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        // setRightWidthMM(rightWidthMM)
-        if (value == '' || value == 0) {
-          let rightWidthMM = ''
+        if (diseaseData.hzbrmc_lb_right_width_mm !== undefined && diseaseData.hzbrmc_lb_right_width_mm !== '0' && diseaseData.hzbrmc_lb_right_width_mm !== '') {
+          var rightWidthMM = ',右腹板宽度' + diseaseData.hzbrmc_lb_right_width_mm + '@@毫米@@'
           setRightWidthMM(rightWidthMM)
         } else {
-          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          var rightWidthMM = ''
           setRightWidthMM(rightWidthMM)
         }
-      } else if (name == 'hzbrmc_slant_m') {
-        // 倾斜量 - 米
-        // let slantM = ',倾斜量' + value + '@@米@@'
-        // setSlantM(slantM)
-        if (value == '' || value == 0) {
-          let slantM = ''
+        if (diseaseData.hzbrmc_slant_m !== undefined && diseaseData.hzbrmc_slant_m !== '0' && diseaseData.hzbrmc_slant_m !== '') {
+          var slantM = ',倾斜量' + diseaseData.hzbrmc_slant_m + '@@米@@'
           setSlantM(slantM)
         } else {
-          let slantM = ',倾斜量' + value + '@@米@@'
+          var slantM = ''
           setSlantM(slantM)
         }
       }
 
-      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                    + widthMM + heightM + heightCM + heightMM + areaFace
-                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                    + bottomWidthMM + rightWidthMM + slantM
-      setWriteTxt(writeTxt)
-      console.log('writeTxt', writeTxt);
-      console.log('病害名称',itemData.diseaseName);
-      let binghai = itemData.diseaseName
-      let allText = binghai.concat(writeTxt)
-      console.log('allText', allText);
-      diseaseData['description'] = allText
-      handleFormChenge(allText, diseaseData.description)
+      if (writeDesTextValue == '' || writeDesTextValue == undefined) {
+        console.log('没有修改数据');
+        if (diseaseData.description == '' || diseaseData.description == undefined) {
+          diseaseData['description'] = itemData.diseaseName
+        } else if (diseaseData.description !== '' || diseaseData.description !== undefined) {
+          let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+          // let writeTxt = diseaseData.hzbrmc_length_m
+          setWriteTxt(writeTxt)
+          // console.log('writeTxt', writeTxt);
+          // console.log('病害名称',itemData.diseaseName);
+          let binghai = itemData.diseaseName
+          let allText = binghai.concat(writeTxt)
+          console.log('allText', allText);
+          diseaseData['description'] = allText
+          handleFormChenge(allText, diseaseData.description)
+        }
+      } else {
+        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+        setWriteTxt(writeTxt)
+        console.log('writeTxt', writeTxt);
+        console.log('病害名称',itemData.diseaseName);
+        let binghai = itemData.diseaseName
+        let allText = binghai.concat(writeTxt)
+        console.log('allText', allText);
+        diseaseData['description'] = allText
+        handleFormChenge(allText, diseaseData.description)
+      }
     }
 
     // 填入位置描述内容
@@ -4599,14 +4436,14 @@ export function DiseaseC({route, navigation}) {
         }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
+        // let angle = ',角度' + value + '@@度@@'
+        // setDispMM(angle)
         if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+          let angle = ''
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          let angle = ',角度' + value + '@@度@@'
+          setAngle(angle)
         }
       } else if (name == 'hzbrmc_chu') {
         // 处
@@ -4755,480 +4592,358 @@ export function DiseaseC({route, navigation}) {
       setDiseaseData(_data);
     };
 
+    const [writeDesTextValue, setWriteDesTextValue] = useState('')
+
     // 填入病害描述内容
     const writeDesText = (name, value) => {
       // let writeTxt = []
       console.log('writeDesText', name, value);
+      setWriteDesTextValue(value)
 
-      if (name == 'scale') {
-        // 标度
-        let biaodu = ',标度' + value + '@@'
-        setBiaodu(biaodu)
-      } else if (name == 'hzbrmc_length_m') {
-        //长度 - 米
-        // let lengthM = ',长度' + value + '@@米@@'
-        // setLengthM(lengthM)
-        if (value == '' || value == 0) {
-          let lengthM = ''
+      if (true) {
+        if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
+          var biaodu = ',标度' + diseaseData.scale + '@@'
+          setBiaodu(biaodu)
+        } else {
+          var biaodu = ''
+          setBiaodu(biaodu)
+        }
+        if (diseaseData.hzbrmc_length_m !== undefined && diseaseData.hzbrmc_length_m !== '0' && diseaseData.hzbrmc_length_m !== '') {
+          var lengthM = ',长度' + diseaseData.hzbrmc_length_m + '@@米@@'
           setLengthM(lengthM)
         } else {
-          let lengthM = ',长度' + value + '@@米@@'
+          var lengthM = ''
           setLengthM(lengthM)
         }
-      } else if (name == 'hzbrmc_length_cm') {
-        // 长度 - 厘米
-        // let lengthCM = ',长度' + value + '@@厘米@@'
-        // setLengthCM(lengthCM)
-        if (value == '' || value == 0) {
-          let lengthCM = ''
+        if (diseaseData.hzbrmc_length_cm !== undefined && diseaseData.hzbrmc_length_cm !== '0' && diseaseData.hzbrmc_length_cm !== '') {
+          var lengthCM = ',长度' + diseaseData.hzbrmc_length_cm + '@@厘米@@'
           setLengthCM(lengthCM)
         } else {
-          let lengthCM = ',长度' + value + '@@厘米@@'
+          var lengthCM = ''
           setLengthCM(lengthCM)
         }
-      } else if (name == 'hzbrmc_length_mm') {
-        // 长度 - 毫米
-        // let lengthMM = ',长度' + value + '@@毫米@@'
-        // setLengthMM(lengthMM)
-        if (value == '' || value == 0) {
-          let lengthMM = ''
+        if (diseaseData.hzbrmc_length_mm !== undefined && diseaseData.hzbrmc_length_mm !== '0' && diseaseData.hzbrmc_length_mm !== '') {
+          var lengthMM = ',长度' + diseaseData.hzbrmc_length_mm + '@@毫米@@'
           setLengthMM(lengthMM)
         } else {
-          let lengthMM = ',长度' + value + '@@毫米@@'
+          var lengthMM = ''
           setLengthMM(lengthMM)
         }
-      } else if (name == 'hzbrmc_width_m') {
-        // 宽度 - 米
-        // let widthM = ',宽度' + value + '@@米@@'
-        // setWidthM(widthM)
-        if (value == '' || value == 0) {
-          let widthM = ''
+        if (diseaseData.hzbrmc_width_m !== undefined && diseaseData.hzbrmc_width_m !== '0' && diseaseData.hzbrmc_width_m !== '') {
+          var widthM = ',宽度' + diseaseData.hzbrmc_width_m + '@@米@@'
           setWidthM(widthM)
         } else {
-          let widthM = ',宽度' + value + '@@米@@'
+          var widthM = ''
           setWidthM(widthM)
         }
-      } else if (name == 'hzbrmc_width_cm') {
-        // 宽度 - 厘米
-        // let widthCM = ',宽度' + value + '@@厘米@@'
-        // setWidthCM(widthCM)
-        if (value == '' || value == 0) {
-          let widthCM = ''
+        if (diseaseData.hzbrmc_width_cm !== undefined && diseaseData.hzbrmc_width_cm !== '0' && diseaseData.hzbrmc_width_cm !== '') {
+          var widthCM = ',宽度' + diseaseData.hzbrmc_width_cm + '@@厘米@@'
           setWidthCM(widthCM)
         } else {
-          let widthCM = ',宽度' + value + '@@厘米@@'
+          var widthCM = ''
           setWidthCM(widthCM)
         }
-      } else if (name == 'hzbrmc_width_mm') {
-        // 宽度 - 毫米
-        if (value == '' || value == 0) {
-          let widthMM = ''
+        if (diseaseData.hzbrmc_width_mm !== undefined && diseaseData.hzbrmc_width_mm !== '0' && diseaseData.hzbrmc_width_mm !== '') {
+          console.log('diseaseData.hzbrmc_width_mm',diseaseData.hzbrmc_width_mm == '');
+          var widthMM = ',宽度' + diseaseData.hzbrmc_width_mm + '@@毫米@@'
           setWidthMM(widthMM)
         } else {
-          let widthMM = ',宽度' + value + '@@毫米@@'
+          // diseaseData.hzbrmc_width_mm == undefined || diseaseData.hzbrmc_width_mm == 0 || diseaseData.hzbrmc_width_mm == ''
+          var widthMM = ''
           setWidthMM(widthMM)
         }
-      } else if (name == 'hzbrmc_height_m') {
-        // 高度 - 米
-        // let heightM = ',高度' + value + '@@米@@'
-        // setHeightM(heightM)
-        if (value == '' || value == 0) {
-          let heightM = ''
+        if (diseaseData.hzbrmc_height_m !== undefined && diseaseData.hzbrmc_height_m !== '0' && diseaseData.hzbrmc_height_m !== '') {
+          var heightM = ',高度' + diseaseData.hzbrmc_height_m + '@@米@@'
           setHeightM(heightM)
         } else {
-          let heightM = ',高度' + value + '@@米@@'
+          var heightM = ''
           setHeightM(heightM)
         }
-      } else if (name == 'hzbrmc_height_cm') {
-        // 高度 - 厘米
-        if (value == '' || value == 0) {
-          let heightCM = ''
+        if (diseaseData.hzbrmc_height_cm !== undefined && diseaseData.hzbrmc_height_cm !== '0' && diseaseData.hzbrmc_height_cm !== '') {
+          var heightCM = ',高度' + diseaseData.hzbrmc_height_cm + '@@厘米@@'
           setHeightCM(heightCM)
         } else {
-          let heightCM = ',高度' + value + '@@厘米@@'
+          var heightCM = ''
           setHeightCM(heightCM)
         }
-      } else if (name == 'hzbrmc_height_mm') {
-        // 高度 - 毫米
-        // let heightMM = ',高度' + value + '@@毫米@@'
-        // setHeightMM(heightMM)
-        if (value == '' || value == 0) {
-          let heightMM = ''
+        if (diseaseData.hzbrmc_height_mm !== undefined && diseaseData.hzbrmc_height_mm !== '0' && diseaseData.hzbrmc_height_mm !== '') {
+          var heightMM = ',高度' + diseaseData.hzbrmc_height_mm + '@@毫米@@'
           setHeightMM(heightMM)
         } else {
-          let heightMM = ',高度' + value + '@@毫米@@'
+          var heightMM = ''
           setHeightMM(heightMM)
         }
-      } else if (name == 'hzbrmc_area_face') {
-        // 面域 - %
-        // let areaFace = ',面域' + value + '@@%@@'
-        // setAreaFace(areaFace)
-        if (value == '' || value == 0) {
-          let areaFace = ''
+        if (diseaseData.hzbrmc_area_face !== undefined && diseaseData.hzbrmc_area_face !== '0' && diseaseData.hzbrmc_area_face !== '') {
+          var areaFace = ',面域' + diseaseData.hzbrmc_area_face + '@@%@@'
           setAreaFace(areaFace)
         } else {
-          let areaFace = ',面域' + value + '@@%@@'
+          var areaFace = ''
           setAreaFace(areaFace)
         }
-      } else if (name == 'hzbrmc_area_per') {
-        // 面积占比 - %
-        // let areaPer = ',面积占比' + value + '@@%@@'
-        // setAreaPer(areaPer)
-        if (value == '' || value == 0) {
-          let areaPer = ''
+        if (diseaseData.hzbrmc_area_per !== undefined && diseaseData.hzbrmc_area_per !== '0' && diseaseData.hzbrmc_area_per !== '') {
+          var areaPer = ',面积占比' + diseaseData.hzbrmc_area_per + '@@%@@'
           setAreaPer(areaPer)
         } else {
-          let areaPer = ',面积占比' + value + '@@%@@'
+          var areaPer = ''
           setAreaPer(areaPer)
         }
-      } else if (name == 'hzbrmc_area_m') {
-        // 面积 - 平方米
-        // let areaM = ',面积' + value + '@@平方米@@'
-        // setAreaM(areaM)
-        if (value == '' || value == 0) {
-          let areaM = ''
+        if (diseaseData.hzbrmc_area_m !== undefined && diseaseData.hzbrmc_area_m !== '0' && diseaseData.hzbrmc_area_m !== '') {
+          var areaM = ',面积' + diseaseData.hzbrmc_area_m + '@@平方米@@'
           setAreaM(areaM)
         } else {
-          let areaM = ',面积' + value + '@@平方米@@'
+          var areaM = ''
           setAreaM(areaM)
         }
-      } else if (name == 'hzbrmc_area_cm') {
-        // 面积 - 平方厘米
-        // let areaCM = ',面积' + value + '@@平方厘米@@'
-        // setAreaCM(areaCM)
-        if (value == '' || value == 0) {
-          let areaCM = ''
+        if (diseaseData.hzbrmc_area_cm !== undefined && diseaseData.hzbrmc_area_cm !== '0' && diseaseData.hzbrmc_area_cm !== '') {
+          var areaCM = ',面积' + diseaseData.hzbrmc_area_cm + '@@平方厘米@@'
           setAreaCM(areaCM)
         } else {
-          let areaCM = ',面积' + value + '@@平方厘米@@'
+          var areaCM = ''
           setAreaCM(areaCM)
         }
-      } else if (name == 'hzbrmc_area_mm') {
-        // 面积 - 平方毫米
-        // let areaMM = ',面积' + value + '@@平方毫米@@'
-        // setAreaMM(areaMM)
-        if (value == '' || value == 0) {
-          let areaMM = ''
+        if (diseaseData.hzbrmc_area_mm !== undefined && diseaseData.hzbrmc_area_mm !== '0' && diseaseData.hzbrmc_area_mm !== '') {
+          var areaMM = ',面积' + diseaseData.hzbrmc_area_mm + '@@平方毫米@@'
           setAreaMM(areaMM)
         } else {
-          let areaMM = ',面积' + value + '@@平方毫米@@'
+          var areaMM = ''
           setAreaMM(areaMM)
         }
-      } else if (name == 'hzbrmc_heightdiff_cm') {
-        // 高差 - 厘米
-        // let heightDiffCM = ',高差' + value + '@@厘米@@'
-        // setHeightDiffCM(heightDiffCM)
-        if (value == '' || value == 0) {
-          let heightDiffCM = ''
+        if (diseaseData.hzbrmc_heightdiff_cm !== undefined && diseaseData.hzbrmc_heightdiff_cm !== '0' && diseaseData.hzbrmc_heightdiff_cm !== '') {
+          var heightDiffCM = ',高差' + diseaseData.hzbrmc_heightdiff_cm + '@@厘米@@'
           setHeightDiffCM(heightDiffCM)
         } else {
-          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          var heightDiffCM = ''
           setHeightDiffCM(heightDiffCM)
         }
-      } else if (name == 'hzbrmc_heightdiff_mm') {
-        // 高差 - 毫米
-        // let heightDiffMM = ',高差' + value + '@@毫米@@'
-        // setHeightDiffMM(heightDiffMM)
-        if (value == '' || value == 0) {
-          let heightDiffMM = ''
+        if (diseaseData.hzbrmc_heightdiff_mm !== undefined && diseaseData.hzbrmc_heightdiff_mm !== '0' && diseaseData.hzbrmc_heightdiff_mm !== '') {
+          var heightDiffMM = ',高差' + diseaseData.hzbrmc_heightdiff_mm + '@@毫米@@'
           setHeightDiffMM(heightDiffMM)
         } else {
-          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          var heightDiffMM = ''
           setHeightDiffMM(heightDiffMM)
         }
-      } else if (name == 'hzbrmc_spacing_cm') {
-        // 间距 - 厘米
-        // let spacingCM = ',间距' + value + '@@厘米@@'
-        // setSpacingCM(spacingCM)
-        if (value == '' || value == 0) {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+        if (diseaseData.hzbrmc_spacing_cm !== undefined && diseaseData.hzbrmc_spacing_cm !== '0' && diseaseData.hzbrmc_spacing_cm !== '') {
+          var spacingCM = ',间距' + diseaseData.hzbrmc_spacing_cm + '@@厘米@@'
           setSpacingCM(spacingCM)
         } else {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+          var spacingCM = ''
           setSpacingCM(spacingCM)
         }
-      } else if (name == 'hzbrmc_deformation_mm') {
-        // 变形 - 毫米
-        // let deformationMM = ',变形' + value + '@@毫米@@'
-        // setDeformationMM(deformationMM)
-        if (value == '' || value == 0) {
-          let deformationMM = ''
+        if (diseaseData.hzbrmc_deformation_mm !== undefined && diseaseData.hzbrmc_deformation_mm !== '0' && diseaseData.hzbrmc_deformation_mm !== '') {
+          var deformationMM = ',变形' + diseaseData.hzbrmc_deformation_mm + '@@毫米@@'
           setDeformationMM(deformationMM)
         } else {
-          let deformationMM = ',变形' + value + '@@毫米@@'
+          var deformationMM = ''
           setDeformationMM(deformationMM)
         }
-      } else if (name == 'hzbrmc_num') {
-        // 个数 - 个
-        // let num = ',个数' + value + '@@个@@'
-        // setNum(num)
-        if (value == '' || value == 0) {
-          let num = ''
+        if (diseaseData.hzbrmc_num !== undefined && diseaseData.hzbrmc_num !== '0' && diseaseData.hzbrmc_num !== '') {
+          var num = ',个数' + diseaseData.hzbrmc_num + '@@个@@'
           setNum(num)
         } else {
-          let num = ',个数' + value + '@@个@@'
+          var num = ''
           setNum(num)
         }
-      } else if (name == 'hzbrmc_range_cm') {
-        // 距离 - 厘米
-        // let rangeCM = ',距离' + value + '@@厘米@@'
-        // setRangeCM(rangeCM)
-        if (value == '' || value == 0) {
-          let rangeCM = ''
+        if (diseaseData.hzbrmc_range_cm !== undefined && diseaseData.hzbrmc_range_cm !== '0' && diseaseData.hzbrmc_range_cm !== '') {
+          var rangeCM = ',距离' + diseaseData.hzbrmc_range_cm + '@@厘米@@'
           setRangeCM(rangeCM)
         } else {
-          let rangeCM = ',距离' + value + '@@厘米@@'
+          var rangeCM = ''
           setRangeCM(rangeCM)
         }
-      } else if (name == 'hzbrmc_range_mm') {
-        // 距离 - 毫米
-        // let rangeMM = ',距离' + value + '@@毫米@@'
-        // setRangeMM(rangeMM)
-        if (value == '' || value == 0) {
-          let rangeMM = ''
+        if (diseaseData.hzbrmc_range_mm !== undefined && diseaseData.hzbrmc_range_mm !== '0' && diseaseData.hzbrmc_range_mm !== '') {
+          var rangeMM = ',距离' + diseaseData.hzbrmc_range_mm + '@@毫米@@'
           setRangeMM(rangeMM)
         } else {
-          let rangeMM = ',距离' + value + '@@毫米@@'
+          var rangeMM = ''
           setRangeMM(rangeMM)
         }
-      } else if (name == 'hzbrmc_depth_cm') {
-        // 深度 - 厘米
-        // let depthCM = ',深度' + value + '@@厘米@@'
-        // setDepthCM(depthCM)
-        if (value == '' || value == 0) {
-          let depthCM = ''
+        if (diseaseData.hzbrmc_depth_cm !== undefined && diseaseData.hzbrmc_depth_cm !== '0' && diseaseData.hzbrmc_depth_cm !== '') {
+          var depthCM = ',深度' + diseaseData.hzbrmc_depth_cm + '@@厘米@@'
           setDepthCM(depthCM)
         } else {
-          let depthCM = ',深度' + value + '@@厘米@@'
+          var depthCM = ''
           setDepthCM(depthCM)
         }
-      } else if (name == 'hzbrmc_depth_mm') {
-        // 深度 - 毫米
-        // let depthMM = ',深度' + value + '@@毫米@@'
-        // setDepthMM(depthMM)
-        if (value == '' || value == 0) {
-          let depthMM = ''
+        if (diseaseData.hzbrmc_depth_mm !== undefined && diseaseData.hzbrmc_depth_mm !== '0' && diseaseData.hzbrmc_depth_mm !== '') {
+          var depthMM = ',深度' + diseaseData.hzbrmc_depth_mm + '@@毫米@@'
           setDepthMM(depthMM)
         } else {
-          let depthMM = ',深度' + value + '@@毫米@@'
+          var depthMM = ''
           setDepthMM(depthMM)
         }
-      } else if (name == 'hzbrmc_volume_m') {
-        // 体积 - 立方米
-        // let volumeM = ',体积' + value + '@@立方米@@'
-        // setVolumeM(volumeM)
-        if (value == '' || value == 0) {
-          let volumeM = ''
+        if (diseaseData.hzbrmc_volume_m !== undefined && diseaseData.hzbrmc_volume_m !== '0' && diseaseData.hzbrmc_volume_m !== '') {
+          var volumeM = ',体积' + diseaseData.hzbrmc_volume_m + '@@立方米@@'
           setVolumeM(volumeM)
         } else {
-          let volumeM = ',体积' + value + '@@立方米@@'
+          var volumeM = ''
           setVolumeM(volumeM)
         }
-      } else if (name == 'hzbrmc_volume_cm') {
-        // 体积 - 立方厘米
-        // let volumeCM = ',体积' + value + '@@立方厘米@@'
-        // setVolumeCM(volumeCM)
-        if (value == '' || value == 0) {
-          let volumeCM = ''
+        if (diseaseData.hzbrmc_volume_cm !== undefined && diseaseData.hzbrmc_volume_cm !== '0' && diseaseData.hzbrmc_volume_cm !== '') {
+          var volumeCM = ',体积' + diseaseData.hzbrmc_volume_cm + '@@立方厘米@@'
           setVolumeCM(volumeCM)
         } else {
-          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          var volumeCM = ''
           setVolumeCM(volumeCM)
         }
-      } else if (name == 'hzbrmc_disp_cm') {
-        // 位移 - 厘米
-        // let dispCM = ',位移' + value + '@@厘米@@'
-        // setDispCM(dispCM)
-        if (value == '' || value == 0) {
-          let dispCM = ''
+        if (diseaseData.hzbrmc_disp_cm !== undefined && diseaseData.hzbrmc_disp_cm !== '0' && diseaseData.hzbrmc_disp_cm !== '') {
+          var dispCM = ',位移' + diseaseData.hzbrmc_disp_cm + '@@厘米@@'
           setDispCM(dispCM)
         } else {
-          let dispCM = ',位移' + value + '@@厘米@@'
+          var dispCM = ''
           setDispCM(dispCM)
         }
-      } else if (name == 'hzbrmc_disp_mm') {
-        // 位移 - 毫米
-        // let dispMM = ',位移' + value + '@@毫米@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
+        if (diseaseData.hzbrmc_disp_mm !== undefined && diseaseData.hzbrmc_disp_mm !== '0' && diseaseData.hzbrmc_disp_mm !== '') {
+          var dispMM = ',位移' + diseaseData.hzbrmc_disp_mm + '@@毫米@@'
           setDispMM(dispMM)
         } else {
-          let dispMM = ',位移' + value + '@@毫米@@'
+          var dispMM = ''
           setDispMM(dispMM)
         }
-      } else if (name == 'hzbrmc_angle_c') {
-        // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+        if (diseaseData.hzbrmc_angle_c !== undefined && diseaseData.hzbrmc_angle_c !== '0' && diseaseData.hzbrmc_angle_c !== '') {
+          var angle = ',角度' + diseaseData.hzbrmc_angle_c + '@@度@@'
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          var angle = ''
+          setAngle(angle)
         }
-      } else if (name == 'hzbrmc_chu') {
-        // 处
-        // let chu = ',' + value + '@@处@@'
-        // setChu(chu)
-        if (value == '' || value == 0) {
-          let chu = ''
+        if (diseaseData.hzbrmc_chu !== undefined && diseaseData.hzbrmc_chu !== '0' && diseaseData.hzbrmc_chu !== '') {
+          var chu = ',' + diseaseData.hzbrmc_chu + '@@处@@'
           setChu(chu)
         } else {
-          let chu = ',' + value + '@@处@@'
+          var chu = ''
           setChu(chu)
         }
-      } else if (name == 'hzbrmc_tiao') {
-        // 条
-        // let tiao = ',' + value + '@@条@@'
-        // setTiao(tiao)
-        if (value == '' || value == 0) {
-          let tiao = ''
+        if (diseaseData.hzbrmc_tiao !== undefined && diseaseData.hzbrmc_tiao !== '0' && diseaseData.hzbrmc_tiao !== '') {
+          var tiao = ',' + diseaseData.hzbrmc_tiao + '@@条@@'
           setTiao(tiao)
         } else {
-          let tiao = ',' + value + '@@条@@'
+          var tiao = ''
           setTiao(tiao)
         }
-      } else if (name == 'hzbrmc_range_fenbu_m') {
-        // 分布范围 - 米
-        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        // setRangeFenbuM(rangeFenbuM)
-        if (value == '' || value == 0) {
-          let rangeFenbuM = ''
+        if (diseaseData.hzbrmc_range_fenbu_m !== undefined && diseaseData.hzbrmc_range_fenbu_m !== '0' && diseaseData.hzbrmc_range_fenbu_m !== '') {
+          var rangeFenbuM = ',分布范围' + diseaseData.hzbrmc_range_fenbu_m + '@@米@@'
           setRangeFenbuM(rangeFenbuM)
         } else {
-          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          var rangeFenbuM = ''
           setRangeFenbuM(rangeFenbuM)
         }
-      } else if (name == 'hzbrmc_range_length_m') {
-        // 长度范围 - 米
-        // let rangeLengthM = ',长度范围' + value + '@@米@@'
-        // setRangeLengthM(rangeLengthM)
-        if (value == '' || value == 0) {
-          let rangeLengthM = ''
+        if (diseaseData.hzbrmc_range_length_m !== undefined && diseaseData.hzbrmc_range_length_m !== '0' && diseaseData.hzbrmc_range_length_m !== '') {
+          var rangeLengthM = ',长度范围' + diseaseData.hzbrmc_range_length_m + '@@米@@'
           setRangeLengthM(rangeLengthM)
         } else {
-          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          var rangeLengthM = ''
           setRangeLengthM(rangeLengthM)
         }
-      } else if (name == 'hzbrmc_range_width_mm') {
-        // 宽度范围 - 毫米
-        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        // setRangeWidthMM(rangeWidthMM)
-        if (value == '' || value == 0) {
-          let rangeWidthMM = ''
+        if (diseaseData.hzbrmc_range_width_mm !== undefined && diseaseData.hzbrmc_range_width_mm !== '0' && diseaseData.hzbrmc_range_width_mm !== '') {
+          var rangeWidthMM = ',宽度范围'+ diseaseData.hzbrmc_range_width_mm + '@@毫米@@'
           setRangeWidthMM(rangeWidthMM)
         } else {
-          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          var rangeWidthMM = ''
           setRangeWidthMM(rangeWidthMM)
         }
-      } else if (name == 'hzbrmc_range_spacing_cm') {
-        // 间距范围 - 厘米
-        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        // setRangeSpacingCM(rangeSpacingCM)
-        if (value == '' || value == 0) {
-          let rangeSpacingCM = ''
+        if (diseaseData.hzbrmc_range_spacing_cm !== undefined && diseaseData.hzbrmc_range_spacing_cm !== '0' && diseaseData.hzbrmc_range_spacing_cm !== '') {
+          var rangeSpacingCM = ',间距范围' + diseaseData.hzbrmc_range_spacing_cm + '@@厘米@@'
           setRangeSpacingCM(rangeSpacingCM)
         } else {
-          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          var rangeSpacingCM = ''
           setRangeSpacingCM(rangeSpacingCM)
         }
-      } else if (name == 'hzbrmc_lb_left_length_m') {
-        // 左腹板长度 - 米
-        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        // setLeftLengthM(leftLengthM)
-        if (value == '' || value == 0) {
-          let leftLengthM = ''
+        if (diseaseData.hzbrmc_lb_left_length_m !== undefined && diseaseData.hzbrmc_lb_left_length_m !== '0' && diseaseData.hzbrmc_lb_left_length_m !== '') {
+          var leftLengthM = ',左腹板长度' + diseaseData.hzbrmc_lb_left_length_m + '@@米@@'
           setLeftLengthM(leftLengthM)
         } else {
-          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          var leftLengthM = ''
           setLeftLengthM(leftLengthM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_length_m') {
-        // 底板长度 - 米
-        // let bottomLengthM = ',底板长度' + value + '@@米@@'
-        // setBottomLengthM(bottomLengthM)
-        if (value == '' || value == 0) {
-          let bottomLengthM = ''
+        if (diseaseData.hzbrmc_lb_bottom_length_m !== undefined && diseaseData.hzbrmc_lb_bottom_length_m !== '0' && diseaseData.hzbrmc_lb_bottom_length_m !== '') {
+          var bottomLengthM = ',底板长度' + diseaseData.hzbrmc_lb_bottom_length_m + '@@米@@'
           setBottomLengthM(bottomLengthM)
         } else {
-          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          var bottomLengthM = ''
           setBottomLengthM(bottomLengthM)
         }
-      } else if (name == 'hzbrmc_lb_right_length_m') {
-        // 右腹板长度 - 米
-        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        // setRightLengthM(rightLengthM)
-        if (value == '' || value == 0) {
-          let rightLengthM = ''
+        if (diseaseData.hzbrmc_lb_right_length_m !== undefined && diseaseData.hzbrmc_lb_right_length_m !== '0' && diseaseData.hzbrmc_lb_right_length_m !== '') {
+          var rightLengthM = ',右腹板长度' + diseaseData.hzbrmc_lb_right_length_m + '@@米@@'
           setRightLengthM(rightLengthM)
         } else {
-          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          var rightLengthM = ''
           setRightLengthM(rightLengthM)
         }
-      } else if (name == 'hzbrmc_lb_left_width_mm') {
-        // 左腹板宽度 - 毫米
-        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        // setLeftWidthMM(leftWidthMM)
-        if (value == '' || value == 0) {
-          let leftWidthMM = ''
+        if (diseaseData.hzbrmc_lb_left_width_mm !== undefined && diseaseData.hzbrmc_lb_left_width_mm !== '0' && diseaseData.hzbrmc_lb_left_width_mm !== '') {
+          var leftWidthMM = ',左腹板宽度' + diseaseData.hzbrmc_lb_left_width_mm + '@@毫米@@'
           setLeftWidthMM(leftWidthMM)
         } else {
-          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          var leftWidthMM = ''
           setLeftWidthMM(leftWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
-        // 底板宽度 - 毫米
-        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        // setBottomWidthMM(bottomWidthMM)
-        if (value == '' || value == 0) {
-          let bottomWidthMM = ''
+        if (diseaseData.hzbrmc_lb_bottom_width_mm !== undefined && diseaseData.hzbrmc_lb_bottom_width_mm !== '0' && diseaseData.hzbrmc_lb_bottom_width_mm !== '') {
+          var bottomWidthMM = ',底板宽度' + diseaseData.hzbrmc_lb_bottom_width_mm + '@@毫米@@'
           setBottomWidthMM(bottomWidthMM)
         } else {
-          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          var bottomWidthMM = ''
           setBottomWidthMM(bottomWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_right_width_mm') {
-        // 右腹板宽度 - 毫米
-        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        // setRightWidthMM(rightWidthMM)
-        if (value == '' || value == 0) {
-          let rightWidthMM = ''
+        if (diseaseData.hzbrmc_lb_right_width_mm !== undefined && diseaseData.hzbrmc_lb_right_width_mm !== '0' && diseaseData.hzbrmc_lb_right_width_mm !== '') {
+          var rightWidthMM = ',右腹板宽度' + diseaseData.hzbrmc_lb_right_width_mm + '@@毫米@@'
           setRightWidthMM(rightWidthMM)
         } else {
-          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          var rightWidthMM = ''
           setRightWidthMM(rightWidthMM)
         }
-      } else if (name == 'hzbrmc_slant_m') {
-        // 倾斜量 - 米
-        // let slantM = ',倾斜量' + value + '@@米@@'
-        // setSlantM(slantM)
-        if (value == '' || value == 0) {
-          let slantM = ''
+        if (diseaseData.hzbrmc_slant_m !== undefined && diseaseData.hzbrmc_slant_m !== '0' && diseaseData.hzbrmc_slant_m !== '') {
+          var slantM = ',倾斜量' + diseaseData.hzbrmc_slant_m + '@@米@@'
           setSlantM(slantM)
         } else {
-          let slantM = ',倾斜量' + value + '@@米@@'
+          var slantM = ''
           setSlantM(slantM)
         }
       }
 
-      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                    + widthMM + heightM + heightCM + heightMM + areaFace
-                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                    + bottomWidthMM + rightWidthMM + slantM
-      setWriteTxt(writeTxt)
-      console.log('writeTxt', writeTxt);
-      console.log('病害名称',itemData.diseaseName);
-      let binghai = itemData.diseaseName
-      let allText = binghai.concat(writeTxt)
-      console.log('allText', allText);
-      diseaseData['description'] = allText
-      handleFormChenge(allText, diseaseData.description)
+      // console.log('value',writeDesTextValue);
+      if (writeDesTextValue == '' || writeDesTextValue == undefined) {
+        console.log('没有修改数据');
+        if (diseaseData.description == '' || diseaseData.description == undefined) {
+          diseaseData['description'] = itemData.diseaseName
+        } else if (diseaseData.description !== '' || diseaseData.description !== undefined) {
+          let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+          // let writeTxt = diseaseData.hzbrmc_length_m
+          setWriteTxt(writeTxt)
+          // console.log('writeTxt', writeTxt);
+          // console.log('病害名称',itemData.diseaseName);
+          let binghai = itemData.diseaseName
+          let allText = binghai.concat(writeTxt)
+          console.log('allText', allText);
+          diseaseData['description'] = allText
+          handleFormChenge(allText, diseaseData.description)
+        }
+      } else {
+        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+        setWriteTxt(writeTxt)
+        console.log('writeTxt', writeTxt);
+        console.log('病害名称',itemData.diseaseName);
+        let binghai = itemData.diseaseName
+        let allText = binghai.concat(writeTxt)
+        console.log('allText', allText);
+        diseaseData['description'] = allText
+        handleFormChenge(allText, diseaseData.description)
+      }
+      
+      
+      
     }
 
     // 填入位置描述内容
@@ -6218,14 +5933,14 @@ export function DiseaseD({route, navigation}) {
         }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
+        // let angle = ',角度' + value + '@@度@@'
+        // setAngle(angle)
         if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+          let angle = ''
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          let angle = ',角度' + value + '@@度@@'
+          setAngle(angle)
         }
       } else if (name == 'hzbrmc_chu') {
         // 处
@@ -6374,480 +6089,354 @@ export function DiseaseD({route, navigation}) {
       setDiseaseData(_data);
     };
 
+    const [writeDesTextValue, setWriteDesTextValue] = useState('')
+
     // 填入病害描述内容
     const writeDesText = (name, value) => {
       // let writeTxt = []
       console.log('writeDesText', name, value);
+      setWriteDesTextValue(value)
 
-      if (name == 'scale') {
-        // 标度
-        let biaodu = ',标度' + value + '@@'
-        setBiaodu(biaodu)
-      } else if (name == 'hzbrmc_length_m') {
-        //长度 - 米
-        // let lengthM = ',长度' + value + '@@米@@'
-        // setLengthM(lengthM)
-        if (value == '' || value == 0) {
-          let lengthM = ''
+      if (true) {
+        if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
+          var biaodu = ',标度' + diseaseData.scale + '@@'
+          setBiaodu(biaodu)
+        } else {
+          var biaodu = ''
+          setBiaodu(biaodu)
+        }
+        if (diseaseData.hzbrmc_length_m !== undefined && diseaseData.hzbrmc_length_m !== '0' && diseaseData.hzbrmc_length_m !== '') {
+          var lengthM = ',长度' + diseaseData.hzbrmc_length_m + '@@米@@'
           setLengthM(lengthM)
         } else {
-          let lengthM = ',长度' + value + '@@米@@'
+          var lengthM = ''
           setLengthM(lengthM)
         }
-      } else if (name == 'hzbrmc_length_cm') {
-        // 长度 - 厘米
-        // let lengthCM = ',长度' + value + '@@厘米@@'
-        // setLengthCM(lengthCM)
-        if (value == '' || value == 0) {
-          let lengthCM = ''
+        if (diseaseData.hzbrmc_length_cm !== undefined && diseaseData.hzbrmc_length_cm !== '0' && diseaseData.hzbrmc_length_cm !== '') {
+          var lengthCM = ',长度' + diseaseData.hzbrmc_length_cm + '@@厘米@@'
           setLengthCM(lengthCM)
         } else {
-          let lengthCM = ',长度' + value + '@@厘米@@'
+          var lengthCM = ''
           setLengthCM(lengthCM)
         }
-      } else if (name == 'hzbrmc_length_mm') {
-        // 长度 - 毫米
-        // let lengthMM = ',长度' + value + '@@毫米@@'
-        // setLengthMM(lengthMM)
-        if (value == '' || value == 0) {
-          let lengthMM = ''
+        if (diseaseData.hzbrmc_length_mm !== undefined && diseaseData.hzbrmc_length_mm !== '0' && diseaseData.hzbrmc_length_mm !== '') {
+          var lengthMM = ',长度' + diseaseData.hzbrmc_length_mm + '@@毫米@@'
           setLengthMM(lengthMM)
         } else {
-          let lengthMM = ',长度' + value + '@@毫米@@'
+          var lengthMM = ''
           setLengthMM(lengthMM)
         }
-      } else if (name == 'hzbrmc_width_m') {
-        // 宽度 - 米
-        // let widthM = ',宽度' + value + '@@米@@'
-        // setWidthM(widthM)
-        if (value == '' || value == 0) {
-          let widthM = ''
+        if (diseaseData.hzbrmc_width_m !== undefined && diseaseData.hzbrmc_width_m !== '0' && diseaseData.hzbrmc_width_m !== '') {
+          var widthM = ',宽度' + diseaseData.hzbrmc_width_m + '@@米@@'
           setWidthM(widthM)
         } else {
-          let widthM = ',宽度' + value + '@@米@@'
+          var widthM = ''
           setWidthM(widthM)
         }
-      } else if (name == 'hzbrmc_width_cm') {
-        // 宽度 - 厘米
-        // let widthCM = ',宽度' + value + '@@厘米@@'
-        // setWidthCM(widthCM)
-        if (value == '' || value == 0) {
-          let widthCM = ''
+        if (diseaseData.hzbrmc_width_cm !== undefined && diseaseData.hzbrmc_width_cm !== '0' && diseaseData.hzbrmc_width_cm !== '') {
+          var widthCM = ',宽度' + diseaseData.hzbrmc_width_cm + '@@厘米@@'
           setWidthCM(widthCM)
         } else {
-          let widthCM = ',宽度' + value + '@@厘米@@'
+          var widthCM = ''
           setWidthCM(widthCM)
         }
-      } else if (name == 'hzbrmc_width_mm') {
-        // 宽度 - 毫米
-        if (value == '' || value == 0) {
-          let widthMM = ''
+        if (diseaseData.hzbrmc_width_mm !== undefined && diseaseData.hzbrmc_width_mm !== '0' && diseaseData.hzbrmc_width_mm !== '') {
+          console.log('diseaseData.hzbrmc_width_mm',diseaseData.hzbrmc_width_mm == '');
+          var widthMM = ',宽度' + diseaseData.hzbrmc_width_mm + '@@毫米@@'
           setWidthMM(widthMM)
         } else {
-          let widthMM = ',宽度' + value + '@@毫米@@'
+          // diseaseData.hzbrmc_width_mm == undefined || diseaseData.hzbrmc_width_mm == 0 || diseaseData.hzbrmc_width_mm == ''
+          var widthMM = ''
           setWidthMM(widthMM)
         }
-      } else if (name == 'hzbrmc_height_m') {
-        // 高度 - 米
-        // let heightM = ',高度' + value + '@@米@@'
-        // setHeightM(heightM)
-        if (value == '' || value == 0) {
-          let heightM = ''
+        if (diseaseData.hzbrmc_height_m !== undefined && diseaseData.hzbrmc_height_m !== '0' && diseaseData.hzbrmc_height_m !== '') {
+          var heightM = ',高度' + diseaseData.hzbrmc_height_m + '@@米@@'
           setHeightM(heightM)
         } else {
-          let heightM = ',高度' + value + '@@米@@'
+          var heightM = ''
           setHeightM(heightM)
         }
-      } else if (name == 'hzbrmc_height_cm') {
-        // 高度 - 厘米
-        if (value == '' || value == 0) {
-          let heightCM = ''
+        if (diseaseData.hzbrmc_height_cm !== undefined && diseaseData.hzbrmc_height_cm !== '0' && diseaseData.hzbrmc_height_cm !== '') {
+          var heightCM = ',高度' + diseaseData.hzbrmc_height_cm + '@@厘米@@'
           setHeightCM(heightCM)
         } else {
-          let heightCM = ',高度' + value + '@@厘米@@'
+          var heightCM = ''
           setHeightCM(heightCM)
         }
-      } else if (name == 'hzbrmc_height_mm') {
-        // 高度 - 毫米
-        // let heightMM = ',高度' + value + '@@毫米@@'
-        // setHeightMM(heightMM)
-        if (value == '' || value == 0) {
-          let heightMM = ''
+        if (diseaseData.hzbrmc_height_mm !== undefined && diseaseData.hzbrmc_height_mm !== '0' && diseaseData.hzbrmc_height_mm !== '') {
+          var heightMM = ',高度' + diseaseData.hzbrmc_height_mm + '@@毫米@@'
           setHeightMM(heightMM)
         } else {
-          let heightMM = ',高度' + value + '@@毫米@@'
+          var heightMM = ''
           setHeightMM(heightMM)
         }
-      } else if (name == 'hzbrmc_area_face') {
-        // 面域 - %
-        // let areaFace = ',面域' + value + '@@%@@'
-        // setAreaFace(areaFace)
-        if (value == '' || value == 0) {
-          let areaFace = ''
+        if (diseaseData.hzbrmc_area_face !== undefined && diseaseData.hzbrmc_area_face !== '0' && diseaseData.hzbrmc_area_face !== '') {
+          var areaFace = ',面域' + diseaseData.hzbrmc_area_face + '@@%@@'
           setAreaFace(areaFace)
         } else {
-          let areaFace = ',面域' + value + '@@%@@'
+          var areaFace = ''
           setAreaFace(areaFace)
         }
-      } else if (name == 'hzbrmc_area_per') {
-        // 面积占比 - %
-        // let areaPer = ',面积占比' + value + '@@%@@'
-        // setAreaPer(areaPer)
-        if (value == '' || value == 0) {
-          let areaPer = ''
+        if (diseaseData.hzbrmc_area_per !== undefined && diseaseData.hzbrmc_area_per !== '0' && diseaseData.hzbrmc_area_per !== '') {
+          var areaPer = ',面积占比' + diseaseData.hzbrmc_area_per + '@@%@@'
           setAreaPer(areaPer)
         } else {
-          let areaPer = ',面积占比' + value + '@@%@@'
+          var areaPer = ''
           setAreaPer(areaPer)
         }
-      } else if (name == 'hzbrmc_area_m') {
-        // 面积 - 平方米
-        // let areaM = ',面积' + value + '@@平方米@@'
-        // setAreaM(areaM)
-        if (value == '' || value == 0) {
-          let areaM = ''
+        if (diseaseData.hzbrmc_area_m !== undefined && diseaseData.hzbrmc_area_m !== '0' && diseaseData.hzbrmc_area_m !== '') {
+          var areaM = ',面积' + diseaseData.hzbrmc_area_m + '@@平方米@@'
           setAreaM(areaM)
         } else {
-          let areaM = ',面积' + value + '@@平方米@@'
+          var areaM = ''
           setAreaM(areaM)
         }
-      } else if (name == 'hzbrmc_area_cm') {
-        // 面积 - 平方厘米
-        // let areaCM = ',面积' + value + '@@平方厘米@@'
-        // setAreaCM(areaCM)
-        if (value == '' || value == 0) {
-          let areaCM = ''
+        if (diseaseData.hzbrmc_area_cm !== undefined && diseaseData.hzbrmc_area_cm !== '0' && diseaseData.hzbrmc_area_cm !== '') {
+          var areaCM = ',面积' + diseaseData.hzbrmc_area_cm + '@@平方厘米@@'
           setAreaCM(areaCM)
         } else {
-          let areaCM = ',面积' + value + '@@平方厘米@@'
+          var areaCM = ''
           setAreaCM(areaCM)
         }
-      } else if (name == 'hzbrmc_area_mm') {
-        // 面积 - 平方毫米
-        // let areaMM = ',面积' + value + '@@平方毫米@@'
-        // setAreaMM(areaMM)
-        if (value == '' || value == 0) {
-          let areaMM = ''
+        if (diseaseData.hzbrmc_area_mm !== undefined && diseaseData.hzbrmc_area_mm !== '0' && diseaseData.hzbrmc_area_mm !== '') {
+          var areaMM = ',面积' + diseaseData.hzbrmc_area_mm + '@@平方毫米@@'
           setAreaMM(areaMM)
         } else {
-          let areaMM = ',面积' + value + '@@平方毫米@@'
+          var areaMM = ''
           setAreaMM(areaMM)
         }
-      } else if (name == 'hzbrmc_heightdiff_cm') {
-        // 高差 - 厘米
-        // let heightDiffCM = ',高差' + value + '@@厘米@@'
-        // setHeightDiffCM(heightDiffCM)
-        if (value == '' || value == 0) {
-          let heightDiffCM = ''
+        if (diseaseData.hzbrmc_heightdiff_cm !== undefined && diseaseData.hzbrmc_heightdiff_cm !== '0' && diseaseData.hzbrmc_heightdiff_cm !== '') {
+          var heightDiffCM = ',高差' + diseaseData.hzbrmc_heightdiff_cm + '@@厘米@@'
           setHeightDiffCM(heightDiffCM)
         } else {
-          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          var heightDiffCM = ''
           setHeightDiffCM(heightDiffCM)
         }
-      } else if (name == 'hzbrmc_heightdiff_mm') {
-        // 高差 - 毫米
-        // let heightDiffMM = ',高差' + value + '@@毫米@@'
-        // setHeightDiffMM(heightDiffMM)
-        if (value == '' || value == 0) {
-          let heightDiffMM = ''
+        if (diseaseData.hzbrmc_heightdiff_mm !== undefined && diseaseData.hzbrmc_heightdiff_mm !== '0' && diseaseData.hzbrmc_heightdiff_mm !== '') {
+          var heightDiffMM = ',高差' + diseaseData.hzbrmc_heightdiff_mm + '@@毫米@@'
           setHeightDiffMM(heightDiffMM)
         } else {
-          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          var heightDiffMM = ''
           setHeightDiffMM(heightDiffMM)
         }
-      } else if (name == 'hzbrmc_spacing_cm') {
-        // 间距 - 厘米
-        // let spacingCM = ',间距' + value + '@@厘米@@'
-        // setSpacingCM(spacingCM)
-        if (value == '' || value == 0) {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+        if (diseaseData.hzbrmc_spacing_cm !== undefined && diseaseData.hzbrmc_spacing_cm !== '0' && diseaseData.hzbrmc_spacing_cm !== '') {
+          var spacingCM = ',间距' + diseaseData.hzbrmc_spacing_cm + '@@厘米@@'
           setSpacingCM(spacingCM)
         } else {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+          var spacingCM = ''
           setSpacingCM(spacingCM)
         }
-      } else if (name == 'hzbrmc_deformation_mm') {
-        // 变形 - 毫米
-        // let deformationMM = ',变形' + value + '@@毫米@@'
-        // setDeformationMM(deformationMM)
-        if (value == '' || value == 0) {
-          let deformationMM = ''
+        if (diseaseData.hzbrmc_deformation_mm !== undefined && diseaseData.hzbrmc_deformation_mm !== '0' && diseaseData.hzbrmc_deformation_mm !== '') {
+          var deformationMM = ',变形' + diseaseData.hzbrmc_deformation_mm + '@@毫米@@'
           setDeformationMM(deformationMM)
         } else {
-          let deformationMM = ',变形' + value + '@@毫米@@'
+          var deformationMM = ''
           setDeformationMM(deformationMM)
         }
-      } else if (name == 'hzbrmc_num') {
-        // 个数 - 个
-        // let num = ',个数' + value + '@@个@@'
-        // setNum(num)
-        if (value == '' || value == 0) {
-          let num = ''
+        if (diseaseData.hzbrmc_num !== undefined && diseaseData.hzbrmc_num !== '0' && diseaseData.hzbrmc_num !== '') {
+          var num = ',个数' + diseaseData.hzbrmc_num + '@@个@@'
           setNum(num)
         } else {
-          let num = ',个数' + value + '@@个@@'
+          var num = ''
           setNum(num)
         }
-      } else if (name == 'hzbrmc_range_cm') {
-        // 距离 - 厘米
-        // let rangeCM = ',距离' + value + '@@厘米@@'
-        // setRangeCM(rangeCM)
-        if (value == '' || value == 0) {
-          let rangeCM = ''
+        if (diseaseData.hzbrmc_range_cm !== undefined && diseaseData.hzbrmc_range_cm !== '0' && diseaseData.hzbrmc_range_cm !== '') {
+          var rangeCM = ',距离' + diseaseData.hzbrmc_range_cm + '@@厘米@@'
           setRangeCM(rangeCM)
         } else {
-          let rangeCM = ',距离' + value + '@@厘米@@'
+          var rangeCM = ''
           setRangeCM(rangeCM)
         }
-      } else if (name == 'hzbrmc_range_mm') {
-        // 距离 - 毫米
-        // let rangeMM = ',距离' + value + '@@毫米@@'
-        // setRangeMM(rangeMM)
-        if (value == '' || value == 0) {
-          let rangeMM = ''
+        if (diseaseData.hzbrmc_range_mm !== undefined && diseaseData.hzbrmc_range_mm !== '0' && diseaseData.hzbrmc_range_mm !== '') {
+          var rangeMM = ',距离' + diseaseData.hzbrmc_range_mm + '@@毫米@@'
           setRangeMM(rangeMM)
         } else {
-          let rangeMM = ',距离' + value + '@@毫米@@'
+          var rangeMM = ''
           setRangeMM(rangeMM)
         }
-      } else if (name == 'hzbrmc_depth_cm') {
-        // 深度 - 厘米
-        // let depthCM = ',深度' + value + '@@厘米@@'
-        // setDepthCM(depthCM)
-        if (value == '' || value == 0) {
-          let depthCM = ''
+        if (diseaseData.hzbrmc_depth_cm !== undefined && diseaseData.hzbrmc_depth_cm !== '0' && diseaseData.hzbrmc_depth_cm !== '') {
+          var depthCM = ',深度' + diseaseData.hzbrmc_depth_cm + '@@厘米@@'
           setDepthCM(depthCM)
         } else {
-          let depthCM = ',深度' + value + '@@厘米@@'
+          var depthCM = ''
           setDepthCM(depthCM)
         }
-      } else if (name == 'hzbrmc_depth_mm') {
-        // 深度 - 毫米
-        // let depthMM = ',深度' + value + '@@毫米@@'
-        // setDepthMM(depthMM)
-        if (value == '' || value == 0) {
-          let depthMM = ''
+        if (diseaseData.hzbrmc_depth_mm !== undefined && diseaseData.hzbrmc_depth_mm !== '0' && diseaseData.hzbrmc_depth_mm !== '') {
+          var depthMM = ',深度' + diseaseData.hzbrmc_depth_mm + '@@毫米@@'
           setDepthMM(depthMM)
         } else {
-          let depthMM = ',深度' + value + '@@毫米@@'
+          var depthMM = ''
           setDepthMM(depthMM)
         }
-      } else if (name == 'hzbrmc_volume_m') {
-        // 体积 - 立方米
-        // let volumeM = ',体积' + value + '@@立方米@@'
-        // setVolumeM(volumeM)
-        if (value == '' || value == 0) {
-          let volumeM = ''
+        if (diseaseData.hzbrmc_volume_m !== undefined && diseaseData.hzbrmc_volume_m !== '0' && diseaseData.hzbrmc_volume_m !== '') {
+          var volumeM = ',体积' + diseaseData.hzbrmc_volume_m + '@@立方米@@'
           setVolumeM(volumeM)
         } else {
-          let volumeM = ',体积' + value + '@@立方米@@'
+          var volumeM = ''
           setVolumeM(volumeM)
         }
-      } else if (name == 'hzbrmc_volume_cm') {
-        // 体积 - 立方厘米
-        // let volumeCM = ',体积' + value + '@@立方厘米@@'
-        // setVolumeCM(volumeCM)
-        if (value == '' || value == 0) {
-          let volumeCM = ''
+        if (diseaseData.hzbrmc_volume_cm !== undefined && diseaseData.hzbrmc_volume_cm !== '0' && diseaseData.hzbrmc_volume_cm !== '') {
+          var volumeCM = ',体积' + diseaseData.hzbrmc_volume_cm + '@@立方厘米@@'
           setVolumeCM(volumeCM)
         } else {
-          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          var volumeCM = ''
           setVolumeCM(volumeCM)
         }
-      } else if (name == 'hzbrmc_disp_cm') {
-        // 位移 - 厘米
-        // let dispCM = ',位移' + value + '@@厘米@@'
-        // setDispCM(dispCM)
-        if (value == '' || value == 0) {
-          let dispCM = ''
+        if (diseaseData.hzbrmc_disp_cm !== undefined && diseaseData.hzbrmc_disp_cm !== '0' && diseaseData.hzbrmc_disp_cm !== '') {
+          var dispCM = ',位移' + diseaseData.hzbrmc_disp_cm + '@@厘米@@'
           setDispCM(dispCM)
         } else {
-          let dispCM = ',位移' + value + '@@厘米@@'
+          var dispCM = ''
           setDispCM(dispCM)
         }
-      } else if (name == 'hzbrmc_disp_mm') {
-        // 位移 - 毫米
-        // let dispMM = ',位移' + value + '@@毫米@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
+        if (diseaseData.hzbrmc_disp_mm !== undefined && diseaseData.hzbrmc_disp_mm !== '0' && diseaseData.hzbrmc_disp_mm !== '') {
+          var dispMM = ',位移' + diseaseData.hzbrmc_disp_mm + '@@毫米@@'
           setDispMM(dispMM)
         } else {
-          let dispMM = ',位移' + value + '@@毫米@@'
+          var dispMM = ''
           setDispMM(dispMM)
         }
-      } else if (name == 'hzbrmc_angle_c') {
-        // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+        if (diseaseData.hzbrmc_angle_c !== undefined && diseaseData.hzbrmc_angle_c !== '0' && diseaseData.hzbrmc_angle_c !== '') {
+          var angle = ',角度' + diseaseData.hzbrmc_angle_c + '@@度@@'
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          var angle = ''
+          setAngle(angle)
         }
-      } else if (name == 'hzbrmc_chu') {
-        // 处
-        // let chu = ',' + value + '@@处@@'
-        // setChu(chu)
-        if (value == '' || value == 0) {
-          let chu = ''
+        if (diseaseData.hzbrmc_chu !== undefined && diseaseData.hzbrmc_chu !== '0' && diseaseData.hzbrmc_chu !== '') {
+          var chu = ',' + diseaseData.hzbrmc_chu + '@@处@@'
           setChu(chu)
         } else {
-          let chu = ',' + value + '@@处@@'
+          var chu = ''
           setChu(chu)
         }
-      } else if (name == 'hzbrmc_tiao') {
-        // 条
-        // let tiao = ',' + value + '@@条@@'
-        // setTiao(tiao)
-        if (value == '' || value == 0) {
-          let tiao = ''
+        if (diseaseData.hzbrmc_tiao !== undefined && diseaseData.hzbrmc_tiao !== '0' && diseaseData.hzbrmc_tiao !== '') {
+          var tiao = ',' + diseaseData.hzbrmc_tiao + '@@条@@'
           setTiao(tiao)
         } else {
-          let tiao = ',' + value + '@@条@@'
+          var tiao = ''
           setTiao(tiao)
         }
-      } else if (name == 'hzbrmc_range_fenbu_m') {
-        // 分布范围 - 米
-        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        // setRangeFenbuM(rangeFenbuM)
-        if (value == '' || value == 0) {
-          let rangeFenbuM = ''
+        if (diseaseData.hzbrmc_range_fenbu_m !== undefined && diseaseData.hzbrmc_range_fenbu_m !== '0' && diseaseData.hzbrmc_range_fenbu_m !== '') {
+          var rangeFenbuM = ',分布范围' + diseaseData.hzbrmc_range_fenbu_m + '@@米@@'
           setRangeFenbuM(rangeFenbuM)
         } else {
-          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          var rangeFenbuM = ''
           setRangeFenbuM(rangeFenbuM)
         }
-      } else if (name == 'hzbrmc_range_length_m') {
-        // 长度范围 - 米
-        // let rangeLengthM = ',长度范围' + value + '@@米@@'
-        // setRangeLengthM(rangeLengthM)
-        if (value == '' || value == 0) {
-          let rangeLengthM = ''
+        if (diseaseData.hzbrmc_range_length_m !== undefined && diseaseData.hzbrmc_range_length_m !== '0' && diseaseData.hzbrmc_range_length_m !== '') {
+          var rangeLengthM = ',长度范围' + diseaseData.hzbrmc_range_length_m + '@@米@@'
           setRangeLengthM(rangeLengthM)
         } else {
-          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          var rangeLengthM = ''
           setRangeLengthM(rangeLengthM)
         }
-      } else if (name == 'hzbrmc_range_width_mm') {
-        // 宽度范围 - 毫米
-        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        // setRangeWidthMM(rangeWidthMM)
-        if (value == '' || value == 0) {
-          let rangeWidthMM = ''
+        if (diseaseData.hzbrmc_range_width_mm !== undefined && diseaseData.hzbrmc_range_width_mm !== '0' && diseaseData.hzbrmc_range_width_mm !== '') {
+          var rangeWidthMM = ',宽度范围'+ diseaseData.hzbrmc_range_width_mm + '@@毫米@@'
           setRangeWidthMM(rangeWidthMM)
         } else {
-          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          var rangeWidthMM = ''
           setRangeWidthMM(rangeWidthMM)
         }
-      } else if (name == 'hzbrmc_range_spacing_cm') {
-        // 间距范围 - 厘米
-        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        // setRangeSpacingCM(rangeSpacingCM)
-        if (value == '' || value == 0) {
-          let rangeSpacingCM = ''
+        if (diseaseData.hzbrmc_range_spacing_cm !== undefined && diseaseData.hzbrmc_range_spacing_cm !== '0' && diseaseData.hzbrmc_range_spacing_cm !== '') {
+          var rangeSpacingCM = ',间距范围' + diseaseData.hzbrmc_range_spacing_cm + '@@厘米@@'
           setRangeSpacingCM(rangeSpacingCM)
         } else {
-          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          var rangeSpacingCM = ''
           setRangeSpacingCM(rangeSpacingCM)
         }
-      } else if (name == 'hzbrmc_lb_left_length_m') {
-        // 左腹板长度 - 米
-        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        // setLeftLengthM(leftLengthM)
-        if (value == '' || value == 0) {
-          let leftLengthM = ''
+        if (diseaseData.hzbrmc_lb_left_length_m !== undefined && diseaseData.hzbrmc_lb_left_length_m !== '0' && diseaseData.hzbrmc_lb_left_length_m !== '') {
+          var leftLengthM = ',左腹板长度' + diseaseData.hzbrmc_lb_left_length_m + '@@米@@'
           setLeftLengthM(leftLengthM)
         } else {
-          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          var leftLengthM = ''
           setLeftLengthM(leftLengthM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_length_m') {
-        // 底板长度 - 米
-        // let bottomLengthM = ',底板长度' + value + '@@米@@'
-        // setBottomLengthM(bottomLengthM)
-        if (value == '' || value == 0) {
-          let bottomLengthM = ''
+        if (diseaseData.hzbrmc_lb_bottom_length_m !== undefined && diseaseData.hzbrmc_lb_bottom_length_m !== '0' && diseaseData.hzbrmc_lb_bottom_length_m !== '') {
+          var bottomLengthM = ',底板长度' + diseaseData.hzbrmc_lb_bottom_length_m + '@@米@@'
           setBottomLengthM(bottomLengthM)
         } else {
-          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          var bottomLengthM = ''
           setBottomLengthM(bottomLengthM)
         }
-      } else if (name == 'hzbrmc_lb_right_length_m') {
-        // 右腹板长度 - 米
-        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        // setRightLengthM(rightLengthM)
-        if (value == '' || value == 0) {
-          let rightLengthM = ''
+        if (diseaseData.hzbrmc_lb_right_length_m !== undefined && diseaseData.hzbrmc_lb_right_length_m !== '0' && diseaseData.hzbrmc_lb_right_length_m !== '') {
+          var rightLengthM = ',右腹板长度' + diseaseData.hzbrmc_lb_right_length_m + '@@米@@'
           setRightLengthM(rightLengthM)
         } else {
-          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          var rightLengthM = ''
           setRightLengthM(rightLengthM)
         }
-      } else if (name == 'hzbrmc_lb_left_width_mm') {
-        // 左腹板宽度 - 毫米
-        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        // setLeftWidthMM(leftWidthMM)
-        if (value == '' || value == 0) {
-          let leftWidthMM = ''
+        if (diseaseData.hzbrmc_lb_left_width_mm !== undefined && diseaseData.hzbrmc_lb_left_width_mm !== '0' && diseaseData.hzbrmc_lb_left_width_mm !== '') {
+          var leftWidthMM = ',左腹板宽度' + diseaseData.hzbrmc_lb_left_width_mm + '@@毫米@@'
           setLeftWidthMM(leftWidthMM)
         } else {
-          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          var leftWidthMM = ''
           setLeftWidthMM(leftWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
-        // 底板宽度 - 毫米
-        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        // setBottomWidthMM(bottomWidthMM)
-        if (value == '' || value == 0) {
-          let bottomWidthMM = ''
+        if (diseaseData.hzbrmc_lb_bottom_width_mm !== undefined && diseaseData.hzbrmc_lb_bottom_width_mm !== '0' && diseaseData.hzbrmc_lb_bottom_width_mm !== '') {
+          var bottomWidthMM = ',底板宽度' + diseaseData.hzbrmc_lb_bottom_width_mm + '@@毫米@@'
           setBottomWidthMM(bottomWidthMM)
         } else {
-          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          var bottomWidthMM = ''
           setBottomWidthMM(bottomWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_right_width_mm') {
-        // 右腹板宽度 - 毫米
-        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        // setRightWidthMM(rightWidthMM)
-        if (value == '' || value == 0) {
-          let rightWidthMM = ''
+        if (diseaseData.hzbrmc_lb_right_width_mm !== undefined && diseaseData.hzbrmc_lb_right_width_mm !== '0' && diseaseData.hzbrmc_lb_right_width_mm !== '') {
+          var rightWidthMM = ',右腹板宽度' + diseaseData.hzbrmc_lb_right_width_mm + '@@毫米@@'
           setRightWidthMM(rightWidthMM)
         } else {
-          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          var rightWidthMM = ''
           setRightWidthMM(rightWidthMM)
         }
-      } else if (name == 'hzbrmc_slant_m') {
-        // 倾斜量 - 米
-        // let slantM = ',倾斜量' + value + '@@米@@'
-        // setSlantM(slantM)
-        if (value == '' || value == 0) {
-          let slantM = ''
+        if (diseaseData.hzbrmc_slant_m !== undefined && diseaseData.hzbrmc_slant_m !== '0' && diseaseData.hzbrmc_slant_m !== '') {
+          var slantM = ',倾斜量' + diseaseData.hzbrmc_slant_m + '@@米@@'
           setSlantM(slantM)
         } else {
-          let slantM = ',倾斜量' + value + '@@米@@'
+          var slantM = ''
           setSlantM(slantM)
         }
       }
 
-      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                    + widthMM + heightM + heightCM + heightMM + areaFace
-                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                    + bottomWidthMM + rightWidthMM + slantM
-      setWriteTxt(writeTxt)
-      console.log('writeTxt', writeTxt);
-      console.log('病害名称',itemData.diseaseName);
-      let binghai = itemData.diseaseName
-      let allText = binghai.concat(writeTxt)
-      console.log('allText', allText);
-      diseaseData['description'] = allText
-      handleFormChenge(allText, diseaseData.description)
+      if (writeDesTextValue == '' || writeDesTextValue == undefined) {
+        console.log('没有修改数据');
+        if (diseaseData.description == '' || diseaseData.description == undefined) {
+          diseaseData['description'] = itemData.diseaseName
+        } else if (diseaseData.description !== '' || diseaseData.description !== undefined) {
+          let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+          // let writeTxt = diseaseData.hzbrmc_length_m
+          setWriteTxt(writeTxt)
+          // console.log('writeTxt', writeTxt);
+          // console.log('病害名称',itemData.diseaseName);
+          let binghai = itemData.diseaseName
+          let allText = binghai.concat(writeTxt)
+          console.log('allText', allText);
+          diseaseData['description'] = allText
+          handleFormChenge(allText, diseaseData.description)
+        }
+      } else {
+        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+        setWriteTxt(writeTxt)
+        console.log('writeTxt', writeTxt);
+        console.log('病害名称',itemData.diseaseName);
+        let binghai = itemData.diseaseName
+        let allText = binghai.concat(writeTxt)
+        console.log('allText', allText);
+        diseaseData['description'] = allText
+        handleFormChenge(allText, diseaseData.description)
+      }
     }
 
     // 填入位置描述内容
@@ -7846,14 +7435,14 @@ export function DiseaseE({route, navigation}) {
         }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
+        // let angle = ',角度' + value + '@@度@@'
+        // setAngle(angle)
         if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+          let angle = ''
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          let angle = ',角度' + value + '@@度@@'
+          setAngle(angle)
         }
       } else if (name == 'hzbrmc_chu') {
         // 处
@@ -8002,480 +7591,354 @@ export function DiseaseE({route, navigation}) {
       setDiseaseData(_data);
     };
 
+    const [writeDesTextValue, setWriteDesTextValue] = useState('')
+
     // 填入病害描述内容
     const writeDesText = (name, value) => {
       // let writeTxt = []
       console.log('writeDesText', name, value);
+      setWriteDesTextValue(value)
 
-      if (name == 'scale') {
-        // 标度
-        let biaodu = ',标度' + value + '@@'
-        setBiaodu(biaodu)
-      } else if (name == 'hzbrmc_length_m') {
-        //长度 - 米
-        // let lengthM = ',长度' + value + '@@米@@'
-        // setLengthM(lengthM)
-        if (value == '' || value == 0) {
-          let lengthM = ''
+      if (true) {
+        if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
+          var biaodu = ',标度' + diseaseData.scale + '@@'
+          setBiaodu(biaodu)
+        } else {
+          var biaodu = ''
+          setBiaodu(biaodu)
+        }
+        if (diseaseData.hzbrmc_length_m !== undefined && diseaseData.hzbrmc_length_m !== '0' && diseaseData.hzbrmc_length_m !== '') {
+          var lengthM = ',长度' + diseaseData.hzbrmc_length_m + '@@米@@'
           setLengthM(lengthM)
         } else {
-          let lengthM = ',长度' + value + '@@米@@'
+          var lengthM = ''
           setLengthM(lengthM)
         }
-      } else if (name == 'hzbrmc_length_cm') {
-        // 长度 - 厘米
-        // let lengthCM = ',长度' + value + '@@厘米@@'
-        // setLengthCM(lengthCM)
-        if (value == '' || value == 0) {
-          let lengthCM = ''
+        if (diseaseData.hzbrmc_length_cm !== undefined && diseaseData.hzbrmc_length_cm !== '0' && diseaseData.hzbrmc_length_cm !== '') {
+          var lengthCM = ',长度' + diseaseData.hzbrmc_length_cm + '@@厘米@@'
           setLengthCM(lengthCM)
         } else {
-          let lengthCM = ',长度' + value + '@@厘米@@'
+          var lengthCM = ''
           setLengthCM(lengthCM)
         }
-      } else if (name == 'hzbrmc_length_mm') {
-        // 长度 - 毫米
-        // let lengthMM = ',长度' + value + '@@毫米@@'
-        // setLengthMM(lengthMM)
-        if (value == '' || value == 0) {
-          let lengthMM = ''
+        if (diseaseData.hzbrmc_length_mm !== undefined && diseaseData.hzbrmc_length_mm !== '0' && diseaseData.hzbrmc_length_mm !== '') {
+          var lengthMM = ',长度' + diseaseData.hzbrmc_length_mm + '@@毫米@@'
           setLengthMM(lengthMM)
         } else {
-          let lengthMM = ',长度' + value + '@@毫米@@'
+          var lengthMM = ''
           setLengthMM(lengthMM)
         }
-      } else if (name == 'hzbrmc_width_m') {
-        // 宽度 - 米
-        // let widthM = ',宽度' + value + '@@米@@'
-        // setWidthM(widthM)
-        if (value == '' || value == 0) {
-          let widthM = ''
+        if (diseaseData.hzbrmc_width_m !== undefined && diseaseData.hzbrmc_width_m !== '0' && diseaseData.hzbrmc_width_m !== '') {
+          var widthM = ',宽度' + diseaseData.hzbrmc_width_m + '@@米@@'
           setWidthM(widthM)
         } else {
-          let widthM = ',宽度' + value + '@@米@@'
+          var widthM = ''
           setWidthM(widthM)
         }
-      } else if (name == 'hzbrmc_width_cm') {
-        // 宽度 - 厘米
-        // let widthCM = ',宽度' + value + '@@厘米@@'
-        // setWidthCM(widthCM)
-        if (value == '' || value == 0) {
-          let widthCM = ''
+        if (diseaseData.hzbrmc_width_cm !== undefined && diseaseData.hzbrmc_width_cm !== '0' && diseaseData.hzbrmc_width_cm !== '') {
+          var widthCM = ',宽度' + diseaseData.hzbrmc_width_cm + '@@厘米@@'
           setWidthCM(widthCM)
         } else {
-          let widthCM = ',宽度' + value + '@@厘米@@'
+          var widthCM = ''
           setWidthCM(widthCM)
         }
-      } else if (name == 'hzbrmc_width_mm') {
-        // 宽度 - 毫米
-        if (value == '' || value == 0) {
-          let widthMM = ''
+        if (diseaseData.hzbrmc_width_mm !== undefined && diseaseData.hzbrmc_width_mm !== '0' && diseaseData.hzbrmc_width_mm !== '') {
+          console.log('diseaseData.hzbrmc_width_mm',diseaseData.hzbrmc_width_mm == '');
+          var widthMM = ',宽度' + diseaseData.hzbrmc_width_mm + '@@毫米@@'
           setWidthMM(widthMM)
         } else {
-          let widthMM = ',宽度' + value + '@@毫米@@'
+          // diseaseData.hzbrmc_width_mm == undefined || diseaseData.hzbrmc_width_mm == 0 || diseaseData.hzbrmc_width_mm == ''
+          var widthMM = ''
           setWidthMM(widthMM)
         }
-      } else if (name == 'hzbrmc_height_m') {
-        // 高度 - 米
-        // let heightM = ',高度' + value + '@@米@@'
-        // setHeightM(heightM)
-        if (value == '' || value == 0) {
-          let heightM = ''
+        if (diseaseData.hzbrmc_height_m !== undefined && diseaseData.hzbrmc_height_m !== '0' && diseaseData.hzbrmc_height_m !== '') {
+          var heightM = ',高度' + diseaseData.hzbrmc_height_m + '@@米@@'
           setHeightM(heightM)
         } else {
-          let heightM = ',高度' + value + '@@米@@'
+          var heightM = ''
           setHeightM(heightM)
         }
-      } else if (name == 'hzbrmc_height_cm') {
-        // 高度 - 厘米
-        if (value == '' || value == 0) {
-          let heightCM = ''
+        if (diseaseData.hzbrmc_height_cm !== undefined && diseaseData.hzbrmc_height_cm !== '0' && diseaseData.hzbrmc_height_cm !== '') {
+          var heightCM = ',高度' + diseaseData.hzbrmc_height_cm + '@@厘米@@'
           setHeightCM(heightCM)
         } else {
-          let heightCM = ',高度' + value + '@@厘米@@'
+          var heightCM = ''
           setHeightCM(heightCM)
         }
-      } else if (name == 'hzbrmc_height_mm') {
-        // 高度 - 毫米
-        // let heightMM = ',高度' + value + '@@毫米@@'
-        // setHeightMM(heightMM)
-        if (value == '' || value == 0) {
-          let heightMM = ''
+        if (diseaseData.hzbrmc_height_mm !== undefined && diseaseData.hzbrmc_height_mm !== '0' && diseaseData.hzbrmc_height_mm !== '') {
+          var heightMM = ',高度' + diseaseData.hzbrmc_height_mm + '@@毫米@@'
           setHeightMM(heightMM)
         } else {
-          let heightMM = ',高度' + value + '@@毫米@@'
+          var heightMM = ''
           setHeightMM(heightMM)
         }
-      } else if (name == 'hzbrmc_area_face') {
-        // 面域 - %
-        // let areaFace = ',面域' + value + '@@%@@'
-        // setAreaFace(areaFace)
-        if (value == '' || value == 0) {
-          let areaFace = ''
+        if (diseaseData.hzbrmc_area_face !== undefined && diseaseData.hzbrmc_area_face !== '0' && diseaseData.hzbrmc_area_face !== '') {
+          var areaFace = ',面域' + diseaseData.hzbrmc_area_face + '@@%@@'
           setAreaFace(areaFace)
         } else {
-          let areaFace = ',面域' + value + '@@%@@'
+          var areaFace = ''
           setAreaFace(areaFace)
         }
-      } else if (name == 'hzbrmc_area_per') {
-        // 面积占比 - %
-        // let areaPer = ',面积占比' + value + '@@%@@'
-        // setAreaPer(areaPer)
-        if (value == '' || value == 0) {
-          let areaPer = ''
+        if (diseaseData.hzbrmc_area_per !== undefined && diseaseData.hzbrmc_area_per !== '0' && diseaseData.hzbrmc_area_per !== '') {
+          var areaPer = ',面积占比' + diseaseData.hzbrmc_area_per + '@@%@@'
           setAreaPer(areaPer)
         } else {
-          let areaPer = ',面积占比' + value + '@@%@@'
+          var areaPer = ''
           setAreaPer(areaPer)
         }
-      } else if (name == 'hzbrmc_area_m') {
-        // 面积 - 平方米
-        // let areaM = ',面积' + value + '@@平方米@@'
-        // setAreaM(areaM)
-        if (value == '' || value == 0) {
-          let areaM = ''
+        if (diseaseData.hzbrmc_area_m !== undefined && diseaseData.hzbrmc_area_m !== '0' && diseaseData.hzbrmc_area_m !== '') {
+          var areaM = ',面积' + diseaseData.hzbrmc_area_m + '@@平方米@@'
           setAreaM(areaM)
         } else {
-          let areaM = ',面积' + value + '@@平方米@@'
+          var areaM = ''
           setAreaM(areaM)
         }
-      } else if (name == 'hzbrmc_area_cm') {
-        // 面积 - 平方厘米
-        // let areaCM = ',面积' + value + '@@平方厘米@@'
-        // setAreaCM(areaCM)
-        if (value == '' || value == 0) {
-          let areaCM = ''
+        if (diseaseData.hzbrmc_area_cm !== undefined && diseaseData.hzbrmc_area_cm !== '0' && diseaseData.hzbrmc_area_cm !== '') {
+          var areaCM = ',面积' + diseaseData.hzbrmc_area_cm + '@@平方厘米@@'
           setAreaCM(areaCM)
         } else {
-          let areaCM = ',面积' + value + '@@平方厘米@@'
+          var areaCM = ''
           setAreaCM(areaCM)
         }
-      } else if (name == 'hzbrmc_area_mm') {
-        // 面积 - 平方毫米
-        // let areaMM = ',面积' + value + '@@平方毫米@@'
-        // setAreaMM(areaMM)
-        if (value == '' || value == 0) {
-          let areaMM = ''
+        if (diseaseData.hzbrmc_area_mm !== undefined && diseaseData.hzbrmc_area_mm !== '0' && diseaseData.hzbrmc_area_mm !== '') {
+          var areaMM = ',面积' + diseaseData.hzbrmc_area_mm + '@@平方毫米@@'
           setAreaMM(areaMM)
         } else {
-          let areaMM = ',面积' + value + '@@平方毫米@@'
+          var areaMM = ''
           setAreaMM(areaMM)
         }
-      } else if (name == 'hzbrmc_heightdiff_cm') {
-        // 高差 - 厘米
-        // let heightDiffCM = ',高差' + value + '@@厘米@@'
-        // setHeightDiffCM(heightDiffCM)
-        if (value == '' || value == 0) {
-          let heightDiffCM = ''
+        if (diseaseData.hzbrmc_heightdiff_cm !== undefined && diseaseData.hzbrmc_heightdiff_cm !== '0' && diseaseData.hzbrmc_heightdiff_cm !== '') {
+          var heightDiffCM = ',高差' + diseaseData.hzbrmc_heightdiff_cm + '@@厘米@@'
           setHeightDiffCM(heightDiffCM)
         } else {
-          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          var heightDiffCM = ''
           setHeightDiffCM(heightDiffCM)
         }
-      } else if (name == 'hzbrmc_heightdiff_mm') {
-        // 高差 - 毫米
-        // let heightDiffMM = ',高差' + value + '@@毫米@@'
-        // setHeightDiffMM(heightDiffMM)
-        if (value == '' || value == 0) {
-          let heightDiffMM = ''
+        if (diseaseData.hzbrmc_heightdiff_mm !== undefined && diseaseData.hzbrmc_heightdiff_mm !== '0' && diseaseData.hzbrmc_heightdiff_mm !== '') {
+          var heightDiffMM = ',高差' + diseaseData.hzbrmc_heightdiff_mm + '@@毫米@@'
           setHeightDiffMM(heightDiffMM)
         } else {
-          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          var heightDiffMM = ''
           setHeightDiffMM(heightDiffMM)
         }
-      } else if (name == 'hzbrmc_spacing_cm') {
-        // 间距 - 厘米
-        // let spacingCM = ',间距' + value + '@@厘米@@'
-        // setSpacingCM(spacingCM)
-        if (value == '' || value == 0) {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+        if (diseaseData.hzbrmc_spacing_cm !== undefined && diseaseData.hzbrmc_spacing_cm !== '0' && diseaseData.hzbrmc_spacing_cm !== '') {
+          var spacingCM = ',间距' + diseaseData.hzbrmc_spacing_cm + '@@厘米@@'
           setSpacingCM(spacingCM)
         } else {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+          var spacingCM = ''
           setSpacingCM(spacingCM)
         }
-      } else if (name == 'hzbrmc_deformation_mm') {
-        // 变形 - 毫米
-        // let deformationMM = ',变形' + value + '@@毫米@@'
-        // setDeformationMM(deformationMM)
-        if (value == '' || value == 0) {
-          let deformationMM = ''
+        if (diseaseData.hzbrmc_deformation_mm !== undefined && diseaseData.hzbrmc_deformation_mm !== '0' && diseaseData.hzbrmc_deformation_mm !== '') {
+          var deformationMM = ',变形' + diseaseData.hzbrmc_deformation_mm + '@@毫米@@'
           setDeformationMM(deformationMM)
         } else {
-          let deformationMM = ',变形' + value + '@@毫米@@'
+          var deformationMM = ''
           setDeformationMM(deformationMM)
         }
-      } else if (name == 'hzbrmc_num') {
-        // 个数 - 个
-        // let num = ',个数' + value + '@@个@@'
-        // setNum(num)
-        if (value == '' || value == 0) {
-          let num = ''
+        if (diseaseData.hzbrmc_num !== undefined && diseaseData.hzbrmc_num !== '0' && diseaseData.hzbrmc_num !== '') {
+          var num = ',个数' + diseaseData.hzbrmc_num + '@@个@@'
           setNum(num)
         } else {
-          let num = ',个数' + value + '@@个@@'
+          var num = ''
           setNum(num)
         }
-      } else if (name == 'hzbrmc_range_cm') {
-        // 距离 - 厘米
-        // let rangeCM = ',距离' + value + '@@厘米@@'
-        // setRangeCM(rangeCM)
-        if (value == '' || value == 0) {
-          let rangeCM = ''
+        if (diseaseData.hzbrmc_range_cm !== undefined && diseaseData.hzbrmc_range_cm !== '0' && diseaseData.hzbrmc_range_cm !== '') {
+          var rangeCM = ',距离' + diseaseData.hzbrmc_range_cm + '@@厘米@@'
           setRangeCM(rangeCM)
         } else {
-          let rangeCM = ',距离' + value + '@@厘米@@'
+          var rangeCM = ''
           setRangeCM(rangeCM)
         }
-      } else if (name == 'hzbrmc_range_mm') {
-        // 距离 - 毫米
-        // let rangeMM = ',距离' + value + '@@毫米@@'
-        // setRangeMM(rangeMM)
-        if (value == '' || value == 0) {
-          let rangeMM = ''
+        if (diseaseData.hzbrmc_range_mm !== undefined && diseaseData.hzbrmc_range_mm !== '0' && diseaseData.hzbrmc_range_mm !== '') {
+          var rangeMM = ',距离' + diseaseData.hzbrmc_range_mm + '@@毫米@@'
           setRangeMM(rangeMM)
         } else {
-          let rangeMM = ',距离' + value + '@@毫米@@'
+          var rangeMM = ''
           setRangeMM(rangeMM)
         }
-      } else if (name == 'hzbrmc_depth_cm') {
-        // 深度 - 厘米
-        // let depthCM = ',深度' + value + '@@厘米@@'
-        // setDepthCM(depthCM)
-        if (value == '' || value == 0) {
-          let depthCM = ''
+        if (diseaseData.hzbrmc_depth_cm !== undefined && diseaseData.hzbrmc_depth_cm !== '0' && diseaseData.hzbrmc_depth_cm !== '') {
+          var depthCM = ',深度' + diseaseData.hzbrmc_depth_cm + '@@厘米@@'
           setDepthCM(depthCM)
         } else {
-          let depthCM = ',深度' + value + '@@厘米@@'
+          var depthCM = ''
           setDepthCM(depthCM)
         }
-      } else if (name == 'hzbrmc_depth_mm') {
-        // 深度 - 毫米
-        // let depthMM = ',深度' + value + '@@毫米@@'
-        // setDepthMM(depthMM)
-        if (value == '' || value == 0) {
-          let depthMM = ''
+        if (diseaseData.hzbrmc_depth_mm !== undefined && diseaseData.hzbrmc_depth_mm !== '0' && diseaseData.hzbrmc_depth_mm !== '') {
+          var depthMM = ',深度' + diseaseData.hzbrmc_depth_mm + '@@毫米@@'
           setDepthMM(depthMM)
         } else {
-          let depthMM = ',深度' + value + '@@毫米@@'
+          var depthMM = ''
           setDepthMM(depthMM)
         }
-      } else if (name == 'hzbrmc_volume_m') {
-        // 体积 - 立方米
-        // let volumeM = ',体积' + value + '@@立方米@@'
-        // setVolumeM(volumeM)
-        if (value == '' || value == 0) {
-          let volumeM = ''
+        if (diseaseData.hzbrmc_volume_m !== undefined && diseaseData.hzbrmc_volume_m !== '0' && diseaseData.hzbrmc_volume_m !== '') {
+          var volumeM = ',体积' + diseaseData.hzbrmc_volume_m + '@@立方米@@'
           setVolumeM(volumeM)
         } else {
-          let volumeM = ',体积' + value + '@@立方米@@'
+          var volumeM = ''
           setVolumeM(volumeM)
         }
-      } else if (name == 'hzbrmc_volume_cm') {
-        // 体积 - 立方厘米
-        // let volumeCM = ',体积' + value + '@@立方厘米@@'
-        // setVolumeCM(volumeCM)
-        if (value == '' || value == 0) {
-          let volumeCM = ''
+        if (diseaseData.hzbrmc_volume_cm !== undefined && diseaseData.hzbrmc_volume_cm !== '0' && diseaseData.hzbrmc_volume_cm !== '') {
+          var volumeCM = ',体积' + diseaseData.hzbrmc_volume_cm + '@@立方厘米@@'
           setVolumeCM(volumeCM)
         } else {
-          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          var volumeCM = ''
           setVolumeCM(volumeCM)
         }
-      } else if (name == 'hzbrmc_disp_cm') {
-        // 位移 - 厘米
-        // let dispCM = ',位移' + value + '@@厘米@@'
-        // setDispCM(dispCM)
-        if (value == '' || value == 0) {
-          let dispCM = ''
+        if (diseaseData.hzbrmc_disp_cm !== undefined && diseaseData.hzbrmc_disp_cm !== '0' && diseaseData.hzbrmc_disp_cm !== '') {
+          var dispCM = ',位移' + diseaseData.hzbrmc_disp_cm + '@@厘米@@'
           setDispCM(dispCM)
         } else {
-          let dispCM = ',位移' + value + '@@厘米@@'
+          var dispCM = ''
           setDispCM(dispCM)
         }
-      } else if (name == 'hzbrmc_disp_mm') {
-        // 位移 - 毫米
-        // let dispMM = ',位移' + value + '@@毫米@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
+        if (diseaseData.hzbrmc_disp_mm !== undefined && diseaseData.hzbrmc_disp_mm !== '0' && diseaseData.hzbrmc_disp_mm !== '') {
+          var dispMM = ',位移' + diseaseData.hzbrmc_disp_mm + '@@毫米@@'
           setDispMM(dispMM)
         } else {
-          let dispMM = ',位移' + value + '@@毫米@@'
+          var dispMM = ''
           setDispMM(dispMM)
         }
-      } else if (name == 'hzbrmc_angle_c') {
-        // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+        if (diseaseData.hzbrmc_angle_c !== undefined && diseaseData.hzbrmc_angle_c !== '0' && diseaseData.hzbrmc_angle_c !== '') {
+          var angle = ',角度' + diseaseData.hzbrmc_angle_c + '@@度@@'
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          var angle = ''
+          setAngle(angle)
         }
-      } else if (name == 'hzbrmc_chu') {
-        // 处
-        // let chu = ',' + value + '@@处@@'
-        // setChu(chu)
-        if (value == '' || value == 0) {
-          let chu = ''
+        if (diseaseData.hzbrmc_chu !== undefined && diseaseData.hzbrmc_chu !== '0' && diseaseData.hzbrmc_chu !== '') {
+          var chu = ',' + diseaseData.hzbrmc_chu + '@@处@@'
           setChu(chu)
         } else {
-          let chu = ',' + value + '@@处@@'
+          var chu = ''
           setChu(chu)
         }
-      } else if (name == 'hzbrmc_tiao') {
-        // 条
-        // let tiao = ',' + value + '@@条@@'
-        // setTiao(tiao)
-        if (value == '' || value == 0) {
-          let tiao = ''
+        if (diseaseData.hzbrmc_tiao !== undefined && diseaseData.hzbrmc_tiao !== '0' && diseaseData.hzbrmc_tiao !== '') {
+          var tiao = ',' + diseaseData.hzbrmc_tiao + '@@条@@'
           setTiao(tiao)
         } else {
-          let tiao = ',' + value + '@@条@@'
+          var tiao = ''
           setTiao(tiao)
         }
-      } else if (name == 'hzbrmc_range_fenbu_m') {
-        // 分布范围 - 米
-        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        // setRangeFenbuM(rangeFenbuM)
-        if (value == '' || value == 0) {
-          let rangeFenbuM = ''
+        if (diseaseData.hzbrmc_range_fenbu_m !== undefined && diseaseData.hzbrmc_range_fenbu_m !== '0' && diseaseData.hzbrmc_range_fenbu_m !== '') {
+          var rangeFenbuM = ',分布范围' + diseaseData.hzbrmc_range_fenbu_m + '@@米@@'
           setRangeFenbuM(rangeFenbuM)
         } else {
-          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          var rangeFenbuM = ''
           setRangeFenbuM(rangeFenbuM)
         }
-      } else if (name == 'hzbrmc_range_length_m') {
-        // 长度范围 - 米
-        // let rangeLengthM = ',长度范围' + value + '@@米@@'
-        // setRangeLengthM(rangeLengthM)
-        if (value == '' || value == 0) {
-          let rangeLengthM = ''
+        if (diseaseData.hzbrmc_range_length_m !== undefined && diseaseData.hzbrmc_range_length_m !== '0' && diseaseData.hzbrmc_range_length_m !== '') {
+          var rangeLengthM = ',长度范围' + diseaseData.hzbrmc_range_length_m + '@@米@@'
           setRangeLengthM(rangeLengthM)
         } else {
-          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          var rangeLengthM = ''
           setRangeLengthM(rangeLengthM)
         }
-      } else if (name == 'hzbrmc_range_width_mm') {
-        // 宽度范围 - 毫米
-        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        // setRangeWidthMM(rangeWidthMM)
-        if (value == '' || value == 0) {
-          let rangeWidthMM = ''
+        if (diseaseData.hzbrmc_range_width_mm !== undefined && diseaseData.hzbrmc_range_width_mm !== '0' && diseaseData.hzbrmc_range_width_mm !== '') {
+          var rangeWidthMM = ',宽度范围'+ diseaseData.hzbrmc_range_width_mm + '@@毫米@@'
           setRangeWidthMM(rangeWidthMM)
         } else {
-          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          var rangeWidthMM = ''
           setRangeWidthMM(rangeWidthMM)
         }
-      } else if (name == 'hzbrmc_range_spacing_cm') {
-        // 间距范围 - 厘米
-        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        // setRangeSpacingCM(rangeSpacingCM)
-        if (value == '' || value == 0) {
-          let rangeSpacingCM = ''
+        if (diseaseData.hzbrmc_range_spacing_cm !== undefined && diseaseData.hzbrmc_range_spacing_cm !== '0' && diseaseData.hzbrmc_range_spacing_cm !== '') {
+          var rangeSpacingCM = ',间距范围' + diseaseData.hzbrmc_range_spacing_cm + '@@厘米@@'
           setRangeSpacingCM(rangeSpacingCM)
         } else {
-          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          var rangeSpacingCM = ''
           setRangeSpacingCM(rangeSpacingCM)
         }
-      } else if (name == 'hzbrmc_lb_left_length_m') {
-        // 左腹板长度 - 米
-        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        // setLeftLengthM(leftLengthM)
-        if (value == '' || value == 0) {
-          let leftLengthM = ''
+        if (diseaseData.hzbrmc_lb_left_length_m !== undefined && diseaseData.hzbrmc_lb_left_length_m !== '0' && diseaseData.hzbrmc_lb_left_length_m !== '') {
+          var leftLengthM = ',左腹板长度' + diseaseData.hzbrmc_lb_left_length_m + '@@米@@'
           setLeftLengthM(leftLengthM)
         } else {
-          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          var leftLengthM = ''
           setLeftLengthM(leftLengthM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_length_m') {
-        // 底板长度 - 米
-        // let bottomLengthM = ',底板长度' + value + '@@米@@'
-        // setBottomLengthM(bottomLengthM)
-        if (value == '' || value == 0) {
-          let bottomLengthM = ''
+        if (diseaseData.hzbrmc_lb_bottom_length_m !== undefined && diseaseData.hzbrmc_lb_bottom_length_m !== '0' && diseaseData.hzbrmc_lb_bottom_length_m !== '') {
+          var bottomLengthM = ',底板长度' + diseaseData.hzbrmc_lb_bottom_length_m + '@@米@@'
           setBottomLengthM(bottomLengthM)
         } else {
-          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          var bottomLengthM = ''
           setBottomLengthM(bottomLengthM)
         }
-      } else if (name == 'hzbrmc_lb_right_length_m') {
-        // 右腹板长度 - 米
-        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        // setRightLengthM(rightLengthM)
-        if (value == '' || value == 0) {
-          let rightLengthM = ''
+        if (diseaseData.hzbrmc_lb_right_length_m !== undefined && diseaseData.hzbrmc_lb_right_length_m !== '0' && diseaseData.hzbrmc_lb_right_length_m !== '') {
+          var rightLengthM = ',右腹板长度' + diseaseData.hzbrmc_lb_right_length_m + '@@米@@'
           setRightLengthM(rightLengthM)
         } else {
-          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          var rightLengthM = ''
           setRightLengthM(rightLengthM)
         }
-      } else if (name == 'hzbrmc_lb_left_width_mm') {
-        // 左腹板宽度 - 毫米
-        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        // setLeftWidthMM(leftWidthMM)
-        if (value == '' || value == 0) {
-          let leftWidthMM = ''
+        if (diseaseData.hzbrmc_lb_left_width_mm !== undefined && diseaseData.hzbrmc_lb_left_width_mm !== '0' && diseaseData.hzbrmc_lb_left_width_mm !== '') {
+          var leftWidthMM = ',左腹板宽度' + diseaseData.hzbrmc_lb_left_width_mm + '@@毫米@@'
           setLeftWidthMM(leftWidthMM)
         } else {
-          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          var leftWidthMM = ''
           setLeftWidthMM(leftWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
-        // 底板宽度 - 毫米
-        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        // setBottomWidthMM(bottomWidthMM)
-        if (value == '' || value == 0) {
-          let bottomWidthMM = ''
+        if (diseaseData.hzbrmc_lb_bottom_width_mm !== undefined && diseaseData.hzbrmc_lb_bottom_width_mm !== '0' && diseaseData.hzbrmc_lb_bottom_width_mm !== '') {
+          var bottomWidthMM = ',底板宽度' + diseaseData.hzbrmc_lb_bottom_width_mm + '@@毫米@@'
           setBottomWidthMM(bottomWidthMM)
         } else {
-          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          var bottomWidthMM = ''
           setBottomWidthMM(bottomWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_right_width_mm') {
-        // 右腹板宽度 - 毫米
-        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        // setRightWidthMM(rightWidthMM)
-        if (value == '' || value == 0) {
-          let rightWidthMM = ''
+        if (diseaseData.hzbrmc_lb_right_width_mm !== undefined && diseaseData.hzbrmc_lb_right_width_mm !== '0' && diseaseData.hzbrmc_lb_right_width_mm !== '') {
+          var rightWidthMM = ',右腹板宽度' + diseaseData.hzbrmc_lb_right_width_mm + '@@毫米@@'
           setRightWidthMM(rightWidthMM)
         } else {
-          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          var rightWidthMM = ''
           setRightWidthMM(rightWidthMM)
         }
-      } else if (name == 'hzbrmc_slant_m') {
-        // 倾斜量 - 米
-        // let slantM = ',倾斜量' + value + '@@米@@'
-        // setSlantM(slantM)
-        if (value == '' || value == 0) {
-          let slantM = ''
+        if (diseaseData.hzbrmc_slant_m !== undefined && diseaseData.hzbrmc_slant_m !== '0' && diseaseData.hzbrmc_slant_m !== '') {
+          var slantM = ',倾斜量' + diseaseData.hzbrmc_slant_m + '@@米@@'
           setSlantM(slantM)
         } else {
-          let slantM = ',倾斜量' + value + '@@米@@'
+          var slantM = ''
           setSlantM(slantM)
         }
       }
 
-      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                    + widthMM + heightM + heightCM + heightMM + areaFace
-                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                    + bottomWidthMM + rightWidthMM + slantM
-      setWriteTxt(writeTxt)
-      console.log('writeTxt', writeTxt);
-      console.log('病害名称',itemData.diseaseName);
-      let binghai = itemData.diseaseName
-      let allText = binghai.concat(writeTxt)
-      console.log('allText', allText);
-      diseaseData['description'] = allText
-      handleFormChenge(allText, diseaseData.description)
+      if (writeDesTextValue == '' || writeDesTextValue == undefined) {
+        console.log('没有修改数据');
+        if (diseaseData.description == '' || diseaseData.description == undefined) {
+          diseaseData['description'] = itemData.diseaseName
+        } else if (diseaseData.description !== '' || diseaseData.description !== undefined) {
+          let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+          // let writeTxt = diseaseData.hzbrmc_length_m
+          setWriteTxt(writeTxt)
+          // console.log('writeTxt', writeTxt);
+          // console.log('病害名称',itemData.diseaseName);
+          let binghai = itemData.diseaseName
+          let allText = binghai.concat(writeTxt)
+          console.log('allText', allText);
+          diseaseData['description'] = allText
+          handleFormChenge(allText, diseaseData.description)
+        }
+      } else {
+        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+        setWriteTxt(writeTxt)
+        console.log('writeTxt', writeTxt);
+        console.log('病害名称',itemData.diseaseName);
+        let binghai = itemData.diseaseName
+        let allText = binghai.concat(writeTxt)
+        console.log('allText', allText);
+        diseaseData['description'] = allText
+        handleFormChenge(allText, diseaseData.description)
+      }
     }
 
     // 填入位置描述内容
@@ -9471,14 +8934,14 @@ export function DiseaseK({route, navigation}) {
         }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
+        // let angle = ',角度' + value + '@@度@@'
+        // setAngle(angle)
         if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+          let angle = ''
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          let angle = ',角度' + value + '@@度@@'
+          setAngle(angle)
         }
       } else if (name == 'hzbrmc_chu') {
         // 处
@@ -9627,480 +9090,354 @@ export function DiseaseK({route, navigation}) {
       setDiseaseData(_data);
     };
 
+    const [writeDesTextValue, setWriteDesTextValue] = useState('')
+
     // 填入病害描述内容
     const writeDesText = (name, value) => {
       // let writeTxt = []
       console.log('writeDesText', name, value);
+      setWriteDesTextValue(value)
 
-      if (name == 'scale') {
-        // 标度
-        let biaodu = ',标度' + value + '@@'
-        setBiaodu(biaodu)
-      } else if (name == 'hzbrmc_length_m') {
-        //长度 - 米
-        // let lengthM = ',长度' + value + '@@米@@'
-        // setLengthM(lengthM)
-        if (value == '' || value == 0) {
-          let lengthM = ''
+      if (true) {
+        if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
+          var biaodu = ',标度' + diseaseData.scale + '@@'
+          setBiaodu(biaodu)
+        } else {
+          var biaodu = ''
+          setBiaodu(biaodu)
+        }
+        if (diseaseData.hzbrmc_length_m !== undefined && diseaseData.hzbrmc_length_m !== '0' && diseaseData.hzbrmc_length_m !== '') {
+          var lengthM = ',长度' + diseaseData.hzbrmc_length_m + '@@米@@'
           setLengthM(lengthM)
         } else {
-          let lengthM = ',长度' + value + '@@米@@'
+          var lengthM = ''
           setLengthM(lengthM)
         }
-      } else if (name == 'hzbrmc_length_cm') {
-        // 长度 - 厘米
-        // let lengthCM = ',长度' + value + '@@厘米@@'
-        // setLengthCM(lengthCM)
-        if (value == '' || value == 0) {
-          let lengthCM = ''
+        if (diseaseData.hzbrmc_length_cm !== undefined && diseaseData.hzbrmc_length_cm !== '0' && diseaseData.hzbrmc_length_cm !== '') {
+          var lengthCM = ',长度' + diseaseData.hzbrmc_length_cm + '@@厘米@@'
           setLengthCM(lengthCM)
         } else {
-          let lengthCM = ',长度' + value + '@@厘米@@'
+          var lengthCM = ''
           setLengthCM(lengthCM)
         }
-      } else if (name == 'hzbrmc_length_mm') {
-        // 长度 - 毫米
-        // let lengthMM = ',长度' + value + '@@毫米@@'
-        // setLengthMM(lengthMM)
-        if (value == '' || value == 0) {
-          let lengthMM = ''
+        if (diseaseData.hzbrmc_length_mm !== undefined && diseaseData.hzbrmc_length_mm !== '0' && diseaseData.hzbrmc_length_mm !== '') {
+          var lengthMM = ',长度' + diseaseData.hzbrmc_length_mm + '@@毫米@@'
           setLengthMM(lengthMM)
         } else {
-          let lengthMM = ',长度' + value + '@@毫米@@'
+          var lengthMM = ''
           setLengthMM(lengthMM)
         }
-      } else if (name == 'hzbrmc_width_m') {
-        // 宽度 - 米
-        // let widthM = ',宽度' + value + '@@米@@'
-        // setWidthM(widthM)
-        if (value == '' || value == 0) {
-          let widthM = ''
+        if (diseaseData.hzbrmc_width_m !== undefined && diseaseData.hzbrmc_width_m !== '0' && diseaseData.hzbrmc_width_m !== '') {
+          var widthM = ',宽度' + diseaseData.hzbrmc_width_m + '@@米@@'
           setWidthM(widthM)
         } else {
-          let widthM = ',宽度' + value + '@@米@@'
+          var widthM = ''
           setWidthM(widthM)
         }
-      } else if (name == 'hzbrmc_width_cm') {
-        // 宽度 - 厘米
-        // let widthCM = ',宽度' + value + '@@厘米@@'
-        // setWidthCM(widthCM)
-        if (value == '' || value == 0) {
-          let widthCM = ''
+        if (diseaseData.hzbrmc_width_cm !== undefined && diseaseData.hzbrmc_width_cm !== '0' && diseaseData.hzbrmc_width_cm !== '') {
+          var widthCM = ',宽度' + diseaseData.hzbrmc_width_cm + '@@厘米@@'
           setWidthCM(widthCM)
         } else {
-          let widthCM = ',宽度' + value + '@@厘米@@'
+          var widthCM = ''
           setWidthCM(widthCM)
         }
-      } else if (name == 'hzbrmc_width_mm') {
-        // 宽度 - 毫米
-        if (value == '' || value == 0) {
-          let widthMM = ''
+        if (diseaseData.hzbrmc_width_mm !== undefined && diseaseData.hzbrmc_width_mm !== '0' && diseaseData.hzbrmc_width_mm !== '') {
+          console.log('diseaseData.hzbrmc_width_mm',diseaseData.hzbrmc_width_mm == '');
+          var widthMM = ',宽度' + diseaseData.hzbrmc_width_mm + '@@毫米@@'
           setWidthMM(widthMM)
         } else {
-          let widthMM = ',宽度' + value + '@@毫米@@'
+          // diseaseData.hzbrmc_width_mm == undefined || diseaseData.hzbrmc_width_mm == 0 || diseaseData.hzbrmc_width_mm == ''
+          var widthMM = ''
           setWidthMM(widthMM)
         }
-      } else if (name == 'hzbrmc_height_m') {
-        // 高度 - 米
-        // let heightM = ',高度' + value + '@@米@@'
-        // setHeightM(heightM)
-        if (value == '' || value == 0) {
-          let heightM = ''
+        if (diseaseData.hzbrmc_height_m !== undefined && diseaseData.hzbrmc_height_m !== '0' && diseaseData.hzbrmc_height_m !== '') {
+          var heightM = ',高度' + diseaseData.hzbrmc_height_m + '@@米@@'
           setHeightM(heightM)
         } else {
-          let heightM = ',高度' + value + '@@米@@'
+          var heightM = ''
           setHeightM(heightM)
         }
-      } else if (name == 'hzbrmc_height_cm') {
-        // 高度 - 厘米
-        if (value == '' || value == 0) {
-          let heightCM = ''
+        if (diseaseData.hzbrmc_height_cm !== undefined && diseaseData.hzbrmc_height_cm !== '0' && diseaseData.hzbrmc_height_cm !== '') {
+          var heightCM = ',高度' + diseaseData.hzbrmc_height_cm + '@@厘米@@'
           setHeightCM(heightCM)
         } else {
-          let heightCM = ',高度' + value + '@@厘米@@'
+          var heightCM = ''
           setHeightCM(heightCM)
         }
-      } else if (name == 'hzbrmc_height_mm') {
-        // 高度 - 毫米
-        // let heightMM = ',高度' + value + '@@毫米@@'
-        // setHeightMM(heightMM)
-        if (value == '' || value == 0) {
-          let heightMM = ''
+        if (diseaseData.hzbrmc_height_mm !== undefined && diseaseData.hzbrmc_height_mm !== '0' && diseaseData.hzbrmc_height_mm !== '') {
+          var heightMM = ',高度' + diseaseData.hzbrmc_height_mm + '@@毫米@@'
           setHeightMM(heightMM)
         } else {
-          let heightMM = ',高度' + value + '@@毫米@@'
+          var heightMM = ''
           setHeightMM(heightMM)
         }
-      } else if (name == 'hzbrmc_area_face') {
-        // 面域 - %
-        // let areaFace = ',面域' + value + '@@%@@'
-        // setAreaFace(areaFace)
-        if (value == '' || value == 0) {
-          let areaFace = ''
+        if (diseaseData.hzbrmc_area_face !== undefined && diseaseData.hzbrmc_area_face !== '0' && diseaseData.hzbrmc_area_face !== '') {
+          var areaFace = ',面域' + diseaseData.hzbrmc_area_face + '@@%@@'
           setAreaFace(areaFace)
         } else {
-          let areaFace = ',面域' + value + '@@%@@'
+          var areaFace = ''
           setAreaFace(areaFace)
         }
-      } else if (name == 'hzbrmc_area_per') {
-        // 面积占比 - %
-        // let areaPer = ',面积占比' + value + '@@%@@'
-        // setAreaPer(areaPer)
-        if (value == '' || value == 0) {
-          let areaPer = ''
+        if (diseaseData.hzbrmc_area_per !== undefined && diseaseData.hzbrmc_area_per !== '0' && diseaseData.hzbrmc_area_per !== '') {
+          var areaPer = ',面积占比' + diseaseData.hzbrmc_area_per + '@@%@@'
           setAreaPer(areaPer)
         } else {
-          let areaPer = ',面积占比' + value + '@@%@@'
+          var areaPer = ''
           setAreaPer(areaPer)
         }
-      } else if (name == 'hzbrmc_area_m') {
-        // 面积 - 平方米
-        // let areaM = ',面积' + value + '@@平方米@@'
-        // setAreaM(areaM)
-        if (value == '' || value == 0) {
-          let areaM = ''
+        if (diseaseData.hzbrmc_area_m !== undefined && diseaseData.hzbrmc_area_m !== '0' && diseaseData.hzbrmc_area_m !== '') {
+          var areaM = ',面积' + diseaseData.hzbrmc_area_m + '@@平方米@@'
           setAreaM(areaM)
         } else {
-          let areaM = ',面积' + value + '@@平方米@@'
+          var areaM = ''
           setAreaM(areaM)
         }
-      } else if (name == 'hzbrmc_area_cm') {
-        // 面积 - 平方厘米
-        // let areaCM = ',面积' + value + '@@平方厘米@@'
-        // setAreaCM(areaCM)
-        if (value == '' || value == 0) {
-          let areaCM = ''
+        if (diseaseData.hzbrmc_area_cm !== undefined && diseaseData.hzbrmc_area_cm !== '0' && diseaseData.hzbrmc_area_cm !== '') {
+          var areaCM = ',面积' + diseaseData.hzbrmc_area_cm + '@@平方厘米@@'
           setAreaCM(areaCM)
         } else {
-          let areaCM = ',面积' + value + '@@平方厘米@@'
+          var areaCM = ''
           setAreaCM(areaCM)
         }
-      } else if (name == 'hzbrmc_area_mm') {
-        // 面积 - 平方毫米
-        // let areaMM = ',面积' + value + '@@平方毫米@@'
-        // setAreaMM(areaMM)
-        if (value == '' || value == 0) {
-          let areaMM = ''
+        if (diseaseData.hzbrmc_area_mm !== undefined && diseaseData.hzbrmc_area_mm !== '0' && diseaseData.hzbrmc_area_mm !== '') {
+          var areaMM = ',面积' + diseaseData.hzbrmc_area_mm + '@@平方毫米@@'
           setAreaMM(areaMM)
         } else {
-          let areaMM = ',面积' + value + '@@平方毫米@@'
+          var areaMM = ''
           setAreaMM(areaMM)
         }
-      } else if (name == 'hzbrmc_heightdiff_cm') {
-        // 高差 - 厘米
-        // let heightDiffCM = ',高差' + value + '@@厘米@@'
-        // setHeightDiffCM(heightDiffCM)
-        if (value == '' || value == 0) {
-          let heightDiffCM = ''
+        if (diseaseData.hzbrmc_heightdiff_cm !== undefined && diseaseData.hzbrmc_heightdiff_cm !== '0' && diseaseData.hzbrmc_heightdiff_cm !== '') {
+          var heightDiffCM = ',高差' + diseaseData.hzbrmc_heightdiff_cm + '@@厘米@@'
           setHeightDiffCM(heightDiffCM)
         } else {
-          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          var heightDiffCM = ''
           setHeightDiffCM(heightDiffCM)
         }
-      } else if (name == 'hzbrmc_heightdiff_mm') {
-        // 高差 - 毫米
-        // let heightDiffMM = ',高差' + value + '@@毫米@@'
-        // setHeightDiffMM(heightDiffMM)
-        if (value == '' || value == 0) {
-          let heightDiffMM = ''
+        if (diseaseData.hzbrmc_heightdiff_mm !== undefined && diseaseData.hzbrmc_heightdiff_mm !== '0' && diseaseData.hzbrmc_heightdiff_mm !== '') {
+          var heightDiffMM = ',高差' + diseaseData.hzbrmc_heightdiff_mm + '@@毫米@@'
           setHeightDiffMM(heightDiffMM)
         } else {
-          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          var heightDiffMM = ''
           setHeightDiffMM(heightDiffMM)
         }
-      } else if (name == 'hzbrmc_spacing_cm') {
-        // 间距 - 厘米
-        // let spacingCM = ',间距' + value + '@@厘米@@'
-        // setSpacingCM(spacingCM)
-        if (value == '' || value == 0) {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+        if (diseaseData.hzbrmc_spacing_cm !== undefined && diseaseData.hzbrmc_spacing_cm !== '0' && diseaseData.hzbrmc_spacing_cm !== '') {
+          var spacingCM = ',间距' + diseaseData.hzbrmc_spacing_cm + '@@厘米@@'
           setSpacingCM(spacingCM)
         } else {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+          var spacingCM = ''
           setSpacingCM(spacingCM)
         }
-      } else if (name == 'hzbrmc_deformation_mm') {
-        // 变形 - 毫米
-        // let deformationMM = ',变形' + value + '@@毫米@@'
-        // setDeformationMM(deformationMM)
-        if (value == '' || value == 0) {
-          let deformationMM = ''
+        if (diseaseData.hzbrmc_deformation_mm !== undefined && diseaseData.hzbrmc_deformation_mm !== '0' && diseaseData.hzbrmc_deformation_mm !== '') {
+          var deformationMM = ',变形' + diseaseData.hzbrmc_deformation_mm + '@@毫米@@'
           setDeformationMM(deformationMM)
         } else {
-          let deformationMM = ',变形' + value + '@@毫米@@'
+          var deformationMM = ''
           setDeformationMM(deformationMM)
         }
-      } else if (name == 'hzbrmc_num') {
-        // 个数 - 个
-        // let num = ',个数' + value + '@@个@@'
-        // setNum(num)
-        if (value == '' || value == 0) {
-          let num = ''
+        if (diseaseData.hzbrmc_num !== undefined && diseaseData.hzbrmc_num !== '0' && diseaseData.hzbrmc_num !== '') {
+          var num = ',个数' + diseaseData.hzbrmc_num + '@@个@@'
           setNum(num)
         } else {
-          let num = ',个数' + value + '@@个@@'
+          var num = ''
           setNum(num)
         }
-      } else if (name == 'hzbrmc_range_cm') {
-        // 距离 - 厘米
-        // let rangeCM = ',距离' + value + '@@厘米@@'
-        // setRangeCM(rangeCM)
-        if (value == '' || value == 0) {
-          let rangeCM = ''
+        if (diseaseData.hzbrmc_range_cm !== undefined && diseaseData.hzbrmc_range_cm !== '0' && diseaseData.hzbrmc_range_cm !== '') {
+          var rangeCM = ',距离' + diseaseData.hzbrmc_range_cm + '@@厘米@@'
           setRangeCM(rangeCM)
         } else {
-          let rangeCM = ',距离' + value + '@@厘米@@'
+          var rangeCM = ''
           setRangeCM(rangeCM)
         }
-      } else if (name == 'hzbrmc_range_mm') {
-        // 距离 - 毫米
-        // let rangeMM = ',距离' + value + '@@毫米@@'
-        // setRangeMM(rangeMM)
-        if (value == '' || value == 0) {
-          let rangeMM = ''
+        if (diseaseData.hzbrmc_range_mm !== undefined && diseaseData.hzbrmc_range_mm !== '0' && diseaseData.hzbrmc_range_mm !== '') {
+          var rangeMM = ',距离' + diseaseData.hzbrmc_range_mm + '@@毫米@@'
           setRangeMM(rangeMM)
         } else {
-          let rangeMM = ',距离' + value + '@@毫米@@'
+          var rangeMM = ''
           setRangeMM(rangeMM)
         }
-      } else if (name == 'hzbrmc_depth_cm') {
-        // 深度 - 厘米
-        // let depthCM = ',深度' + value + '@@厘米@@'
-        // setDepthCM(depthCM)
-        if (value == '' || value == 0) {
-          let depthCM = ''
+        if (diseaseData.hzbrmc_depth_cm !== undefined && diseaseData.hzbrmc_depth_cm !== '0' && diseaseData.hzbrmc_depth_cm !== '') {
+          var depthCM = ',深度' + diseaseData.hzbrmc_depth_cm + '@@厘米@@'
           setDepthCM(depthCM)
         } else {
-          let depthCM = ',深度' + value + '@@厘米@@'
+          var depthCM = ''
           setDepthCM(depthCM)
         }
-      } else if (name == 'hzbrmc_depth_mm') {
-        // 深度 - 毫米
-        // let depthMM = ',深度' + value + '@@毫米@@'
-        // setDepthMM(depthMM)
-        if (value == '' || value == 0) {
-          let depthMM = ''
+        if (diseaseData.hzbrmc_depth_mm !== undefined && diseaseData.hzbrmc_depth_mm !== '0' && diseaseData.hzbrmc_depth_mm !== '') {
+          var depthMM = ',深度' + diseaseData.hzbrmc_depth_mm + '@@毫米@@'
           setDepthMM(depthMM)
         } else {
-          let depthMM = ',深度' + value + '@@毫米@@'
+          var depthMM = ''
           setDepthMM(depthMM)
         }
-      } else if (name == 'hzbrmc_volume_m') {
-        // 体积 - 立方米
-        // let volumeM = ',体积' + value + '@@立方米@@'
-        // setVolumeM(volumeM)
-        if (value == '' || value == 0) {
-          let volumeM = ''
+        if (diseaseData.hzbrmc_volume_m !== undefined && diseaseData.hzbrmc_volume_m !== '0' && diseaseData.hzbrmc_volume_m !== '') {
+          var volumeM = ',体积' + diseaseData.hzbrmc_volume_m + '@@立方米@@'
           setVolumeM(volumeM)
         } else {
-          let volumeM = ',体积' + value + '@@立方米@@'
+          var volumeM = ''
           setVolumeM(volumeM)
         }
-      } else if (name == 'hzbrmc_volume_cm') {
-        // 体积 - 立方厘米
-        // let volumeCM = ',体积' + value + '@@立方厘米@@'
-        // setVolumeCM(volumeCM)
-        if (value == '' || value == 0) {
-          let volumeCM = ''
+        if (diseaseData.hzbrmc_volume_cm !== undefined && diseaseData.hzbrmc_volume_cm !== '0' && diseaseData.hzbrmc_volume_cm !== '') {
+          var volumeCM = ',体积' + diseaseData.hzbrmc_volume_cm + '@@立方厘米@@'
           setVolumeCM(volumeCM)
         } else {
-          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          var volumeCM = ''
           setVolumeCM(volumeCM)
         }
-      } else if (name == 'hzbrmc_disp_cm') {
-        // 位移 - 厘米
-        // let dispCM = ',位移' + value + '@@厘米@@'
-        // setDispCM(dispCM)
-        if (value == '' || value == 0) {
-          let dispCM = ''
+        if (diseaseData.hzbrmc_disp_cm !== undefined && diseaseData.hzbrmc_disp_cm !== '0' && diseaseData.hzbrmc_disp_cm !== '') {
+          var dispCM = ',位移' + diseaseData.hzbrmc_disp_cm + '@@厘米@@'
           setDispCM(dispCM)
         } else {
-          let dispCM = ',位移' + value + '@@厘米@@'
+          var dispCM = ''
           setDispCM(dispCM)
         }
-      } else if (name == 'hzbrmc_disp_mm') {
-        // 位移 - 毫米
-        // let dispMM = ',位移' + value + '@@毫米@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
+        if (diseaseData.hzbrmc_disp_mm !== undefined && diseaseData.hzbrmc_disp_mm !== '0' && diseaseData.hzbrmc_disp_mm !== '') {
+          var dispMM = ',位移' + diseaseData.hzbrmc_disp_mm + '@@毫米@@'
           setDispMM(dispMM)
         } else {
-          let dispMM = ',位移' + value + '@@毫米@@'
+          var dispMM = ''
           setDispMM(dispMM)
         }
-      } else if (name == 'hzbrmc_angle_c') {
-        // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+        if (diseaseData.hzbrmc_angle_c !== undefined && diseaseData.hzbrmc_angle_c !== '0' && diseaseData.hzbrmc_angle_c !== '') {
+          var angle = ',角度' + diseaseData.hzbrmc_angle_c + '@@度@@'
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          var angle = ''
+          setAngle(angle)
         }
-      } else if (name == 'hzbrmc_chu') {
-        // 处
-        // let chu = ',' + value + '@@处@@'
-        // setChu(chu)
-        if (value == '' || value == 0) {
-          let chu = ''
+        if (diseaseData.hzbrmc_chu !== undefined && diseaseData.hzbrmc_chu !== '0' && diseaseData.hzbrmc_chu !== '') {
+          var chu = ',' + diseaseData.hzbrmc_chu + '@@处@@'
           setChu(chu)
         } else {
-          let chu = ',' + value + '@@处@@'
+          var chu = ''
           setChu(chu)
         }
-      } else if (name == 'hzbrmc_tiao') {
-        // 条
-        // let tiao = ',' + value + '@@条@@'
-        // setTiao(tiao)
-        if (value == '' || value == 0) {
-          let tiao = ''
+        if (diseaseData.hzbrmc_tiao !== undefined && diseaseData.hzbrmc_tiao !== '0' && diseaseData.hzbrmc_tiao !== '') {
+          var tiao = ',' + diseaseData.hzbrmc_tiao + '@@条@@'
           setTiao(tiao)
         } else {
-          let tiao = ',' + value + '@@条@@'
+          var tiao = ''
           setTiao(tiao)
         }
-      } else if (name == 'hzbrmc_range_fenbu_m') {
-        // 分布范围 - 米
-        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        // setRangeFenbuM(rangeFenbuM)
-        if (value == '' || value == 0) {
-          let rangeFenbuM = ''
+        if (diseaseData.hzbrmc_range_fenbu_m !== undefined && diseaseData.hzbrmc_range_fenbu_m !== '0' && diseaseData.hzbrmc_range_fenbu_m !== '') {
+          var rangeFenbuM = ',分布范围' + diseaseData.hzbrmc_range_fenbu_m + '@@米@@'
           setRangeFenbuM(rangeFenbuM)
         } else {
-          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          var rangeFenbuM = ''
           setRangeFenbuM(rangeFenbuM)
         }
-      } else if (name == 'hzbrmc_range_length_m') {
-        // 长度范围 - 米
-        // let rangeLengthM = ',长度范围' + value + '@@米@@'
-        // setRangeLengthM(rangeLengthM)
-        if (value == '' || value == 0) {
-          let rangeLengthM = ''
+        if (diseaseData.hzbrmc_range_length_m !== undefined && diseaseData.hzbrmc_range_length_m !== '0' && diseaseData.hzbrmc_range_length_m !== '') {
+          var rangeLengthM = ',长度范围' + diseaseData.hzbrmc_range_length_m + '@@米@@'
           setRangeLengthM(rangeLengthM)
         } else {
-          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          var rangeLengthM = ''
           setRangeLengthM(rangeLengthM)
         }
-      } else if (name == 'hzbrmc_range_width_mm') {
-        // 宽度范围 - 毫米
-        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        // setRangeWidthMM(rangeWidthMM)
-        if (value == '' || value == 0) {
-          let rangeWidthMM = ''
+        if (diseaseData.hzbrmc_range_width_mm !== undefined && diseaseData.hzbrmc_range_width_mm !== '0' && diseaseData.hzbrmc_range_width_mm !== '') {
+          var rangeWidthMM = ',宽度范围'+ diseaseData.hzbrmc_range_width_mm + '@@毫米@@'
           setRangeWidthMM(rangeWidthMM)
         } else {
-          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          var rangeWidthMM = ''
           setRangeWidthMM(rangeWidthMM)
         }
-      } else if (name == 'hzbrmc_range_spacing_cm') {
-        // 间距范围 - 厘米
-        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        // setRangeSpacingCM(rangeSpacingCM)
-        if (value == '' || value == 0) {
-          let rangeSpacingCM = ''
+        if (diseaseData.hzbrmc_range_spacing_cm !== undefined && diseaseData.hzbrmc_range_spacing_cm !== '0' && diseaseData.hzbrmc_range_spacing_cm !== '') {
+          var rangeSpacingCM = ',间距范围' + diseaseData.hzbrmc_range_spacing_cm + '@@厘米@@'
           setRangeSpacingCM(rangeSpacingCM)
         } else {
-          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          var rangeSpacingCM = ''
           setRangeSpacingCM(rangeSpacingCM)
         }
-      } else if (name == 'hzbrmc_lb_left_length_m') {
-        // 左腹板长度 - 米
-        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        // setLeftLengthM(leftLengthM)
-        if (value == '' || value == 0) {
-          let leftLengthM = ''
+        if (diseaseData.hzbrmc_lb_left_length_m !== undefined && diseaseData.hzbrmc_lb_left_length_m !== '0' && diseaseData.hzbrmc_lb_left_length_m !== '') {
+          var leftLengthM = ',左腹板长度' + diseaseData.hzbrmc_lb_left_length_m + '@@米@@'
           setLeftLengthM(leftLengthM)
         } else {
-          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          var leftLengthM = ''
           setLeftLengthM(leftLengthM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_length_m') {
-        // 底板长度 - 米
-        // let bottomLengthM = ',底板长度' + value + '@@米@@'
-        // setBottomLengthM(bottomLengthM)
-        if (value == '' || value == 0) {
-          let bottomLengthM = ''
+        if (diseaseData.hzbrmc_lb_bottom_length_m !== undefined && diseaseData.hzbrmc_lb_bottom_length_m !== '0' && diseaseData.hzbrmc_lb_bottom_length_m !== '') {
+          var bottomLengthM = ',底板长度' + diseaseData.hzbrmc_lb_bottom_length_m + '@@米@@'
           setBottomLengthM(bottomLengthM)
         } else {
-          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          var bottomLengthM = ''
           setBottomLengthM(bottomLengthM)
         }
-      } else if (name == 'hzbrmc_lb_right_length_m') {
-        // 右腹板长度 - 米
-        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        // setRightLengthM(rightLengthM)
-        if (value == '' || value == 0) {
-          let rightLengthM = ''
+        if (diseaseData.hzbrmc_lb_right_length_m !== undefined && diseaseData.hzbrmc_lb_right_length_m !== '0' && diseaseData.hzbrmc_lb_right_length_m !== '') {
+          var rightLengthM = ',右腹板长度' + diseaseData.hzbrmc_lb_right_length_m + '@@米@@'
           setRightLengthM(rightLengthM)
         } else {
-          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          var rightLengthM = ''
           setRightLengthM(rightLengthM)
         }
-      } else if (name == 'hzbrmc_lb_left_width_mm') {
-        // 左腹板宽度 - 毫米
-        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        // setLeftWidthMM(leftWidthMM)
-        if (value == '' || value == 0) {
-          let leftWidthMM = ''
+        if (diseaseData.hzbrmc_lb_left_width_mm !== undefined && diseaseData.hzbrmc_lb_left_width_mm !== '0' && diseaseData.hzbrmc_lb_left_width_mm !== '') {
+          var leftWidthMM = ',左腹板宽度' + diseaseData.hzbrmc_lb_left_width_mm + '@@毫米@@'
           setLeftWidthMM(leftWidthMM)
         } else {
-          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          var leftWidthMM = ''
           setLeftWidthMM(leftWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
-        // 底板宽度 - 毫米
-        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        // setBottomWidthMM(bottomWidthMM)
-        if (value == '' || value == 0) {
-          let bottomWidthMM = ''
+        if (diseaseData.hzbrmc_lb_bottom_width_mm !== undefined && diseaseData.hzbrmc_lb_bottom_width_mm !== '0' && diseaseData.hzbrmc_lb_bottom_width_mm !== '') {
+          var bottomWidthMM = ',底板宽度' + diseaseData.hzbrmc_lb_bottom_width_mm + '@@毫米@@'
           setBottomWidthMM(bottomWidthMM)
         } else {
-          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          var bottomWidthMM = ''
           setBottomWidthMM(bottomWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_right_width_mm') {
-        // 右腹板宽度 - 毫米
-        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        // setRightWidthMM(rightWidthMM)
-        if (value == '' || value == 0) {
-          let rightWidthMM = ''
+        if (diseaseData.hzbrmc_lb_right_width_mm !== undefined && diseaseData.hzbrmc_lb_right_width_mm !== '0' && diseaseData.hzbrmc_lb_right_width_mm !== '') {
+          var rightWidthMM = ',右腹板宽度' + diseaseData.hzbrmc_lb_right_width_mm + '@@毫米@@'
           setRightWidthMM(rightWidthMM)
         } else {
-          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          var rightWidthMM = ''
           setRightWidthMM(rightWidthMM)
         }
-      } else if (name == 'hzbrmc_slant_m') {
-        // 倾斜量 - 米
-        // let slantM = ',倾斜量' + value + '@@米@@'
-        // setSlantM(slantM)
-        if (value == '' || value == 0) {
-          let slantM = ''
+        if (diseaseData.hzbrmc_slant_m !== undefined && diseaseData.hzbrmc_slant_m !== '0' && diseaseData.hzbrmc_slant_m !== '') {
+          var slantM = ',倾斜量' + diseaseData.hzbrmc_slant_m + '@@米@@'
           setSlantM(slantM)
         } else {
-          let slantM = ',倾斜量' + value + '@@米@@'
+          var slantM = ''
           setSlantM(slantM)
         }
       }
 
-      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                    + widthMM + heightM + heightCM + heightMM + areaFace
-                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                    + bottomWidthMM + rightWidthMM + slantM
-      setWriteTxt(writeTxt)
-      console.log('writeTxt', writeTxt);
-      console.log('病害名称',itemData.diseaseName);
-      let binghai = itemData.diseaseName
-      let allText = binghai.concat(writeTxt)
-      console.log('allText', allText);
-      diseaseData['description'] = allText
-      handleFormChenge(allText, diseaseData.description)
+      if (writeDesTextValue == '' || writeDesTextValue == undefined) {
+        console.log('没有修改数据');
+        if (diseaseData.description == '' || diseaseData.description == undefined) {
+          diseaseData['description'] = itemData.diseaseName
+        } else if (diseaseData.description !== '' || diseaseData.description !== undefined) {
+          let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+          // let writeTxt = diseaseData.hzbrmc_length_m
+          setWriteTxt(writeTxt)
+          // console.log('writeTxt', writeTxt);
+          // console.log('病害名称',itemData.diseaseName);
+          let binghai = itemData.diseaseName
+          let allText = binghai.concat(writeTxt)
+          console.log('allText', allText);
+          diseaseData['description'] = allText
+          handleFormChenge(allText, diseaseData.description)
+        }
+      } else {
+        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+        setWriteTxt(writeTxt)
+        console.log('writeTxt', writeTxt);
+        console.log('病害名称',itemData.diseaseName);
+        let binghai = itemData.diseaseName
+        let allText = binghai.concat(writeTxt)
+        console.log('allText', allText);
+        diseaseData['description'] = allText
+        handleFormChenge(allText, diseaseData.description)
+      }
     }
 
     // 填入位置描述内容
@@ -11202,14 +10539,14 @@ export function DiseaseG({route, navigation}) {
         }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
+        // let angle = ',角度' + value + '@@度@@'
+        // setAngle(angle)
         if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+          let angle = ''
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          let angle = ',角度' + value + '@@度@@'
+          setAngle(angle)
         }
       } else if (name == 'hzbrmc_chu') {
         // 处
@@ -11358,480 +10695,354 @@ export function DiseaseG({route, navigation}) {
       setDiseaseData(_data);
     };
 
+    const [writeDesTextValue, setWriteDesTextValue] = useState('')
+
     // 填入病害描述内容
     const writeDesText = (name, value) => {
       // let writeTxt = []
       console.log('writeDesText', name, value);
+      setWriteDesTextValue(value)
 
-      if (name == 'scale') {
-        // 标度
-        let biaodu = ',标度' + value + '@@'
-        setBiaodu(biaodu)
-      } else if (name == 'hzbrmc_length_m') {
-        //长度 - 米
-        // let lengthM = ',长度' + value + '@@米@@'
-        // setLengthM(lengthM)
-        if (value == '' || value == 0) {
-          let lengthM = ''
+      if (true) {
+        if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
+          var biaodu = ',标度' + diseaseData.scale + '@@'
+          setBiaodu(biaodu)
+        } else {
+          var biaodu = ''
+          setBiaodu(biaodu)
+        }
+        if (diseaseData.hzbrmc_length_m !== undefined && diseaseData.hzbrmc_length_m !== '0' && diseaseData.hzbrmc_length_m !== '') {
+          var lengthM = ',长度' + diseaseData.hzbrmc_length_m + '@@米@@'
           setLengthM(lengthM)
         } else {
-          let lengthM = ',长度' + value + '@@米@@'
+          var lengthM = ''
           setLengthM(lengthM)
         }
-      } else if (name == 'hzbrmc_length_cm') {
-        // 长度 - 厘米
-        // let lengthCM = ',长度' + value + '@@厘米@@'
-        // setLengthCM(lengthCM)
-        if (value == '' || value == 0) {
-          let lengthCM = ''
+        if (diseaseData.hzbrmc_length_cm !== undefined && diseaseData.hzbrmc_length_cm !== '0' && diseaseData.hzbrmc_length_cm !== '') {
+          var lengthCM = ',长度' + diseaseData.hzbrmc_length_cm + '@@厘米@@'
           setLengthCM(lengthCM)
         } else {
-          let lengthCM = ',长度' + value + '@@厘米@@'
+          var lengthCM = ''
           setLengthCM(lengthCM)
         }
-      } else if (name == 'hzbrmc_length_mm') {
-        // 长度 - 毫米
-        // let lengthMM = ',长度' + value + '@@毫米@@'
-        // setLengthMM(lengthMM)
-        if (value == '' || value == 0) {
-          let lengthMM = ''
+        if (diseaseData.hzbrmc_length_mm !== undefined && diseaseData.hzbrmc_length_mm !== '0' && diseaseData.hzbrmc_length_mm !== '') {
+          var lengthMM = ',长度' + diseaseData.hzbrmc_length_mm + '@@毫米@@'
           setLengthMM(lengthMM)
         } else {
-          let lengthMM = ',长度' + value + '@@毫米@@'
+          var lengthMM = ''
           setLengthMM(lengthMM)
         }
-      } else if (name == 'hzbrmc_width_m') {
-        // 宽度 - 米
-        // let widthM = ',宽度' + value + '@@米@@'
-        // setWidthM(widthM)
-        if (value == '' || value == 0) {
-          let widthM = ''
+        if (diseaseData.hzbrmc_width_m !== undefined && diseaseData.hzbrmc_width_m !== '0' && diseaseData.hzbrmc_width_m !== '') {
+          var widthM = ',宽度' + diseaseData.hzbrmc_width_m + '@@米@@'
           setWidthM(widthM)
         } else {
-          let widthM = ',宽度' + value + '@@米@@'
+          var widthM = ''
           setWidthM(widthM)
         }
-      } else if (name == 'hzbrmc_width_cm') {
-        // 宽度 - 厘米
-        // let widthCM = ',宽度' + value + '@@厘米@@'
-        // setWidthCM(widthCM)
-        if (value == '' || value == 0) {
-          let widthCM = ''
+        if (diseaseData.hzbrmc_width_cm !== undefined && diseaseData.hzbrmc_width_cm !== '0' && diseaseData.hzbrmc_width_cm !== '') {
+          var widthCM = ',宽度' + diseaseData.hzbrmc_width_cm + '@@厘米@@'
           setWidthCM(widthCM)
         } else {
-          let widthCM = ',宽度' + value + '@@厘米@@'
+          var widthCM = ''
           setWidthCM(widthCM)
         }
-      } else if (name == 'hzbrmc_width_mm') {
-        // 宽度 - 毫米
-        if (value == '' || value == 0) {
-          let widthMM = ''
+        if (diseaseData.hzbrmc_width_mm !== undefined && diseaseData.hzbrmc_width_mm !== '0' && diseaseData.hzbrmc_width_mm !== '') {
+          console.log('diseaseData.hzbrmc_width_mm',diseaseData.hzbrmc_width_mm == '');
+          var widthMM = ',宽度' + diseaseData.hzbrmc_width_mm + '@@毫米@@'
           setWidthMM(widthMM)
         } else {
-          let widthMM = ',宽度' + value + '@@毫米@@'
+          // diseaseData.hzbrmc_width_mm == undefined || diseaseData.hzbrmc_width_mm == 0 || diseaseData.hzbrmc_width_mm == ''
+          var widthMM = ''
           setWidthMM(widthMM)
         }
-      } else if (name == 'hzbrmc_height_m') {
-        // 高度 - 米
-        // let heightM = ',高度' + value + '@@米@@'
-        // setHeightM(heightM)
-        if (value == '' || value == 0) {
-          let heightM = ''
+        if (diseaseData.hzbrmc_height_m !== undefined && diseaseData.hzbrmc_height_m !== '0' && diseaseData.hzbrmc_height_m !== '') {
+          var heightM = ',高度' + diseaseData.hzbrmc_height_m + '@@米@@'
           setHeightM(heightM)
         } else {
-          let heightM = ',高度' + value + '@@米@@'
+          var heightM = ''
           setHeightM(heightM)
         }
-      } else if (name == 'hzbrmc_height_cm') {
-        // 高度 - 厘米
-        if (value == '' || value == 0) {
-          let heightCM = ''
+        if (diseaseData.hzbrmc_height_cm !== undefined && diseaseData.hzbrmc_height_cm !== '0' && diseaseData.hzbrmc_height_cm !== '') {
+          var heightCM = ',高度' + diseaseData.hzbrmc_height_cm + '@@厘米@@'
           setHeightCM(heightCM)
         } else {
-          let heightCM = ',高度' + value + '@@厘米@@'
+          var heightCM = ''
           setHeightCM(heightCM)
         }
-      } else if (name == 'hzbrmc_height_mm') {
-        // 高度 - 毫米
-        // let heightMM = ',高度' + value + '@@毫米@@'
-        // setHeightMM(heightMM)
-        if (value == '' || value == 0) {
-          let heightMM = ''
+        if (diseaseData.hzbrmc_height_mm !== undefined && diseaseData.hzbrmc_height_mm !== '0' && diseaseData.hzbrmc_height_mm !== '') {
+          var heightMM = ',高度' + diseaseData.hzbrmc_height_mm + '@@毫米@@'
           setHeightMM(heightMM)
         } else {
-          let heightMM = ',高度' + value + '@@毫米@@'
+          var heightMM = ''
           setHeightMM(heightMM)
         }
-      } else if (name == 'hzbrmc_area_face') {
-        // 面域 - %
-        // let areaFace = ',面域' + value + '@@%@@'
-        // setAreaFace(areaFace)
-        if (value == '' || value == 0) {
-          let areaFace = ''
+        if (diseaseData.hzbrmc_area_face !== undefined && diseaseData.hzbrmc_area_face !== '0' && diseaseData.hzbrmc_area_face !== '') {
+          var areaFace = ',面域' + diseaseData.hzbrmc_area_face + '@@%@@'
           setAreaFace(areaFace)
         } else {
-          let areaFace = ',面域' + value + '@@%@@'
+          var areaFace = ''
           setAreaFace(areaFace)
         }
-      } else if (name == 'hzbrmc_area_per') {
-        // 面积占比 - %
-        // let areaPer = ',面积占比' + value + '@@%@@'
-        // setAreaPer(areaPer)
-        if (value == '' || value == 0) {
-          let areaPer = ''
+        if (diseaseData.hzbrmc_area_per !== undefined && diseaseData.hzbrmc_area_per !== '0' && diseaseData.hzbrmc_area_per !== '') {
+          var areaPer = ',面积占比' + diseaseData.hzbrmc_area_per + '@@%@@'
           setAreaPer(areaPer)
         } else {
-          let areaPer = ',面积占比' + value + '@@%@@'
+          var areaPer = ''
           setAreaPer(areaPer)
         }
-      } else if (name == 'hzbrmc_area_m') {
-        // 面积 - 平方米
-        // let areaM = ',面积' + value + '@@平方米@@'
-        // setAreaM(areaM)
-        if (value == '' || value == 0) {
-          let areaM = ''
+        if (diseaseData.hzbrmc_area_m !== undefined && diseaseData.hzbrmc_area_m !== '0' && diseaseData.hzbrmc_area_m !== '') {
+          var areaM = ',面积' + diseaseData.hzbrmc_area_m + '@@平方米@@'
           setAreaM(areaM)
         } else {
-          let areaM = ',面积' + value + '@@平方米@@'
+          var areaM = ''
           setAreaM(areaM)
         }
-      } else if (name == 'hzbrmc_area_cm') {
-        // 面积 - 平方厘米
-        // let areaCM = ',面积' + value + '@@平方厘米@@'
-        // setAreaCM(areaCM)
-        if (value == '' || value == 0) {
-          let areaCM = ''
+        if (diseaseData.hzbrmc_area_cm !== undefined && diseaseData.hzbrmc_area_cm !== '0' && diseaseData.hzbrmc_area_cm !== '') {
+          var areaCM = ',面积' + diseaseData.hzbrmc_area_cm + '@@平方厘米@@'
           setAreaCM(areaCM)
         } else {
-          let areaCM = ',面积' + value + '@@平方厘米@@'
+          var areaCM = ''
           setAreaCM(areaCM)
         }
-      } else if (name == 'hzbrmc_area_mm') {
-        // 面积 - 平方毫米
-        // let areaMM = ',面积' + value + '@@平方毫米@@'
-        // setAreaMM(areaMM)
-        if (value == '' || value == 0) {
-          let areaMM = ''
+        if (diseaseData.hzbrmc_area_mm !== undefined && diseaseData.hzbrmc_area_mm !== '0' && diseaseData.hzbrmc_area_mm !== '') {
+          var areaMM = ',面积' + diseaseData.hzbrmc_area_mm + '@@平方毫米@@'
           setAreaMM(areaMM)
         } else {
-          let areaMM = ',面积' + value + '@@平方毫米@@'
+          var areaMM = ''
           setAreaMM(areaMM)
         }
-      } else if (name == 'hzbrmc_heightdiff_cm') {
-        // 高差 - 厘米
-        // let heightDiffCM = ',高差' + value + '@@厘米@@'
-        // setHeightDiffCM(heightDiffCM)
-        if (value == '' || value == 0) {
-          let heightDiffCM = ''
+        if (diseaseData.hzbrmc_heightdiff_cm !== undefined && diseaseData.hzbrmc_heightdiff_cm !== '0' && diseaseData.hzbrmc_heightdiff_cm !== '') {
+          var heightDiffCM = ',高差' + diseaseData.hzbrmc_heightdiff_cm + '@@厘米@@'
           setHeightDiffCM(heightDiffCM)
         } else {
-          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          var heightDiffCM = ''
           setHeightDiffCM(heightDiffCM)
         }
-      } else if (name == 'hzbrmc_heightdiff_mm') {
-        // 高差 - 毫米
-        // let heightDiffMM = ',高差' + value + '@@毫米@@'
-        // setHeightDiffMM(heightDiffMM)
-        if (value == '' || value == 0) {
-          let heightDiffMM = ''
+        if (diseaseData.hzbrmc_heightdiff_mm !== undefined && diseaseData.hzbrmc_heightdiff_mm !== '0' && diseaseData.hzbrmc_heightdiff_mm !== '') {
+          var heightDiffMM = ',高差' + diseaseData.hzbrmc_heightdiff_mm + '@@毫米@@'
           setHeightDiffMM(heightDiffMM)
         } else {
-          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          var heightDiffMM = ''
           setHeightDiffMM(heightDiffMM)
         }
-      } else if (name == 'hzbrmc_spacing_cm') {
-        // 间距 - 厘米
-        // let spacingCM = ',间距' + value + '@@厘米@@'
-        // setSpacingCM(spacingCM)
-        if (value == '' || value == 0) {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+        if (diseaseData.hzbrmc_spacing_cm !== undefined && diseaseData.hzbrmc_spacing_cm !== '0' && diseaseData.hzbrmc_spacing_cm !== '') {
+          var spacingCM = ',间距' + diseaseData.hzbrmc_spacing_cm + '@@厘米@@'
           setSpacingCM(spacingCM)
         } else {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+          var spacingCM = ''
           setSpacingCM(spacingCM)
         }
-      } else if (name == 'hzbrmc_deformation_mm') {
-        // 变形 - 毫米
-        // let deformationMM = ',变形' + value + '@@毫米@@'
-        // setDeformationMM(deformationMM)
-        if (value == '' || value == 0) {
-          let deformationMM = ''
+        if (diseaseData.hzbrmc_deformation_mm !== undefined && diseaseData.hzbrmc_deformation_mm !== '0' && diseaseData.hzbrmc_deformation_mm !== '') {
+          var deformationMM = ',变形' + diseaseData.hzbrmc_deformation_mm + '@@毫米@@'
           setDeformationMM(deformationMM)
         } else {
-          let deformationMM = ',变形' + value + '@@毫米@@'
+          var deformationMM = ''
           setDeformationMM(deformationMM)
         }
-      } else if (name == 'hzbrmc_num') {
-        // 个数 - 个
-        // let num = ',个数' + value + '@@个@@'
-        // setNum(num)
-        if (value == '' || value == 0) {
-          let num = ''
+        if (diseaseData.hzbrmc_num !== undefined && diseaseData.hzbrmc_num !== '0' && diseaseData.hzbrmc_num !== '') {
+          var num = ',个数' + diseaseData.hzbrmc_num + '@@个@@'
           setNum(num)
         } else {
-          let num = ',个数' + value + '@@个@@'
+          var num = ''
           setNum(num)
         }
-      } else if (name == 'hzbrmc_range_cm') {
-        // 距离 - 厘米
-        // let rangeCM = ',距离' + value + '@@厘米@@'
-        // setRangeCM(rangeCM)
-        if (value == '' || value == 0) {
-          let rangeCM = ''
+        if (diseaseData.hzbrmc_range_cm !== undefined && diseaseData.hzbrmc_range_cm !== '0' && diseaseData.hzbrmc_range_cm !== '') {
+          var rangeCM = ',距离' + diseaseData.hzbrmc_range_cm + '@@厘米@@'
           setRangeCM(rangeCM)
         } else {
-          let rangeCM = ',距离' + value + '@@厘米@@'
+          var rangeCM = ''
           setRangeCM(rangeCM)
         }
-      } else if (name == 'hzbrmc_range_mm') {
-        // 距离 - 毫米
-        // let rangeMM = ',距离' + value + '@@毫米@@'
-        // setRangeMM(rangeMM)
-        if (value == '' || value == 0) {
-          let rangeMM = ''
+        if (diseaseData.hzbrmc_range_mm !== undefined && diseaseData.hzbrmc_range_mm !== '0' && diseaseData.hzbrmc_range_mm !== '') {
+          var rangeMM = ',距离' + diseaseData.hzbrmc_range_mm + '@@毫米@@'
           setRangeMM(rangeMM)
         } else {
-          let rangeMM = ',距离' + value + '@@毫米@@'
+          var rangeMM = ''
           setRangeMM(rangeMM)
         }
-      } else if (name == 'hzbrmc_depth_cm') {
-        // 深度 - 厘米
-        // let depthCM = ',深度' + value + '@@厘米@@'
-        // setDepthCM(depthCM)
-        if (value == '' || value == 0) {
-          let depthCM = ''
+        if (diseaseData.hzbrmc_depth_cm !== undefined && diseaseData.hzbrmc_depth_cm !== '0' && diseaseData.hzbrmc_depth_cm !== '') {
+          var depthCM = ',深度' + diseaseData.hzbrmc_depth_cm + '@@厘米@@'
           setDepthCM(depthCM)
         } else {
-          let depthCM = ',深度' + value + '@@厘米@@'
+          var depthCM = ''
           setDepthCM(depthCM)
         }
-      } else if (name == 'hzbrmc_depth_mm') {
-        // 深度 - 毫米
-        // let depthMM = ',深度' + value + '@@毫米@@'
-        // setDepthMM(depthMM)
-        if (value == '' || value == 0) {
-          let depthMM = ''
+        if (diseaseData.hzbrmc_depth_mm !== undefined && diseaseData.hzbrmc_depth_mm !== '0' && diseaseData.hzbrmc_depth_mm !== '') {
+          var depthMM = ',深度' + diseaseData.hzbrmc_depth_mm + '@@毫米@@'
           setDepthMM(depthMM)
         } else {
-          let depthMM = ',深度' + value + '@@毫米@@'
+          var depthMM = ''
           setDepthMM(depthMM)
         }
-      } else if (name == 'hzbrmc_volume_m') {
-        // 体积 - 立方米
-        // let volumeM = ',体积' + value + '@@立方米@@'
-        // setVolumeM(volumeM)
-        if (value == '' || value == 0) {
-          let volumeM = ''
+        if (diseaseData.hzbrmc_volume_m !== undefined && diseaseData.hzbrmc_volume_m !== '0' && diseaseData.hzbrmc_volume_m !== '') {
+          var volumeM = ',体积' + diseaseData.hzbrmc_volume_m + '@@立方米@@'
           setVolumeM(volumeM)
         } else {
-          let volumeM = ',体积' + value + '@@立方米@@'
+          var volumeM = ''
           setVolumeM(volumeM)
         }
-      } else if (name == 'hzbrmc_volume_cm') {
-        // 体积 - 立方厘米
-        // let volumeCM = ',体积' + value + '@@立方厘米@@'
-        // setVolumeCM(volumeCM)
-        if (value == '' || value == 0) {
-          let volumeCM = ''
+        if (diseaseData.hzbrmc_volume_cm !== undefined && diseaseData.hzbrmc_volume_cm !== '0' && diseaseData.hzbrmc_volume_cm !== '') {
+          var volumeCM = ',体积' + diseaseData.hzbrmc_volume_cm + '@@立方厘米@@'
           setVolumeCM(volumeCM)
         } else {
-          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          var volumeCM = ''
           setVolumeCM(volumeCM)
         }
-      } else if (name == 'hzbrmc_disp_cm') {
-        // 位移 - 厘米
-        // let dispCM = ',位移' + value + '@@厘米@@'
-        // setDispCM(dispCM)
-        if (value == '' || value == 0) {
-          let dispCM = ''
+        if (diseaseData.hzbrmc_disp_cm !== undefined && diseaseData.hzbrmc_disp_cm !== '0' && diseaseData.hzbrmc_disp_cm !== '') {
+          var dispCM = ',位移' + diseaseData.hzbrmc_disp_cm + '@@厘米@@'
           setDispCM(dispCM)
         } else {
-          let dispCM = ',位移' + value + '@@厘米@@'
+          var dispCM = ''
           setDispCM(dispCM)
         }
-      } else if (name == 'hzbrmc_disp_mm') {
-        // 位移 - 毫米
-        // let dispMM = ',位移' + value + '@@毫米@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
+        if (diseaseData.hzbrmc_disp_mm !== undefined && diseaseData.hzbrmc_disp_mm !== '0' && diseaseData.hzbrmc_disp_mm !== '') {
+          var dispMM = ',位移' + diseaseData.hzbrmc_disp_mm + '@@毫米@@'
           setDispMM(dispMM)
         } else {
-          let dispMM = ',位移' + value + '@@毫米@@'
+          var dispMM = ''
           setDispMM(dispMM)
         }
-      } else if (name == 'hzbrmc_angle_c') {
-        // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+        if (diseaseData.hzbrmc_angle_c !== undefined && diseaseData.hzbrmc_angle_c !== '0' && diseaseData.hzbrmc_angle_c !== '') {
+          var angle = ',角度' + diseaseData.hzbrmc_angle_c + '@@度@@'
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          var angle = ''
+          setAngle(angle)
         }
-      } else if (name == 'hzbrmc_chu') {
-        // 处
-        // let chu = ',' + value + '@@处@@'
-        // setChu(chu)
-        if (value == '' || value == 0) {
-          let chu = ''
+        if (diseaseData.hzbrmc_chu !== undefined && diseaseData.hzbrmc_chu !== '0' && diseaseData.hzbrmc_chu !== '') {
+          var chu = ',' + diseaseData.hzbrmc_chu + '@@处@@'
           setChu(chu)
         } else {
-          let chu = ',' + value + '@@处@@'
+          var chu = ''
           setChu(chu)
         }
-      } else if (name == 'hzbrmc_tiao') {
-        // 条
-        // let tiao = ',' + value + '@@条@@'
-        // setTiao(tiao)
-        if (value == '' || value == 0) {
-          let tiao = ''
+        if (diseaseData.hzbrmc_tiao !== undefined && diseaseData.hzbrmc_tiao !== '0' && diseaseData.hzbrmc_tiao !== '') {
+          var tiao = ',' + diseaseData.hzbrmc_tiao + '@@条@@'
           setTiao(tiao)
         } else {
-          let tiao = ',' + value + '@@条@@'
+          var tiao = ''
           setTiao(tiao)
         }
-      } else if (name == 'hzbrmc_range_fenbu_m') {
-        // 分布范围 - 米
-        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        // setRangeFenbuM(rangeFenbuM)
-        if (value == '' || value == 0) {
-          let rangeFenbuM = ''
+        if (diseaseData.hzbrmc_range_fenbu_m !== undefined && diseaseData.hzbrmc_range_fenbu_m !== '0' && diseaseData.hzbrmc_range_fenbu_m !== '') {
+          var rangeFenbuM = ',分布范围' + diseaseData.hzbrmc_range_fenbu_m + '@@米@@'
           setRangeFenbuM(rangeFenbuM)
         } else {
-          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          var rangeFenbuM = ''
           setRangeFenbuM(rangeFenbuM)
         }
-      } else if (name == 'hzbrmc_range_length_m') {
-        // 长度范围 - 米
-        // let rangeLengthM = ',长度范围' + value + '@@米@@'
-        // setRangeLengthM(rangeLengthM)
-        if (value == '' || value == 0) {
-          let rangeLengthM = ''
+        if (diseaseData.hzbrmc_range_length_m !== undefined && diseaseData.hzbrmc_range_length_m !== '0' && diseaseData.hzbrmc_range_length_m !== '') {
+          var rangeLengthM = ',长度范围' + diseaseData.hzbrmc_range_length_m + '@@米@@'
           setRangeLengthM(rangeLengthM)
         } else {
-          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          var rangeLengthM = ''
           setRangeLengthM(rangeLengthM)
         }
-      } else if (name == 'hzbrmc_range_width_mm') {
-        // 宽度范围 - 毫米
-        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        // setRangeWidthMM(rangeWidthMM)
-        if (value == '' || value == 0) {
-          let rangeWidthMM = ''
+        if (diseaseData.hzbrmc_range_width_mm !== undefined && diseaseData.hzbrmc_range_width_mm !== '0' && diseaseData.hzbrmc_range_width_mm !== '') {
+          var rangeWidthMM = ',宽度范围'+ diseaseData.hzbrmc_range_width_mm + '@@毫米@@'
           setRangeWidthMM(rangeWidthMM)
         } else {
-          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          var rangeWidthMM = ''
           setRangeWidthMM(rangeWidthMM)
         }
-      } else if (name == 'hzbrmc_range_spacing_cm') {
-        // 间距范围 - 厘米
-        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        // setRangeSpacingCM(rangeSpacingCM)
-        if (value == '' || value == 0) {
-          let rangeSpacingCM = ''
+        if (diseaseData.hzbrmc_range_spacing_cm !== undefined && diseaseData.hzbrmc_range_spacing_cm !== '0' && diseaseData.hzbrmc_range_spacing_cm !== '') {
+          var rangeSpacingCM = ',间距范围' + diseaseData.hzbrmc_range_spacing_cm + '@@厘米@@'
           setRangeSpacingCM(rangeSpacingCM)
         } else {
-          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          var rangeSpacingCM = ''
           setRangeSpacingCM(rangeSpacingCM)
         }
-      } else if (name == 'hzbrmc_lb_left_length_m') {
-        // 左腹板长度 - 米
-        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        // setLeftLengthM(leftLengthM)
-        if (value == '' || value == 0) {
-          let leftLengthM = ''
+        if (diseaseData.hzbrmc_lb_left_length_m !== undefined && diseaseData.hzbrmc_lb_left_length_m !== '0' && diseaseData.hzbrmc_lb_left_length_m !== '') {
+          var leftLengthM = ',左腹板长度' + diseaseData.hzbrmc_lb_left_length_m + '@@米@@'
           setLeftLengthM(leftLengthM)
         } else {
-          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          var leftLengthM = ''
           setLeftLengthM(leftLengthM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_length_m') {
-        // 底板长度 - 米
-        // let bottomLengthM = ',底板长度' + value + '@@米@@'
-        // setBottomLengthM(bottomLengthM)
-        if (value == '' || value == 0) {
-          let bottomLengthM = ''
+        if (diseaseData.hzbrmc_lb_bottom_length_m !== undefined && diseaseData.hzbrmc_lb_bottom_length_m !== '0' && diseaseData.hzbrmc_lb_bottom_length_m !== '') {
+          var bottomLengthM = ',底板长度' + diseaseData.hzbrmc_lb_bottom_length_m + '@@米@@'
           setBottomLengthM(bottomLengthM)
         } else {
-          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          var bottomLengthM = ''
           setBottomLengthM(bottomLengthM)
         }
-      } else if (name == 'hzbrmc_lb_right_length_m') {
-        // 右腹板长度 - 米
-        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        // setRightLengthM(rightLengthM)
-        if (value == '' || value == 0) {
-          let rightLengthM = ''
+        if (diseaseData.hzbrmc_lb_right_length_m !== undefined && diseaseData.hzbrmc_lb_right_length_m !== '0' && diseaseData.hzbrmc_lb_right_length_m !== '') {
+          var rightLengthM = ',右腹板长度' + diseaseData.hzbrmc_lb_right_length_m + '@@米@@'
           setRightLengthM(rightLengthM)
         } else {
-          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          var rightLengthM = ''
           setRightLengthM(rightLengthM)
         }
-      } else if (name == 'hzbrmc_lb_left_width_mm') {
-        // 左腹板宽度 - 毫米
-        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        // setLeftWidthMM(leftWidthMM)
-        if (value == '' || value == 0) {
-          let leftWidthMM = ''
+        if (diseaseData.hzbrmc_lb_left_width_mm !== undefined && diseaseData.hzbrmc_lb_left_width_mm !== '0' && diseaseData.hzbrmc_lb_left_width_mm !== '') {
+          var leftWidthMM = ',左腹板宽度' + diseaseData.hzbrmc_lb_left_width_mm + '@@毫米@@'
           setLeftWidthMM(leftWidthMM)
         } else {
-          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          var leftWidthMM = ''
           setLeftWidthMM(leftWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
-        // 底板宽度 - 毫米
-        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        // setBottomWidthMM(bottomWidthMM)
-        if (value == '' || value == 0) {
-          let bottomWidthMM = ''
+        if (diseaseData.hzbrmc_lb_bottom_width_mm !== undefined && diseaseData.hzbrmc_lb_bottom_width_mm !== '0' && diseaseData.hzbrmc_lb_bottom_width_mm !== '') {
+          var bottomWidthMM = ',底板宽度' + diseaseData.hzbrmc_lb_bottom_width_mm + '@@毫米@@'
           setBottomWidthMM(bottomWidthMM)
         } else {
-          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          var bottomWidthMM = ''
           setBottomWidthMM(bottomWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_right_width_mm') {
-        // 右腹板宽度 - 毫米
-        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        // setRightWidthMM(rightWidthMM)
-        if (value == '' || value == 0) {
-          let rightWidthMM = ''
+        if (diseaseData.hzbrmc_lb_right_width_mm !== undefined && diseaseData.hzbrmc_lb_right_width_mm !== '0' && diseaseData.hzbrmc_lb_right_width_mm !== '') {
+          var rightWidthMM = ',右腹板宽度' + diseaseData.hzbrmc_lb_right_width_mm + '@@毫米@@'
           setRightWidthMM(rightWidthMM)
         } else {
-          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          var rightWidthMM = ''
           setRightWidthMM(rightWidthMM)
         }
-      } else if (name == 'hzbrmc_slant_m') {
-        // 倾斜量 - 米
-        // let slantM = ',倾斜量' + value + '@@米@@'
-        // setSlantM(slantM)
-        if (value == '' || value == 0) {
-          let slantM = ''
+        if (diseaseData.hzbrmc_slant_m !== undefined && diseaseData.hzbrmc_slant_m !== '0' && diseaseData.hzbrmc_slant_m !== '') {
+          var slantM = ',倾斜量' + diseaseData.hzbrmc_slant_m + '@@米@@'
           setSlantM(slantM)
         } else {
-          let slantM = ',倾斜量' + value + '@@米@@'
+          var slantM = ''
           setSlantM(slantM)
         }
       }
 
-      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                    + widthMM + heightM + heightCM + heightMM + areaFace
-                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                    + bottomWidthMM + rightWidthMM + slantM
-      setWriteTxt(writeTxt)
-      console.log('writeTxt', writeTxt);
-      console.log('病害名称',itemData.diseaseName);
-      let binghai = itemData.diseaseName
-      let allText = binghai.concat(writeTxt)
-      console.log('allText', allText);
-      diseaseData['description'] = allText
-      handleFormChenge(allText, diseaseData.description)
+      if (writeDesTextValue == '' || writeDesTextValue == undefined) {
+        console.log('没有修改数据');
+        if (diseaseData.description == '' || diseaseData.description == undefined) {
+          diseaseData['description'] = itemData.diseaseName
+        } else if (diseaseData.description !== '' || diseaseData.description !== undefined) {
+          let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+          // let writeTxt = diseaseData.hzbrmc_length_m
+          setWriteTxt(writeTxt)
+          // console.log('writeTxt', writeTxt);
+          // console.log('病害名称',itemData.diseaseName);
+          let binghai = itemData.diseaseName
+          let allText = binghai.concat(writeTxt)
+          console.log('allText', allText);
+          diseaseData['description'] = allText
+          handleFormChenge(allText, diseaseData.description)
+        }
+      } else {
+        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+        setWriteTxt(writeTxt)
+        console.log('writeTxt', writeTxt);
+        console.log('病害名称',itemData.diseaseName);
+        let binghai = itemData.diseaseName
+        let allText = binghai.concat(writeTxt)
+        console.log('allText', allText);
+        diseaseData['description'] = allText
+        handleFormChenge(allText, diseaseData.description)
+      }
     }
 
     // 填入位置描述内容
@@ -12922,14 +12133,14 @@ export function DiseaseH({route, navigation}) {
         }
       } else if (name == 'hzbrmc_angle_c') {
         // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
+        // let angle = ',角度' + value + '@@度@@'
+        // setAngle(angle)
         if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+          let angle = ''
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          let angle = ',角度' + value + '@@度@@'
+          setAngle(angle)
         }
       } else if (name == 'hzbrmc_chu') {
         // 处
@@ -13078,480 +12289,354 @@ export function DiseaseH({route, navigation}) {
       setDiseaseData(_data);
     };
 
+    const [writeDesTextValue, setWriteDesTextValue] = useState('')
+
     // 填入病害描述内容
     const writeDesText = (name, value) => {
       // let writeTxt = []
       console.log('writeDesText', name, value);
+      setWriteDesTextValue(value)
 
-      if (name == 'scale') {
-        // 标度
-        let biaodu = ',标度' + value + '@@'
-        setBiaodu(biaodu)
-      } else if (name == 'hzbrmc_length_m') {
-        //长度 - 米
-        // let lengthM = ',长度' + value + '@@米@@'
-        // setLengthM(lengthM)
-        if (value == '' || value == 0) {
-          let lengthM = ''
+      if (true) {
+        if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
+          var biaodu = ',标度' + diseaseData.scale + '@@'
+          setBiaodu(biaodu)
+        } else {
+          var biaodu = ''
+          setBiaodu(biaodu)
+        }
+        if (diseaseData.hzbrmc_length_m !== undefined && diseaseData.hzbrmc_length_m !== '0' && diseaseData.hzbrmc_length_m !== '') {
+          var lengthM = ',长度' + diseaseData.hzbrmc_length_m + '@@米@@'
           setLengthM(lengthM)
         } else {
-          let lengthM = ',长度' + value + '@@米@@'
+          var lengthM = ''
           setLengthM(lengthM)
         }
-      } else if (name == 'hzbrmc_length_cm') {
-        // 长度 - 厘米
-        // let lengthCM = ',长度' + value + '@@厘米@@'
-        // setLengthCM(lengthCM)
-        if (value == '' || value == 0) {
-          let lengthCM = ''
+        if (diseaseData.hzbrmc_length_cm !== undefined && diseaseData.hzbrmc_length_cm !== '0' && diseaseData.hzbrmc_length_cm !== '') {
+          var lengthCM = ',长度' + diseaseData.hzbrmc_length_cm + '@@厘米@@'
           setLengthCM(lengthCM)
         } else {
-          let lengthCM = ',长度' + value + '@@厘米@@'
+          var lengthCM = ''
           setLengthCM(lengthCM)
         }
-      } else if (name == 'hzbrmc_length_mm') {
-        // 长度 - 毫米
-        // let lengthMM = ',长度' + value + '@@毫米@@'
-        // setLengthMM(lengthMM)
-        if (value == '' || value == 0) {
-          let lengthMM = ''
+        if (diseaseData.hzbrmc_length_mm !== undefined && diseaseData.hzbrmc_length_mm !== '0' && diseaseData.hzbrmc_length_mm !== '') {
+          var lengthMM = ',长度' + diseaseData.hzbrmc_length_mm + '@@毫米@@'
           setLengthMM(lengthMM)
         } else {
-          let lengthMM = ',长度' + value + '@@毫米@@'
+          var lengthMM = ''
           setLengthMM(lengthMM)
         }
-      } else if (name == 'hzbrmc_width_m') {
-        // 宽度 - 米
-        // let widthM = ',宽度' + value + '@@米@@'
-        // setWidthM(widthM)
-        if (value == '' || value == 0) {
-          let widthM = ''
+        if (diseaseData.hzbrmc_width_m !== undefined && diseaseData.hzbrmc_width_m !== '0' && diseaseData.hzbrmc_width_m !== '') {
+          var widthM = ',宽度' + diseaseData.hzbrmc_width_m + '@@米@@'
           setWidthM(widthM)
         } else {
-          let widthM = ',宽度' + value + '@@米@@'
+          var widthM = ''
           setWidthM(widthM)
         }
-      } else if (name == 'hzbrmc_width_cm') {
-        // 宽度 - 厘米
-        // let widthCM = ',宽度' + value + '@@厘米@@'
-        // setWidthCM(widthCM)
-        if (value == '' || value == 0) {
-          let widthCM = ''
+        if (diseaseData.hzbrmc_width_cm !== undefined && diseaseData.hzbrmc_width_cm !== '0' && diseaseData.hzbrmc_width_cm !== '') {
+          var widthCM = ',宽度' + diseaseData.hzbrmc_width_cm + '@@厘米@@'
           setWidthCM(widthCM)
         } else {
-          let widthCM = ',宽度' + value + '@@厘米@@'
+          var widthCM = ''
           setWidthCM(widthCM)
         }
-      } else if (name == 'hzbrmc_width_mm') {
-        // 宽度 - 毫米
-        if (value == '' || value == 0) {
-          let widthMM = ''
+        if (diseaseData.hzbrmc_width_mm !== undefined && diseaseData.hzbrmc_width_mm !== '0' && diseaseData.hzbrmc_width_mm !== '') {
+          console.log('diseaseData.hzbrmc_width_mm',diseaseData.hzbrmc_width_mm == '');
+          var widthMM = ',宽度' + diseaseData.hzbrmc_width_mm + '@@毫米@@'
           setWidthMM(widthMM)
         } else {
-          let widthMM = ',宽度' + value + '@@毫米@@'
+          // diseaseData.hzbrmc_width_mm == undefined || diseaseData.hzbrmc_width_mm == 0 || diseaseData.hzbrmc_width_mm == ''
+          var widthMM = ''
           setWidthMM(widthMM)
         }
-      } else if (name == 'hzbrmc_height_m') {
-        // 高度 - 米
-        // let heightM = ',高度' + value + '@@米@@'
-        // setHeightM(heightM)
-        if (value == '' || value == 0) {
-          let heightM = ''
+        if (diseaseData.hzbrmc_height_m !== undefined && diseaseData.hzbrmc_height_m !== '0' && diseaseData.hzbrmc_height_m !== '') {
+          var heightM = ',高度' + diseaseData.hzbrmc_height_m + '@@米@@'
           setHeightM(heightM)
         } else {
-          let heightM = ',高度' + value + '@@米@@'
+          var heightM = ''
           setHeightM(heightM)
         }
-      } else if (name == 'hzbrmc_height_cm') {
-        // 高度 - 厘米
-        if (value == '' || value == 0) {
-          let heightCM = ''
+        if (diseaseData.hzbrmc_height_cm !== undefined && diseaseData.hzbrmc_height_cm !== '0' && diseaseData.hzbrmc_height_cm !== '') {
+          var heightCM = ',高度' + diseaseData.hzbrmc_height_cm + '@@厘米@@'
           setHeightCM(heightCM)
         } else {
-          let heightCM = ',高度' + value + '@@厘米@@'
+          var heightCM = ''
           setHeightCM(heightCM)
         }
-      } else if (name == 'hzbrmc_height_mm') {
-        // 高度 - 毫米
-        // let heightMM = ',高度' + value + '@@毫米@@'
-        // setHeightMM(heightMM)
-        if (value == '' || value == 0) {
-          let heightMM = ''
+        if (diseaseData.hzbrmc_height_mm !== undefined && diseaseData.hzbrmc_height_mm !== '0' && diseaseData.hzbrmc_height_mm !== '') {
+          var heightMM = ',高度' + diseaseData.hzbrmc_height_mm + '@@毫米@@'
           setHeightMM(heightMM)
         } else {
-          let heightMM = ',高度' + value + '@@毫米@@'
+          var heightMM = ''
           setHeightMM(heightMM)
         }
-      } else if (name == 'hzbrmc_area_face') {
-        // 面域 - %
-        // let areaFace = ',面域' + value + '@@%@@'
-        // setAreaFace(areaFace)
-        if (value == '' || value == 0) {
-          let areaFace = ''
+        if (diseaseData.hzbrmc_area_face !== undefined && diseaseData.hzbrmc_area_face !== '0' && diseaseData.hzbrmc_area_face !== '') {
+          var areaFace = ',面域' + diseaseData.hzbrmc_area_face + '@@%@@'
           setAreaFace(areaFace)
         } else {
-          let areaFace = ',面域' + value + '@@%@@'
+          var areaFace = ''
           setAreaFace(areaFace)
         }
-      } else if (name == 'hzbrmc_area_per') {
-        // 面积占比 - %
-        // let areaPer = ',面积占比' + value + '@@%@@'
-        // setAreaPer(areaPer)
-        if (value == '' || value == 0) {
-          let areaPer = ''
+        if (diseaseData.hzbrmc_area_per !== undefined && diseaseData.hzbrmc_area_per !== '0' && diseaseData.hzbrmc_area_per !== '') {
+          var areaPer = ',面积占比' + diseaseData.hzbrmc_area_per + '@@%@@'
           setAreaPer(areaPer)
         } else {
-          let areaPer = ',面积占比' + value + '@@%@@'
+          var areaPer = ''
           setAreaPer(areaPer)
         }
-      } else if (name == 'hzbrmc_area_m') {
-        // 面积 - 平方米
-        // let areaM = ',面积' + value + '@@平方米@@'
-        // setAreaM(areaM)
-        if (value == '' || value == 0) {
-          let areaM = ''
+        if (diseaseData.hzbrmc_area_m !== undefined && diseaseData.hzbrmc_area_m !== '0' && diseaseData.hzbrmc_area_m !== '') {
+          var areaM = ',面积' + diseaseData.hzbrmc_area_m + '@@平方米@@'
           setAreaM(areaM)
         } else {
-          let areaM = ',面积' + value + '@@平方米@@'
+          var areaM = ''
           setAreaM(areaM)
         }
-      } else if (name == 'hzbrmc_area_cm') {
-        // 面积 - 平方厘米
-        // let areaCM = ',面积' + value + '@@平方厘米@@'
-        // setAreaCM(areaCM)
-        if (value == '' || value == 0) {
-          let areaCM = ''
+        if (diseaseData.hzbrmc_area_cm !== undefined && diseaseData.hzbrmc_area_cm !== '0' && diseaseData.hzbrmc_area_cm !== '') {
+          var areaCM = ',面积' + diseaseData.hzbrmc_area_cm + '@@平方厘米@@'
           setAreaCM(areaCM)
         } else {
-          let areaCM = ',面积' + value + '@@平方厘米@@'
+          var areaCM = ''
           setAreaCM(areaCM)
         }
-      } else if (name == 'hzbrmc_area_mm') {
-        // 面积 - 平方毫米
-        // let areaMM = ',面积' + value + '@@平方毫米@@'
-        // setAreaMM(areaMM)
-        if (value == '' || value == 0) {
-          let areaMM = ''
+        if (diseaseData.hzbrmc_area_mm !== undefined && diseaseData.hzbrmc_area_mm !== '0' && diseaseData.hzbrmc_area_mm !== '') {
+          var areaMM = ',面积' + diseaseData.hzbrmc_area_mm + '@@平方毫米@@'
           setAreaMM(areaMM)
         } else {
-          let areaMM = ',面积' + value + '@@平方毫米@@'
+          var areaMM = ''
           setAreaMM(areaMM)
         }
-      } else if (name == 'hzbrmc_heightdiff_cm') {
-        // 高差 - 厘米
-        // let heightDiffCM = ',高差' + value + '@@厘米@@'
-        // setHeightDiffCM(heightDiffCM)
-        if (value == '' || value == 0) {
-          let heightDiffCM = ''
+        if (diseaseData.hzbrmc_heightdiff_cm !== undefined && diseaseData.hzbrmc_heightdiff_cm !== '0' && diseaseData.hzbrmc_heightdiff_cm !== '') {
+          var heightDiffCM = ',高差' + diseaseData.hzbrmc_heightdiff_cm + '@@厘米@@'
           setHeightDiffCM(heightDiffCM)
         } else {
-          let heightDiffCM = ',高差' + value + '@@厘米@@'
+          var heightDiffCM = ''
           setHeightDiffCM(heightDiffCM)
         }
-      } else if (name == 'hzbrmc_heightdiff_mm') {
-        // 高差 - 毫米
-        // let heightDiffMM = ',高差' + value + '@@毫米@@'
-        // setHeightDiffMM(heightDiffMM)
-        if (value == '' || value == 0) {
-          let heightDiffMM = ''
+        if (diseaseData.hzbrmc_heightdiff_mm !== undefined && diseaseData.hzbrmc_heightdiff_mm !== '0' && diseaseData.hzbrmc_heightdiff_mm !== '') {
+          var heightDiffMM = ',高差' + diseaseData.hzbrmc_heightdiff_mm + '@@毫米@@'
           setHeightDiffMM(heightDiffMM)
         } else {
-          let heightDiffMM = ',高差' + value + '@@毫米@@'
+          var heightDiffMM = ''
           setHeightDiffMM(heightDiffMM)
         }
-      } else if (name == 'hzbrmc_spacing_cm') {
-        // 间距 - 厘米
-        // let spacingCM = ',间距' + value + '@@厘米@@'
-        // setSpacingCM(spacingCM)
-        if (value == '' || value == 0) {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+        if (diseaseData.hzbrmc_spacing_cm !== undefined && diseaseData.hzbrmc_spacing_cm !== '0' && diseaseData.hzbrmc_spacing_cm !== '') {
+          var spacingCM = ',间距' + diseaseData.hzbrmc_spacing_cm + '@@厘米@@'
           setSpacingCM(spacingCM)
         } else {
-          let spacingCM = ',间距' + value + '@@厘米@@'
+          var spacingCM = ''
           setSpacingCM(spacingCM)
         }
-      } else if (name == 'hzbrmc_deformation_mm') {
-        // 变形 - 毫米
-        // let deformationMM = ',变形' + value + '@@毫米@@'
-        // setDeformationMM(deformationMM)
-        if (value == '' || value == 0) {
-          let deformationMM = ''
+        if (diseaseData.hzbrmc_deformation_mm !== undefined && diseaseData.hzbrmc_deformation_mm !== '0' && diseaseData.hzbrmc_deformation_mm !== '') {
+          var deformationMM = ',变形' + diseaseData.hzbrmc_deformation_mm + '@@毫米@@'
           setDeformationMM(deformationMM)
         } else {
-          let deformationMM = ',变形' + value + '@@毫米@@'
+          var deformationMM = ''
           setDeformationMM(deformationMM)
         }
-      } else if (name == 'hzbrmc_num') {
-        // 个数 - 个
-        // let num = ',个数' + value + '@@个@@'
-        // setNum(num)
-        if (value == '' || value == 0) {
-          let num = ''
+        if (diseaseData.hzbrmc_num !== undefined && diseaseData.hzbrmc_num !== '0' && diseaseData.hzbrmc_num !== '') {
+          var num = ',个数' + diseaseData.hzbrmc_num + '@@个@@'
           setNum(num)
         } else {
-          let num = ',个数' + value + '@@个@@'
+          var num = ''
           setNum(num)
         }
-      } else if (name == 'hzbrmc_range_cm') {
-        // 距离 - 厘米
-        // let rangeCM = ',距离' + value + '@@厘米@@'
-        // setRangeCM(rangeCM)
-        if (value == '' || value == 0) {
-          let rangeCM = ''
+        if (diseaseData.hzbrmc_range_cm !== undefined && diseaseData.hzbrmc_range_cm !== '0' && diseaseData.hzbrmc_range_cm !== '') {
+          var rangeCM = ',距离' + diseaseData.hzbrmc_range_cm + '@@厘米@@'
           setRangeCM(rangeCM)
         } else {
-          let rangeCM = ',距离' + value + '@@厘米@@'
+          var rangeCM = ''
           setRangeCM(rangeCM)
         }
-      } else if (name == 'hzbrmc_range_mm') {
-        // 距离 - 毫米
-        // let rangeMM = ',距离' + value + '@@毫米@@'
-        // setRangeMM(rangeMM)
-        if (value == '' || value == 0) {
-          let rangeMM = ''
+        if (diseaseData.hzbrmc_range_mm !== undefined && diseaseData.hzbrmc_range_mm !== '0' && diseaseData.hzbrmc_range_mm !== '') {
+          var rangeMM = ',距离' + diseaseData.hzbrmc_range_mm + '@@毫米@@'
           setRangeMM(rangeMM)
         } else {
-          let rangeMM = ',距离' + value + '@@毫米@@'
+          var rangeMM = ''
           setRangeMM(rangeMM)
         }
-      } else if (name == 'hzbrmc_depth_cm') {
-        // 深度 - 厘米
-        // let depthCM = ',深度' + value + '@@厘米@@'
-        // setDepthCM(depthCM)
-        if (value == '' || value == 0) {
-          let depthCM = ''
+        if (diseaseData.hzbrmc_depth_cm !== undefined && diseaseData.hzbrmc_depth_cm !== '0' && diseaseData.hzbrmc_depth_cm !== '') {
+          var depthCM = ',深度' + diseaseData.hzbrmc_depth_cm + '@@厘米@@'
           setDepthCM(depthCM)
         } else {
-          let depthCM = ',深度' + value + '@@厘米@@'
+          var depthCM = ''
           setDepthCM(depthCM)
         }
-      } else if (name == 'hzbrmc_depth_mm') {
-        // 深度 - 毫米
-        // let depthMM = ',深度' + value + '@@毫米@@'
-        // setDepthMM(depthMM)
-        if (value == '' || value == 0) {
-          let depthMM = ''
+        if (diseaseData.hzbrmc_depth_mm !== undefined && diseaseData.hzbrmc_depth_mm !== '0' && diseaseData.hzbrmc_depth_mm !== '') {
+          var depthMM = ',深度' + diseaseData.hzbrmc_depth_mm + '@@毫米@@'
           setDepthMM(depthMM)
         } else {
-          let depthMM = ',深度' + value + '@@毫米@@'
+          var depthMM = ''
           setDepthMM(depthMM)
         }
-      } else if (name == 'hzbrmc_volume_m') {
-        // 体积 - 立方米
-        // let volumeM = ',体积' + value + '@@立方米@@'
-        // setVolumeM(volumeM)
-        if (value == '' || value == 0) {
-          let volumeM = ''
+        if (diseaseData.hzbrmc_volume_m !== undefined && diseaseData.hzbrmc_volume_m !== '0' && diseaseData.hzbrmc_volume_m !== '') {
+          var volumeM = ',体积' + diseaseData.hzbrmc_volume_m + '@@立方米@@'
           setVolumeM(volumeM)
         } else {
-          let volumeM = ',体积' + value + '@@立方米@@'
+          var volumeM = ''
           setVolumeM(volumeM)
         }
-      } else if (name == 'hzbrmc_volume_cm') {
-        // 体积 - 立方厘米
-        // let volumeCM = ',体积' + value + '@@立方厘米@@'
-        // setVolumeCM(volumeCM)
-        if (value == '' || value == 0) {
-          let volumeCM = ''
+        if (diseaseData.hzbrmc_volume_cm !== undefined && diseaseData.hzbrmc_volume_cm !== '0' && diseaseData.hzbrmc_volume_cm !== '') {
+          var volumeCM = ',体积' + diseaseData.hzbrmc_volume_cm + '@@立方厘米@@'
           setVolumeCM(volumeCM)
         } else {
-          let volumeCM = ',体积' + value + '@@立方厘米@@'
+          var volumeCM = ''
           setVolumeCM(volumeCM)
         }
-      } else if (name == 'hzbrmc_disp_cm') {
-        // 位移 - 厘米
-        // let dispCM = ',位移' + value + '@@厘米@@'
-        // setDispCM(dispCM)
-        if (value == '' || value == 0) {
-          let dispCM = ''
+        if (diseaseData.hzbrmc_disp_cm !== undefined && diseaseData.hzbrmc_disp_cm !== '0' && diseaseData.hzbrmc_disp_cm !== '') {
+          var dispCM = ',位移' + diseaseData.hzbrmc_disp_cm + '@@厘米@@'
           setDispCM(dispCM)
         } else {
-          let dispCM = ',位移' + value + '@@厘米@@'
+          var dispCM = ''
           setDispCM(dispCM)
         }
-      } else if (name == 'hzbrmc_disp_mm') {
-        // 位移 - 毫米
-        // let dispMM = ',位移' + value + '@@毫米@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
+        if (diseaseData.hzbrmc_disp_mm !== undefined && diseaseData.hzbrmc_disp_mm !== '0' && diseaseData.hzbrmc_disp_mm !== '') {
+          var dispMM = ',位移' + diseaseData.hzbrmc_disp_mm + '@@毫米@@'
           setDispMM(dispMM)
         } else {
-          let dispMM = ',位移' + value + '@@毫米@@'
+          var dispMM = ''
           setDispMM(dispMM)
         }
-      } else if (name == 'hzbrmc_angle_c') {
-        // 角度 - 度
-        // let dispMM = ',角度' + value + '@@度@@'
-        // setDispMM(dispMM)
-        if (value == '' || value == 0) {
-          let dispMM = ''
-          setDispMM(dispMM)
+        if (diseaseData.hzbrmc_angle_c !== undefined && diseaseData.hzbrmc_angle_c !== '0' && diseaseData.hzbrmc_angle_c !== '') {
+          var angle = ',角度' + diseaseData.hzbrmc_angle_c + '@@度@@'
+          setAngle(angle)
         } else {
-          let dispMM = ',角度' + value + '@@度@@'
-          setDispMM(dispMM)
+          var angle = ''
+          setAngle(angle)
         }
-      } else if (name == 'hzbrmc_chu') {
-        // 处
-        // let chu = ',' + value + '@@处@@'
-        // setChu(chu)
-        if (value == '' || value == 0) {
-          let chu = ''
+        if (diseaseData.hzbrmc_chu !== undefined && diseaseData.hzbrmc_chu !== '0' && diseaseData.hzbrmc_chu !== '') {
+          var chu = ',' + diseaseData.hzbrmc_chu + '@@处@@'
           setChu(chu)
         } else {
-          let chu = ',' + value + '@@处@@'
+          var chu = ''
           setChu(chu)
         }
-      } else if (name == 'hzbrmc_tiao') {
-        // 条
-        // let tiao = ',' + value + '@@条@@'
-        // setTiao(tiao)
-        if (value == '' || value == 0) {
-          let tiao = ''
+        if (diseaseData.hzbrmc_tiao !== undefined && diseaseData.hzbrmc_tiao !== '0' && diseaseData.hzbrmc_tiao !== '') {
+          var tiao = ',' + diseaseData.hzbrmc_tiao + '@@条@@'
           setTiao(tiao)
         } else {
-          let tiao = ',' + value + '@@条@@'
+          var tiao = ''
           setTiao(tiao)
         }
-      } else if (name == 'hzbrmc_range_fenbu_m') {
-        // 分布范围 - 米
-        // let rangeFenbuM = ',分布范围' + value + '@@米@@'
-        // setRangeFenbuM(rangeFenbuM)
-        if (value == '' || value == 0) {
-          let rangeFenbuM = ''
+        if (diseaseData.hzbrmc_range_fenbu_m !== undefined && diseaseData.hzbrmc_range_fenbu_m !== '0' && diseaseData.hzbrmc_range_fenbu_m !== '') {
+          var rangeFenbuM = ',分布范围' + diseaseData.hzbrmc_range_fenbu_m + '@@米@@'
           setRangeFenbuM(rangeFenbuM)
         } else {
-          let rangeFenbuM = ',分布范围' + value + '@@米@@'
+          var rangeFenbuM = ''
           setRangeFenbuM(rangeFenbuM)
         }
-      } else if (name == 'hzbrmc_range_length_m') {
-        // 长度范围 - 米
-        // let rangeLengthM = ',长度范围' + value + '@@米@@'
-        // setRangeLengthM(rangeLengthM)
-        if (value == '' || value == 0) {
-          let rangeLengthM = ''
+        if (diseaseData.hzbrmc_range_length_m !== undefined && diseaseData.hzbrmc_range_length_m !== '0' && diseaseData.hzbrmc_range_length_m !== '') {
+          var rangeLengthM = ',长度范围' + diseaseData.hzbrmc_range_length_m + '@@米@@'
           setRangeLengthM(rangeLengthM)
         } else {
-          let rangeLengthM = ',长度范围' + value + '@@米@@'
+          var rangeLengthM = ''
           setRangeLengthM(rangeLengthM)
         }
-      } else if (name == 'hzbrmc_range_width_mm') {
-        // 宽度范围 - 毫米
-        // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-        // setRangeWidthMM(rangeWidthMM)
-        if (value == '' || value == 0) {
-          let rangeWidthMM = ''
+        if (diseaseData.hzbrmc_range_width_mm !== undefined && diseaseData.hzbrmc_range_width_mm !== '0' && diseaseData.hzbrmc_range_width_mm !== '') {
+          var rangeWidthMM = ',宽度范围'+ diseaseData.hzbrmc_range_width_mm + '@@毫米@@'
           setRangeWidthMM(rangeWidthMM)
         } else {
-          let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+          var rangeWidthMM = ''
           setRangeWidthMM(rangeWidthMM)
         }
-      } else if (name == 'hzbrmc_range_spacing_cm') {
-        // 间距范围 - 厘米
-        // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-        // setRangeSpacingCM(rangeSpacingCM)
-        if (value == '' || value == 0) {
-          let rangeSpacingCM = ''
+        if (diseaseData.hzbrmc_range_spacing_cm !== undefined && diseaseData.hzbrmc_range_spacing_cm !== '0' && diseaseData.hzbrmc_range_spacing_cm !== '') {
+          var rangeSpacingCM = ',间距范围' + diseaseData.hzbrmc_range_spacing_cm + '@@厘米@@'
           setRangeSpacingCM(rangeSpacingCM)
         } else {
-          let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+          var rangeSpacingCM = ''
           setRangeSpacingCM(rangeSpacingCM)
         }
-      } else if (name == 'hzbrmc_lb_left_length_m') {
-        // 左腹板长度 - 米
-        // let leftLengthM = ',左腹板长度' + value + '@@米@@'
-        // setLeftLengthM(leftLengthM)
-        if (value == '' || value == 0) {
-          let leftLengthM = ''
+        if (diseaseData.hzbrmc_lb_left_length_m !== undefined && diseaseData.hzbrmc_lb_left_length_m !== '0' && diseaseData.hzbrmc_lb_left_length_m !== '') {
+          var leftLengthM = ',左腹板长度' + diseaseData.hzbrmc_lb_left_length_m + '@@米@@'
           setLeftLengthM(leftLengthM)
         } else {
-          let leftLengthM = ',左腹板长度' + value + '@@米@@'
+          var leftLengthM = ''
           setLeftLengthM(leftLengthM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_length_m') {
-        // 底板长度 - 米
-        // let bottomLengthM = ',底板长度' + value + '@@米@@'
-        // setBottomLengthM(bottomLengthM)
-        if (value == '' || value == 0) {
-          let bottomLengthM = ''
+        if (diseaseData.hzbrmc_lb_bottom_length_m !== undefined && diseaseData.hzbrmc_lb_bottom_length_m !== '0' && diseaseData.hzbrmc_lb_bottom_length_m !== '') {
+          var bottomLengthM = ',底板长度' + diseaseData.hzbrmc_lb_bottom_length_m + '@@米@@'
           setBottomLengthM(bottomLengthM)
         } else {
-          let bottomLengthM = ',底板长度' + value + '@@米@@'
+          var bottomLengthM = ''
           setBottomLengthM(bottomLengthM)
         }
-      } else if (name == 'hzbrmc_lb_right_length_m') {
-        // 右腹板长度 - 米
-        // let rightLengthM = ',右腹板长度' + value + '@@米@@'
-        // setRightLengthM(rightLengthM)
-        if (value == '' || value == 0) {
-          let rightLengthM = ''
+        if (diseaseData.hzbrmc_lb_right_length_m !== undefined && diseaseData.hzbrmc_lb_right_length_m !== '0' && diseaseData.hzbrmc_lb_right_length_m !== '') {
+          var rightLengthM = ',右腹板长度' + diseaseData.hzbrmc_lb_right_length_m + '@@米@@'
           setRightLengthM(rightLengthM)
         } else {
-          let rightLengthM = ',右腹板长度' + value + '@@米@@'
+          var rightLengthM = ''
           setRightLengthM(rightLengthM)
         }
-      } else if (name == 'hzbrmc_lb_left_width_mm') {
-        // 左腹板宽度 - 毫米
-        // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-        // setLeftWidthMM(leftWidthMM)
-        if (value == '' || value == 0) {
-          let leftWidthMM = ''
+        if (diseaseData.hzbrmc_lb_left_width_mm !== undefined && diseaseData.hzbrmc_lb_left_width_mm !== '0' && diseaseData.hzbrmc_lb_left_width_mm !== '') {
+          var leftWidthMM = ',左腹板宽度' + diseaseData.hzbrmc_lb_left_width_mm + '@@毫米@@'
           setLeftWidthMM(leftWidthMM)
         } else {
-          let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+          var leftWidthMM = ''
           setLeftWidthMM(leftWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_bottom_width_mm') {
-        // 底板宽度 - 毫米
-        // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-        // setBottomWidthMM(bottomWidthMM)
-        if (value == '' || value == 0) {
-          let bottomWidthMM = ''
+        if (diseaseData.hzbrmc_lb_bottom_width_mm !== undefined && diseaseData.hzbrmc_lb_bottom_width_mm !== '0' && diseaseData.hzbrmc_lb_bottom_width_mm !== '') {
+          var bottomWidthMM = ',底板宽度' + diseaseData.hzbrmc_lb_bottom_width_mm + '@@毫米@@'
           setBottomWidthMM(bottomWidthMM)
         } else {
-          let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+          var bottomWidthMM = ''
           setBottomWidthMM(bottomWidthMM)
         }
-      } else if (name == 'hzbrmc_lb_right_width_mm') {
-        // 右腹板宽度 - 毫米
-        // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-        // setRightWidthMM(rightWidthMM)
-        if (value == '' || value == 0) {
-          let rightWidthMM = ''
+        if (diseaseData.hzbrmc_lb_right_width_mm !== undefined && diseaseData.hzbrmc_lb_right_width_mm !== '0' && diseaseData.hzbrmc_lb_right_width_mm !== '') {
+          var rightWidthMM = ',右腹板宽度' + diseaseData.hzbrmc_lb_right_width_mm + '@@毫米@@'
           setRightWidthMM(rightWidthMM)
         } else {
-          let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+          var rightWidthMM = ''
           setRightWidthMM(rightWidthMM)
         }
-      } else if (name == 'hzbrmc_slant_m') {
-        // 倾斜量 - 米
-        // let slantM = ',倾斜量' + value + '@@米@@'
-        // setSlantM(slantM)
-        if (value == '' || value == 0) {
-          let slantM = ''
+        if (diseaseData.hzbrmc_slant_m !== undefined && diseaseData.hzbrmc_slant_m !== '0' && diseaseData.hzbrmc_slant_m !== '') {
+          var slantM = ',倾斜量' + diseaseData.hzbrmc_slant_m + '@@米@@'
           setSlantM(slantM)
         } else {
-          let slantM = ',倾斜量' + value + '@@米@@'
+          var slantM = ''
           setSlantM(slantM)
         }
       }
 
-      let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-                    + widthMM + heightM + heightCM + heightMM + areaFace
-                    + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-                    + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-                    + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-                    + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-                    + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-                    + bottomWidthMM + rightWidthMM + slantM
-      setWriteTxt(writeTxt)
-      console.log('writeTxt', writeTxt);
-      console.log('病害名称',itemData.diseaseName);
-      let binghai = itemData.diseaseName
-      let allText = binghai.concat(writeTxt)
-      console.log('allText', allText);
-      diseaseData['description'] = allText
-      handleFormChenge(allText, diseaseData.description)
+      if (writeDesTextValue == '' || writeDesTextValue == undefined) {
+        console.log('没有修改数据');
+        if (diseaseData.description == '' || diseaseData.description == undefined) {
+          diseaseData['description'] = itemData.diseaseName
+        } else if (diseaseData.description !== '' || diseaseData.description !== undefined) {
+          let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+          // let writeTxt = diseaseData.hzbrmc_length_m
+          setWriteTxt(writeTxt)
+          // console.log('writeTxt', writeTxt);
+          // console.log('病害名称',itemData.diseaseName);
+          let binghai = itemData.diseaseName
+          let allText = binghai.concat(writeTxt)
+          console.log('allText', allText);
+          diseaseData['description'] = allText
+          handleFormChenge(allText, diseaseData.description)
+        }
+      } else {
+        let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
+                  + widthMM + heightM + heightCM + heightMM + areaFace
+                  + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
+                  + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
+                  + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
+                  + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
+                  + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
+                  + bottomWidthMM + rightWidthMM + slantM
+        setWriteTxt(writeTxt)
+        console.log('writeTxt', writeTxt);
+        console.log('病害名称',itemData.diseaseName);
+        let binghai = itemData.diseaseName
+        let allText = binghai.concat(writeTxt)
+        console.log('allText', allText);
+        diseaseData['description'] = allText
+        handleFormChenge(allText, diseaseData.description)
+      }
     }
 
     // 填入位置描述内容

@@ -222,33 +222,6 @@ export const useP1002Init = ({route, navigation}) => {
 
   const [version, setVersion] = React.useState(null);
 
-  const [cacheNum, setCacheNum] = React.useState([])
-
-  React.useEffect(() => {
-    console.log('DiseaseHooks============');
-    // console.log('DiseaseHooks route============',route);
-    console.log('DiseaseHooks route============',route.params.data.jsondata);
-    // console.log('DiseaseHooks route memberLength=====',route.params.routeParams.title);
-    try {
-      console.log('route.params.data.jsondata.memberHeight',route.params.data.jsondata.memberHeight);
-      if (route.params.data.jsondata !== undefined || route.params.data.jsondata !== '') {
-        console.log('Hook 3');
-        var cacheNum = [{
-          memberLength:route.params.data.jsondata.memberLength !== undefined ? route.params.data.jsondata.memberLength : '0',
-          memberWidth:route.params.data.jsondata.memberWidth !== undefined ? route.params.data.jsondata.memberWidth : '0',
-          memberHeight:route.params.data.jsondata.memberHeight !== undefined ? route.params.data.jsondata.memberHeight : '0',
-          title:route.params.routeParams.title
-        }]
-        
-      }
-      setCacheNum(cacheNum)
-      console.log('Hook cacheNum', cacheNum);
-    } catch (err) {
-      console.log('Hooks err',err);
-    }
-    
-  },[])
-
   // 日志
   useFocusEffect(
     React.useCallback(() => {
@@ -331,7 +304,6 @@ export const useP1002Init = ({route, navigation}) => {
           navigation.navigate('Collection/Detect/BridgeTest/Main', {
             project,
             bridge,
-            cachenumjson: cacheNum
           }),
       },
       {
@@ -339,7 +311,6 @@ export const useP1002Init = ({route, navigation}) => {
         onPress: () =>
           navigation.navigate('Collection/Detect/BridgeTest/Member', {
             data: route.params.routeParams,
-            cachenumjson: cacheNum
           }),
       },
       {
@@ -347,14 +318,7 @@ export const useP1002Init = ({route, navigation}) => {
           route.params.memberList.length > 1
             ? '病害批量录入'
             : `${route.params.memberList[0].membername}-病害录入`,
-        // onPress: () => navigation.goBack(),
-        onPress: () => navigation.goBack({
-          cachenumjson: cacheNum
-        }),
-        // onPress: () => navigation.navigate('Collection/Detect/BridgeTest/DiseaseEdit2', {
-        //   // data: route.params.routeParams,
-        //   cachenumjson: cacheNum
-        // })
+        onPress: () => navigation.goBack(),
       },
       {
         name: `${route.params.type.checktypegroupname}`,
@@ -362,7 +326,7 @@ export const useP1002Init = ({route, navigation}) => {
     ];
   })();
 
-  return [baseData, itemData, version, headerItems, cacheNum];
+  return [baseData, itemData, version, headerItems];
 };
 
 export const useArea = ({diseaseData, baseData}) => {
