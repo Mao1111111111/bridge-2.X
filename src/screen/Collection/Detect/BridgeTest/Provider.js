@@ -113,6 +113,10 @@ const Provider = ({bridge, project, children}) => {
           dpscores_auto: 0,
           u_date: '',
         }));
+        // 处理构件编号
+        _partsList.forEach(item=>{
+          item.memberid = item.memberid.replace(bridge.bridgeid,bridgereportid)
+        })
         // 将桥梁构件数据 存入 桥梁构件检测表
         await loop(_partsList, bridgeReportMember.save);
       } else {
