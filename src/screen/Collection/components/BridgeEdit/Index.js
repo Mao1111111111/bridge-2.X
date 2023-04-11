@@ -1,5 +1,4 @@
 import React from 'react';
-import uuid from 'react-native-uuid';
 import {Modal, Portal} from 'react-native-paper';
 import {View, Text, TouchableOpacity, BackHandler, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,6 +20,7 @@ import Pid from '../../../../components/Pid';
 import * as bridge from '../../../../database/bridge';
 import * as bridgeMember from '../../../../database/bridge_member';
 import * as bridgeProjectBind from '../../../../database/bridge_project_bind';
+import dayjs from 'dayjs';
 
 // 桥梁表单顶部
 const Header = ({onClose}) => {
@@ -223,13 +223,13 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         setLoading(false);
         return;
       }
-      // 随机数作为 bridgeid
-      const UUID = uuid.v4();
-      console.info('add');
+      // 设置bridgeid 
+      let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
+      let bridgeid = _values.bridgetype.slice(_values.bridgetype.length-1)+userInfo.userid + parseInt(time).toString(32)
       // 将桥梁存入 bridge 表
       await bridge.save({
         ..._values,
-        bridgeid: UUID,
+        bridgeid: bridgeid,
         userid: userInfo.userid,
         username: userInfo.nickname,
       });
@@ -241,7 +241,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
               bridgeMember
                 .save({
                   ...it,
-                  bridgeid: UUID,
+                  bridgeid: bridgeid,
                 })
                 .then(resolve)
                 .catch(reject);
@@ -250,10 +250,14 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
       );
       // 如果是在项目中新建的桥梁，那么将桥梁和项目绑定 
       if (project.id) {
+        // 设置bridgereportid
+        let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
+        let bridgereportid = bridgeid + parseInt(time).toString(32)
         // 如果 bridgereportid 不存在，那么存入数据库的 bridgereportid 是 随机数
         await bridgeProjectBind.save({
+          bridgereportid:bridgereportid,
           projectid: project.projectid,
-          bridgeid: UUID,
+          bridgeid: bridgeid,
           userid: userInfo.userid,
         });
       }
@@ -322,12 +326,13 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         setLoading(false);
         return;
       }
-      // 桥梁id 为 随机数
-      const UUID = uuid.v4();
+      // 设置桥梁
+      let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
+      let bridgeid = _values.bridgetype.slice(_values.bridgetype.length-1)+userInfo.userid + parseInt(time).toString(32)
       // 将桥梁数据存入数据库
       await bridge.save({
         ..._values,
-        bridgeid: UUID,
+        bridgeid: bridgeid,
         userid: userInfo.userid,
         username: userInfo.nickname,
       });
@@ -339,7 +344,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
               bridgeMember
                 .save({
                   ...it,
-                  bridgeid: UUID,
+                  bridgeid: bridgeid,
                 })
                 .then(resolve)
                 .catch(reject);
@@ -349,9 +354,13 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
       // 如果是在项目中克隆的桥梁，那么将数据存入桥梁项目绑定表
       if (project.id) {
         if (project.id) {
+          // 设置bridgereportid
+          let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
+          let bridgereportid = bridgeid + parseInt(time).toString(32)
           await bridgeProjectBind.save({
+            bridgereportid:bridgereportid,
             projectid: project.projectid,
-            bridgeid: UUID,
+            bridgeid: bridgeid,
             userid: userInfo.userid,
           });
         }
