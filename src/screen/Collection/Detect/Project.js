@@ -34,40 +34,43 @@ import {BoxShadow} from 'react-native-shadow'
 
 
 export default function Project({navigation}) {
+  // 全局参数 -- 养护区列表、路线列表、用户信息
   const {
     state: {areaList, routeList, userInfo},
     dispatch,
   } = React.useContext(GlobalContext);
-
+  // 全局主题样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
-
+  // 查询参数
   const [search, setSearch] = React.useState({});
-
+  // 项目数据列表
   const [list, setList] = React.useState([]);
-
+  // 表格的loading
   const [loading, setLoading] = React.useState(false);
-
+  // 选中项的数据
   const [nowChecked, setNowChecked] = React.useState(null);
-
+  // 当前页
   const [page, setPage] = React.useState();
-
+  // 共几条
   const [total, setTotal] = React.useState(0);
-
+  // 共几页
   const [pageTotal, setPageTotal] = React.useState(0);
-
+  // 当前选中的养护区
   const [areacode, setAreacode] = React.useState('');
-
+  // 养护区列表
   const [area, setArea] = React.useState([]);
-
+  // 路线列表
   const [route, setRoute] = React.useState([]);
-
+  // 新增修改模态框的引用
   const formRef = React.useRef();
-
+  // 检索组件的引用
   const searchRef = React.useRef([]);
 
+  // 顶部导航
   const headerItems = [
+    // 采集平台点击，打开抽屉导航
     {
       name: '采集平台',
       onPress: () =>
@@ -86,6 +89,7 @@ export default function Project({navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
+      // ---当屏幕聚焦时执行
       setSearch({});
       searchRef.current.forEach(item => item.clear());
       setPage({
@@ -123,11 +127,15 @@ export default function Project({navigation}) {
     }
   }, [areaList, routeList, areacode]);
 
+  // 当 检索条件、页码、用户信息变化时，触发
   React.useEffect(() => {
+    // 如果页码为0 或 没有用户信息 那么返回
     if (!page || !userInfo) {
       return;
     }
+    // 设置表格loading
     setLoading(true);
+    // 在数据库中查询
     project
       .search({
         param: {
@@ -138,57 +146,76 @@ export default function Project({navigation}) {
         page,
       })
       .then(res => {
+        // 设置数据列表
         setList(res.list);
+        // 设置共几页
         setPageTotal(res.page.pageTotal);
+        // 设置共几条
         setTotal(res.page.total);
       })
       .finally(() => setLoading(false));
   }, [search, page, userInfo]);
 
+  // 点击检索
   const handleSearch = () => {
+    // 存储检索数据
     const values = {};
     searchRef.current.forEach(item => {
       values[item.name] = item.value;
+      // 如果是输入框，那么有blur失焦函数，执行失焦函数
       if (item.blur) {
         item.blur();
       }
     });
+    // 将输入存入，从而触发 useEffect
     setSearch(values);
+    // 设置当前页
     setPage({
       pageSize: 10,
       pageNo: 0,
     });
   };
-
+  // 删除
   const handleDelete = async () => {
+    // 查询当前项目下是否有检测桥梁
     const res = await bridgeProjectBind.bridgeList(nowChecked.projectid);
+    // 如果有，则不可以删除
     if (res.length) {
       alert('该项目含有检测桥梁，不可删除');
       return;
     }
+    // 确认框
     confirm('是否删除选中的数据？', async () => {
+      // 设置表格loading
       setLoading(true);
       try {
+        // 在项目表中删除
         await project.remove(nowChecked.id);
+        // 在项目桥梁绑定表中删除
         await bridgeProjectBind.remove({
           projectid: nowChecked.projectid,
         });
+        // 重置查询
         setSearch({});
+        // 重置当前页
         setPage({
           pageSize: 10,
           pageNo: 0,
         });
+        // 清空选中
         setNowChecked(null);
+        // 提示
         alert('删除成功');
       } catch (err) {
         console.error(err);
         alert('删除失败');
       } finally {
+        // 完成后,解除loading
         setLoading(false);
       }
     });
   };
-
+  // 项目状态改变
   const handleStatusChange = () => {
     confirm(
       `将项目状态变更“完成”后，请通过数
@@ -196,28 +223,35 @@ export default function Project({navigation}) {
 项目变更完成，代表项目中的桥梁数据采集完成。`,
       async () => {
         try {
+          // 设置表格loading
           setLoading(true);
+          // 设置项目检测完成
           await project.switchStatus({
             status: 1,
             id: nowChecked.id,
           });
+          // 重置检索
           setSearch({});
+          // 重置当前页
           setPage({
             pageSize: 10,
             pageNo: 0,
           });
+          // 重置选中
           setNowChecked(null);
           alert('操作成功');
         } catch (err) {
           console.error(err);
           alert('操作失败');
         } finally {
+          // 解除表格loading
           setLoading(false);
         }
       },
     );
   };
 
+  // 新增或修改 结束后 执行的函数
   const handleSubmitOver = () => {
     setSearch({});
     searchRef.current.forEach(item => item.clear());
@@ -228,24 +262,36 @@ export default function Project({navigation}) {
     setNowChecked(null);
   };
 
+  // 点击选择框时
   const handleCheck = item => {
+    // item 里是选中的这条数据的所有信息
     if (!nowChecked) {
+      // 如果当前没有选中，那么设置选中
       setNowChecked(item);
       return;
     } else if (nowChecked.id === item.id) {
+      // 如果点击已经选中的项，那么取消选中
       setNowChecked(null);
     } else {
+      // 如果选中了一项后，又选中了另一项，那么设置选中的另一项
       setNowChecked(item);
     }
   };
 
   return (
     <CommonView
+      //顶部导航最左侧标签 
       pid="P1001"
+      //导航项
       headerItems={headerItems}
+      //---左侧按钮----
+      // 新增
       onAdd={() => formRef.current.open()}
+      // 编辑 -- nowChecked 是选中项的数据
       onEdit={nowChecked && (() => formRef.current.open(nowChecked))}
+      // 删除 -- nowChecked 是选中项的数据
       onDelete={nowChecked && handleDelete}
+      // 右侧按钮
       operations={[
         {
           // name: 'check', //此处name属性用于原代码里CircleButton用于标识icon
@@ -308,9 +354,13 @@ export default function Project({navigation}) {
         <Table.Box
           loading={loading}
           style={tailwind.roundedSm}
+          // 共几页
           numberOfPages={pageTotal}
+          // 共几条
           total={total}
+          // 当前页
           pageNo={page?.pageNo || 0}
+          // 当页码改变时
           onPageChange={e =>
             setPage({
               pageSize: 10,
@@ -334,11 +384,13 @@ export default function Project({navigation}) {
             renderItem={({item, index}) => (
               <Table.Row
                 key={index}
+                // 点击跳转到项目细节，即路线管理
                 onPress={() =>
                   navigation.navigate('Collection/Detect/ProjectDetail', {
                     project: item,
                   })
                 }>
+                {/* 选择框 */}
                 <Table.Cell flex={1}>
                   <Checkbox
                     checked={(nowChecked || {}).id === item.id}
@@ -356,6 +408,7 @@ export default function Project({navigation}) {
           />
         </Table.Box>
       </View>
+      {/* 项目的 新增、修改表单 */}
       <Form ref={formRef} onSubmitOver={handleSubmitOver} />
     </CommonView>
   );

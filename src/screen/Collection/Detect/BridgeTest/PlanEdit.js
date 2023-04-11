@@ -17,38 +17,51 @@ import storage from '../../../../utils/storage';
 import {listToPage} from '../../../../utils/common';
 
 export default function PlanEdit({navigation, route}) {
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 全局参数 -- 桥幅属性、用户信息
   const {
     state: {bridgeside, userInfo},
   } = React.useContext(GlobalContext);
 
+  // 桥梁检测全局参数 -- 项目信息、桥梁信息、文件列表、检测id
   const {
     state: {project, bridge, fileList, bridgereportid},
   } = React.useContext(Context);
 
+  // 病害表格数据
   const [tableData, setTableData] = React.useState([]);
 
+  // 养护计划数据
   const [plan, setPlan] = React.useState([]);
 
+  // 桥梁各部件病害信息 -- 用于获取病害表格中的类别
   const [membercheck, setMembercheck] = React.useState([]);
 
+  // 表格表格当前页
   const [tablePageNo, setTablePageNo] = React.useState(1);
 
+  // 照片
   const [img, setImg] = React.useState();
 
+  // 描述
   const [remark, setRemark] = React.useState();
 
+  // 病害表格当前选中 -- 单选
   const [nowEdit, setNowEdit] = React.useState(null);
 
   const [data, setData] = React.useState(new Set());
 
+  // 病害列表
   const {list} = route?.params || {};
 
+  // 类别
   const category = 'plan';
 
+  // 初始化
   React.useEffect(() => {
     storage.getBaseItem('桥梁各部件病害信息').then(res => {
       if (res.data && res.data.length) {
@@ -57,6 +70,7 @@ export default function PlanEdit({navigation, route}) {
     });
   }, []);
 
+  // 初始化 病害表格数据
   React.useEffect(() => {
     if (!list.length || !bridgereportid) {
       return;
@@ -72,6 +86,7 @@ export default function PlanEdit({navigation, route}) {
     });
   }, [list, bridgereportid]);
 
+  // 初始化 图片、描述、养护计划
   React.useEffect(() => {
     if (!fileList || !list) {
       return;
@@ -106,18 +121,24 @@ export default function PlanEdit({navigation, route}) {
     setRemark(jsondata.remark || '描述');
 
     // 获取计划
+    // 本地获取 部件养护计划信息
     storage.getBaseItem('部件养护计划信息').then(r => {
+      // 部件养护计划数据
       const bermaintPlan = r.data || [];
+      // 当前病害的部件编号
       const {membertype} =
         list?.find(({memberid}) => memberid === nowEdit.dataid) || {};
+        // 获取当前病害养护计划的数据
       const {list: _plan} =
         bermaintPlan[0]?.list?.find(item => item.membertype === membertype) ||
         {};
+      // 设置养护计划数据
       setPlan(_plan || []);
       if (!_plan) {
         return;
       }
       // 内容数据
+      // 数据库中获取当前病害的养护计划数据
       partsPlanGenesisData
         .get({
           checkstatusdataid: nowEdit.version,
@@ -126,6 +147,7 @@ export default function PlanEdit({navigation, route}) {
         })
         .then(res => {
           console.info(res);
+          // 如果没有计划，那么保存，如果有，则默认选择
           if (!res && _plan.length) {
             partsPlanGenesisData.save({
               checkstatusdataid: nowEdit.version,
@@ -142,6 +164,7 @@ export default function PlanEdit({navigation, route}) {
     });
   }, [nowEdit, fileList, list, bridgereportid, userInfo]);
 
+  // 顶部导航
   const getHeaderItems = () => {
     if (!project.projectname) {
       return [];
@@ -173,10 +196,12 @@ export default function PlanEdit({navigation, route}) {
     ];
   };
 
+  // 获取构件名
   const getMemberName = item => {
     return list.find(({memberid}) => memberid === item.dataid)?.membername;
   };
 
+  // 获取类别名
   const getTypeName = item => {
     const jsondata = JSON.parse(item.jsondata);
     if (jsondata?.areatype) {
@@ -193,6 +218,7 @@ export default function PlanEdit({navigation, route}) {
     return '';
   };
 
+  // 养护计划选择时，更新养护计划
   const handleChenge = ({name, value}) => {
     const _data = {
       ...data,
@@ -209,15 +235,19 @@ export default function PlanEdit({navigation, route}) {
 
   return (
     <Box headerItems={getHeaderItems()} pid="P1301">
+      {/* 年份 + 影音 tab */}
       <HeaderTabs disabled={true} />
       <View style={tailwind.flex1}>
         <Content>
           <View style={[styles.card, {width:710, backgroundColor:'#fff'}]}>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
+              {/* 左侧 */}
               <View style={[tailwind.flex1]}>
+                {/* 标题 */}
                 <Text style={[styles.title, {color:'#2b427d'}]}>
                   病害列表
                 </Text>
+                {/* 表格 */}
                 <View style={styles.tableBox}>
                   <Table.Header>
                     <Table.Title title="选择" flex={1} />
@@ -251,19 +281,25 @@ export default function PlanEdit({navigation, route}) {
                 />
               </View>
               <View style={tailwind.mX2} />
+              {/* 右侧 */}
               <View style={[styles.flex2]}>
+                {/* 顶部 */}
                 <View style={[styles.flex2, tailwind.flexRow, tailwind.mB2]}>
+                  {/* 左侧 */}
                   <View style={[tailwind.flex1]}>
                     <Text style={[styles.title, {color:'#2b427d'}]}>
                       照片
                     </Text>
                     {img ? (
+                      // 有图片
                       img.mediatype === 'image' ? (
+                        // 图片
                         <Image
                           style={styles.img}
                           source={{uri: 'file://' + img.filepath}}
                         />
                       ) : (
+                        // 图片名
                         <View style={styles.img}>
                           <Text
                             style={[
@@ -276,12 +312,14 @@ export default function PlanEdit({navigation, route}) {
                         </View>
                       )
                     ) : (
+                      // 没有图片
                       <View style={styles.img}>
                         <Icon name="folder-multiple-image" size={40} />
                       </View>
                     )}
                   </View>
                   <View style={tailwind.mX2} />
+                  {/* 右侧 */}
                   <View style={[tailwind.flex1]}>
                     <Text style={[styles.title, {color:'#2b427d'}]}>
                       描述
@@ -291,6 +329,7 @@ export default function PlanEdit({navigation, route}) {
                     </View>
                   </View>
                 </View>
+                {/* 底部 */}
                 <View style={[styles.flex3]}>
                   <Text style={[styles.title, {color:'#2b427d'}]}>
                     养护计划

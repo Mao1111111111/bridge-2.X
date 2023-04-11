@@ -22,68 +22,95 @@ import MemberEdit from './MemberEdit';
 import Media from './Media';
 
 export default function Main({navigation}) {
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 桥梁检测的全局参数
   const {
     state: {
+      // 项目信息 -- 从前面的项目表中传过来的
       project,
+      // 检测桥梁的部件列表
       memberList,
+      // 检测id
       bridgereportid,
+      // 检测桥梁的跨列表
       kuaList,
+      // 当前桥梁检测 的 媒体文件
       fileList,
+      // 检测构件列表
       partsList,
+      // 桥梁信息 -- 从前面的桥梁表中传过来的
       bridge,
     },
     dispatch,
   } = React.useContext(Context);
 
+  // 全局参数 -- 桥幅属性
   const {
     state: {bridgeside},
   } = React.useContext(GlobalContext);
 
+  // 当前tab
   const [pageType, setPageType] = React.useState('数据');
 
+  // 选中的数据 单选
   const [nowEdit, setNowEdit] = React.useState(null);
 
+  // 病害记录条数
   const [diseaseDataTotal, setDiseaseDataTotal] = React.useState(0);
 
+  // 标记的图片数量
   const [mianTotal, setMianTotal] = React.useState(0);
 
+  // 部件表格数据
   const [table1Data, setTable1Data] = React.useState([]);
 
+  // 部件表格当前页
   const [table1PageNo, setTable1PageNo] = React.useState(1);
 
+  // 桥跨表格的数据
   const [table2Data, setTable2Data] = React.useState([]);
 
+  // 桥跨表格当前页
   const [table2PageNo, setTable2PageNo] = React.useState(1);
 
+  // 部件编辑组件的引用
   const memberEditRef = React.useRef();
 
+  // 表格每页条数
   const pageRow = 8;
 
+  // 当页面改变时,清空当前选中
   React.useEffect(() => setNowEdit(null), [pageType]);
 
+  // 当部件列表变化时 重新设置部件表格的数据
   React.useEffect(() => {
     memberList.length && setTable1Data(listToPage(memberList, pageRow));
   }, [memberList]);
 
+  // 当跨列表数据变化时, 重新设置跨表格的数据
   React.useEffect(() => {
     kuaList.length && setTable2Data(listToPage(kuaList, pageRow));
   }, [kuaList]);
 
+  // 页面聚焦时
   useFocusEffect(
     React.useCallback(() => {
       if (bridgereportid) {
+        // 获取检测桥梁的 病害条数
         getDiseaseDataTotal(bridgereportid).then(res =>
           setDiseaseDataTotal(res.count),
         );
+        // 获取检测桥梁的 标记条数
         getMainTotal(bridgereportid).then(res => setMianTotal(res.count));
       }
     }, [bridgereportid]),
   );
 
+  // 显示右侧图片的组件
   const getImg = (category, text) => {
     const style = [
       styles.img,
@@ -92,8 +119,10 @@ export default function Main({navigation}) {
       tailwind.bgGray200,
     ];
 
+    // 显示组件
     const getComponent = data => {
       return data.mediatype === 'virtualimage' ? (
+        // 虚拟图片
         <View style={[style, tailwind.bgGray200]}>
           <Text
             style={[
@@ -105,6 +134,7 @@ export default function Main({navigation}) {
           </Text>
         </View>
       ) : (
+        // tip
         <Image
           style={styles.img}
           source={{
@@ -114,11 +144,14 @@ export default function Main({navigation}) {
       );
     };
 
+    // 获取数据-- 符合条件的所有图片 -- 桥梁检测文件列表过滤
     const datas = fileList.filter(
+      // 如果是传入类型的图片，并且是图片或虚拟图片，那么存入数据
       item =>
         item.category === category &&
         new Set(['image', 'virtualimage']).has(item.mediatype),
     );
+    // 显示的图片数据--一张
     let _img = {};
     if (datas.length) {
       const preference = datas.find(({is_preference}) => !!is_preference);
@@ -126,9 +159,12 @@ export default function Main({navigation}) {
     }
     return (
       <>
+        {/* 图片 */}
         {datas.length ? (
+          // 有数据，那么显示图片
           getComponent(_img)
         ) : (
+          // 没有数据
           <View style={[style]}>
             {category === 'remark' ? (
               <Icon name="file-document-edit-outline" size={40} />
@@ -137,6 +173,7 @@ export default function Main({navigation}) {
             )}
           </View>
         )}
+        {/* 图片下面的文字 */}
         <Text style={tailwind.textCenter}>
           {text}[{datas.length}]
         </Text>
@@ -144,10 +181,13 @@ export default function Main({navigation}) {
     );
   };
 
+  // 获取 顶部导航项
   const getHeaderItems = () => {
+    // 没有项目名时，返回 []
     if (!project.projectname) {
       return [];
     }
+    // 桥幅属性名
     let paramname = '';
     if (bridgeside && bridge) {
       paramname =
@@ -161,16 +201,19 @@ export default function Main({navigation}) {
       //   onPress: () => navigation.navigate('Collection/Detect/Project'),
       // },
       {
+        // 项目名称 -- 点击返回项目下的，桥梁列表
         name: `${project.projectname}`,
         onPress: () =>
           navigation.navigate('Collection/Detect/ProjectDetail', {project}),
       },
       {
+        // 桥梁桩号 - 桥梁名称 - 桥幅属性
         name: `${bridge.bridgestation}-${bridge.bridgename}-${paramname}`,
       },
     ];
   };
 
+  // 点击列表，将选中的数据存入
   const handleCheck = (val, key) => {
     if (nowEdit && val[key] === nowEdit[key]) {
       setNowEdit(null);
@@ -179,6 +222,7 @@ export default function Main({navigation}) {
     }
   };
 
+  // 进入构件管理
   const handleMember = () => {
     if (!nowEdit) {
       return;
@@ -189,6 +233,7 @@ export default function Main({navigation}) {
     });
   };
 
+  // 进入病害成因 或 养护区
   const handlePlanOrGenesis = path => {
     const key = nowEdit.type === 'member' ? 'membertype' : 'stepno';
     const list = partsList.filter(
@@ -200,6 +245,7 @@ export default function Main({navigation}) {
     });
   };
 
+  // 获取列表文件总大小
   const getMB = list => {
     if (list.length) {
       return (
@@ -212,18 +258,24 @@ export default function Main({navigation}) {
     }
   };
 
+  // 打开编辑部件模态框
   const handleEdit = () => {
     memberEditRef.current.open();
   };
 
+  // 关闭 编辑部件模态框
   const handleEditClose = () => {
+    // 触发刷新
     dispatch({type: 'reflush', payload: Math.random().toString(36).slice(-8)});
   };
 
   return (
+    // 外部盒子 = 样式 + 顶部导航 + 导航左侧标签
     <Box headerItems={getHeaderItems()} pid="P1301">
+      {/* 年份tab + 数据/影音tab，onChangeTab 为点击数据/影音tab时 */}
       <HeaderTabs onChangeTab={setPageType} />
       {pageType !== '数据' ? (
+        //---------影音---------
         <Media
           type="bridge"
           dataid={bridge.bridgeid}
@@ -243,21 +295,26 @@ export default function Main({navigation}) {
           ]}
         />
       ) : (
+        //---------数据---------
         <Content
+          //右侧按钮 
           operations={[
             {
+              // 进入构件管理
               // name: 'eye',
               img:'look',
               onPress: handleMember,
               disabled: !nowEdit,
             },
             {
+              // 病害成因
               // name: 'stethoscope',
               img:'disList',
               onPress: () => handlePlanOrGenesis('GenesisEdit'),
               disabled: !nowEdit,
             },
             {
+              // 养护区
               // name: 'book-plus',
               img: 'maintainPlan',
               onPress: () => handlePlanOrGenesis('PlanEdit'),
@@ -265,17 +322,22 @@ export default function Main({navigation}) {
             },
           ]}>
           <View style={[tailwind.flexRow, tailwind.flex1]}>
+            {/* 左侧 */}
             <View style={[styles.card, theme.primaryBgStyle]}>
+              {/* tab */}
               <Tabs
                 style={[tailwind.flex1]}
                 defaultActive="部件"
+                // 切换时，清空选中
                 onChangeTab={() => setNowEdit(null)}
                 tabs={[
+                  // 部件
                   {
                     key: '部件',
                     name: '部件',
                     component: (
                       <>
+                        {/* 部件 表格 */}
                         <View style={styles.tableBox}>
                           <Table.Header>
                             <Table.Title title="选择" flex={1} />
@@ -285,7 +347,7 @@ export default function Main({navigation}) {
                             <Table.Title title="编辑时间" flex={3} />
                           </Table.Header>
                           <FlatList
-                            scrollEnabled={false}
+                            scrollEnabled={true}
                             data={table1Data[table1PageNo - 1] || []}
                             extraData={table1Data}
                             renderItem={({item, index}) => (
@@ -306,6 +368,7 @@ export default function Main({navigation}) {
                                 <Table.Cell notText={true} flex={3}>
                                   <View style={[tailwind.flex1, tailwind.pX2]}>
                                     <ProgressBar
+                                      //进度为 done/total 
                                       progress={item.done / item.total}
                                       style={[tailwind.rounded, tailwind.h2]}
                                       color={theme.primaryColor}
@@ -322,6 +385,7 @@ export default function Main({navigation}) {
                             )}
                           />
                         </View>
+                        {/* 操作按钮 */}
                         <View
                           style={[tailwind.flexRow, tailwind.justifyBetween]}>
                           <Button onPress={handleEdit} style={[{backgroundColor:'#2b427d'}]}>编辑部件</Button>
@@ -334,6 +398,7 @@ export default function Main({navigation}) {
                       </>
                     ),
                   },
+                  // 桥跨
                   {
                     key: '桥跨',
                     name: '桥跨',
@@ -397,15 +462,19 @@ export default function Main({navigation}) {
               />
             </View>
             <View style={tailwind.mX2} />
+            {/* 右侧 */}
             <View style={[styles.card, theme.primaryBgStyle]}>
+              {/* 标题 */}
               <Text style={[tailwind.fontBold, {color: '#2b427d'}]}>
                 全局描述
               </Text>
+              {/* 图片 */}
               <View style={[tailwind.flexRow, tailwind.mY2]}>
                 <View style={tailwind.flex1}>{getImg('front', '正面照')}</View>
                 <View style={tailwind.mX2} />
                 <View style={tailwind.flex1}>{getImg('facade', '立面照')}</View>
               </View>
+              {/* 描述表单 */}
               <View style={tailwind.flex1}>
                 <View
                   style={[styles.tableRow, tailwind.border, tailwind.borderB0]}>
@@ -549,6 +618,7 @@ export default function Main({navigation}) {
           </View>
         </Content>
       )}
+      {/* 部件编辑组件 */}
       <MemberEdit ref={memberEditRef} onClose={handleEditClose} />
     </Box>
   );

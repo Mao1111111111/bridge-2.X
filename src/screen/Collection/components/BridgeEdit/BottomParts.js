@@ -1,3 +1,6 @@
+/* 
+  桥梁表单--下部结构
+ */
 import React from 'react';
 import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
@@ -11,24 +14,32 @@ import {listToPage} from '../../../../utils/common';
 import styles from './styles';
 
 export default function BottomParts({navigation}) {
+  // 桥梁全局参数
   const {dispatch, state} = React.useContext(Context);
 
+  // 全局参数
   const {
     state: {type, bridgeabutment, bridgepier, bridgewall},
   } = React.useContext(GlobalContext);
 
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 当前选中的 -- 多选
   const [checked, setChecked] = React.useState({});
 
+  // 部件数据 -- 一行两个进行处理
   const [memberRow, setMemberRow] = React.useState([]);
 
+  // 下部部件 编号
   const pCode = 'b20';
 
+  // 桥梁全局参数 -- 表单对象、全部的构件信息，并按 b10 b20 b30 分组、下部部件数据
   const {values, memberInfo, bottomPartsData} = state;
 
+  // 页面聚焦时 -- 处理下部部件数据
   useFocusEffect(
     React.useCallback(() => {
       if (!memberInfo) {
@@ -45,6 +56,7 @@ export default function BottomParts({navigation}) {
     }, [values, memberInfo]),
   );
 
+  // 页面聚焦时 -- 处理页面配置
   useFocusEffect(
     React.useCallback(() => {
       dispatch({
@@ -70,6 +82,7 @@ export default function BottomParts({navigation}) {
     }, [dispatch, navigation]),
   );
 
+  // 选中时，将数据存入 桥梁全局参数的 values
   const handleCheck = name => {
     const _checked = {...checked};
     _checked[name] = !_checked[name];
@@ -83,6 +96,7 @@ export default function BottomParts({navigation}) {
     });
   };
 
+  // 全选，将数据存入 桥梁全局参数的 values
   const handleCheckAll = () => {
     const _checked = {
       b200004: true,

@@ -17,23 +17,32 @@ import {alert, confirm} from '../../../../utils/alert';
 import * as bridgeReportMember from '../../../../database/bridge_report_member';
 import rules from '../../../../utils/rules';
 
+// 构件表单 组件 -- 构件新增、编辑
 const PartsForm = React.forwardRef(
   ({onSubmit, bridgereportid, bridge}, ref) => {
+    // 全局样式
     const {
       state: {theme},
     } = React.useContext(ThemeContext);
 
+    // 是否显示
     const [visible, setVisible] = React.useState(false);
 
+    // 是否是编辑
     const [isUpdate, setIsUpdate] = React.useState(false);
 
+    // 当前部件编号
     const [membertype, setMembertype] = React.useState('');
 
+    // 数据列表
     const [list, setList] = React.useState([]);
 
+    // 当前编辑的数据的序号
     const [nowEdit, setNowEdit] = React.useState(0);
 
+    // 暴露给父组件的函数
     React.useImperativeHandle(ref, () => ({
+      // 打开
       open: (val, type) => {
         if (val) {
           setList([...val]);
@@ -45,15 +54,18 @@ const PartsForm = React.forwardRef(
         setMembertype(type);
         setVisible(true);
       },
+      // 关闭
       close,
     }));
 
+    // 关闭
     const close = () => {
       setVisible(false);
       setNowEdit(0);
       setList([{}]);
     };
 
+    // 向后
     const handleNext = () => {
       if (nowEdit === list.length - 1) {
         return;
@@ -61,6 +73,7 @@ const PartsForm = React.forwardRef(
       setNowEdit(nowEdit + 1);
     };
 
+    // 向前
     const handlePrev = () => {
       if (nowEdit === 0) {
         return;
@@ -68,16 +81,21 @@ const PartsForm = React.forwardRef(
       setNowEdit(nowEdit - 1);
     };
 
+    // 表单内容变化时
     const handleChange = val => {
+      // 修改 数据列表 的 内容
       const _list = [...list];
       _list[nowEdit][val.name] = val.value;
       setList(_list);
     };
 
+    // 点击确定时
     const handleOk = async () => {
       if (isUpdate) {
+        // 编辑时，更新数据库的数据
         await Promise.all(list.map(bridgeReportMember.update));
       } else {
+        // 新增时，在数据库中新增
         await Promise.all(
           list.map(async item => {
             await bridgeReportMember.save({
@@ -98,12 +116,14 @@ const PartsForm = React.forwardRef(
 
     return (
       <Portal>
+        {/* 模态框 */}
         <PaperModal
           visible={visible}
           dismissable={false}
           contentContainerStyle={[styles.partsEditModalContent]}>
           <View
             style={[theme.primaryBgStyle, tailwind.flex1, tailwind.rounded]}>
+            {/* 标题 + 关闭按钮 */}
             <View style={[styles.partsEditModalHand]}>
               <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
                 <Text
@@ -115,8 +135,10 @@ const PartsForm = React.forwardRef(
                 <Icon name="close" size={24} />
               </TouchableOpacity>
             </View>
+            {/* 内容 */}
             <View
               style={[tailwind.justifyBetween, tailwind.mT1, tailwind.flexRow]}>
+              {/* 左侧按钮 */}
               {isUpdate ? (
                 <TouchableOpacity
                   onPress={handlePrev}
@@ -149,6 +171,7 @@ const PartsForm = React.forwardRef(
                   label="排序序号:    "
                 />
               </View>
+              {/* 右侧按钮 */}
               {isUpdate ? (
                 <TouchableOpacity
                   onPress={handleNext}
@@ -159,10 +182,12 @@ const PartsForm = React.forwardRef(
                 <View style={[tailwind.mL4]} />
               )}
             </View>
+            {/* 操作按钮 */}
             <View style={[styles.partsEditModalFoot]}>
               <Button style={[{backgroundColor: '#808285'}]} onPress={close}>
                 取消
               </Button>
+              {/* 序号 */}
               {isUpdate ? (
                 <Text style={[tailwind.textBase, tailwind.fontBold]}>
                   {nowEdit + 1}/{list.length}
@@ -170,6 +195,7 @@ const PartsForm = React.forwardRef(
               ) : (
                 <></>
               )}
+              {/* 点击确定 */}
               <Button onPress={handleOk} style={[{backgroundColor: '#2b427d'}]}>确定</Button>
             </View>
           </View>
@@ -182,25 +208,36 @@ const PartsForm = React.forwardRef(
 const only1 = ['b100001', 'b100006'];
 const only2 = ['b100003', 'b100007', 'b100005'];
 
+// 新增部件 组件
 const MemberAdd = React.forwardRef(
+  // 部件列表、父组件的函数、桥梁信息、翼墙耳墙、检测id
   ({memberList, onSubmit, bridge, bridgewall, bridgereportid}, ref) => {
+    // 全局样式
     const {
       state: {theme},
     } = React.useContext(ThemeContext);
+
+    // 全局参数 -- 基础部件信息
     const {
       state: {basememberinfo},
     } = React.useContext(GlobalContext);
 
+    // 是否显示
     const [visible, setVisible] = React.useState(false);
 
+    // 当前选中 -- 多选
     const [checked, setChecked] = React.useState(new Set());
 
+    // 上部结构数据
     const [b10, setB10] = React.useState([]);
 
+    // 下部结构数据
     const [b20, setB20] = React.useState([]);
 
+    // 桥面系结构数据
     const [b30, setB30] = React.useState([]);
 
+    // 暴露给父组件的函数
     React.useImperativeHandle(ref, () => ({
       open: () => {
         setVisible(true);
@@ -208,7 +245,9 @@ const MemberAdd = React.forwardRef(
       close,
     }));
 
+    // 初始化
     React.useEffect(() => {
+      // 部件信息 ，根据 b10 b20 b30分组
       const memberInfo = listToGroup(basememberinfo, 'positionid');
       if (memberList && basememberinfo) {
         const hide = new Set(memberList.map(({membertype}) => membertype));
@@ -254,20 +293,27 @@ const MemberAdd = React.forwardRef(
       }
     }, [memberList, basememberinfo]);
 
+    // 确定添加部件
     const buildParts = () => {
       confirm('是否添加选中的部件？', async () => {
+        // values = 桥梁数据 + 桥梁配置数据
         const values = {
           ...bridge,
           ...JSON.parse(bridge?.bridgeconfig || '{}'),
         };
+        // 部件编号 的 集合
         const set = new Set(memberList.map(({membertype}) => membertype));
         console.info(set);
+        // 跨数量
         const kua =
           parseInt(values.b200001num, 10) + parseInt(values.b200002num, 10) - 1;
         const data = [];
+        // 选中的部件 遍历
         checked.forEach(item => {
+          // 如果现有的部件列表中 不存在选中的部件，那么把选中的部件的数据存入
           if (!set.has(item)) {
             data.push(
+                //根据新的部件编号，执行规则中 对应部件的函数 ，获取对应的构件数据(多条构件数据)
               ...rules[item](
                 item,
                 values,
@@ -284,6 +330,7 @@ const MemberAdd = React.forwardRef(
             );
           }
         });
+        // 将所有的构件数据存入 桥梁检测构件表 
         await Promise.all(
           data.map(
             async item =>
@@ -300,12 +347,16 @@ const MemberAdd = React.forwardRef(
       });
     };
 
+    // 关闭
     const close = () => {
+      // 重置选中
       setChecked(new Set());
       setVisible(false);
     };
 
+    // 部件表格
     const renderCheckList = (title, data) => {
+      // 选中时
       const handleCheck = membertype => {
         const _checked = new Set(checked);
         if (only1.find(item => membertype === item)) {
@@ -327,6 +378,7 @@ const MemberAdd = React.forwardRef(
       };
       return (
         <>
+          {/* 顶部标题 */}
           <Text style={[tailwind.fontBold, theme.primaryTextStyle]}>
             {title}
           </Text>
@@ -338,6 +390,7 @@ const MemberAdd = React.forwardRef(
                 tailwind.borderT,
                 tailwind.borderL,
               ]}>
+              {/* 部件表格 */}
               {data.map((item, index) => (
                 <View style={[tailwind.flexRow]} key={index}>
                   {item?.map((it, inx) => (
@@ -360,12 +413,14 @@ const MemberAdd = React.forwardRef(
 
     return (
       <Portal>
+        {/* 模态框 */}
         <PaperModal
           visible={visible}
           dismissable={false}
           contentContainerStyle={[styles.partsAddModalContent]}>
           <View
             style={[theme.primaryBgStyle, tailwind.flex1, tailwind.rounded]}>
+            {/* 顶部 = 标题 + 关闭按钮 */}
             <View style={[styles.partsEditModalHand]}>
               <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
                 <Text
@@ -377,6 +432,7 @@ const MemberAdd = React.forwardRef(
                 <Icon name="close" size={24} />
               </TouchableOpacity>
             </View>
+            {/* 内容 + 底部按钮 */}
             <View style={[tailwind.flex1, tailwind.p2]}>
               {renderCheckList('上部结构', b10)}
               <View style={tailwind.mT2} />
@@ -402,50 +458,69 @@ const MemberAdd = React.forwardRef(
   },
 );
 
+// 编辑部件
 function MemberEdit({onClose}, ref) {
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 全局参数 -- 桥梁结构数据、翼墙耳墙
   const {
     state: {basememberinfo, bridgewall},
   } = React.useContext(GlobalContext);
 
+  // 桥梁检测参数 -- 检测id、桥梁信息
   const {
     state: {bridgereportid, bridge},
   } = React.useContext(Context);
 
+  // 按钮loading
   const [loading, setLoading] = React.useState(false);
 
+  // 模态框是否显示
   const [visible, setVisible] = React.useState(false);
 
+  // 选中构件的id -- 多选
   const [checked, setChecked] = React.useState(new Set());
 
+  // 当前编辑的部件的 序号
   const [nowEdit, setNowEdit] = React.useState(0);
 
+  // 部件列表
   const [memberList, setMemberList] = React.useState([]);
 
+  // 存放所有构件数据 -- 不分组
   const [partsList, setPartsList] = React.useState([]);
 
+  // 右侧构件表格的数据
   const [list, setList] = React.useState([]);
 
+  // 构件表单组件的引用
   const partsFormRef = React.useRef();
 
+  // 添加部件组件 的 引用
   const MemberAddRef = React.useRef();
 
+  // 暴露给父组件的函数
   React.useImperativeHandle(ref, () => ({
     open: () => setVisible(true),
   }));
 
+  // 初始化数据 
   React.useEffect(() => {
+    // 检测编号、基础部件信息、桥梁信息都存在时，从桥梁检测部件表中获取数据
     bridgereportid &&
       basememberinfo &&
       bridge &&
       bridgeReportMember
         .list({bridgereportid, bridgeid: bridge.bridgeid})
         .then(res => {
+          // 对数据分组
           const group = listToGroup(res, 'membertype');
+          // 将未分组的数据存入
           setPartsList(res);
+          // 处理部件表格的数据
           setMemberList(
             Object.keys(group)
               .map(key => {
@@ -461,8 +536,10 @@ function MemberEdit({onClose}, ref) {
         });
   }, [bridgereportid, bridge, basememberinfo]);
 
+  // 设置右侧构件表格的数据 -- 当构件列表、部件列表、当前选择的部件 变化时触发
   React.useEffect(() => {
     if (memberList && partsList && memberList.length && partsList.length) {
+      // 设置构件表格数据
       setList(
         partsList.filter(
           ({membertype}) => membertype === memberList[nowEdit]?.membertype,
@@ -471,17 +548,24 @@ function MemberEdit({onClose}, ref) {
     }
   }, [partsList, nowEdit, memberList]);
 
+  // 点击 添加部件 按钮
   const handleAddMember = () => {
+    // 打开添加部件模态框
     MemberAddRef.current.open();
   };
 
+  // 获取数据
   const getData = async () => {
+    // 在数据库中获取数据
     const res = await bridgeReportMember.list({
       bridgereportid,
       bridgeid: bridge.bridgeid,
     });
+    // 分组
     const group = listToGroup(res, 'membertype');
+    // 设置所有构件列表
     setPartsList(res);
+    // 设置部件表格数据 -- 部件类型、名称、构件数量
     setMemberList(
       Object.keys(group)
         .map(key => {
@@ -495,14 +579,18 @@ function MemberEdit({onClose}, ref) {
     );
   };
 
+  // 删除部件
   const handleDeleteMember = () => {
     confirm('是否删除选中的部件？', async () => {
       try {
+        // 数据库中删除
         await bridgeReportMember.removeByMembertype({
           membertype: memberList[nowEdit]?.membertype,
           bridgereportid,
         });
+        // 重新获取数据
         await getData();
+        // 重置选中部件
         setNowEdit(0);
         alert('删除成功');
       } catch (err) {
@@ -514,11 +602,15 @@ function MemberEdit({onClose}, ref) {
     });
   };
 
+  // 删除选中的构件
   const handleDelete = () => {
     confirm('是否删除选中的构件？', async () => {
       try {
+        // 数据库中删除 --- 一次删除多个
         await Promise.all([...checked].map(bridgeReportMember.remove));
+        // 重新获取表格数据
         await getData();
+        // 重置选中的构件
         setChecked(new Set());
         alert('删除成功');
       } catch (err) {
@@ -530,20 +622,25 @@ function MemberEdit({onClose}, ref) {
     });
   };
 
+  // 编辑构件
   const handleEdit = () => {
     if (!checked.size) {
       return;
     }
+    // 打开构件表单 参数(当前选中的构件数据，当前编辑的部件编号)
     partsFormRef.current.open(
       JSON.parse(JSON.stringify(list.filter(item => checked.has(item.id)))),
       memberList[nowEdit]?.membertype,
     );
   };
 
+  // 新增构件
   const handleAdd = () => {
+    // 打开构件表单 参数(无，当前编辑的部件编号)
     partsFormRef.current.open(undefined, memberList[nowEdit]?.membertype);
   };
 
+  // 选择右侧构件时
   const handleCheck = id => {
     const _checked = new Set(checked);
     if (_checked.has(id)) {
@@ -554,21 +651,28 @@ function MemberEdit({onClose}, ref) {
     setChecked(_checked);
   };
 
+  // 关闭模态框
   const handleClose = () => {
+    // 关闭
     setVisible(false);
+    // 清空选中的 构件
     setChecked(new Set());
+    // 重置当前编辑的 部件
     setNowEdit(0);
+    // 执行父组件的函数
     onClose();
   };
 
   return (
     <Portal>
+      {/* 模态框 */}
       <PaperModal
         visible={visible}
         onDismiss={handleClose}
         contentContainerStyle={[theme.primaryBgStyle, styles.partsEditContent]}
         onClose={handleClose}>
         <View style={tailwind.flex1}>
+          {/* 顶部 = 标题 + 关闭按钮 */}
           <View style={[styles.partsEditModalHand]}>
             <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
               <Text style={[tailwind.textLg, tailwind.fontBold, tailwind.mR2]}>
@@ -579,9 +683,12 @@ function MemberEdit({onClose}, ref) {
               <Icon name="close" size={24} />
             </TouchableOpacity>
           </View>
+          {/* 内容 + 底部 */}
           <View style={styles.box}>
+            {/* 左侧 */}
             <View style={tailwind.flex1}>
               <View style={tailwind.flex1}>
+                {/* 表格 */}
                 <Table.Box
                   header={
                     <Table.Header style={[tailwind.flexGrow]}>
@@ -606,6 +713,7 @@ function MemberEdit({onClose}, ref) {
                     )}
                   />
                 </Table.Box>
+                {/* 操作按钮 */}
                 <View style={styles.btnRow}>
                   <Button loading={loading} onPress={handleAddMember} style={[{backgroundColor: '#2b427d'}]}>
                     添加部件
@@ -621,7 +729,9 @@ function MemberEdit({onClose}, ref) {
               </View>
             </View>
             <View style={tailwind.mX1} />
+            {/* 右侧 */}
             <View style={styles.flex2}>
+              {/* 表格 */}
               <Table.Box
                 header={
                   <Table.Header>
@@ -650,6 +760,7 @@ function MemberEdit({onClose}, ref) {
                   )}
                 />
               </Table.Box>
+              {/* 操作按钮 */}
               <View style={styles.btnRow}>
                 <Button
                   loading={loading}
@@ -676,12 +787,14 @@ function MemberEdit({onClose}, ref) {
             </View>
           </View>
         </View>
+        {/* 构件表单 */}
         <PartsForm
           ref={partsFormRef}
           onSubmit={getData}
           bridge={bridge}
           bridgereportid={bridgereportid}
         />
+        {/* 新增部件 */}
         <MemberAdd
           ref={MemberAddRef}
           onSubmit={getData}

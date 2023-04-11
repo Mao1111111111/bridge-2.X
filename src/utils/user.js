@@ -1,6 +1,7 @@
 const host = 'http://testdata.api.jianlide.cn:1088/api';
 const testHost = 'http://114.116.196.47:10808'
 
+// 获取授权，得到access_token
 export const fetchAuthorize = credentials =>
   new Promise((resolve, reject) => {
     fetch(host + '/auth/authorize', {
@@ -13,7 +14,7 @@ export const fetchAuthorize = credentials =>
       .then(resolve)
       .catch(err => reject(err.response));
   });
-
+// 获取用户信息
 export const fetchUsersProfile = access_token =>
   new Promise((resolve, reject) => {
     fetch(host + '/v1/org/users/profile', {

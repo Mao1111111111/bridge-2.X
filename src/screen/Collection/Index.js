@@ -21,6 +21,7 @@ export default function Collection() {
 
   return (
     <View style={[tailwind.flex1, tailwind.relative]}>
+      {/* 抽屉路由 */}
       <NavigatorDrawer
         initialRouteName="Collection/Detect"
         routes={[

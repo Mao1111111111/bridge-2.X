@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text} from 'react-native';
 import {tailwind} from 'react-native-tailwindcss';
 
+// 如项目管理中，顶部导航最左边的标签
 export default function ({pid, size}) {
   return (
     <View

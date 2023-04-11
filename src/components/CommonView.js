@@ -6,11 +6,14 @@ import Headerbar from './Headerbar';
 import EditMenu from './EditMenu';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 
+// 盒子
 export function Box({pid, children, headerItems}) {
   return (
+    // 点击空白处，收起键盘
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={[tailwind.flex1]}>
         <View style={[tailwind.mX19,{position:'absolute',top:13,left:70}]}>
+          {/* 顶部导航 */}
           <Headerbar items={headerItems || []} pid={pid || ''} />
         </View>
         <View style={[tailwind.mY6]}></View>
@@ -20,6 +23,7 @@ export function Box({pid, children, headerItems}) {
   );
 }
 
+// 用于影音
 export function Content({
   children,
   onAdd,
@@ -117,6 +121,7 @@ export function Content({
   return (
     <View
       style={[tailwind.flex1, tailwind.flexRow, tailwind.pX4, tailwind.mB3]}>
+      {/* 左侧菜单 */}
       {!hideMenu ? (
         <View style={[tailwind.mR3,tailwind.pX1]}>
           <EditMenu
@@ -131,18 +136,23 @@ export function Content({
       ) : (
         <></>
       )}
+      {/* 内容 */}
       <View style={tailwind.flex1}>{children}</View>
+      {/* 右侧菜单 */}
       {!hideMenu ? (
         <View style={tailwind.mL3}>
           {/* <CircleButton name="help" /> */}
           {/* <View style={tailwind.mY10} /> */}
+          {/* 父组件传入的组件 */}
           {operationsComponents ? operationsComponents : <></>}
+          {/* 操作列表 */}
           {operations ? (
             operations.map((operation, index) => (
               <React.Fragment key={index}>
                 <View style={tailwind.mY1} />
                 {/* <CircleButton {...operation} /> */}
                 <View>
+                    {/* Pressable 按钮点击效果 */}
                     <Pressable {...operation} onPressIn={() => imgPulldown(operation.img)} onPressOut={() => imgPullup(operation.img)}>
                       <Image style={
                       { height: 45, width: 45, alignItems: 'center' }}
@@ -248,11 +258,15 @@ export default function CommonView({
 
 
   return (
+    // TouchableWithoutFeedback 点击空白处收起键盘
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      {/* 占满box */}
       <View style={[tailwind.flex1]}>
         {/* 界面顶部栏 页面路径与用户名 */}
         {/* <Headerbar items={headerItems || []} pid={pid || ''} /> */}
+        {/* tabBar 无意义参数 */}
         {tabBar ? tabBar : <></>}
+        {/* 内部大盒子，采用row 左中右 */}
         <View
           style={[
             tailwind.flex1,
@@ -260,26 +274,30 @@ export default function CommonView({
             tailwind.pX4,
             tailwind.pY3,
           ]}>
+          {/* 左侧按钮 */}
           <View style={[tailwind.mR3,tailwind.pX1]}>
-          <View style={tailwind.mY12} />
-            {/* 左侧按钮 */}
-            <EditMenu
-              onAdd={onAdd}
-              onEdit={onEdit}
-              onCopy={onCopy}
-              onCut={onCut}
-              onDelete={onDelete}
-              onStick={onStick}
-            />
+            <View style={tailwind.mY12} />
+              {/* 左侧按钮 */}
+              <EditMenu
+                onAdd={onAdd}
+                onEdit={onEdit}
+                onCopy={onCopy}
+                onCut={onCut}
+                onDelete={onDelete}
+                onStick={onStick}
+              />
           </View>
+          {/* 中部 = 顶部导航 + 内容 */}
           <View style={tailwind.flex1}>
-          {/* 页面路径与用户信息 */}
-          <View style={[tailwind.mX19,{width:700}]}>
-            <Headerbar items={headerItems || []} pid={pid || ''} />
-          </View>
-          
+            {/* 页面路径与用户信息 */}
+            <View style={[tailwind.mX19,{width:700}]}>
+              {/* 顶部导航 可以显示 1）导航按钮 2）icon图标按钮 3）对过长的标题截取 */}
+              <Headerbar items={headerItems || []} pid={pid || ''} />
+            </View>
+            {/* 嵌入公共盒子的内容，即主要内容 */}
             {children}
           </View>
+          {/* 右侧 */}
           <View style={tailwind.mL3}>
             {/* 帮助 按钮 */}
             {/* <CircleButton name="help" /> */}

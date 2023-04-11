@@ -1,3 +1,6 @@
+/* 
+  桥梁表单--其他属性
+ */
 import React from 'react';
 import {View, Text} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
@@ -10,25 +13,33 @@ import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
 import styles from './styles';
 
 export default function Other({navigation}) {
+  // 桥梁全局参数
   const {state, dispatch} = React.useContext(Context);
 
+  // 全局参数
   const {state: globalState} = React.useContext(GlobalContext);
 
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 桥梁全局参数 -- 表单值
   const {values} = state;
 
+  // 全局参数 -- 支座编号、桥台形式、翼墙耳墙、桥墩形式、照明系统
   const {bridgepadno, bridgeabutment, bridgewall, bridgepier, bridgelightsys} =
     globalState;
 
+  // 桥墩形式 变化时，打印桥墩形式
   React.useEffect(() => {
     console.info(bridgepier);
   }, [bridgepier]);
 
+  // 页面聚焦时
   useFocusEffect(
     React.useCallback(() => {
+      // 重置顶部标题
       dispatch({
         type: 'headerItems',
         payload: [
@@ -41,10 +52,12 @@ export default function Other({navigation}) {
           },
         ],
       });
+      // 重置顶部标签
       dispatch({
         type: 'pid',
         payload: 'P1202',
       });
+      // 重置底部类型
       dispatch({
         type: 'footBarType',
         payload: 'notRoot',
@@ -52,6 +65,7 @@ export default function Other({navigation}) {
     }, [dispatch, navigation]),
   );
 
+  // 当数据变化时，存入 桥梁全局参数的 表单对象
   const handleChange = ({name, value}) => {
     dispatch({
       type: 'values',
@@ -71,7 +85,9 @@ export default function Other({navigation}) {
         theme.primaryBgStyle,
         tailwind.flex1,
       ]}>
+      {/* 顶部 */}
       <Text style={[tailwind.fontBold]}>----构件配置相关参数----{'>'}</Text>
+      {/* 内容 */}
       <View>
         <View style={[tailwind.flexRow, tailwind.mY2, tailwind.itemsCenter]}>
           <KeyboardInput

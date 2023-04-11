@@ -1,3 +1,6 @@
+/* 
+  处理图片水印的组件
+ */
 import React from 'react';
 import {WebView} from 'react-native-webview';
 import {tailwind} from 'react-native-tailwindcss';
@@ -203,6 +206,7 @@ export default function Sketch({id, source, onSave, maxHeight, maxWidth}) {
     }
   };
 
+  // 剪裁图片
   const handleCrop = async () => {
     const {data, width, height} = await ImagePicker.openCropper({
       path: 'file://' + source,
@@ -246,8 +250,11 @@ export default function Sketch({id, source, onSave, maxHeight, maxWidth}) {
 
   return (
     <View style={[tailwind.flex1]}>
+      {/* 左侧操作区 + 图片展示 */}
       <View style={tailwind.flexRow}>
+        {/* 操作区 */}
         <View style={[tailwind.pX1, tailwind.pT2]}>
+          {/* 剪裁 */}
           <EditBtn icon="crop" onPress={handleCrop} />
           <View style={[tailwind.mY1]} />
           <EditBtn icon="arrow-u-left-top" onPress={handleUndo} />
@@ -256,6 +263,7 @@ export default function Sketch({id, source, onSave, maxHeight, maxWidth}) {
           <View style={[tailwind.mY1]} />
           <EditBtn icon="content-save" onPress={handleSave} />
         </View>
+        {/* 图片 */}
         <View
           style={[
             tailwind.bgBlack,
