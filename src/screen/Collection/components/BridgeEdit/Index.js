@@ -223,9 +223,12 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         setLoading(false);
         return;
       }
-      // 设置bridgeid 
-      let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
-      let bridgeid = _values.bridgetype.slice(_values.bridgetype.length-1)+userInfo.userid + parseInt(time).toString(32)
+      // ------设置bridgeid 
+      // 当前时间戳
+      let time = (new Date()).valueOf()
+      // 13位时间戳补齐为17位
+      let dealTime = time + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
+      let bridgeid = _values.bridgetype.slice(_values.bridgetype.length-1)+userInfo.userid + parseInt(dealTime).toString(36)
       // 将桥梁存入 bridge 表
       await bridge.save({
         ..._values,
@@ -233,6 +236,9 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         userid: userInfo.userid,
         username: userInfo.nickname,
       });
+      parts.forEach((item,index)=>{
+        item.memberid = bridgeid + '_' + item.membertype + '_' + (time).toString(36) + index
+      })
       // 将当前桥梁的 所有构件存入 桥梁构件表
       await Promise.all(
         parts.map(
@@ -252,7 +258,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
       if (project.id) {
         // 设置bridgereportid
         let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
-        let bridgereportid = bridgeid + parseInt(time).toString(32)
+        let bridgereportid = bridgeid + parseInt(time).toString(36)
         // 如果 bridgereportid 不存在，那么存入数据库的 bridgereportid 是 随机数
         await bridgeProjectBind.save({
           bridgereportid:bridgereportid,
@@ -286,6 +292,12 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
       await bridge.update(_values);
       // 桥梁构件表中移除当前桥梁的数据
       await bridgeMember.remove(_values.bridgeid);
+      // 当前时间戳
+      let time = (new Date()).valueOf()
+      // 处理构件数据
+      parts.forEach((item,index)=>{
+        item.memberid = _values.bridgeid + '_' + item.membertype + '_' + (time).toString(36) + index
+      })
       // 将构件数据重新存入
       await Promise.all(
         parts.map(
@@ -327,8 +339,10 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         return;
       }
       // 设置桥梁
-      let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
-      let bridgeid = _values.bridgetype.slice(_values.bridgetype.length-1)+userInfo.userid + parseInt(time).toString(32)
+      let time = (new Date()).valueOf()
+      // 13位时间戳补齐为17位
+      let dealTime = time + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
+      let bridgeid = _values.bridgetype.slice(_values.bridgetype.length-1)+userInfo.userid + parseInt(dealTime).toString(36)
       // 将桥梁数据存入数据库
       await bridge.save({
         ..._values,
@@ -336,6 +350,9 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         userid: userInfo.userid,
         username: userInfo.nickname,
       });
+      parts.forEach((item,index)=>{
+        item.memberid = bridgeid + '_' + item.membertype + '_' + (time).toString(36) + index
+      })
       // 存入当前桥梁的所有构件
       await Promise.all(
         parts.map(
@@ -356,7 +373,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         if (project.id) {
           // 设置bridgereportid
           let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
-          let bridgereportid = bridgeid + parseInt(time).toString(32)
+          let bridgereportid = bridgeid + parseInt(time).toString(36)
           await bridgeProjectBind.save({
             bridgereportid:bridgereportid,
             projectid: project.projectid,
