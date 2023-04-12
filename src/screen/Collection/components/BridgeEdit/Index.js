@@ -237,7 +237,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         username: userInfo.nickname,
       });
       parts.forEach((item,index)=>{
-        item.memberid = bridgeid + '_' + item.membertype + '_' + (time).toString(36) + index
+        item.memberid = bridgeid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
       })
       // 将当前桥梁的 所有构件存入 桥梁构件表
       await Promise.all(
@@ -296,7 +296,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
       let time = (new Date()).valueOf()
       // 处理构件数据
       parts.forEach((item,index)=>{
-        item.memberid = _values.bridgeid + '_' + item.membertype + '_' + (time).toString(36) + index
+        item.memberid = _values.bridgeid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
       })
       // 将构件数据重新存入
       await Promise.all(
@@ -351,7 +351,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         username: userInfo.nickname,
       });
       parts.forEach((item,index)=>{
-        item.memberid = bridgeid + '_' + item.membertype + '_' + (time).toString(36) + index
+        item.memberid = bridgeid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
       })
       // 存入当前桥梁的所有构件
       await Promise.all(
