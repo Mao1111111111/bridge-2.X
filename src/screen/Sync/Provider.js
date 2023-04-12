@@ -170,7 +170,6 @@ function Provider({children}) {
         alert('上传完成');
       } else {
         const upload = async () => {
-          console.log("1111");
           try {
             // 获取数据
             const allData = await createData.getData(
@@ -182,7 +181,12 @@ function Provider({children}) {
             );
             const data = allData.data
             const mediaData = allData.mediaData
-            
+            // 处理数据中的 检测部件id
+            if(data.testData.detailTestData.length>0){
+              data.testData.detailTestData.forEach(item=>{
+                item.partid = data.testData.bridgereportid + '_' + item.positionid + '_' + item.membertype
+              })
+            }
             //---------对检测数据操作
             //---文件夹
             // 文件夹地址，根据 桥id 建立文件夹
@@ -221,7 +225,6 @@ function Provider({children}) {
                         + data.bridgeid + '/'
                         + data.testData.bridgereportid + '/'
                         + 'reportData.txt'
-            
             //---------上传反馈数据
             let feedbackParams = {
               bucketname:BucketName_storeTestData,
@@ -248,11 +251,11 @@ function Provider({children}) {
               }
             }
             //---------上传检测数据到云
-            uploadData.syncUploadTestDataToObs(ObsReportDataKey,JSON.stringify(data)).then(res=>{
+            await uploadData.syncUploadTestDataToObs(ObsReportDataKey,JSON.stringify(data)).then(async res=>{
               let newFeedbackParams = feedbackParams
               newFeedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
               //---------反馈
-              uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+              await uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
                 //console.log("res",res);
               }).catch(err=>console.log("err",err))
             }).catch(err=>console.log("err",err))
@@ -294,6 +297,18 @@ function Provider({children}) {
                   }).catch(err=>console.log("err",err))
                 }),
             );
+
+            //---------将数据标记为已上传
+            await uploadLog.save({
+              dataid: state.testDataUploadingIds[inx],
+              category: '检测数据',
+              to_projcet_id: state.testDataUploadProject.projectid,
+              to_projcet_name: state.testDataUploadProject.projectname,
+            });
+            dispatch({
+              type: 'testDataUploadEndIds',
+              payload: state.testDataUploadingIds?.slice(0, inx + 1),
+            });
 
             //------以下注释为 原上传逻辑
             /* const data = await createData.getTestData(
@@ -371,18 +386,7 @@ function Provider({children}) {
                     );
                   }),
               );
-              await uploadLog.save({
-                dataid: state.testDataUploadingIds[inx],
-                category: '检测数据',
-                to_projcet_id: state.testDataUploadProject.projectid,
-                to_projcet_name: state.testDataUploadProject.projectname,
-              });
             } */
-
-            /* dispatch({
-              type: 'testDataUploadEndIds',
-              payload: state.testDataUploadingIds?.slice(0, inx + 1),
-            }); */
           } catch (err) {
             console.info(err);
           } finally {
