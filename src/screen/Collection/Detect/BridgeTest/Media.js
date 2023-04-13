@@ -167,7 +167,7 @@ const RowMediaComponent = ({item, onPress, isActive}) => {
 };
 
 // 媒体组件
-export default function Media({categoryList, type, dataid, defaultFileName}) {
+export default function Media({categoryList, type, dataid, defaultFileName,pileTitle,pileNum}) {
   // categoryList-类型列表，defaultFileName-默认文件名
   // 全局样式
   const {
