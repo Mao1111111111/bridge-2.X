@@ -666,14 +666,16 @@ export const getData =async (
   //部件数据 存入 测试数据
   data.testData['detailTestData'] = partData
 
+  // 处理媒体数据
+  let mediaData = []
+  fileList.forEach(item=>{
+    if(item.mediatype!=='virtualimage'){
+      mediaData.push(item)
+    }
+  })
   let newData = {
     data:data,
-    mediaData:[
-      ...bridgeMedia,
-      ...partMedia,
-      ...diseasePartsMedia,
-      ...goodMemberMedia
-    ]
+    mediaData:mediaData
   }
   return newData
 }
