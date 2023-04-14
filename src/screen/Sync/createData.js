@@ -456,7 +456,7 @@ export const getData =async (
   const bridgeReportData = await bridgeReport.get(bindData);
   //如果没有检测数据，那么返回空的data
   if (!bridgeReportData) {
-    return data;
+    return null;
   }
   //将检测信息存入
   data.testData = {

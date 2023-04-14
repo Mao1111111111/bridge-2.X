@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import * as bridgeReport from '../../../database/bridge_report';
 import {tailwind} from 'react-native-tailwindcss';
 import {useFocusEffect} from '@react-navigation/native';
 import {ProgressBar, Modal, Portal} from 'react-native-paper';
@@ -107,9 +108,16 @@ export default function TestData({navigation}) {
   useFocusEffect(
     React.useCallback(() => {
       if (userInfo || testDataFefreshFlg) {
-        bridgeList(userInfo.userid).then(res => {
+        bridgeList(userInfo.userid).then(async res => {
           res.forEach(item => (item.id = item.bindId));
-          setList(res);
+          let data = []
+          for(let i=0;i<res.length;i++){
+            let testData = await bridgeReport.get(res[i]);
+            if(testData){
+              data.push(res[i])
+            }
+          }
+          setList(data);
         });
       }
     }, [userInfo, testDataFefreshFlg]),
