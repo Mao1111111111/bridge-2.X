@@ -411,273 +411,285 @@ export const getData =async (
   membercheckdata,
   basememberinfo
 ) =>{
-  let data = {}
-  //****************** 桥梁绑定信息 ******************
-  const bindData = await bridgeProjectBind.getById(id);
+  try{
+    let data = {}
+    //****************** 桥梁绑定信息 ******************
+    const bindData = await bridgeProjectBind.getById(id);
 
-  //const {bridgereportbindid,binddate,...newBindData} = bindData
-  //data = newBindData
-  //****************** 桥梁信息 ******************
-  //----获取 桥梁信息
-  const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
-  data = bridgeData
-  data.bridgeconfig = JSON.parse(data.bridgeconfig)
-  //----桥梁的部件、构件数据
-  //初始构件数据
-  let initialMemberData = await bridgeMember.list(data.bridgeid)
-  //初始部件数据
-  let initialPartData = []
-  //整合
-  initialMemberData.forEach(item=>{
-    let index = initialPartData.findIndex(i=> i.membertype==item.membertype)
+    //const {bridgereportbindid,binddate,...newBindData} = bindData
+    //data = newBindData
+    //****************** 桥梁信息 ******************
+    //----获取 桥梁信息
+    const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
+    data = bridgeData
+    data.bridgeconfig = JSON.parse(data.bridgeconfig)
+    //----桥梁的部件、构件数据
+    //初始构件数据
+    let initialMemberData = await bridgeMember.list(data.bridgeid)
+    //初始部件数据
+    let initialPartData = []
+    //整合
+    initialMemberData.forEach(item=>{
+      let index = initialPartData.findIndex(i=> i.membertype==item.membertype)
 
-    if(index==-1){
-      //不存在
-      let part = basememberinfo.find(i=>i.membertype==item.membertype)
-      let newPart = {
-        bridgertype:part.bridgertype,
-        membername:part.membername,
-        membertype:part.membertype,
-        positionid:part.positionid,
-        weight:part.weight,
-        memberData:[item]
-      }
-      initialPartData.push(newPart)
-    }else{
-      initialPartData[index].memberData.push(item)
-    }
-  })
-  //桥梁结构信息
-  data['structureInfo'] = initialPartData
-  //****************** 检测数据--基本数据 ******************
-  //绑定项目信息
-  data['testData'] = bindData
-  //获取桥梁检测信息 -- 桥梁检测列表
-  const bridgeReportData = await bridgeReport.get(bindData);
-  //如果没有检测数据，那么返回空的data
-  if (!bridgeReportData) {
-    return null;
-  }
-  //将检测信息存入
-  data.testData = {
-    ...data.testData,
-    ...{
-      "reportname":bridgeReportData.reportname,
-      "startdate":bridgeReportData.startdate,
-      "rstatus":bridgeReportData.rstatus,
-      "finishdate":dayjs().format('YYYY-MM-DD HH:mm:ss'),
-      "longitude":bridgeReportData.longitude,
-      "latitude":bridgeReportData.latitude,
-    }
-  }
-  //****************** 检测数据--媒体数据 ******************
-  //----获取照片文件列表 -- 文件表
-  const fileList = await bridgeReportFile.list(bindData);
-  //桥梁媒体信息
-  let bridgeMedia = []
-  //部件媒体信息
-  let partMedia = []
-  //病害媒体信息
-  let diseasePartsMedia = []
-  //好构件媒体信息
-  let goodMemberMedia = []
-  //媒体信息分配
-  fileList.forEach(item=>{
-    if(item.type=='bridge'){
-      bridgeMedia.push(item)
-    }else if(item.type=='member'){
-      partMedia.push(item)
-    }else if(item.type=='diseaseParts'){
-      diseasePartsMedia.push(item)
-    }else if(item.type=='goodParts'){
-      goodMemberMedia.push(item)
-    }
-  })
-  //存入桥梁媒体信息
-  data.testData['bridgeMedia'] = bridgeMedia
-  //****************** 检测数据--养护计划 ******************
-  //获取 养护计划 和 病害成因 数据，并根据category分类
-  const planGenesis = listToGroup(
-    await partsPlanGenesisData.list(bindData),
-    'category',
-  );
-  //养护计划
-  const planData = planGenesis.plan?planGenesis.plan:[]
-  //病害成因
-  const genesisData = planGenesis.genesisData?planGenesis.genesisData:[]
-  //****************** 检测数据--构件数据 ******************
-  //获取构件数据 -- 与上面构件的区别是 会有新添加的构件
-  let memberData = await bridgeReportMember.list({bridgeid: bindData.bridgeid,bridgereportid:bindData.bridgereportid})
-  //处理构件数据
-  memberData.forEach(item=>{
-    item.dpscoresauto = 100
-    if(item.memberstatus=='200'){
-      item['diseaseData']=[]
-    }else if(item.memberstatus=='100'){
-      item['goodData']=[]
-      item['media']=[]
-    }
-  })
-  //----病害构件
-  const diseaseMember = memberData.filter(
-    ({memberstatus}) => memberstatus === '200',
-  );
-  //获取 病害数据
-  let diseaseData = await partsCheckstatusData.getDisease(
-    bindData.bridgereportid,
-    diseaseMember.map(item => item.memberid),
-  )
-  //处理 病害数据 和 构件数据
-  diseaseMember.forEach(e=>{
-    const list = diseaseData
-        .filter(({dataid}) => e.memberid === dataid)
-        .map(item => {
-          //数据解析
-          const jsondata = JSON.parse(item?.jsondata || '{}');
-          if (jsondata?.standard?.scale) {
-            item.score =
-              numeric(jsondata?.standard?.scale)[item?.jsondata?.scale] || 0;
-          }
-          item.parentdataid = ''
-          item.jsondata = jsondata
-          item.membername = e.membername;
-          item.membertype = e.membertype;
-          return item;
-        });
-    //如果只一条病害数据 
-    if (list.length === 1) {
-      //memberData 构件数据
-      //查找这条病害输入哪条构件数据
-      const inx = memberData.findIndex(
-        ({memberid}) => memberid === list[0].memberid,
-      );
-      //计算 dpscoresauto
-      if (memberData[inx]) {
-        memberData[inx].dpscoresauto =
-          100 - (list[0].score || 0);
-      }
-    }
-    //如果有多条病害数据
-    //计算dpscoresauto
-    if (list.length > 1) {
-      const m = {};
-      list.forEach(item => {
-        if (m[item.scalegroupid || 'not']) {
-          m[item.scalegroupid || 'not'].push(item.score || 0);
-        } else {
-          m[item.scalegroupid || 'not'] = [item.score || 0];
+      if(index==-1){
+        //不存在
+        let part = basememberinfo.find(i=>i.membertype==item.membertype)
+        let newPart = {
+          bridgertype:part.bridgertype,
+          membername:part.membername,
+          membertype:part.membertype,
+          positionid:part.positionid,
+          weight:part.weight,
+          memberData:[item]
         }
-      });
-      const scoreList = [...(m.not || [])];
-      Object.keys(m)
-        .filter(key => key !== 'not')
-        .forEach(key => {
-          scoreList.push(Math.max(...m[key]));
-        });
-      const inx = memberData.findIndex(
-        ({memberid}) => memberid === list[0].dataid,
-      );
-      if (memberData[inx]) {
-        memberData[inx].dpscoresauto = parseFloat(
-          (100 - score(scoreList).reduce((a, c) => a + c)).toFixed(3),
-        );
+        initialPartData.push(newPart)
+      }else{
+        initialPartData[index].memberData.push(item)
+      }
+    })
+    //桥梁结构信息
+    data['structureInfo'] = initialPartData
+    //****************** 检测数据--基本数据 ******************
+    //绑定项目信息
+    data['testData'] = bindData
+    //获取桥梁检测信息 -- 桥梁检测列表
+    const bridgeReportData = await bridgeReport.get(bindData);
+    //如果没有检测数据，那么返回空的data
+    if (!bridgeReportData) {
+      return null;
+    }
+    //将检测信息存入
+    data.testData = {
+      ...data.testData,
+      ...{
+        "reportname":bridgeReportData.reportname,
+        "startdate":bridgeReportData.startdate,
+        "rstatus":bridgeReportData.rstatus,
+        "finishdate":dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        "longitude":bridgeReportData.longitude,
+        "latitude":bridgeReportData.latitude,
       }
     }
-  })
-  //病害数据 添加 媒体 属性
-  diseaseData.forEach(item=>{item['media']=[]})
-  //将 病害媒体数据 存入病害
-  diseasePartsMedia.forEach(item=>{
-    let index = diseaseData.findIndex(i=> i.version==item.dataid)
-    diseaseData[index].media.push(item)
-  })
-  //将 养护计划数据 存入病害
-  planData.forEach(item=>{
-    let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
-    diseaseData[index].maintenancePlan = item
-  })
-  //将 病害成因数据 存入病害
-  genesisData.forEach(item=>{
-    let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
-    diseaseData[index].maintenancePlan = item
-  })
-  //将 病害数据 存入构件
-  diseaseData.forEach(item=>{
-    let index = memberData.findIndex(i=> i.memberid==item.dataid)
-    memberData[index].diseaseData.push(item)
-  })
-  //----好构件
-  const goodsMember = memberData.filter(
-    ({memberstatus}) => memberstatus === '100',
-  );
-  //获取 好构件 的 数据
-  const _goodsData = goodsMember.length
-  ? await partsCheckstatusData.getGoods(
+    //****************** 检测数据--媒体数据 ******************
+    //----获取照片文件列表 -- 文件表
+    const fileList = await bridgeReportFile.list(bindData);
+    //桥梁媒体信息
+    let bridgeMedia = []
+    //部件媒体信息
+    let partMedia = []
+    //病害媒体信息
+    let diseasePartsMedia = []
+    //好构件媒体信息
+    let goodMemberMedia = []
+    //媒体信息分配
+    fileList.forEach(item=>{
+      if(item.type=='bridge'){
+        bridgeMedia.push(item)
+      }else if(item.type=='member'){
+        partMedia.push(item)
+      }else if(item.type=='diseaseParts'){
+        diseasePartsMedia.push(item)
+      }else if(item.type=='goodParts'){
+        goodMemberMedia.push(item)
+      }
+    })
+    //存入桥梁媒体信息
+    data.testData['bridgeMedia'] = bridgeMedia
+    //****************** 检测数据--养护计划 ******************
+    //获取 养护计划 和 病害成因 数据，并根据category分类
+    const planGenesis = listToGroup(
+      await partsPlanGenesisData.list(bindData),
+      'category',
+    );
+    //养护计划
+    const planData = planGenesis.plan?planGenesis.plan:[]
+    //病害成因
+    const genesisData = planGenesis.genesisData?planGenesis.genesisData:[]
+    //****************** 检测数据--构件数据 ******************
+    //获取构件数据 -- 与上面构件的区别是 会有新添加的构件
+    let memberData = await bridgeReportMember.list({bridgeid: bindData.bridgeid,bridgereportid:bindData.bridgereportid})
+    //处理构件数据
+    memberData.forEach(item=>{
+      item.dpscoresauto = 100
+      if(item.memberstatus=='200'){
+        item['diseaseData']=[]
+      }else if(item.memberstatus=='100'){
+        item['goodData']=[]
+        item['media']=[]
+      }
+    })
+    //----病害构件
+    const diseaseMember = memberData.filter(
+      ({memberstatus}) => memberstatus === '200',
+    );
+    //获取 病害数据
+    let diseaseData = await partsCheckstatusData.getDisease(
       bindData.bridgereportid,
-      goodsMember.map(it => it.memberid),
+      diseaseMember.map(item => item.memberid),
     )
-  : []
-  //好构件数据
-  const goodsData = [];
-  //处理 好构件数据
-  goodsMember.forEach(e => {
-    const goods = _goodsData
-      .filter(({dataid}) => e.memberid === dataid)
-      .sort((a, b) => a.u_date - b.u_date)[0];
-    if (goods) {
-      goods.parentdataid = ''
-      goods.membername = e.membername;
-      goods.membertype = e.membertype;
-      goodsData.push(goods);
-    }
-  });
-  //将 好构件 的 媒体数据 存入构件
-  goodMemberMedia.forEach(item=>{
-    let index = memberData.findIndex(i=> i.memberid==item.dataid)
-    memberData[index].media.push(item)
-  })
-  //将 好构件数据 存入 好构件
-  goodsData.forEach(item=>{
-    let index = memberData.findIndex(i=> i.memberid==item.dataid)
-    memberData[index].goodsData.push(item)
-  })
-  //****************** 检测数据--部件数据 ******************
-  //部件数据
-  let partData = []
-  //整合
-  memberData.forEach(async (item)=>{
-    let exist = partData.findIndex(i=> i.membertype==item.membertype)
-    if(exist==-1){
-      //不存在
-      let part = basememberinfo.find(i=>i.membertype==item.membertype)
-      part["memberData"] = [item]
-      part["media"] = []
-      partData.push(part)
-    }else{
-      //存在
-      partData[exist].memberData.push(item)
-    }
-  })
-  //----将部件图片信息存入部件
-  partMedia.forEach(item=>{
-    let index = partData.findIndex(i=> i.membertype==item.dataid)
-    partData[index].media.push(item)
-  })
-  //部件数据 存入 测试数据
-  data.testData['detailTestData'] = partData
+    //处理 病害数据 和 构件数据
+    diseaseMember.forEach(e=>{
+      const list = diseaseData
+          .filter(({dataid}) => e.memberid === dataid)
+          .map(item => {
+            //数据解析
+            const jsondata = JSON.parse(item?.jsondata || '{}');
+            if (jsondata?.standard?.scale) {
+              item.score =
+                numeric(jsondata?.standard?.scale)[item?.jsondata?.scale] || 0;
+            }
+            item.parentdataid = ''
+            item.jsondata = jsondata
+            item.membername = e.membername;
+            item.membertype = e.membertype;
+            return item;
+          });
+      //如果只一条病害数据 
+      if (list.length === 1) {
+        //memberData 构件数据
+        //查找这条病害输入哪条构件数据
+        const inx = memberData.findIndex(
+          ({memberid}) => memberid === list[0].memberid,
+        );
+        //计算 dpscoresauto
+        if (memberData[inx]) {
+          memberData[inx].dpscoresauto =
+            100 - (list[0].score || 0);
+        }
+      }
+      //如果有多条病害数据
+      //计算dpscoresauto
+      if (list.length > 1) {
+        const m = {};
+        list.forEach(item => {
+          if (m[item.scalegroupid || 'not']) {
+            m[item.scalegroupid || 'not'].push(item.score || 0);
+          } else {
+            m[item.scalegroupid || 'not'] = [item.score || 0];
+          }
+        });
+        const scoreList = [...(m.not || [])];
+        Object.keys(m)
+          .filter(key => key !== 'not')
+          .forEach(key => {
+            scoreList.push(Math.max(...m[key]));
+          });
+        const inx = memberData.findIndex(
+          ({memberid}) => memberid === list[0].dataid,
+        );
+        if (memberData[inx]) {
+          memberData[inx].dpscoresauto = parseFloat(
+            (100 - score(scoreList).reduce((a, c) => a + c)).toFixed(3),
+          );
+        }
+      }
+    })
+    //病害数据 添加 媒体 属性
+    diseaseData.forEach(item=>{item['media']=[]})
+    //将 病害媒体数据 存入病害
+    diseasePartsMedia.forEach(item=>{
+      let index = diseaseData.findIndex(i=> i.version==item.dataid)
+      diseaseData[index].media.push(item)
+    })
+    //将 养护计划数据 存入病害
+    planData.forEach(item=>{
+      let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
+      diseaseData[index].maintenancePlan = item
+    })
+    //将 病害成因数据 存入病害
+    genesisData.forEach(item=>{
+      let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
+      diseaseData[index].maintenancePlan = item
+    })
+    //将 病害数据 存入构件
+    diseaseData.forEach(item=>{
+      let index = memberData.findIndex(i=> i.memberid==item.dataid)
+      memberData[index].diseaseData.push(item)
+    })
+    //----好构件
+    const goodsMember = memberData.filter(
+      ({memberstatus}) => memberstatus === '100',
+    );
+    //获取 好构件 的 数据
+    const _goodsData = goodsMember.length
+    ? await partsCheckstatusData.getGoods(
+        bindData.bridgereportid,
+        goodsMember.map(it => it.memberid),
+      )
+    : []
+    //好构件数据
+    const goodsData = [];
+    //处理 好构件数据
+    goodsMember.forEach(e => {
+      const goods = _goodsData
+        .filter(({dataid}) => e.memberid === dataid)
+        .sort((a, b) => a.u_date - b.u_date)[0];
+      if (goods) {
+        goods.parentdataid = ''
+        goods.membername = e.membername;
+        goods.membertype = e.membertype;
+        goodsData.push(goods);
+      }
+    });
+    //将 好构件 的 媒体数据 存入构件
+    goodMemberMedia.forEach(item=>{
+      let index = memberData.findIndex(i=> i.memberid==item.dataid)
+      memberData[index].media.push(item)
+    })
+    //将 好构件数据 存入 好构件
+    goodsData.forEach(item=>{
+      let index = memberData.findIndex(i=> i.memberid==item.dataid)
+      memberData[index].goodsData.push(item)
+    })
+    //****************** 检测数据--部件数据 ******************
+    //部件数据
+    let partData = []
+    //整合
+    memberData.forEach(async (item)=>{
+      let exist = partData.findIndex(i=> i.membertype==item.membertype)
+      if(exist==-1){
+        //不存在
+        let part = basememberinfo.find(i=>i.membertype==item.membertype)
+        part["memberData"] = [item]
+        part["media"] = []
+        partData.push(part)
+      }else{
+        //存在
+        partData[exist].memberData.push(item)
+      }
+    })
+    //----将部件图片信息存入部件
+    partMedia.forEach(item=>{
+      let index = partData.findIndex(i=> i.membertype==item.dataid)
+      partData[index].media.push(item)
+    })
+    //部件数据 存入 测试数据
+    data.testData['detailTestData'] = partData
 
-  // 处理媒体数据
-  let mediaData = []
-  fileList.forEach(item=>{
-    if(item.mediatype!=='virtualimage'){
-      mediaData.push(item)
+    // 处理媒体数据
+    let mediaData = []
+    fileList.forEach(item=>{
+      if(item.mediatype!=='virtualimage'){
+        mediaData.push(item)
+      }
+    })
+    let newData = {
+      state:true,
+      data:data,
+      mediaData:mediaData
     }
-  })
-  let newData = {
-    data:data,
-    mediaData:mediaData
+    return newData
+  }catch(e){
+    const bindData = await bridgeProjectBind.getById(id);
+    const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
+    let data = {
+      state:false,
+      data:bridgeData,
+      err:e
+    }
+    return data
   }
-  return newData
 }
 //获取
 /* const fun = key => {
