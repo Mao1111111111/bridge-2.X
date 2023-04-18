@@ -2,6 +2,7 @@ import React from 'react';
 import * as uploadData from '../../utils/upload-data';
 import * as bridge from '../../database/bridge';
 import * as bridgeMember from '../../database/bridge_member';
+import * as uploadStateRecord from '../../database/upload_state_record';
 import * as uploadLog from '../../database/upload_log';
 import reducer from '../../providers/reducer';
 import {Context as GlobalContext} from '../../providers/GlobalProvider';
@@ -281,13 +282,16 @@ function Provider({children}) {
                   bridgename:data.bridgename
                 }
               }
+              // 测试数据上传成功 标志位
+              let testDataUploadSuccess = true
+              // 媒体数据上传成功 标志位
+              let mediaDataUploadSuccess = true
               //---------上传检测数据到云
               await uploadData.syncUploadTestDataToObs(ObsReportDataKey,JSON.stringify(data)).then(async res=>{
                 let newFeedbackParams = feedbackParams
                 newFeedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
                 //---------反馈
                 await uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
-                  //console.log("res",res);
                 }).catch(err=>{
                   let errObj = state.promptFontErr
                   let name = state.testDataUploadProject.projectname + '-' + data.bridgename
@@ -302,6 +306,8 @@ function Provider({children}) {
                     type: 'promptFontErr',
                     payload: errObj
                   })
+                  // 测试数据上传成功 标志位
+                  testDataUploadSuccess = false
                 })
               }).catch(err=>{
                 let errObj = state.promptFontErr
@@ -317,6 +323,8 @@ function Provider({children}) {
                   type: 'promptFontErr',
                   payload: errObj
                 })
+                // 测试数据上传成功 标志位
+                testDataUploadSuccess = false
               })
 
               //---------上传媒体数据到云
@@ -364,6 +372,8 @@ function Provider({children}) {
                           type: 'promptFontErr',
                           payload: errObj
                         })
+                        // 媒体数据上传成功 标志位
+                        mediaDataUploadSuccess = false
                       })
                     }).catch(err=>{
                         let errObj = state.promptFontErr
@@ -377,9 +387,31 @@ function Provider({children}) {
                           type: 'promptFontErr',
                           payload: errObj
                         })
+                        // 媒体数据上传成功 标志位
+                        mediaDataUploadSuccess = false
                     })
                   }),
               );
+              // 判断是否上传成功
+              if(testDataUploadSuccess&&mediaDataUploadSuccess){
+                // 上传状态
+                await uploadStateRecord.update({
+                  state:3,
+                  bridgereportid:data.testData.bridgereportid
+                });
+                // 上传记录
+                await uploadLog.save({
+                  dataid: state.testDataUploadingIds[inx],
+                  category: '检测数据',
+                  to_projcet_id: state.testDataUploadProject.projectid,
+                  to_projcet_name: state.testDataUploadProject.projectname,
+                });
+              }else{
+                await uploadStateRecord.update({
+                  state:2,
+                  bridgereportid:data.bridgereportid
+                });
+              }
             }else{
               // 数据整理失败
               let errObj = state.promptFontErr
@@ -395,9 +427,23 @@ function Provider({children}) {
                 type: 'promptFontErr',
                 payload: errObj
               })
+              // 上传状态记录表
+              await uploadStateRecord.update({
+                state:2,
+                bridgereportid:allData.data.bridgereportid
+              });
             }
+            dispatch({
+              type: 'testDataUploadEndIds',
+              payload: state.testDataUploadingIds?.slice(0, inx + 1),
+            });
             //---------将数据标记为已上传
-            /* await uploadLog.save({
+            // 上传状态记录表
+           /*  await uploadStateRecord.update({
+              state:3,
+              bridgereportid:data.bridgereportid
+            });
+            await uploadLog.save({
               dataid: state.testDataUploadingIds[inx],
               category: '检测数据',
               to_projcet_id: state.testDataUploadProject.projectid,

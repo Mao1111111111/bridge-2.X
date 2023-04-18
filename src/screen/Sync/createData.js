@@ -685,7 +685,10 @@ export const getData =async (
     const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
     let data = {
       state:false,
-      data:bridgeData,
+      data:{
+        ...bridgeData,
+        ...bindData
+      },
       err:e
     }
     return data

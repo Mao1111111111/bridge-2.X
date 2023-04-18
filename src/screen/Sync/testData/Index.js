@@ -7,6 +7,7 @@ import {View, Text, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
 import Tabs from '../../../components/Tabs';
 import {Box} from '../../../components/CommonView';
 import {bridgeList} from '../../../database/bridge_project_bind';
+import * as uploadStateRecord from '../../../database/upload_state_record';
 import {Context as GlobalContext} from '../../../providers/GlobalProvider';
 import {Context as ThemeContext} from '../../../providers/ThemeProvider';
 import {syncGetProject, syncGroups} from '../../../utils/upload-data';
@@ -110,13 +111,40 @@ export default function TestData({navigation}) {
       if (userInfo || testDataFefreshFlg) {
         bridgeList(userInfo.userid).then(async res => {
           res.forEach(item => (item.id = item.bindId));
+          // 表格数据 =  已上传 + 未上传
           let data = []
+          // 将没有检测的数据排除
           for(let i=0;i<res.length;i++){
             let testData = await bridgeReport.get(res[i]);
             if(testData){
-              data.push(res[i])
+              // 获取检测状态
+              const uploadState = await uploadStateRecord.getById(res[i].bridgereportid)
+              //console.log("state",uploadStatestate);
+              // 默认检测数据为未上传
+              let state = 0
+              if(uploadState){
+                // 当上传状态表中存在时，上传状态为表中数据
+                state = uploadState.state
+              }else{
+                // 当上传状态表中不存在数据时，上传状态根据上传记录表判断
+                if(res[i].upload_date){
+                  state = 3
+                }
+                // 并将数据存入上传状态表
+                await uploadStateRecord.save({
+                  bridgeid: res[i].bridgeid,
+                  bridgereportid:res[i].bridgereportid,
+                  userid: res[i].userid
+                });
+              }
+              // 将上传状态存入数据
+              data.push({
+                ...res[i],
+                uploadState:state
+              })
             }
           }
+          console.log("data ",data);
           setList(data);
         });
       }
@@ -189,8 +217,9 @@ export default function TestData({navigation}) {
           <NotSync
             onUpload={handleUpload}
             list={list.filter(
-              ({upload_date, id}) =>
-                !upload_date && !testDataUploadingIds.find(it => it === id),
+              ({upload_date, id, uploadState}) =>
+                /* !upload_date && !testDataUploadingIds.find(it => it === id), */
+                uploadState!==3 && !testDataUploadingIds.find(it => it === id),
             )}
           />
         );
@@ -199,8 +228,9 @@ export default function TestData({navigation}) {
           <Synced
             onUpload={handleUpload}
             list={list.filter(
-              ({upload_date, id}) =>
-                upload_date && !testDataUploadingIds.find(it => it === id),
+              ({upload_date, id, uploadState}) =>
+                /* upload_date && !testDataUploadingIds.find(it => it === id), */
+                uploadState==3 && !testDataUploadingIds.find(it => it === id),
             )}
           />
         );

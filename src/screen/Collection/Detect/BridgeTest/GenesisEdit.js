@@ -12,6 +12,7 @@ import Table from '../../../../components/Table';
 import HeaderTabs from './HeaderTabs';
 import {getDiseaseDataList} from '../../../../database/parts_checkstatus_data';
 import * as partsPlanGenesisData from '../../../../database/parts_plan_genesis_data';
+import * as uploadStateRecord from '../../../../database/upload_state_record';
 import storage from '../../../../utils/storage';
 import {listToPage} from '../../../../utils/common';
 
@@ -177,6 +178,20 @@ export default function GenesisEdit({navigation, route}) {
         setData(new Set(JSON.parse(res.jsondata).list));
       }
     })();
+    //---更新上传状态
+    const updateUploadState = async () => {
+      // 获取当前上传状态
+      // 上传状态
+      let uploadState = await uploadStateRecord.getById(bridgereportid)
+      // 当状态为已上传时，设置上传状态为有更新
+      if(uploadState.state==3){
+        await uploadStateRecord.update({
+          state:1,
+          bridgereportid:bridgereportid
+        });
+      }
+    }
+    updateUploadState()
   }, [nowEdit, fileList, list, bridgereportid, userInfo]);
 
   // 顶部导航
@@ -254,6 +269,20 @@ export default function GenesisEdit({navigation, route}) {
       bridgereportid,
     });
     setData(set);
+    //---更新上传状态
+    const updateUploadState = async () => {
+      // 获取当前上传状态
+      // 上传状态
+      let uploadState = await uploadStateRecord.getById(bridgereportid)
+      // 当状态为已上传时，设置上传状态为有更新
+      if(uploadState.state==3){
+        await uploadStateRecord.update({
+          state:1,
+          bridgereportid:bridgereportid
+        });
+      }
+    }
+    updateUploadState()
   };
 
   return (
