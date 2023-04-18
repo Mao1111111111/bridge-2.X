@@ -409,7 +409,7 @@ function Provider({children}) {
               }else{
                 await uploadStateRecord.update({
                   state:2,
-                  bridgereportid:data.bridgereportid
+                  bridgereportid:data.testData.bridgereportid
                 });
               }
             }else{

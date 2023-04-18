@@ -144,7 +144,6 @@ export default function TestData({navigation}) {
               })
             }
           }
-          console.log("data ",data);
           setList(data);
         });
       }
