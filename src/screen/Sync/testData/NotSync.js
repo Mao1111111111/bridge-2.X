@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, FlatList, StyleSheet} from 'react-native';
+import {View, FlatList, StyleSheet, Text} from 'react-native';
 import {tailwind} from 'react-native-tailwindcss';
 import Table from '../../../components/Table';
 import Checkbox from '../../../components/Checkbox';
@@ -27,6 +27,14 @@ export default function NotSync({list, onUpload}) {
   const [tablePageNo, setTablePageNo] = React.useState(1);
 
   const [nowEdit, setNowEdit] = React.useState(new Set());
+
+  // 上传状态对应文字
+  const uploadStateToFont = {
+    0:'未上传',
+    1:'有更新',
+    2:'上传失败',
+    3:'已上传'
+  }
 
   React.useEffect(() => {
     setNowEdit(new Set());
@@ -75,6 +83,7 @@ export default function NotSync({list, onUpload}) {
             <Table.Title title="桩号" flex={3} />
             <Table.Title title="桥梁名称" flex={3} />
             <Table.Title title="桥幅" flex={2} />
+            <Table.Title title="上传状态" flex={2} />
             <Table.Title title="所属本地项目" flex={3} />
           </Table.Header>
           <FlatList
@@ -95,6 +104,9 @@ export default function NotSync({list, onUpload}) {
                     bridgeside?.find(it => it.paramid === item.bridgeside)
                       .paramname
                   }
+                </Table.Cell>
+                <Table.Cell flex={2}>
+                  <Text style={{color:item.uploadState==1?'green':item.uploadState==2?'red':null}}>{uploadStateToFont[item.uploadState]}</Text>
                 </Table.Cell>
                 <Table.Cell flex={3}>{item.projectname}</Table.Cell>
               </Table.Row>

@@ -10,6 +10,7 @@ import reducer from '../../../../providers/reducer';
 import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
 import * as bridgeMember from '../../../../database/bridge_member';
 import * as bridgeReport from '../../../../database/bridge_report';
+import * as uploadStateRecord from '../../../../database/upload_state_record';
 import * as bridgeReportFile from '../../../../database/bridge_report_file';
 import * as bridgeProjectBind from '../../../../database/bridge_project_bind';
 import * as bridgeReportMember from '../../../../database/bridge_report_member';
@@ -104,6 +105,12 @@ const Provider = ({bridge, project, children}) => {
           bridgeid: bridge.bridgeid,
           bridgereportid,
           userid: userInfo.userid,
+        });
+        // 上传状态记录
+        await uploadStateRecord.save({
+          bridgeid: bridge.bridgeid,
+          bridgereportid,
+          userid: userInfo.userid
         });
         // 获取桥梁的构件，并在数据中加入 报告id、构件检测状态、构件评分、更新时间
         _partsList = (await bridgeMember.list(bridge.bridgeid)).map(item => ({
@@ -300,6 +307,20 @@ const Provider = ({bridge, project, children}) => {
         dispatch({type: 'isLoading', payload: false});
         dispatch({type: 'cachePartsList', payload: []});
       });
+    //---更新上传状态
+    const updateUploadState = async () => {
+      // 获取当前上传状态
+      // 上传状态
+      let uploadState = await uploadStateRecord.getById(state.bridgereportid)
+      // 当状态为已上传时，设置上传状态为有更新
+      if(uploadState.state==3){
+        await uploadStateRecord.update({
+          state:1,
+          bridgereportid:state.bridgereportid
+        });
+      }
+    }
+    updateUploadState()
   }, [
     state.cachePartsList,
     state.isInit,
@@ -362,6 +383,20 @@ const Provider = ({bridge, project, children}) => {
         dispatch({type: 'isLoading', payload: false});
         dispatch({type: 'cacheFileData', payload: null});
       });
+    //---更新上传状态
+    const updateUploadState = async () => {
+      // 获取当前上传状态
+      // 上传状态
+      let uploadState = await uploadStateRecord.getById(state.bridgereportid)
+      // 当状态为已上传时，设置上传状态为有更新
+      if(uploadState.state==3){
+        await uploadStateRecord.update({
+          state:1,
+          bridgereportid:state.bridgereportid
+        });
+      }
+    }
+    updateUploadState()
   }, [
     state.cacheFileData,
     state.isInit,

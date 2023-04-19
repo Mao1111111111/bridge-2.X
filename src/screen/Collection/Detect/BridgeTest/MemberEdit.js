@@ -15,6 +15,7 @@ import {BujianCheckbox} from '../../components/BridgeEdit/components';
 import {listToPage, listToGroup} from '../../../../utils/common';
 import {alert, confirm} from '../../../../utils/alert';
 import * as bridgeReportMember from '../../../../database/bridge_report_member';
+import * as uploadStateRecord from '../../../../database/upload_state_record';
 import rules from '../../../../utils/rules';
 
 // 构件表单 组件 -- 构件新增、编辑
@@ -111,6 +112,17 @@ const PartsForm = React.forwardRef(
             });
           }),
         );
+        //---更新上传状态
+        // 获取当前上传状态
+        // 上传状态
+        let uploadState = await uploadStateRecord.getById(bridgereportid)
+        // 当状态为已上传时，设置上传状态为有更新
+        if(uploadState.state==3){
+          await uploadStateRecord.update({
+            state:1,
+            bridgereportid:bridgereportid
+          });
+        }
       }
       await onSubmit();
       close();
@@ -351,6 +363,17 @@ const MemberAdd = React.forwardRef(
               }),
           ),
         );
+        //---更新上传状态
+        // 获取当前上传状态
+        // 上传状态
+        let uploadState = await uploadStateRecord.getById(bridgereportid)
+        // 当状态为已上传时，设置上传状态为有更新
+        if(uploadState.state==3){
+          await uploadStateRecord.update({
+            state:1,
+            bridgereportid:bridgereportid
+          });
+        }
         await onSubmit();
         close();
       });
