@@ -590,7 +590,9 @@ export const getData =async (
     //将 病害媒体数据 存入病害
     diseasePartsMedia.forEach(item=>{
       let index = diseaseData.findIndex(i=> i.version==item.dataid)
-      diseaseData[index].media.push(item)
+      if(index!==-1){
+        diseaseData[index].media.push(item)
+      }
     })
     //将 养护计划数据 存入病害
     planData.forEach(item=>{
@@ -681,6 +683,7 @@ export const getData =async (
     }
     return newData
   }catch(e){
+    console.log("e",e);
     const bindData = await bridgeProjectBind.getById(id);
     const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
     let data = {
