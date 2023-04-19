@@ -1,6 +1,7 @@
 import React from 'react';
 import * as uploadData from '../../utils/upload-data';
 import * as bridge from '../../database/bridge';
+import * as bridgeProjectBind from '../../database/bridge_project_bind';
 import * as bridgeMember from '../../database/bridge_member';
 import * as uploadStateRecord from '../../database/upload_state_record';
 import * as uploadLog from '../../database/upload_log';
@@ -10,7 +11,6 @@ import {alert} from '../../utils/alert';
 import storage from '../../utils/storage';
 import * as createData from './createData';
 import { BucketName_storeTestData } from '../../assets/OBSConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import fs from '../../utils/fs'
 import RNFS from 'react-native-fs';
 
@@ -190,6 +190,9 @@ function Provider({children}) {
                       + state.promptFontErr[key].mediaDataFont.length + '条，失败原因：' 
                       + state.promptFontErr[key].mediaDataFont[0]
             }
+            if(state.promptFontErr[key].otherErr){
+              errFont = errFont + '\n' + '1)' + '检测数据上传失败，失败原因：' + state.promptFontErr[key].otherErr
+            }
           })
         }
         alert(errFont,
@@ -247,10 +250,8 @@ function Provider({children}) {
               date.getHours() + ':' + 
               date.getMinutes() + ':' + 
               date.getSeconds()
-
+              
               //---------存储到华为云的键值
-              // 获取用户信息
-              const userInfo = JSON.parse(await AsyncStorage.getItem('userInfo'))
               // 企业编号/用户编号/桥梁编号/桥梁检测编号/对象文件编号
               let ObsReportDataKey = userInfo.company.companyid + '/'
                           + data.testData.userid + '/'
@@ -532,6 +533,27 @@ function Provider({children}) {
               );
             } */
           } catch (err) {
+            // ----- 记录上传原因
+            let errObj = state.promptFontErr
+            const bindData = await bridgeProjectBind.getById(state.testDataUploadingIds[inx]);
+            const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
+            let name = state.testDataUploadProject.projectname + '-' + bridgeData.bridgename
+            if(errObj[name]){
+              errObj[name]['otherErr'] = err
+            }else{
+              errObj[name] = {
+                testDataFont:err
+              }
+            }
+            dispatch({
+              type: 'promptFontErr',
+              payload: errObj
+            })
+            // ----数据库记录上传状态
+            await uploadStateRecord.update({
+              state:2,
+              bridgereportid:bindData.bridgereportid
+            });
             console.info('errr',err);
           } finally {
             console.info('>???', inx);
