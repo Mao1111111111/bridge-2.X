@@ -149,7 +149,7 @@ const RowMediaComponent = ({item, onPress, isActive}) => {
 };
 
 // 媒体组件
-export default function Media({categoryList, type, dataid, defaultFileName,pileTitle,pileNum}) {
+export default function Media({categoryList, type, dataid, defaultFileName,pileTitle,pileNum,memberList,route}) {
   // categoryList-类型列表，defaultFileName-默认文件名
   // 全局样式
   const {
@@ -270,6 +270,7 @@ export default function Media({categoryList, type, dataid, defaultFileName,pileT
         memberArr[0].list = res
         // console.log(memberArr[0].list[0]);
         setMemberArr(memberArr)
+        console.log('memberArrmemberArrmemberArr',memberArr);
     } catch (err) {
       console.log('ee',err);
     }
