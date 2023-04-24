@@ -148,8 +148,10 @@ const RowMediaComponent = ({item, onPress, isActive}) => {
   );
 };
 
-
-export default function Media({categoryList, type, dataid, defaultFileName, pileTitle, pileNum, memberList,route}) {
+// 媒体组件
+export default function Media({categoryList, type, dataid, defaultFileName,pileTitle,pileNum}) {
+  // categoryList-类型列表，defaultFileName-默认文件名
+  // 全局样式
   const {
     state: {theme},
   } = React.useContext(ThemeContext);

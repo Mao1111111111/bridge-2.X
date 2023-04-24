@@ -15,6 +15,7 @@ import {BujianCheckbox} from '../../components/BridgeEdit/components';
 import {listToPage, listToGroup} from '../../../../utils/common';
 import {alert, confirm} from '../../../../utils/alert';
 import * as bridgeReportMember from '../../../../database/bridge_report_member';
+import * as uploadStateRecord from '../../../../database/upload_state_record';
 import rules from '../../../../utils/rules';
 
 // 构件表单 组件 -- 构件新增、编辑
@@ -95,13 +96,15 @@ const PartsForm = React.forwardRef(
         // 编辑时，更新数据库的数据
         await Promise.all(list.map(bridgeReportMember.update));
       } else {
+        // 当前时间戳
+        let time = (new Date()).valueOf()
         // 新增时，在数据库中新增
         await Promise.all(
-          list.map(async item => {
+          list.map(async (item,index) => {
             await bridgeReportMember.save({
               ...item,
               position: membertype.substring(0, 3),
-              memberid: uuid.v4(),
+              memberid: bridgereportid + '_' + membertype + '_' + (time).toString(36) + '_' + index,
               membertype,
               dpscores_auto: 0,
               bridgereportid,
@@ -109,6 +112,17 @@ const PartsForm = React.forwardRef(
             });
           }),
         );
+        //---更新上传状态
+        // 获取当前上传状态
+        // 上传状态
+        let uploadState = await uploadStateRecord.getById(bridgereportid)
+        // 当状态为已上传时，设置上传状态为有更新
+        if(uploadState.state==3){
+          await uploadStateRecord.update({
+            state:1,
+            bridgereportid:bridgereportid
+          });
+        }
       }
       await onSubmit();
       close();
@@ -330,6 +344,13 @@ const MemberAdd = React.forwardRef(
             );
           }
         });
+
+        // 当前时间戳
+        let time = (new Date()).valueOf()
+        // 处理构件数据中的 memberid
+        data.forEach((item,index)=>{
+          item.memberid = bridgereportid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
+        })
         // 将所有的构件数据存入 桥梁检测构件表 
         await Promise.all(
           data.map(
@@ -342,6 +363,17 @@ const MemberAdd = React.forwardRef(
               }),
           ),
         );
+        //---更新上传状态
+        // 获取当前上传状态
+        // 上传状态
+        let uploadState = await uploadStateRecord.getById(bridgereportid)
+        // 当状态为已上传时，设置上传状态为有更新
+        if(uploadState.state==3){
+          await uploadStateRecord.update({
+            state:1,
+            bridgereportid:bridgereportid
+          });
+        }
         await onSubmit();
         close();
       });

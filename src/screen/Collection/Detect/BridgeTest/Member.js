@@ -294,7 +294,7 @@ export default function Member({route, navigation,item}) {
     }
     return [
       {
-        // name: 'home',
+        name: 'home',
         isIcon: true,
         onPress: () => navigation.navigate('Collection/Detect/Project'),
       },
