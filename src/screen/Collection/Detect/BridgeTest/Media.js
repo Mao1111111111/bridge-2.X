@@ -270,7 +270,7 @@ export default function Media({categoryList, type, dataid, defaultFileName,pileT
         memberArr[0].list = res
         // console.log(memberArr[0].list[0]);
         setMemberArr(memberArr)
-        console.log('memberArrmemberArrmemberArr',memberArr);
+        // console.log('memberArrmemberArrmemberArr',memberArr);
     } catch (err) {
       console.log('ee',err);
     }
