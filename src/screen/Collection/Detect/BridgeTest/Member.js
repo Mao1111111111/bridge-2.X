@@ -365,7 +365,7 @@ export default function Member({route, navigation,item}) {
   // 影音组件
   const getMedia = () => {
     try {
-      console.log('listlist',list);
+      // console.log('listlist',list);
       const nowEdit = parts.find(item => checkedList.has(item.id));
       const dataid = nowEdit
         ? nowEdit.memberid

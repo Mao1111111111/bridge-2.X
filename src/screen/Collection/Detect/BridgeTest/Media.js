@@ -14,13 +14,14 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
-import {TextInput, Textarea, WriteInput} from '../../../../components/Input';
+import {TextInput, Textarea, WriteInput, WriteInputSlide} from '../../../../components/Input';
 import VideoPlayer from '../../../../components/VideoPlayer';
 import {CircleButton} from '../../../../components/Button';
 import {Content} from '../../../../components/CommonView';
 import LabelItem from '../../../../components/LabelItem';
 import {Player} from '../../../../components/Audio';
 import Select from '../../../../components/Select';
+import {Picker} from '@react-native-picker/picker';
 import Sketch from '../../../../components/Sketch';
 import Tabs from '../../../../components/Tabs';
 import fs from '../../../../utils/fs';
@@ -170,8 +171,10 @@ export default function Media({categoryList, type, dataid, defaultFileName, pile
 
   const [nowEdit, setNowEdit] = React.useState();
 
-  const [dataArr, setDataArr] = React.useState()
+  const [pickerVisible, setPickerVisible] = React.useState(false);
   const [memberArr, setMemberArr] = React.useState()
+  const [labelText, setLabelText] = React.useState('')
+
 
   React.useEffect(() => {
     if (!type || !fileList || !categoryList) {
@@ -206,39 +209,6 @@ export default function Media({categoryList, type, dataid, defaultFileName, pile
       setIsInit(false);
     }
 
-    let dataArr = [
-      {
-        "name": "Asia",
-        "id": 1,
-        "list": [
-          {
-            "name": "China",
-            "id": 100,
-            "list": [
-              {
-                "name": "Beijing",
-                "id": 1101
-              },
-              {
-                "name": "Chongqing",
-                "id": 1102
-              },
-              {
-                "name": "Shanghai",
-                "id": 1103
-              }
-            ]
-          },
-          {
-            "name": "South Korea",
-            "id": 200,
-            "list": []
-          }
-        ]
-      }
-    ]
-    setDataArr(dataArr)
-
     // console.log('图片标题来源defaultFileName',defaultFileName,categoryList[0].label);
     try {
       // console.log('memberList',memberList,route.params.data.title);
@@ -250,9 +220,7 @@ export default function Media({categoryList, type, dataid, defaultFileName, pile
         list:[]
       }]
       memberList.forEach((index,item) => {
-        // console.log('memberList[item].list', memberList[item].list);
         memberList[item].list.forEach((index1, item1) => {
-          // console.log('memberList item',index1);
           memberArr[0].list.push({
           
               name:index.title,
@@ -265,81 +233,43 @@ export default function Media({categoryList, type, dataid, defaultFileName, pile
         })
         
       });
-      console.log('memberArr3',memberArr[0]);
-      let mArr = memberArr[0].list
-      console.log('mArr',mArr);
+      
+        let secList = []
+        let res = []
+        for (let i = 0; i < memberArr[0].list.length; i++) {
+          // console.log('memberArr[0].list[i].name',memberArr[0].list[i].name);
+          // console.log('memberArr[0].list[i].list',memberArr[0].list[i].list);
 
-      const groups = mArr.reduce((groups, member) => {
-        const key = member.name
-        if (!groups[key]) {
-          groups[key] = []
+          // 写入第二层的list内容
+          secList.push(
+            {
+              name:memberArr[0].list[i].name,
+              id:memberArr[0].list[i].id,
+              list:[]
+            }
+          )
+          // 写入第三层的list内容
+          for (let k = 0; k < secList.length; k++) {
+            if (secList[k].name == memberArr[0].list[i].name) {
+              secList[k].list.push(
+                {
+                  name:memberArr[0].list[i].list.name,
+                  id:memberArr[0].list[i].list.id
+                }
+              )
+            }
+          }
+          // 去重
+          res = secList.filter(function(item,index,self){
+            return self.findIndex(el => el.id==item.id) === index
+          })
+          // console.log('res',res);
         }
-        groups[key].push(member)
-        return groups
-      },{})
-      groups.forEach(item => {
-        console.log('item',item);
-        // if (item.name) {
-        //   delete item.name
-        // }
-      })
-      console.log('分类后的groups',groups);
-      let ccArr = [{
-        name:memberArr[0].name,
-        id:memberArr[0].id,
-        list:groups
-      }]
-      console.log('ccArr',ccArr);
-      console.log('ccArr',ccArr[0].list);
-      // console.log('memberArr4',memberArr[0].list[0]);
-      // let testArr = []
-      // let BBarr = []
-      // let linshiArr = []
-      // for (let i = 0; i < memberArr[0].list.length; i++) {
-      //   testArr.push(memberArr[0].list[i].id)
-      //   let idArr = [...new Set(testArr)]
-      //   // console.log('idArr',idArr);
-      //   for (let m = 0; m < idArr.length; m++) {
-      //     if (idArr[m] == memberArr[0].list[i].id) {
-      //       // console.log('id',idArr[m]);
-      //       BBarr.push({
-      //         name:memberArr[0].list[i].name,
-      //         id:memberArr[0].list[i].id
-      //       })
-      //     }
-      //   }
-      //   console.log('BBarr',BBarr);
-      //   // 去重
-      //   let res = BBarr.filter(function(item,index,self){
-      //     return self.findIndex(el => el.id==item.id) === index
-      //   })
-      //   console.log('res',res);
-        
-      //   for (let n = 0; n < res.length; n++) {
-      //     if (memberArr[0].list[i].id == res[n].id) {
-      //       console.log('res[n].id',res[n].id);
-      //       // console.log('memberArr[0].list[i].list',memberArr[0].list[i].list.name);
-      //       // linshiArr.push({
-      //       //   name:memberArr[0].list[i].list.name,
-      //       //   id:memberArr[0].list[i].list.id
-      //       // })
-      //       linshiArr.push({
-      //         name:memberArr[0].list[i].list.name,
-      //         id:memberArr[0].list[i].list.id
-      //       })
-      //       // res[n]['list'] = memberArr[0].list[i].list
-      //     }
-          
-          
-      //   }
-        
-      //   console.log('linshiArr',linshiArr);
-      //   // console.log(i);
-      //   // console.log('secMemberArr```',memberArr[0].list[i].list);
-      // }
-      setMemberArr(memberArr)
+        memberArr[0].list = res
+        // console.log(memberArr[0].list[0]);
+        setMemberArr(memberArr)
     } catch (err) {
-      console.log(err);
+      console.log('ee',err);
     }
    
   }, [type, fileList, categoryList, dataid, isInit]);
@@ -494,11 +424,15 @@ export default function Media({categoryList, type, dataid, defaultFileName, pile
   };
 
   const handleDelete = () => {
-    dispatch({type: 'isLoading', payload: true});
-    const item = fileList.find(({mediaid}) => mediaid === nowEdit);
-    item.isDelete = true;
-    setNowEdit(list[list.length - 1].mediaid || '');
-    dispatch({type: 'cacheFileData', payload: item});
+    try {
+      dispatch({type: 'isLoading', payload: true});
+      const item = fileList.find(({mediaid}) => mediaid === nowEdit);
+      item.isDelete = true;
+      setNowEdit(list[list.length - 1].mediaid || '');
+      dispatch({type: 'cacheFileData', payload: item});
+    } catch (error) {
+      console.log('handledelete error', error);
+    }
   };
 
   const handlePriority = () => {
@@ -557,11 +491,30 @@ export default function Media({categoryList, type, dataid, defaultFileName, pile
     dispatch({type: 'cacheFileData', payload: data});
   }, 500);
 
+  const openMadol = () => {
+    console.log('打开弹窗');
+    setPickerVisible(true)
+  }
   cancel = () => {
     console.log('点击关闭321');
+    setPickerVisible(false)
   };
-  confirm = data => console.info('confirm', data);
-  
+  // confirm = data => console.info('confirm', data);
+  confirm = data => getLabel(data);
+  const getLabel = (data) => {
+    try {
+      if (data) {
+        if (data[0].name == '主梁') {
+          let labelText = data[2].name + '梁状况'
+          console.log(labelText);
+          setPickerVisible(false)
+          setLabelText(labelText)
+        }
+      }
+    } catch (error) {
+      
+    }
+  }
 
   return (
     <Content
@@ -682,22 +635,26 @@ export default function Media({categoryList, type, dataid, defaultFileName, pile
                 onChange={handleChenge}
               />
               <View style={tailwind.mY2} />
-              {memberList ? (
-                <Modal isVisible={false}>
+              
+              {/* {memberList ? (
+                <Modal isVisible={pickerVisible}>
                   <CascadePicker 
-                    dataSource={dataArr}
+                    dataSource={memberArr}
                     cancel={this.cancel}
                     confirm={this.confirm}
+                    name="filename"
+                    label="标题："
+                    onChange={handleChenge}
                   />
-              </Modal>
+                </Modal>
               ) : (
                 <WriteInput
-                ref={e => (form.current.filename = e)}
-                name="filename"
-                label="标题："
-                onChange={handleChenge}
+                  ref={e => (form.current.filename = e)}
+                  name="filename"
+                  label="标题："
+                  onChange={handleChenge}
                 />
-              )}
+              )} */}
               {/* <View style={{flex: 1}}>
                 <Modal>
                   <CascadePicker 
@@ -707,12 +664,23 @@ export default function Media({categoryList, type, dataid, defaultFileName, pile
                   />
                 </Modal>
               </View> */}
-              <WriteInput
+              
+              {/* <WriteInput
                 ref={e => (form.current.filename = e)}
                 name="filename"
                 label="标题："
                 onChange={handleChenge}
-              />
+              /> */}
+              <TouchableOpacity onPress={openMadol}>
+                <WriteInputSlide
+                  ref={e => (form.current.filename = e)}
+                  name="filename"
+                  label="标题："
+                  onChange={handleChenge}
+                  dataArr={memberArr}
+                />
+              </TouchableOpacity>
+              
               <View style={tailwind.mY2} />
               {categoryList ? (
                 <Select
@@ -767,6 +735,30 @@ export default function Media({categoryList, type, dataid, defaultFileName, pile
           </View>
         </View>
       )}
+      {/* 级联列表弹窗 */}
+      <Modal isVisible={pickerVisible}>
+        <CascadePicker 
+          dataSource={memberArr}
+          cancel={this.cancel}
+          confirm={this.confirm}
+          headOptions={{
+            confirmText:'确认',
+            cancelText:'取消',
+            backgroundColor:'#eeeeee',
+            confirmStyle:{
+              color:'#2b427d',
+              fontSize:16
+            },
+            cancelStyle:{
+              color:'#2b427d',
+              fontSize:16
+            },
+          }}
+          pickerStyle={{
+            activeFontColor:'#2b427d'
+          }}
+        />
+      </Modal>
       {/* 控制图片左右切换的模块 */}
       <View style={[styles.card, styles.rowCard, theme.primaryBgStyle]}>
         <TouchableOpacity onPress={handlePrev}>
@@ -816,6 +808,30 @@ const styles = StyleSheet.create({
     width: 480,
     height: 270,
     resizeMode: 'stretch',
+  },
+  input: {
+    ...tailwind.border,
+    ...tailwind.borderGray400,
+    ...tailwind.roundedSm,
+    ...tailwind.flex1,
+    ...tailwind.h8,
+    ...tailwind.justifyCenter,
+    ...tailwind.relative,
+    height: 40,
+  },
+  showText: {
+    ...tailwind.absolute,
+    ...tailwind.wFull,
+    ...tailwind.pX2,
+    ...tailwind.flexRow,
+    height: 25,
+    ...tailwind.h8,
+  },
+  select: {
+    paddingHorizontal: 0,
+    marginHorizontal: 0,
+    horizontal: 0,
+    opacity: 0,
   },
   card: {
     ...tailwind.flexRow,

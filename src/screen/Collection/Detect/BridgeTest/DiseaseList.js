@@ -311,6 +311,7 @@ export default function DiseaseList({route, navigation}) {
           const _list = [];
           res.forEach((item, index) => {
             if (!_list.find(it => it.version === item.version)) {
+              console.log('病害录入页面返回传入的数据',item.jsondata);
               item.jsondata = JSON.parse(item.jsondata || '{}');
               item.index = index + 1;
               if (item?.jsondata?.standard?.scale) {
@@ -605,7 +606,7 @@ export default function DiseaseList({route, navigation}) {
                         </Table.Cell>
                         <Table.Cell flex={3}>{item.u_date}</Table.Cell>
                         <Table.Cell flex={2}>
-                          {item.jsondata?.remark?.split('，')[0]}
+                          {item.jsondata?.diseaseName}
                         </Table.Cell>
                         <Table.Cell flex={4}>
                           {item.jsondata?.remark?.split('，').slice(1).join()}
