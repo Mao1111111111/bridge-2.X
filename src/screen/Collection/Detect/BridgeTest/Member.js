@@ -195,7 +195,7 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
   );
 };
 
-export default function Member({route, navigation}) {
+export default function Member({route, navigation,item}) {
   // 全局样式
   const {
     state: {theme},
@@ -230,6 +230,7 @@ export default function Member({route, navigation}) {
 
   // data是部件数据 data = {"done": 2, "lastEditDate": "2023-04-06 14:27:13", "membertype": "b200001", "title": "桥台", "total": 2, "type": "member"}
   const {data} = route.params;
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -280,6 +281,7 @@ export default function Member({route, navigation}) {
     setNowGroup(_list ? _list[0].stepno : null);
     setList(_list);
     setParts(_parts);
+    // console.log('list', _list);
   }, [partsList, data, basememberinfo]);
 
   // 顶部导航
@@ -363,6 +365,7 @@ export default function Member({route, navigation}) {
   // 影音组件
   const getMedia = () => {
     try {
+      console.log('listlist',list);
       const nowEdit = parts.find(item => checkedList.has(item.id));
       const dataid = nowEdit
         ? nowEdit.memberid
@@ -398,6 +401,8 @@ export default function Member({route, navigation}) {
           type={checkedList.size === 0 ? 'member' : 'parts'}
           defaultFileName={`${defaultFileName}状况`}
           categoryList={categoryList}
+          memberList={list}
+          route={route}
         />
       );
     } catch (err) {
@@ -405,6 +410,21 @@ export default function Member({route, navigation}) {
     }
     
   };
+
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+  // 向前
+  const goAhead = () => {
+    console.log('点击了goAhead');
+    handleEditPage('Collection/Detect/BridgeTest/Member/DiseaseList')
+  }
 
   return (
     <Box pid="P1501" headerItems={getHeaderItems()}>
@@ -417,6 +437,8 @@ export default function Member({route, navigation}) {
       {/* 数据 */}
       <View style={[pageType !== '数据' ? tailwind.hidden : tailwind.flex1]}>
         <Content
+        onBack={goBack}
+        onAhead={checkedList.size == 1 && goAhead}
           // 右侧按钮组
           operations={[
             {

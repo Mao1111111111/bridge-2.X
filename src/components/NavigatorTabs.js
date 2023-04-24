@@ -6,15 +6,13 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Context} from '../providers/GlobalProvider';
 import {Context as ThemeContext} from '../providers/ThemeProvider';
 import Headerbar from './Headerbar';
+import CommonView from './CommonView';
+import Pid from './Pid';
 import {Context as GlobalContext} from '../providers/GlobalProvider';
 // import {BoxShadow} from '../declaration/react-native-shadow'
 import ModalDropdown from 'react-native-modal-dropdown';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Caiji from '../../src/screen/Collection/Index';
-import Shuju from '../../src/screen/Sync/Index';
-import Tongji from '../../src/screen/Chart';
-import Shezhi from '../../src/screen/Setting';
 import { log } from 'react-native-reanimated';
 
 const Tab = createBottomTabNavigator();
@@ -58,7 +56,7 @@ const TabItem = ({title, icon, img,imgActive,isActive}) => {
 
 
 // 自定义 TabBar 渲染
-const TabBar = ({state, navigation, descriptors}) => {
+const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
 
   const {
     state: {userInfo},
@@ -113,7 +111,6 @@ const TabBar = ({state, navigation, descriptors}) => {
 
   const type = ['采集平台', '数据同步','数据统计','用户设置']
   
-  const [toPage, setToPage] = useState()
   // 分类选择
   _selectType = (indexA, value) => {
     // console.log('---', indexA, value)
@@ -150,20 +147,20 @@ const TabBar = ({state, navigation, descriptors}) => {
           // tailwind.flexGrow0,
           theme.primaryBgStyle,
           styles.boxShadow,
-          styles.bgcolor,
+          // styles.bgcolor,
           {height},
-          // {backgroundColor:'#000'}
+          {backgroundColor:'#eeeeee'}
           // {top:50}
         ],
       ]}
       >
       {/* logo */}
-      {/* <Image style={
+      <Image style={
         { height: 55, width: 180, alignItems: 'center' }}
         source={require('../iconImg/logo.png')}
-      /> */}
+      />
       {/* 软件版本 */}
-      {/* <Text
+      <Text
         style={
           [
             {
@@ -175,9 +172,9 @@ const TabBar = ({state, navigation, descriptors}) => {
             }
           ]
         }
-      >v1.083</Text> */}
-      {/* 中间导航按钮 */}
-      {/* {state.routes.map((route, index) => (
+      >v1.083</Text>
+      {/* 导航样式一 中间导航按钮 */}
+      {state.routes.map((route, index) => (
         <TouchableOpacity
           key={index}
           onPress={() => handlePress(route, index)}
@@ -193,7 +190,7 @@ const TabBar = ({state, navigation, descriptors}) => {
             isActive={state.index === index}
           />
         </TouchableOpacity>
-      ))} */}
+      ))}
 
       {/* 用户信息 */}
       {/* <Pressable onPress={() => menuList()}>
@@ -205,18 +202,30 @@ const TabBar = ({state, navigation, descriptors}) => {
           <Text>{userInfo?.nickname}</Text>
         </View>
       </Pressable> */}
-      {/* <View style={styles.user}> */}
+      <View style={styles.user}>
         {/* 用户头像 */}
-        {/* <Image style={{ height: 24, width: 24, alignItems: 'center' }}
+        <Image style={{ height: 24, width: 24, alignItems: 'center' }}
             source={require('../iconImg/user.png')}
-        /> */}
+        />
         {/* 整个小间隔 */}
-        {/* <Text>{' '}</Text>
-        <Text>{userInfo?.nickname}</Text> */}
-      {/* </View> */}
+        <Text>{' '}</Text>
+        <Text>{userInfo?.nickname}</Text>
+      </View>
 
-      {/* 下拉式一级导航菜单 */}
-      <ModalDropdown style={[styles.user,{top:0}]}
+      {/* <View style={[tailwind.mX19,{width:'76%'}]}>
+        <Headerbar items={headerItems || []} pid={''} />
+      </View> */}
+      {/* 右下角的页面编号 */}
+      {/* {pid ? (
+        <View style={styles.pid}>
+          <Pid pid={pid} size="small" />
+        </View>
+      ) : (
+        <></>
+      )} */}
+
+      {/* 导航样式二 下拉式一级导航菜单 */}
+      {/* <ModalDropdown style={[styles.user,{top:0}]}
         adjustFrame={this._adjustType}
         options={type} // 选项内容
         dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
@@ -233,14 +242,13 @@ const TabBar = ({state, navigation, descriptors}) => {
           <Text>{' '}</Text>
           <Text>{userInfo?.nickname}</Text>
         </View>
-      </ModalDropdown>
-      
+      </ModalDropdown> */}
     </Animated.View>
-    
-    
   );
 };
-export default function NavigatorTabs({routes}) {
+
+
+export default function NavigatorTabs({routes, headerItems, pid}) {
   return (
     <Tab.Navigator header={false} tabBar={props => <TabBar {...props} />}>
       {routes.map(item => (
@@ -288,7 +296,14 @@ const styles = StyleSheet.create({
     ...tailwind.itemsCenter,
   },
   menuListStyle: {
-    zIndex: 999,
+    // zIndex: 999,
     backgroundColor:'#fff'
+  },
+  pid: {
+    position:'absolute',
+    top:508,
+    right:3,
+    // height:20,
+    // backgroundColor:'#fff'
   }
 });

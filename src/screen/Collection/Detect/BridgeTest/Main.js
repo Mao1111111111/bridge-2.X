@@ -269,6 +269,20 @@ export default function Main({navigation}) {
     dispatch({type: 'reflush', payload: Math.random().toString(36).slice(-8)});
   };
 
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+  // 向前
+  const goAhead = () => {
+    console.log('点击了goAhead');
+  }
+
   return (
     // 外部盒子 = 样式 + 顶部导航 + 导航左侧标签
     <Box headerItems={getHeaderItems()} pid="P1301">
@@ -297,6 +311,8 @@ export default function Main({navigation}) {
       ) : (
         //---------数据---------
         <Content
+        onBack={goBack}
+        onAhead={nowEdit && handleMember}
           //右侧按钮 
           operations={[
             {

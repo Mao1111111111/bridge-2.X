@@ -23,7 +23,7 @@ import {RadioGroup} from '../../../../components/Radio';
 import ScaleInfo from '../BridgeTest/ScaleInfo';
 // import RadioGroup from 'react-native-radio-buttons-group';
 // 引入
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { log } from 'react-native-reanimated';
 
 

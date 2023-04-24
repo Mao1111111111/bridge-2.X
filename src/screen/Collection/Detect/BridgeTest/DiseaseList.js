@@ -64,7 +64,8 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
    }
 
   React.useEffect(() => {
-    // console.log("groupList",groupList);
+    console.log("groupList",groupList);
+    console.log('memberList',memberList);
     if (groupList && groupList.length) {
       groupList[0] && setNowEdit(groupList[0]);
       if(setSecondDisTypeSel){
@@ -555,14 +556,26 @@ export default function DiseaseList({route, navigation}) {
     }
   };
 
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+
   return (
     <Box headerItems={getHeaderItems()} pid="P1603">
       <HeaderTabs disabled={true} />
       <View style={tailwind.flex1}>
         <Content
           onAdd={() => handleAdd({list: [], index: total})}
-          onEdit={() => handleEdit(nowEdit)}
-          onDelete={handleDelete}>
+          onEdit={nowEdit && (() => handleEdit(nowEdit))}
+          onDelete={nowEdit && handleDelete}
+          onBack={goBack}
+          onAhead={nowEdit && (() => handleEdit(nowEdit))}>
           <View style={[styles.card, {width:700, backgroundColor:'#fff'}]}>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               <View style={[tailwind.flex1]}>

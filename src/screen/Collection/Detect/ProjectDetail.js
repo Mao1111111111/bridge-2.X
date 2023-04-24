@@ -733,6 +733,20 @@ export default function ProjectDetail({route, navigation}) {
     }
   };
 
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+  // 向前
+  const goAhead = () => {
+    console.log('点击了goAhead');
+  }
+
   return (
     // 公共box
     <CommonView
@@ -746,6 +760,8 @@ export default function ProjectDetail({route, navigation}) {
       onEdit={nowChecked && (() => bridgeRef.current.open(nowChecked))}
       // 删除
       onDelete={nowChecked && handleDelete}
+      onBack={goBack}
+      // onAhead={goAhead}
       // 右侧按钮
       operations={[
         // 导入桥梁 按钮
