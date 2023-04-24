@@ -16,6 +16,7 @@ import {listToPage} from '../../../../utils/common';
 import HeaderTabs from './HeaderTabs';
 import {confirm} from '../../../../utils/alert';
 import { getBaseData } from './utils';
+import uuid from 'react-native-uuid';
 
 const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
   //console.log("groupList",groupList);
@@ -461,7 +462,10 @@ export default function DiseaseList({route, navigation}) {
       title,
       type:data.secondDisTypeData,
       thridData:data.thridDisTypeData,
-      data: waitingData,
+      data: {
+        ...waitingData,
+        version:uuid.v4()
+      },
       memberList: list,
       dataGroupId,
       routeParams,
