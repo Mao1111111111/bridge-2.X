@@ -14,6 +14,10 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { log } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {logout} from '../database/user'
+import Modal from '../components/Modal';
+import Button from '../components/Button';
 
 const Tab = createBottomTabNavigator();
 
@@ -63,6 +67,10 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
   } = React.useContext(GlobalContext);
 
   const {
+    dispatch,
+  } = React.useContext(Context);
+
+  const {
     state: {isTabBarShow},
   } = React.useContext(Context);
 
@@ -107,19 +115,35 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
     }
   };
 
-  
+  const [visible, setVisible] = React.useState(false);
+  const close = () => {
+    setVisible(false);
+  };
 
-  const type = ['采集平台', '数据同步','数据统计','用户设置']
+  const asklogOut = (route, index) => {
+    console.log('退出登录?');
+    setVisible(true)
+  }
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('userInfo');
+    await logout();
+    dispatch({type: 'userInfo', payload: null});
+    dispatch({type: 'isLogin', payload: false});
+    setVisible(false)
+  };
+
+  const type = ['采集平台', '数据同步','数据统计','用户设置','退出登录']
   
   // 分类选择
   _selectType = (indexA, value) => {
-    // console.log('---', indexA, value)
+    console.log('---', indexA, value)
       {state.routes.map((route, index) =>(
         indexA == '0' && indexA == index ? handlePress(route, index) :
         indexA == '1' && indexA == index ? handlePress(route, index) :
         indexA == '2' && indexA == index ? handlePress(route, index) :
         indexA == '3' && indexA == index ? handlePress(route, index) : <></>
       ))}
+      indexA == '4' ? asklogOut() : <></>
   }
   // 下拉列表分隔符
   _separator = () => {
@@ -145,22 +169,22 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
           {width: '100%'},
           tailwind.flexRow,
           // tailwind.flexGrow0,
-          theme.primaryBgStyle,
-          styles.boxShadow,
+          // theme.primaryBgStyle,
+          // styles.boxShadow,
           // styles.bgcolor,
-          {height},
-          {backgroundColor:'#eeeeee'}
+          // {height},
+          {backgroundColor:'rgba(255,255,255,0)'}
           // {top:50}
         ],
       ]}
       >
       {/* logo */}
-      <Image style={
+      {/* <Image style={
         { height: 55, width: 180, alignItems: 'center' }}
         source={require('../iconImg/logo.png')}
-      />
+      /> */}
       {/* 软件版本 */}
-      <Text
+      {/* <Text
         style={
           [
             {
@@ -172,9 +196,25 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
             }
           ]
         }
-      >v1.083</Text>
+      >v1.083</Text> */}
+      {/* 检测公司名称 */}
+      <Text
+        style={
+          [
+            {
+              fontSize:10,
+              color:'#394f86',
+              fontWeight: 'bold',
+              left:20,
+              top:15,
+              width:100,
+              textAlign:'center'
+            }
+          ]
+        }
+      >黑龙江省工程质量{'\n'}道桥检测中心有限公司</Text>
       {/* 导航样式一 中间导航按钮 */}
-      {state.routes.map((route, index) => (
+      {/* {state.routes.map((route, index) => (
         <TouchableOpacity
           key={index}
           onPress={() => handlePress(route, index)}
@@ -190,7 +230,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
             isActive={state.index === index}
           />
         </TouchableOpacity>
-      ))}
+      ))} */}
 
       {/* 用户信息 */}
       {/* <Pressable onPress={() => menuList()}>
@@ -202,15 +242,15 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
           <Text>{userInfo?.nickname}</Text>
         </View>
       </Pressable> */}
-      <View style={styles.user}>
+      {/* <View style={styles.user}> */}
         {/* 用户头像 */}
-        <Image style={{ height: 24, width: 24, alignItems: 'center' }}
+        {/* <Image style={{ height: 24, width: 24, alignItems: 'center' }}
             source={require('../iconImg/user.png')}
-        />
+        /> */}
         {/* 整个小间隔 */}
-        <Text>{' '}</Text>
+        {/* <Text>{' '}</Text>
         <Text>{userInfo?.nickname}</Text>
-      </View>
+      </View> */}
 
       {/* <View style={[tailwind.mX19,{width:'76%'}]}>
         <Headerbar items={headerItems || []} pid={''} />
@@ -225,11 +265,11 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
       )} */}
 
       {/* 导航样式二 下拉式一级导航菜单 */}
-      {/* <ModalDropdown style={[styles.user,{top:0}]}
+      <ModalDropdown style={[styles.user,{top:20}]}
         adjustFrame={this._adjustType}
         options={type} // 选项内容
         dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-        dropdownStyle={[{width:100,height:145,alignItems:'center'}]}
+        dropdownStyle={[{width:100,height:155,alignItems:'center'}]}
         dropdownTextStyle={[{width:80,textAlign:'center'}]}
         onSelect={this._selectType} // 点击选项时，执行的方法
         defaultValue={'采集平台'}
@@ -242,7 +282,26 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
           <Text>{' '}</Text>
           <Text>{userInfo?.nickname}</Text>
         </View>
-      </ModalDropdown> */}
+      </ModalDropdown>
+
+      <Modal onClose={close} visible={visible} title="退出登录" showHead>
+      <View style={[styles.modelBody, theme.primaryBgStyle,{height: 80}]}>
+        <View style={[tailwind.flexRow,tailwind.flex1, tailwind.mL2, tailwind.mT1]}>
+          <TouchableOpacity onPress={close}>
+            <Text style={[tailwind.mB1,tailwind.mX8,tailwind.mY8]}>取消</Text>
+          </TouchableOpacity>
+          
+          <View style={tailwind.mY1} />
+          <TouchableOpacity onPress={handleLogout}>
+            <Text style={[tailwind.mB1,tailwind.mX16,,tailwind.mY8]}>确认</Text>
+          </TouchableOpacity>
+          
+        </View>
+        
+        
+        
+      </View>
+    </Modal>
     </Animated.View>
   );
 };
@@ -251,15 +310,17 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
 export default function NavigatorTabs({routes, headerItems, pid}) {
   return (
     <Tab.Navigator header={false} tabBar={props => <TabBar {...props} />}>
+      {/* <Tab.Navigator header={false} tabBar={props => <TabBar {...props} />}> */}
+      {/* 删除tebBar={....}的内容可以去除自定义的一级菜单导航按钮 */}
       {routes.map(item => (
         <Tab.Screen
           key={item.name}
           {...item}
           options={{
             // 将默认的顶部导航栏高度设为0进行隐藏
-            // headerStyle: tailwind.h0,
+            headerStyle: tailwind.h0,
             // 将默认的顶部导航栏颜色设为与背景色一致
-            headerStyle: [{backgroundColor: '#e0e0e0'}], 
+            // headerStyle: [{backgroundColor: '#e0e0e0'}],  //此处headeStyle与上方选其一存在
             title: item.title,
             icon: item.icon,
             img: item.img,
@@ -305,5 +366,12 @@ const styles = StyleSheet.create({
     right:3,
     // height:20,
     // backgroundColor:'#fff'
-  }
+  },
+  modelBody: {
+    ...tailwind.pX4,
+    ...tailwind.pB4,
+    ...tailwind.w64,
+    ...tailwind.selfCenter,
+    ...tailwind.rounded,
+  },
 });
