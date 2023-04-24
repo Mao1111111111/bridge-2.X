@@ -188,6 +188,20 @@ export default function DiseaseEdit2({route, navigation}) {
 
   const handleScaleOpen = () => scaleInfoRef.current.open();
 
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+  // 向前
+  const goAhead = () => {
+    console.log('点击了goAhead');
+  }
+
   return (
     <Box headerItems={headerItems} pid="P1603">
       <HeaderTabs
@@ -226,7 +240,10 @@ export default function DiseaseEdit2({route, navigation}) {
               }
             : tailwind.flex1,
         ]}>
-        <Content>
+        <Content
+        // onAdd={false}
+        onBack={goBack}
+        >
           <View style={[styles.card, {width:700, backgroundColor:'#fff'}]}>
             <View style={[tailwind.flex1]}>
               <View style={tailwind.flexRow}>

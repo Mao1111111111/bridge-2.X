@@ -64,7 +64,8 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
    }
 
   React.useEffect(() => {
-    // console.log("groupList",groupList);
+    console.log("groupList",groupList);
+    console.log('memberList',memberList);
     if (groupList && groupList.length) {
       groupList[0] && setNowEdit(groupList[0]);
       if(setSecondDisTypeSel){
@@ -310,6 +311,7 @@ export default function DiseaseList({route, navigation}) {
           const _list = [];
           res.forEach((item, index) => {
             if (!_list.find(it => it.version === item.version)) {
+              console.log('病害录入页面返回传入的数据',item.jsondata);
               item.jsondata = JSON.parse(item.jsondata || '{}');
               item.index = index + 1;
               if (item?.jsondata?.standard?.scale) {
@@ -555,14 +557,26 @@ export default function DiseaseList({route, navigation}) {
     }
   };
 
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+
   return (
     <Box headerItems={getHeaderItems()} pid="P1603">
       <HeaderTabs disabled={true} />
       <View style={tailwind.flex1}>
         <Content
           onAdd={() => handleAdd({list: [], index: total})}
-          onEdit={() => handleEdit(nowEdit)}
-          onDelete={handleDelete}>
+          onEdit={nowEdit && (() => handleEdit(nowEdit))}
+          onDelete={nowEdit && handleDelete}
+          onBack={goBack}
+          onAhead={nowEdit && (() => handleEdit(nowEdit))}>
           <View style={[styles.card, {width:700, backgroundColor:'#fff'}]}>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               <View style={[tailwind.flex1]}>
@@ -592,7 +606,7 @@ export default function DiseaseList({route, navigation}) {
                         </Table.Cell>
                         <Table.Cell flex={3}>{item.u_date}</Table.Cell>
                         <Table.Cell flex={2}>
-                          {item.jsondata?.remark?.split('，')[0]}
+                          {item.jsondata?.diseaseName}
                         </Table.Cell>
                         <Table.Cell flex={4}>
                           {item.jsondata?.remark?.split('，').slice(1).join()}

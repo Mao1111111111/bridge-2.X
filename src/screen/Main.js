@@ -14,33 +14,6 @@ import Login from './Login';
 import Lock from '../components/Lock';
 
 
-// const routes = [
-//   {
-//     name: 'Collection',
-//     title: '采集平台',
-//     icon: 'plus-thick',
-//     component: Collection,
-//   },
-//   {
-//     name: 'Sync',
-//     title: '数据同步',
-//     icon: 'cloud-sync',
-//     component: Sync,
-//   },
-//   {
-//     name: 'Chart',
-//     title: '数据统计',
-//     icon: 'chart-arc',
-//     component: Chart,
-//   },
-//   {
-//     name: 'Setting',
-//     title: '用户设置',
-//     icon: 'cog',
-//     component: Setting,
-//   },
-// ];
-
 export default function Main() {
 
   // ===============设置一级菜单的选中与未选中状态下的图片样式=========================
@@ -80,6 +53,11 @@ export default function Main() {
 
   }, [])
 
+  // 全局参数 -- 养护区列表、路线列表、用户信息
+  const {
+    state: {areaList, routeList, userInfo},
+    dispatch,
+  } = React.useContext(GlobalContext);
 
   const routes = [
     {
@@ -137,6 +115,24 @@ export default function Main() {
     },
   });
 
+  const headerItems = [
+    // 采集平台点击，打开抽屉导航
+    {
+      name: '采集平台',
+      onPress: () =>
+        dispatch({
+          type: 'drawerShowFlg',
+          payload: Math.random().toString(36).slice(-8),
+        }),
+    },
+    {
+      name: '检测平台',
+    },
+    {
+      name: '项目管理',
+    },
+  ];
+
   React.useEffect(() => {
     setNavTheme({
       ...DefaultTheme,
@@ -167,7 +163,7 @@ export default function Main() {
           animated={true}
         />
         {/* tab 导航 */}
-        <NavigatorTabs routes={routes} />
+        <NavigatorTabs routes={routes} headerItems={headerItems}  pid='P1001' />
       </NavigationContainer>
     </>
   ) : (

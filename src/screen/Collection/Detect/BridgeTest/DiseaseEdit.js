@@ -424,7 +424,10 @@ export default function DiseaseEdit({route, navigation}) {
               }
             : tailwind.flex1,
         ]}>
-        <Content onAdd={addFlg && handleAdd} onDelete={addFlg && handleDelete}>
+        <Content
+          onAdd={addFlg && handleAdd}
+          onDelete={addFlg && handleDelete}
+        >
           <View style={[styles.card, theme.primaryBgStyle]}>
             <View style={[tailwind.flexRow, tailwind.mB1]}>
               {/* <LabelItem label="编号:">

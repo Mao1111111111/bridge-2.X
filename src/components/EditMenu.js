@@ -11,6 +11,8 @@ export default function EditMenu({
   onAdd,
   onCopy,
   onDelete,
+  onBack,
+  onAhead,
   onStick,
   onCut,
   onEdit,
@@ -21,10 +23,15 @@ export default function EditMenu({
 
   // 声明按钮背景图片
   const [addImg, setAddImg] = useState() // 添加
+  const [addDisImg, setAddDisImg] = useState() // 添加
   const [editImg, setEditImg] = useState() //编辑 - 允许点击
   const [editDisImg, setEditDisImg] = useState() // 编辑 - 禁用
   const [deleteImg, setDeleteImg] = useState() // 删除 - 允许点击
   const [deleteDisImg, setdeleteDisImg] = useState() // 删除 - 禁用
+  const [goBackImg, setGoBackImg] = useState() //页面回退 - 允许点击
+  const [goBackDisImg, setGoBackDisImg] = useState() //页面回退 - 禁用
+  const [goAheadImg, setGoAheadImg] = useState() //页面前进 - 允许点击
+  const [goAheadDisImg, setGoAheadDisImg] = useState() //页面前进 - 禁用
 
 
   useEffect(() => {
@@ -32,6 +39,8 @@ export default function EditMenu({
     // 设置按钮的初始状态
     let addImg = require('../iconImg/add.png')
     setAddImg(addImg)
+    let addDisImg = require('../iconImg/addDis.png')
+    setAddDisImg(addDisImg)
     let editImg = require('../iconImg/edit.png')
     setEditImg(editImg)
     let editDisImg = require('../iconImg/editDis.png')
@@ -40,6 +49,14 @@ export default function EditMenu({
     setDeleteImg(deleteImg)
     let deleteDisImg = require('../iconImg/deleteDis.png')
     setdeleteDisImg(deleteDisImg)
+    let goBackImg = require('../iconImg/goBack.png')
+    setGoBackImg(goBackImg)
+    let goBackDisImg = require('../iconImg/goBackDis.png')
+    setGoBackDisImg(goBackDisImg)
+    let goAheadImg = require('../iconImg/goAhead.png')
+    setGoAheadImg(goAheadImg)
+    let goAheadDisImg = require('../iconImg/goAheadDis.png')
+    setGoAheadDisImg(goAheadDisImg)
   }, [])
 
            
@@ -86,6 +103,24 @@ export default function EditMenu({
     let deleteImg = require('../iconImg/delete.png')
     setDeleteImg(deleteImg)
   }
+  // 回退
+  const goBackPulldown = () => {
+    let goBackImg = require('../iconImg/goBackPull.png')
+    setGoBackImg(goBackImg)
+  }
+  const goBackPullup = () => {
+    let goBackImg = require('../iconImg/goBack.png')
+    setGoBackImg(goBackImg)
+  }
+  // 前进
+  const goAheadPulldown = () => {
+    let goAheadImg = require('../iconImg/goAheadPull.png')
+    setGoAheadImg(goAheadImg)
+  }
+  const goAheadPullup = () => {
+    let goAheadImg = require('../iconImg/goAhead.png')
+    setGoAheadImg(goAheadImg)
+  }
 
   // =============以上 按钮的按下与松开状态============================================
 
@@ -111,7 +146,7 @@ export default function EditMenu({
         <Pressable onPressIn={addPulldown} onPressOut={addPullup} onPress={onAdd} disabled={!onAdd}>
           <Image style={
             { height: 45, width: 45, alignItems: 'center' }}
-            source={addImg}
+            source={onAdd ? addImg : addDisImg}
           />
         </Pressable>
       </TouchableOpacity>
@@ -145,6 +180,26 @@ export default function EditMenu({
           <Image style={
             { height: 45, width: 45, alignItems: 'center' }}
             source={onDelete ? deleteImg : deleteDisImg}
+          />
+        </Pressable>
+      </View>
+      <View style={tailwind.mY1} />
+      {/* 回退 */}
+      <View>
+        <Pressable onPressIn={goBackPulldown} onPressOut={goBackPullup} onPress={onBack} disabled={!onBack}>
+          <Image style={
+            { height: 45, width: 45, alignItems: 'center' }}
+            source={onBack ? goBackImg : goBackDisImg}
+          />
+        </Pressable>
+      </View>
+      {/* 前进 */}
+      <View style={tailwind.mY1} />
+      <View>
+        <Pressable onPressIn={goAheadPulldown} onPressOut={goAheadPullup} onPress={onAhead} disabled={!onAhead}>
+          <Image style={
+            { height: 45, width: 45, alignItems: 'center' }}
+            source={onAhead ? goAheadImg : goAheadDisImg}
           />
         </Pressable>
       </View>

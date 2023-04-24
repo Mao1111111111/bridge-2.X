@@ -31,6 +31,8 @@ export function Content({
   onCopy,
   onCut,
   onDelete,
+  onBack,
+  onAhead,
   onStick,
   hideMenu,
   operations,
@@ -130,6 +132,8 @@ export function Content({
             onCopy={onCopy}
             onCut={onCut}
             onDelete={onDelete}
+            onBack={onBack}
+            onAhead={onAhead}
             onStick={onStick}
           />
         </View>
@@ -194,6 +198,8 @@ export default function CommonView({
   onCopy,
   onCut,
   onDelete,
+  onBack,
+  onAhead,
   onStick,
   operations,
 }) {
@@ -262,6 +268,7 @@ export default function CommonView({
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       {/* 占满box */}
       <View style={[tailwind.flex1]}>
+      
         {/* 界面顶部栏 页面路径与用户名 */}
         {/* <Headerbar items={headerItems || []} pid={pid || ''} /> */}
         {/* tabBar 无意义参数 */}
@@ -284,16 +291,18 @@ export default function CommonView({
                 onCopy={onCopy}
                 onCut={onCut}
                 onDelete={onDelete}
+                onBack={onBack}
+                onAhead={onAhead}
                 onStick={onStick}
               />
           </View>
           {/* 中部 = 顶部导航 + 内容 */}
           <View style={tailwind.flex1}>
             {/* 页面路径与用户信息 */}
-            <View style={[tailwind.mX19,{width:700}]}>
+            {/* <View style={[tailwind.mX19,{width:700}]}> */}
               {/* 顶部导航 可以显示 1）导航按钮 2）icon图标按钮 3）对过长的标题截取 */}
               <Headerbar items={headerItems || []} pid={pid || ''} />
-            </View>
+            {/* </View> */}
             {/* 嵌入公共盒子的内容，即主要内容 */}
             {children}
           </View>

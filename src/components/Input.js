@@ -15,6 +15,8 @@ import LabelItem from './LabelItem';
 import Button from './Button';
 import Pid from './Pid';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Modals from "react-native-modal"
+import { CascadePicker } from "react-native-slidepicker";
 
 export const TextInput = React.forwardRef(function (
   {
@@ -197,6 +199,276 @@ export const WriteInput = React.forwardRef(function (
           },
         ]}
       />
+    </LabelItem>
+  );
+});
+
+export const WriteInputSlide = React.forwardRef(function (
+  {
+    label,
+    style,
+    value,
+    inputStyle,
+    LabelStyle,
+    name,
+    onChange,
+    type,
+    isPassword,
+    disabled,
+    lines,
+    height,
+    dataArr
+  },
+  ref,
+) {
+  const textRef = React.useRef();
+
+  const [textValue, setTextValue] = React.useState();
+  const [labelText, setLabelText] = React.useState();
+
+  React.useEffect(() => {
+    if (!value) {
+      setTextValue('');
+      return;
+    }
+    setTextValue(value);
+    console.log('WriteInputSlide value',value);
+  }, [value]);
+
+  React.useImperativeHandle(ref, () => ({
+    focus: () => {
+      textRef.current.focus();
+    },
+    blur: () => {
+      textRef.current.blur();
+    },
+    setValue: val => {
+      setTextValue(val + '');
+    },
+    clear: () => {
+      setTextValue('');
+      onChange &&
+        onChange({
+          name,
+          value: '',
+        });
+    },
+    value: textValue,
+    name,
+  }));
+
+  const handleChange = val => {
+    console.log('val',val);
+    let _val = type === 'numeric' ? val.replace(/[^\d]+/, '') : val;
+    setTextValue(_val);
+    onChange &&
+      onChange({
+        name,
+        value: _val,
+      });
+  };
+
+  const [pickerVisible, setPickerVisible] = React.useState(false);
+  const openMadol = () => {
+    console.log('打开弹窗');
+    setPickerVisible(true)
+  }
+  cancel = () => {
+    console.log('点击关闭321');
+    setPickerVisible(false)
+  };
+  confirm = data => getLabel(data);
+  const getLabel = (data) => {
+    try {
+      if (data) {
+        if (data[0].name == '主梁') {
+          let labelText = data[2].name + '梁状况'
+          console.log(labelText);
+          // setLabelText(labelText)
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '横隔板') {
+          let labelText = data[2].name + '横隔板状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '湿接段') {
+          let labelText = data[2].name + '湿接段状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '支座') {
+          let labelText = data[2].name + '支座状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '铰缝') {
+          let labelText = data[2].name + '铰缝状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '挂梁') {
+          let labelText = data[2].name + '挂梁状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '湿接缝') {
+          let labelText = data[2].name + '湿接缝状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '桥台') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '桥墩') {
+          let labelText = data[2].name + '桥墩状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '墩台基础') {
+          let labelText = data[2].name + '基础状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '墩台基础') {
+          let labelText = data[2].name + '基础状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '翼墙、耳墙') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '锥坡、护坡') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '河床') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '调治构造物') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '桥面铺装') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '伸缩缝装置') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '人行道') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '栏杆、护栏') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '排水系统') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        } else if (data[0].name == '照明、标志') {
+          let labelText = data[2].name + '状况'
+          console.log(labelText);
+          setTextValue(labelText)
+          handleChange(labelText)
+          setPickerVisible(false)
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  return (
+    <LabelItem
+      style={style}
+      label={label}
+      LabelStyle={LabelStyle}
+      // onPress={() => textRef.current.focus()}
+      onPress={() => {openMadol()}}
+      >
+      <RnTextInput
+        ref={textRef}
+        blurOnSubmit={true}
+        keyboardType={type || 'default'}
+        value={textValue}
+        textContentType={isPassword ? 'password' : 'none'}
+        secureTextEntry={isPassword}
+        editable={!disabled}
+        multiline = {true}
+        numberOfLines = {lines}
+        // defaultValue={value}
+        onChangeText={handleChange}
+        style={[
+          styles.writeInput,
+          {height:height},
+          inputStyle ? inputStyle : {},
+          disabled && {
+            ...tailwind.opacity10,
+            ...tailwind.bgGray300,
+          },
+        ]}
+      />
+      {/* 级联列表弹窗 */}
+      <Modals isVisible={pickerVisible}>
+        <CascadePicker 
+          dataSource={dataArr}
+          cancel={this.cancel}
+          confirm={this.confirm}
+          headOptions={{
+            confirmText:'确认',
+            cancelText:'取消',
+            backgroundColor:'#eeeeee',
+            confirmStyle:{
+              color:'#2b427d',
+              fontSize:16
+            },
+            cancelStyle:{
+              color:'#2b427d',
+              fontSize:16
+            },
+          }}
+          pickerStyle={{
+            activeFontColor:'#2b427d'
+          }}
+        />
+      </Modals>
     </LabelItem>
   );
 });

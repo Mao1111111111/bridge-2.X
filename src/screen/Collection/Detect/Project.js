@@ -17,22 +17,6 @@ import * as project from '../../../database/project';
 import {alert, confirm} from '../../../utils/alert';
 import {BoxShadow} from 'react-native-shadow'
 
-// const textShadow = {
-//   width:707,
-//   height: 40,
-//   color:"#000",
-//   border:0,
-//   radius:0.1,
-//   opacity:0.1,
-//   x:2,
-//   y:2,
-//   style:{marginVertical:0}
-// }
-
-
-
-
-
 export default function Project({navigation}) {
   // 全局参数 -- 养护区列表、路线列表、用户信息
   const {
@@ -278,6 +262,20 @@ export default function Project({navigation}) {
     }
   };
 
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      () => navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+  // 向前
+  const goAhead = () => {
+    console.log('点击了goAhead');
+  }
+
   return (
     <CommonView
       //顶部导航最左侧标签 
@@ -291,6 +289,8 @@ export default function Project({navigation}) {
       onEdit={nowChecked && (() => formRef.current.open(nowChecked))}
       // 删除 -- nowChecked 是选中项的数据
       onDelete={nowChecked && handleDelete}
+      // onBack={goBack}
+      // onAhead={goAhead}
       // 右侧按钮
       operations={[
         {
@@ -300,6 +300,7 @@ export default function Project({navigation}) {
           onPress: handleStatusChange,
         },
       ]}>
+        
         {/* 检索 */}
       <View style={[
         styles.searchCard,

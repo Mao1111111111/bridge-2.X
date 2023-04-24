@@ -9,20 +9,6 @@ import {Context} from '../providers/ThemeProvider';
 import {Context as GlobalContext} from '../providers/GlobalProvider';
 import Pid from './Pid';
 
-// import {BoxShadow} from 'react-native-shadow'
-
-// const textShadow = {
-//   width:707,
-//   height: 48,
-//   color:"#000",
-//   border:0,
-//   radius:0.1,
-//   opacity:0.1,
-//   x:2,
-//   y:2,
-//   style:{marginVertical:0}
-// }
-
 export default function Headerbar({items, pid}) {
   const {
     state: {theme},
@@ -57,10 +43,10 @@ export default function Headerbar({items, pid}) {
   return (
     <View style={[
       styles.box,
-      // theme.primaryBgStyle
-      {
-        backgroundColor: '#fff',
-      }
+      theme.primaryBgStyle,
+      // {
+      //   backgroundColor: '#fff',
+      // }
       ]}>
       {/* 如项目管理中，顶部导航最左边的标签 */}
       {pid ? (
@@ -98,22 +84,6 @@ export default function Headerbar({items, pid}) {
           )}
         </React.Fragment>
       ))}
-      {/* {pid ? (
-        <View style={[styles.pid]}>
-          <Pid pid={pid} size="small" />
-        </View>
-      ) : (
-        <></>
-      )} */}
-      {/* 用户信息 */}
-      {/* <View style={styles.user}>
-        <Icon name="account-circle" size={24} style={tailwind.mR1} />
-        <Image style={{ height: 24, width: 24, alignItems: 'center' }}
-            source={require('../iconImg/user.png')}
-        />
-        <Text>{' '}</Text>
-        <Text>{userInfo?.nickname}</Text>
-      </View> */}
     </View>
   );
 }
@@ -122,8 +92,12 @@ const styles = StyleSheet.create({
   box: {
     ...tailwind.flexRow,
     ...tailwind.pY3,
-    ...tailwind.pX1,
-    // ...tailwind.shadow2xl,
+    ...tailwind.pX4,
+    // position:'relative',
+    // top:8,
+    // left:75,
+    // zIndex:500
+    ...tailwind.shadow2xl,
   },
   pid: {
     ...tailwind.mL2,
