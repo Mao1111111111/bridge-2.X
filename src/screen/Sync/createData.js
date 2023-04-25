@@ -655,6 +655,7 @@ export const getData =async (
         let part = basememberinfo.find(i=>i.membertype==item.membertype)
         part["memberData"] = [item]
         part["media"] = []
+        part["partid"] = item.bridgereportid + '_' + item.position + '_' + item.membertype
         partData.push(part)
       }else{
         //存在
@@ -664,7 +665,10 @@ export const getData =async (
     //----将部件图片信息存入部件
     partMedia.forEach(item=>{
       let index = partData.findIndex(i=> i.membertype==item.dataid)
-      partData[index].media.push(item)
+      partData[index].media.push({
+        ...item,
+        dataid:partData[index].partid
+      })
     })
     //部件数据 存入 测试数据
     data.testData['detailTestData'] = partData

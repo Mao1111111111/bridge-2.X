@@ -216,12 +216,6 @@ function Provider({children}) {
               // 数据整理成功
               const data = allData.data
               const mediaData = allData.mediaData
-              // 处理数据中的 检测部件id
-              if(data.testData.detailTestData.length>0){
-                data.testData.detailTestData.forEach(item=>{
-                  item.partid = data.testData.bridgereportid + '_' + item.positionid + '_' + item.membertype
-                })
-              }
               //---------对检测数据操作
               //---文件夹
               // 文件夹地址，根据 桥id 建立文件夹
