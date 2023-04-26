@@ -9,6 +9,7 @@ import * as partsPlanGenesisData from '../../database/parts_plan_genesis_data';
 import {score, numeric} from '../../utils/score';
 import {groupMap, listToGroup} from '../../utils/common';
 import dayjs from 'dayjs';
+import DeviceInfo from 'react-native-device-info';
 
 const getMediaMap = (list, type) => {
   //list是病害下的一组图片
@@ -413,6 +414,12 @@ export const getData =async (
 ) =>{
   try{
     let data = {}
+    //****************** 版本号和设备id ******************
+    let deviceId = await DeviceInfo.getUniqueId().then((res) => {
+      return res.toUpperCase()
+    })
+    data['deviceId'] = deviceId
+    data['dataVersion'] = '1.0'
     //****************** 桥梁绑定信息 ******************
     const bindData = await bridgeProjectBind.getById(id);
 
@@ -421,7 +428,10 @@ export const getData =async (
     //****************** 桥梁信息 ******************
     //----获取 桥梁信息
     const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
-    data = bridgeData
+    data = {
+      ...bridgeData,
+      ...data
+    }
     data.bridgeconfig = JSON.parse(data.bridgeconfig)
     //----桥梁的部件、构件数据
     //初始构件数据
@@ -634,6 +644,7 @@ export const getData =async (
         goodsData.push(goods);
       }
     });
+    
     //将 好构件 的 媒体数据 存入构件
     goodMemberMedia.forEach(item=>{
       let index = memberData.findIndex(i=> i.memberid==item.dataid)
@@ -642,8 +653,12 @@ export const getData =async (
     //将 好构件数据 存入 好构件
     goodsData.forEach(item=>{
       let index = memberData.findIndex(i=> i.memberid==item.dataid)
-      memberData[index].goodsData.push(item)
+      if(index!==-1){
+        memberData[index].goodData.push(item)
+      }
     })
+   
+    
     //****************** 检测数据--部件数据 ******************
     //部件数据
     let partData = []

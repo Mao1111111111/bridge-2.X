@@ -113,7 +113,7 @@ export const getGoods = async (bridgereportid, dataIds) => {
   const sql = `
     select * from parts_checkstatus_data 
     where dataid in (${dataIds.map(it => `'${it}'`).join(',')}) 
-    and memberstatus = '200' and bridgereportid = ?`;
+    and memberstatus = '100' and bridgereportid = ?`;
   return getResult(await db().executeSql(sql, [bridgereportid]), 'array');
 };
 
