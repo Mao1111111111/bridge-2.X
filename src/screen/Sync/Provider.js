@@ -212,6 +212,7 @@ function Provider({children}) {
               state.membercheckdata,
               basememberinfo
             );
+            console.log("allData",JSON.stringify(allData) );
             if(allData.state){
               // 数据整理成功
               const data = allData.data

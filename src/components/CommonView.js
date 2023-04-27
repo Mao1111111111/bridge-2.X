@@ -192,6 +192,9 @@ export default function CommonView({
   pid,
   children,
   headerItems,
+  proNameList,
+  navigation,
+  list,
   tabBar,
   onAdd,
   onEdit,
@@ -301,7 +304,13 @@ export default function CommonView({
             {/* 页面路径与用户信息 */}
             {/* <View style={[tailwind.mX19,{width:700}]}> */}
               {/* 顶部导航 可以显示 1）导航按钮 2）icon图标按钮 3）对过长的标题截取 */}
-              <Headerbar items={headerItems || []} pid={pid || ''} />
+              <Headerbar
+                items={headerItems || []}
+                pid={pid || ''}
+                proNameList={proNameList || [] }
+                navigation={navigation}
+                list={list}
+              />
             {/* </View> */}
             {/* 嵌入公共盒子的内容，即主要内容 */}
             {children}

@@ -16,8 +16,10 @@ import * as bridgeProjectBind from '../../../database/bridge_project_bind';
 import * as project from '../../../database/project';
 import {alert, confirm} from '../../../utils/alert';
 import {BoxShadow} from 'react-native-shadow'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Project({navigation}) {
+  
   // 全局参数 -- 养护区列表、路线列表、用户信息
   const {
     state: {areaList, routeList, userInfo},
@@ -111,6 +113,9 @@ export default function Project({navigation}) {
     }
   }, [areaList, routeList, areacode]);
 
+  // 项目名称列表
+  const [proNameList, setProNameList] = useState()
+
   // 当 检索条件、页码、用户信息变化时，触发
   React.useEffect(() => {
     // 如果页码为0 或 没有用户信息 那么返回
@@ -119,6 +124,9 @@ export default function Project({navigation}) {
     }
     // 设置表格loading
     setLoading(true);
+
+    let proNameList = []
+
     // 在数据库中查询
     project
       .search({
@@ -132,13 +140,29 @@ export default function Project({navigation}) {
       .then(res => {
         // 设置数据列表
         setList(res.list);
+        // console.log('项目列表的数据',list);
         // 设置共几页
         setPageTotal(res.page.pageTotal);
         // 设置共几条
         setTotal(res.page.total);
+        // console.log('project res', res.list);
+        // console.log('project res', res.list[0].projectname);
+        res.list.forEach((item)=>{
+          // console.log('item');
+          proNameList.push({
+            proName:item.projectname,
+            proNum:item.projectno
+          })
+        })
+        // console.log(proNameList);
+        setProNameList(proNameList)
+        // console.log('proNameList',proNameList);
+        setProStorage(proNameList)
       })
       .finally(() => setLoading(false));
   }, [search, page, userInfo]);
+
+
 
   // 点击检索
   const handleSearch = () => {
@@ -236,7 +260,8 @@ export default function Project({navigation}) {
   };
 
   // 新增或修改 结束后 执行的函数
-  const handleSubmitOver = () => {
+  const handleSubmitOver = (newProName, newProNum) => {
+    console.log('newProName',newProName,newProNum);
     setSearch({});
     searchRef.current.forEach(item => item.clear());
     setPage({
@@ -244,7 +269,27 @@ export default function Project({navigation}) {
       pageNo: 0,
     });
     setNowChecked(null);
+    let newProvalue = [
+      {
+        proName:newProName,
+        proNum:newProNum
+      }
+    ]
+    // console.log('确认添加项目');
+    setProStorage(newProvalue)
   };
+
+  const setProStorage = async(value) => {
+    // 存储项目名称数据
+    // console.log('存储项目数据 全局', value);
+    try {
+      const name = 'proList'
+      const jsonValue = JSON.stringify(value)
+      await AsyncStorage.setItem(name, jsonValue)
+    } catch (error) {
+      console.log('存入项目数据失败!', error);
+    }
+  }
 
   // 点击选择框时
   const handleCheck = item => {
@@ -282,6 +327,10 @@ export default function Project({navigation}) {
       pid="P1001"
       //导航项
       headerItems={headerItems}
+      // 项目名称列表
+      proNameList={proNameList}
+      navigation={navigation}
+      list={list}
       //---左侧按钮----
       // 新增
       onAdd={() => formRef.current.open()}

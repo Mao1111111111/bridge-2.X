@@ -170,10 +170,11 @@ export default React.forwardRef(({onSubmitOver}, ref) => {
           username: userInfo.nickname,
         });
       }
+      console.log('新增项目表单的data',values.projectno);
       // 解除loading
       setLoading(false);
       // 执行父组件传递过来的函数
-      onSubmitOver();
+      onSubmitOver(values.projectname, values.projectno);
       // 关闭模态框
       close();
     } catch (error) {

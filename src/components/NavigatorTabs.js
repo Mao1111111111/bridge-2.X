@@ -202,12 +202,12 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
         style={
           [
             {
-              fontSize:10,
+              fontSize:11,
               color:'#394f86',
               fontWeight: 'bold',
               left:20,
               top:15,
-              width:100,
+              width:120,
               textAlign:'center'
             }
           ]
@@ -265,7 +265,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
       )} */}
 
       {/* 导航样式二 下拉式一级导航菜单 */}
-      <ModalDropdown style={[styles.user,{top:20}]}
+      <ModalDropdown style={[styles.user,{top:15}]}
         adjustFrame={this._adjustType}
         options={type} // 选项内容
         dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
