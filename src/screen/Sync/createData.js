@@ -625,7 +625,7 @@ export const getData =async (
     //将 病害成因数据 存入病害
     genesisData.forEach(item=>{
       let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
-      diseaseData[index].maintenancePlan = item
+      diseaseData[index].diseaseCause = item
     })
     //将 病害数据 存入构件
     diseaseData.forEach(item=>{
