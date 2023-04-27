@@ -484,6 +484,19 @@ export const getData =async (
     //****************** 检测数据--媒体数据 ******************
     //----获取照片文件列表 -- 文件表
     const fileList = await bridgeReportFile.list(bindData);
+    // 处理照片数据
+    fileList.forEach(item=>{
+      // 真正应用的路径
+      let appliedPath = item.filepath
+      if(item.is_source==0){
+        appliedPath = item.copypath
+      }
+      // 路径名字
+      let pathArr = appliedPath.split('/')
+      let pathName = pathArr[pathArr.length-1]
+      item['appliedPath'] = appliedPath
+      item['pathName'] = pathName
+    })
     //桥梁媒体信息
     let bridgeMedia = []
     //部件媒体信息

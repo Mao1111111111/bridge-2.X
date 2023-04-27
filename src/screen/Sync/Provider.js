@@ -328,14 +328,14 @@ function Provider({children}) {
                   .filter(({filepath}) => filepath)
                   .map(async item => {
                     //将文件地址分割获取文件名
-                    let arr = item.filepath.split('/')
+                    let arr = item.appliedPath.split('/')
                     //拼接key
                     let key = userInfo.company.companyid + '/'
                       + data.testData.userid + '/'
                       + data.bridgeid + '/'
                       + data.testData.bridgereportid + '/'
                       + arr[arr.length-1].replace("jpg","jpeg")
-                    return await uploadData.uploadImageToObs(key,item.filepath).then(res=>{
+                    return await uploadData.uploadImageToObs(key,item.appliedPath).then(res=>{
                       //设置反馈参数
                       let newFeedbackParams = {
                         ...feedbackParams,
