@@ -620,12 +620,20 @@ export const getData =async (
     //将 养护计划数据 存入病害
     planData.forEach(item=>{
       let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
-      diseaseData[index].maintenancePlan = item
+      let jsondata = JSON.parse(item?.jsondata || '{}')
+      diseaseData[index].maintenancePlan = {
+        ...item,
+        jsondata:jsondata
+      }
     })
     //将 病害成因数据 存入病害
     genesisData.forEach(item=>{
       let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
-      diseaseData[index].diseaseCause = item
+      let jsondata = JSON.parse(item?.jsondata || '{}')
+      diseaseData[index].diseaseCause = {
+        ...item,
+        jsondata:jsondata
+      }
     })
     //将 病害数据 存入构件
     diseaseData.forEach(item=>{
