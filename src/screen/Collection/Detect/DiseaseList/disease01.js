@@ -449,10 +449,43 @@ export function DiseaseA({route, navigation}) {
       const handleScaleOpen = () => scaleInfoRef.current.open();
       const handleFormChenge = ({name,value}) => {
         console.log('```````执行了handleFormChenge``````````');
+        // const _data = {
+        //   ...diseaseData,
+        //   [name]: value,
+        // };
+        // console.log('diseaseData9',diseaseData);
+        // let resetDiseaseData = JSON.stringify(diseaseData)
+        // console.log(resetDiseaseData);
+        let unitt = JSON.stringify(diseaseData, [
+                                    'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+                                  'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+                                  'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+                                  'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+                                  'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+                                  'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+                                  'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+                                  'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+                                  'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+                                  'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+        // console.log(unitt);
+        let unit = JSON.parse(unitt)
+        diseaseData['unit'] = unit
+        // const { url, title, ...rest } = obj;
+        const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+          hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+          hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+          hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+          hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+          hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+          hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+          hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+          memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
+        // console.log('resttttt',rest)
         const _data = {
-          ...diseaseData,
+          ...rest,
           [name]: value,
         };
+        
         if (name === 'checktypeid') {
           const _type = route.params.type.list.find(
             item => value === item.checktypeid,
@@ -474,7 +507,11 @@ export function DiseaseA({route, navigation}) {
               _data.standard = {
                 scale: _standardscale,
                 id: standardid,
+                unit: {
+                  [name]: value
+                }
               };
+              // ------
             } else {
               const defaultScale = basestandardtable.find(
                 item => item.standardid === 'JTG-TH21-2011-T000-0',
@@ -488,9 +525,11 @@ export function DiseaseA({route, navigation}) {
           _data.scale = _data.scale || '';
         }
 
+        console.log('_data',_data);
+
         if (value) {
-          console.log('调用了writeDes', name,value);
-          console.log('lengthM',lengthM);
+          // console.log('调用了writeDes', name,value);
+          // console.log('lengthM',lengthM);
           // 向病害描述函数里传入
           writeDesText(name, value)
         }
@@ -2476,10 +2515,38 @@ export function DiseaseB({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+      let unitt = JSON.stringify(diseaseData, [
+                                  'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+                                'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+                                'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+                                'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+                                'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+                                'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+                                'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+                                'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+                                'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+                                'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+        hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+        hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+        hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+        hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+        hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+        hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+        hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+        memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
-        ...diseaseData,
+        ...rest,
         [name]: value,
       };
+
       if (name === 'checktypeid') {
         const _type = route.params.type.list.find(
           item => value === item.checktypeid,
@@ -4117,8 +4184,35 @@ export function DiseaseC({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+        hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+        hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+        hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+        hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+        hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+        hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+        hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+        memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
-        ...diseaseData,
+        ...rest,
         [name]: value,
       };
       if (name === 'checktypeid') {
@@ -5621,10 +5715,39 @@ export function DiseaseD({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+        hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+        hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+        hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+        hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+        hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+        hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+        hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+        memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
-        ...diseaseData,
+        ...rest,
         [name]: value,
       };
+
       if (name === 'checktypeid') {
         const _type = route.params.type.list.find(
           item => value === item.checktypeid,
@@ -7129,8 +7252,36 @@ export function DiseaseE({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+        hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+        hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+        hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+        hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+        hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+        hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+        hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+        memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
-        ...diseaseData,
+        ...rest,
         [name]: value,
       };
       if (name === 'checktypeid') {
@@ -8634,8 +8785,35 @@ export function DiseaseK({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+        hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+        hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+        hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+        hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+        hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+        hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+        hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+        memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
-        ...diseaseData,
+        ...rest,
         [name]: value,
       };
       if (name === 'checktypeid') {
@@ -10244,8 +10422,35 @@ export function DiseaseG({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+        hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+        hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+        hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+        hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+        hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+        hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+        hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+        memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
-        ...diseaseData,
+        ...rest,
         [name]: value,
       };
       if (name === 'checktypeid') {
@@ -11843,8 +12048,35 @@ export function DiseaseH({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+        hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+        hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+        hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+        hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+        hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+        hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+        hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+        memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
-        ...diseaseData,
+        ...rest,
         [name]: value,
       };
       if (name === 'checktypeid') {
