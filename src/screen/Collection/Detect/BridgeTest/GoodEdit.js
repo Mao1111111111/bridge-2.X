@@ -165,6 +165,7 @@ export default function GoodEdit({route, navigation}) {
                   ref={remarkRef}
                   onChange={({name, value}) => setData({[name]: value})}
                   labelStyle={[styles.title, theme.primaryTextStyle]}
+                  style={{height:100}}
                 />
               </View>
               {list.length > 1 ? (
