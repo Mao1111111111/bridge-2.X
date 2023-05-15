@@ -398,7 +398,7 @@ export default function Project({navigation}) {
                     onPress={() => handleCheck(item)}
                   />
                 </Table.Cell>
-                <Table.Cell flex={0.7}>{item.id}</Table.Cell>
+                <Table.Cell flex={0.7}>{index+1}</Table.Cell>
                 <Table.Cell flex={3}>{item.projectname}</Table.Cell>
                 <Table.Cell flex={0.7}>{item.yicaiji || 0}</Table.Cell>
                 <Table.Cell flex={1}>{item.username}</Table.Cell>
