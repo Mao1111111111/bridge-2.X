@@ -40,6 +40,8 @@ export default React.forwardRef(({onSubmitOver}, ref) => {
   const [name, setName] = React.useState(dayjs().format('YYYY'));
   // 引用，用于记录 选择器和输入框的值
   const formRef = React.useRef({});
+  // 初次打开
+  const [firstOpen,setFirstOpen] = React.useState(true);
 
   // 暴露给父组件的函数
   React.useImperativeHandle(ref, () => ({
@@ -54,6 +56,13 @@ export default React.forwardRef(({onSubmitOver}, ref) => {
         setName(val.projectname);
         // 标题
         setTitle(Object.keys(val).length === 0 ? '新增项目' : '编辑项目');
+        // 设置路线列表和选中的路线
+        setRoute(routeList?.filter(item => item.pcode === val.areacode) || []);
+        setRoutecode(
+          (routeList?.filter(item => item.pcode === val.areacode) || [])[0],
+        )
+        setAreacode(areaList.find(item=>item.code==val.areacode))
+        setFirstOpen(true)
       } else {
         // 新增
         setTitle('新增项目');
@@ -90,6 +99,13 @@ export default React.forwardRef(({onSubmitOver}, ref) => {
     if (routeList && areacode) {
       // 设置路线列表
       setRoute(routeList?.filter(item => item.pcode === areacode.code) || []);
+      setRoutecode(
+        (routeList?.filter(item => item.pcode === areacode.code) || [])[0],
+      )
+      setData({
+        ...data,
+        routecode:(routeList?.filter(item => item.pcode === areacode.code) || [])[0].code
+      })
     }
   }, [areacode, routeList]);
 
@@ -185,10 +201,15 @@ export default React.forwardRef(({onSubmitOver}, ref) => {
 
   // 当养护区 或 路线 变化时，重置项目名称
   React.useEffect(() => {
-    setName(e => {
-      const yaer = e.substring(0, 4);
-      return `${yaer}${areacode?.name || ''}${routecode?.name || ''}`;
-    });
+    console.log("!firstOpen",!firstOpen);
+    console.log("firstOpen",firstOpen);
+    if(!firstOpen){
+      console.log("111");
+      setName(e => {
+        const yaer = e.substring(0, 4);
+        return `${yaer}${areacode?.name || ''}${routecode?.name || ''}`;
+      });
+    }
   }, [areacode, routecode]);
 
   return (
@@ -209,9 +230,12 @@ export default React.forwardRef(({onSubmitOver}, ref) => {
             labelName="name"
             valueName="code"
             value={data?.areacode || ''}
-            onChange={setAreacode}
+            onChange={e=>{
+              setAreacode(e)
+              setFirstOpen(false)
+            }}
             ref={e => (formRef.current.areacode = e)}
-            values={area}
+            values={area} 
           />
           <Select
             name="routecode"
@@ -219,7 +243,10 @@ export default React.forwardRef(({onSubmitOver}, ref) => {
             labelName="name"
             valueName="code"
             value={data?.routecode || ''}
-            onChange={setRoutecode}
+            onChange={(e)=>{
+              setRoutecode(e)
+              setFirstOpen(false)
+            }}
             ref={e => (formRef.current.routecode = e)}
             values={route}
           />
