@@ -419,13 +419,14 @@ export default function Project({navigation}) {
           }
           header={
             <Table.Header>
-              <Table.Title title="选择" flex={1} />
+              
               <Table.Title title="序号" flex={0.7} />
               <Table.Title title="项目名称" flex={3} />
               <Table.Title title="已采集" flex={0.7} />
               <Table.Title title="创建人" flex={1} />
               <Table.Title title="创建时间" flex={2} />
               <Table.Title title="最后操作时间" flex={2} />
+              <Table.Title title="选择" flex={1} />
             </Table.Header>
           }>
           <FlatList
@@ -441,18 +442,19 @@ export default function Project({navigation}) {
                   })
                 }>
                 {/* 选择框 */}
-                <Table.Cell flex={1}>
-                  <Checkbox
-                    checked={(nowChecked || {}).id === item.id}
-                    onPress={() => handleCheck(item)}
-                  />
-                </Table.Cell>
+                
                 <Table.Cell flex={0.7}>{item.id}</Table.Cell>
                 <Table.Cell flex={3}>{item.projectname}</Table.Cell>
                 <Table.Cell flex={0.7}>{item.yicaiji || 0}</Table.Cell>
                 <Table.Cell flex={1}>{item.username}</Table.Cell>
                 <Table.Cell flex={2}>{item.c_date}</Table.Cell>
                 <Table.Cell flex={2}>{item.u_date}</Table.Cell>
+                <Table.Cell flex={1}>
+                  <Checkbox
+                    checked={(nowChecked || {}).id === item.id}
+                    onPress={() => handleCheck(item)}
+                  />
+                </Table.Cell>
               </Table.Row>
             )}
           />

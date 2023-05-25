@@ -193,6 +193,7 @@ export default function CommonView({
   children,
   headerItems,
   proNameList,
+  bridgeList,
   navigation,
   list,
   tabBar,
@@ -308,6 +309,7 @@ export default function CommonView({
                 items={headerItems || []}
                 pid={pid || ''}
                 proNameList={proNameList || [] }
+                bridgeList={bridgeList || []}
                 navigation={navigation}
                 list={list}
               />

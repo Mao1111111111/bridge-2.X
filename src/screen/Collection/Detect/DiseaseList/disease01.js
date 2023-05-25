@@ -449,508 +449,565 @@ export function DiseaseA({route, navigation}) {
       const handleScaleOpen = () => scaleInfoRef.current.open();
       const handleFormChenge = ({name,value}) => {
         console.log('```````执行了handleFormChenge``````````');
-        const _data = {
-          ...diseaseData,
-          [name]: value,
-        };
-        if (name === 'checktypeid') {
-          const _type = route.params.type.list.find(
-            item => value === item.checktypeid,
-          );
-          let defaultScaleVal = '';
-          if (_type) {
-            defaultScaleVal = _type?.standardscale;
-          }
-          _data.scale = defaultScaleVal;
-          const {basestandardtable, infoComponents} = baseData;
-          const standardid =
-            infoComponents.find(({checktypeid}) => value === checktypeid)
-              ?.standardid || '';
-          if (standardid) {
-            const _standardscale = basestandardtable.find(
-              item => standardid === item.standardid,
-            )?.standardscale;
-            if (_standardscale) {
-              _data.standard = {
-                scale: _standardscale,
-                id: standardid,
-              };
-            } else {
-              const defaultScale = basestandardtable.find(
-                item => item.standardid === 'JTG-TH21-2011-T000-0',
-              )?.standardscale;
-              _data.standard = {
-                scale: defaultScale,
-                id: 'JTG-TH21-2011-T000-0',
-              };
-            }
-          }
-          _data.scale = _data.scale || '';
-        }
+        // const _data = {
+        //   ...diseaseData,
+        //   [name]: value,
+        // };
+        // console.log('diseaseData9',diseaseData);
+        // let resetDiseaseData = JSON.stringify(diseaseData)
+        // console.log(resetDiseaseData);
 
-        if (value) {
-          console.log('调用了writeDes', name,value);
-          console.log('lengthM',lengthM);
-          // 向病害描述函数里传入
-          writeDesText(name, value)
-        }
+        try {
+          // const _data = {
+          //   ...diseaseData,
+          //   [name]: value,
+          // };
+          // console.log('diseaseData9',diseaseData);
+          let unitt = JSON.stringify(diseaseData, [
+                                    'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+                                  'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+                                  'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+                                  'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+                                  'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+                                  'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+                                  'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+                                  'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+                                  'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+                                  'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+          // console.log('unitt',unitt);
+          let unit = JSON.parse(unitt)
+          diseaseData['unit'] = unit
+          // const { item1, itme2, ...rest } = obj;
+          // let {hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+          //   hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+          //   hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+          //   hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+          //   hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+          //   hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+          //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+          //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+          //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
+          // console.log('resttttt',rest)
+
+          const _data = {
+            ...diseaseData,
+            [name]: value,
+          };
+          // console.log('diseaseData9',diseaseData);
+
+          if (name === 'checktypeid') {
+            const _type = route.params.type.list.find(
+              item => value === item.checktypeid,
+            );
+            let defaultScaleVal = '';
+            if (_type) {
+              defaultScaleVal = _type?.standardscale;
+            }
+            _data.scale = defaultScaleVal;
+            const {basestandardtable, infoComponents} = baseData;
+            const standardid =
+              infoComponents.find(({checktypeid}) => value === checktypeid)
+                ?.standardid || '';
+            if (standardid) {
+              const _standardscale = basestandardtable.find(
+                item => standardid === item.standardid,
+              )?.standardscale;
+              if (_standardscale) {
+                _data.standard = {
+                  scale: _standardscale,
+                  id: standardid,
+                  unit: {
+                    [name]: value
+                  }
+                };
+                // ------
+              } else {
+                const defaultScale = basestandardtable.find(
+                  item => item.standardid === 'JTG-TH21-2011-T000-0',
+                )?.standardscale;
+                _data.standard = {
+                  scale: defaultScale,
+                  id: 'JTG-TH21-2011-T000-0',
+                };
+              }
+            }
+            _data.scale = _data.scale || '';
+          }
+
+          // console.log('_data',_data);
+
+          if (value) {
+            // console.log('调用了writeDes', name,value);
+            // console.log('lengthM',lengthM);
+            // 向病害描述函数里传入
+            writeDesText(name, value)
+          }
         
-        if (true) {
-          if (name == 'scale') {
-            // 标度
-            let biaodu = ',标度' + value + '@@'
-            setBiaodu(biaodu)
-          } else if (name == 'hzbrmc_length_m') {
-            //长度 - 米
-            if (value == '' || value == 0) {
-              let lengthM = ''
-              setLengthM(lengthM)
-              // handleFormChenge(diseaseData.lengthM,lengthM)
-            } else {
-              let lengthM = ',长度' + value + '@@米@@'
-              setLengthM(lengthM)
-            }
-          } else if (name == 'hzbrmc_length_cm') {
-            // 长度 - 厘米
-            // let lengthCM = ',长度' + value + '@@厘米@@'
-            // setLengthCM(lengthCM)
-            if (value == '' || value == 0) {
-              let lengthCM = ''
-              setLengthCM(lengthCM)
-            } else {
-              let lengthCM = ',长度' + value + '@@厘米@@'
-              setLengthCM(lengthCM)
-            }
-          } else if (name == 'hzbrmc_length_mm') {
-            // 长度 - 毫米
-            // let lengthMM = ',长度' + value + '@@毫米@@'
-            // setLengthMM(lengthMM)
-            if (value == '' || value == 0) {
-              let lengthMM = ''
-              setLengthMM(lengthMM)
-            } else {
-              let lengthMM = ',长度' + value + '@@毫米@@'
-              setLengthMM(lengthMM)
-            }
-          } else if (name == 'hzbrmc_width_m') {
-            // 宽度 - 米
-            // let widthM = ',宽度' + value + '@@米@@'
-            // setWidthM(widthM)
-            if (value == '' || value == 0) {
-              let widthM = ''
-              setWidthM(widthM)
-            } else {
-              let widthM = ',宽度' + value + '@@米@@'
-              setWidthM(widthM)
-            }
-          } else if (name == 'hzbrmc_width_cm') {
-            // 宽度 - 厘米
-            // let widthCM = ',宽度' + value + '@@厘米@@'
-            // setWidthCM(widthCM)
-            if (value == '' || value == 0) {
-              let widthCM = ''
-              setWidthCM(widthCM)
-            } else {
-              let widthCM = ',宽度' + value + '@@厘米@@'
-              setWidthCM(widthCM)
-            }
-          } else if (name == 'hzbrmc_width_mm') {
-            // 宽度 - 毫米
-            if (value == '' || value == 0) {
-              // console.log('宽度毫米设为0');
-              let widthMM = ''
-              setWidthMM(widthMM)
-            } else {
-              let widthMM = ',宽度' + value + '@@毫米@@'
-              setWidthMM(widthMM)
-            }
-          } else if (name == 'hzbrmc_height_m') {
-            // 高度 - 米
-            // let heightM = ',高度' + value + '@@米@@'
-            // setHeightM(heightM)
-            if (value == '' || value == 0) {
-              let heightM = ''
-              setHeightM(heightM)
-            } else {
-              let heightM = ',高度' + value + '@@米@@'
-              setHeightM(heightM)
-            }
-          } else if (name == 'hzbrmc_height_cm') {
-            // 高度 - 厘米
-            if (value == '' || value == 0) {
-              let heightCM = ''
-              setHeightCM(heightCM)
-            } else {
-              let heightCM = ',高度' + value + '@@厘米@@'
-              setHeightCM(heightCM)
-            }
-          } else if (name == 'hzbrmc_height_mm') {
-            // 高度 - 毫米
-            // let heightMM = ',高度' + value + '@@毫米@@'
-            // setHeightMM(heightMM)
-            if (value == '' || value == 0) {
-              let heightMM = ''
-              setHeightMM(heightMM)
-            } else {
-              let heightMM = ',高度' + value + '@@毫米@@'
-              setHeightMM(heightMM)
-            }
-          } else if (name == 'hzbrmc_area_face') {
-            // 面域 - %
-            // let areaFace = ',面域' + value + '@@%@@'
-            // setAreaFace(areaFace)
-            if (value == '' || value == 0) {
-              let areaFace = ''
-              setAreaFace(areaFace)
-            } else {
-              let areaFace = ',面域' + value + '@@%@@'
-              setAreaFace(areaFace)
-            }
-          } else if (name == 'hzbrmc_area_per') {
-            // 面积占比 - %
-            // let areaPer = ',面积占比' + value + '@@%@@'
-            // setAreaPer(areaPer)
-            if (value == '' || value == 0) {
-              let areaPer = ''
-              setAreaPer(areaPer)
-            } else {
-              let areaPer = ',面积占比' + value + '@@%@@'
-              setAreaPer(areaPer)
-            }
-          } else if (name == 'hzbrmc_area_m') {
-            // 面积 - 平方米
-            // let areaM = ',面积' + value + '@@平方米@@'
-            // setAreaM(areaM)
-            if (value == '' || value == 0) {
-              let areaM = ''
-              setAreaM(areaM)
-            } else {
-              let areaM = ',面积' + value + '@@平方米@@'
-              setAreaM(areaM)
-            }
-          } else if (name == 'hzbrmc_area_cm') {
-            // 面积 - 平方厘米
-            // let areaCM = ',面积' + value + '@@平方厘米@@'
-            // setAreaCM(areaCM)
-            if (value == '' || value == 0) {
-              let areaCM = ''
-              setAreaCM(areaCM)
-            } else {
-              let areaCM = ',面积' + value + '@@平方厘米@@'
-              setAreaCM(areaCM)
-            }
-          } else if (name == 'hzbrmc_area_mm') {
-            // 面积 - 平方毫米
-            // let areaMM = ',面积' + value + '@@平方毫米@@'
-            // setAreaMM(areaMM)
-            if (value == '' || value == 0) {
-              let areaMM = ''
-              setAreaMM(areaMM)
-            } else {
-              let areaMM = ',面积' + value + '@@平方毫米@@'
-              setAreaMM(areaMM)
-            }
-          } else if (name == 'hzbrmc_heightdiff_cm') {
-            // 高差 - 厘米
-            // let heightDiffCM = ',高差' + value + '@@厘米@@'
-            // setHeightDiffCM(heightDiffCM)
-            if (value == '' || value == 0) {
-              let heightDiffCM = ''
-              setHeightDiffCM(heightDiffCM)
-            } else {
-              let heightDiffCM = ',高差' + value + '@@厘米@@'
-              setHeightDiffCM(heightDiffCM)
-            }
-          } else if (name == 'hzbrmc_heightdiff_mm') {
-            // 高差 - 毫米
-            // let heightDiffMM = ',高差' + value + '@@毫米@@'
-            // setHeightDiffMM(heightDiffMM)
-            if (value == '' || value == 0) {
-              let heightDiffMM = ''
-              setHeightDiffMM(heightDiffMM)
-            } else {
-              let heightDiffMM = ',高差' + value + '@@毫米@@'
-              setHeightDiffMM(heightDiffMM)
-            }
-          } else if (name == 'hzbrmc_spacing_cm') {
-            // 间距 - 厘米
-            // let spacingCM = ',间距' + value + '@@厘米@@'
-            // setSpacingCM(spacingCM)
-            if (value == '' || value == 0) {
-              let spacingCM = ',间距' + value + '@@厘米@@'
-              setSpacingCM(spacingCM)
-            } else {
-              let spacingCM = ',间距' + value + '@@厘米@@'
-              setSpacingCM(spacingCM)
-            }
-          } else if (name == 'hzbrmc_deformation_mm') {
-            // 变形 - 毫米
-            // let deformationMM = ',变形' + value + '@@毫米@@'
-            // setDeformationMM(deformationMM)
-            if (value == '' || value == 0) {
-              let deformationMM = ''
-              setDeformationMM(deformationMM)
-            } else {
-              let deformationMM = ',变形' + value + '@@毫米@@'
-              setDeformationMM(deformationMM)
-            }
-          } else if (name == 'hzbrmc_num') {
-            // 个数 - 个
-            // let num = ',个数' + value + '@@个@@'
-            // setNum(num)
-            if (value == '' || value == 0) {
-              let num = ''
-              setNum(num)
-            } else {
-              let num = ',个数' + value + '@@个@@'
-              setNum(num)
-            }
-          } else if (name == 'hzbrmc_range_cm') {
-            // 距离 - 厘米
-            // let rangeCM = ',距离' + value + '@@厘米@@'
-            // setRangeCM(rangeCM)
-            if (value == '' || value == 0) {
-              let rangeCM = ''
-              setRangeCM(rangeCM)
-            } else {
-              let rangeCM = ',距离' + value + '@@厘米@@'
-              setRangeCM(rangeCM)
-            }
-          } else if (name == 'hzbrmc_range_mm') {
-            // 距离 - 毫米
-            // let rangeMM = ',距离' + value + '@@毫米@@'
-            // setRangeMM(rangeMM)
-            if (value == '' || value == 0) {
-              let rangeMM = ''
-              setRangeMM(rangeMM)
-            } else {
-              let rangeMM = ',距离' + value + '@@毫米@@'
-              setRangeMM(rangeMM)
-            }
-          } else if (name == 'hzbrmc_depth_cm') {
-            // 深度 - 厘米
-            // let depthCM = ',深度' + value + '@@厘米@@'
-            // setDepthCM(depthCM)
-            if (value == '' || value == 0) {
-              let depthCM = ''
-              setDepthCM(depthCM)
-            } else {
-              let depthCM = ',深度' + value + '@@厘米@@'
-              setDepthCM(depthCM)
-            }
-          } else if (name == 'hzbrmc_depth_mm') {
-            // 深度 - 毫米
-            // let depthMM = ',深度' + value + '@@毫米@@'
-            // setDepthMM(depthMM)
-            if (value == '' || value == 0) {
-              let depthMM = ''
-              setDepthMM(depthMM)
-            } else {
-              let depthMM = ',深度' + value + '@@毫米@@'
-              setDepthMM(depthMM)
-            }
-          } else if (name == 'hzbrmc_volume_m') {
-            // 体积 - 立方米
-            // let volumeM = ',体积' + value + '@@立方米@@'
-            // setVolumeM(volumeM)
-            if (value == '' || value == 0) {
-              let volumeM = ''
-              setVolumeM(volumeM)
-            } else {
-              let volumeM = ',体积' + value + '@@立方米@@'
-              setVolumeM(volumeM)
-            }
-          } else if (name == 'hzbrmc_volume_cm') {
-            // 体积 - 立方厘米
-            // let volumeCM = ',体积' + value + '@@立方厘米@@'
-            // setVolumeCM(volumeCM)
-            if (value == '' || value == 0) {
-              let volumeCM = ''
-              setVolumeCM(volumeCM)
-            } else {
-              let volumeCM = ',体积' + value + '@@立方厘米@@'
-              setVolumeCM(volumeCM)
-            }
-          } else if (name == 'hzbrmc_disp_cm') {
-            // 位移 - 厘米
-            // let dispCM = ',位移' + value + '@@厘米@@'
-            // setDispCM(dispCM)
-            if (value == '' || value == 0) {
-              let dispCM = ''
-              setDispCM(dispCM)
-            } else {
-              let dispCM = ',位移' + value + '@@厘米@@'
-              setDispCM(dispCM)
-            }
-          } else if (name == 'hzbrmc_disp_mm') {
-            // 位移 - 毫米
-            // let dispMM = ',位移' + value + '@@毫米@@'
-            // setDispMM(dispMM)
-            if (value == '' || value == 0) {
-              let dispMM = ''
-              setDispMM(dispMM)
-            } else {
-              let dispMM = ',位移' + value + '@@毫米@@'
-              setDispMM(dispMM)
-            }
-          } else if (name == 'hzbrmc_angle_c') {
-            // 角度 - 度
-            // let dispMM = ',角度' + value + '@@度@@'
-            // setDispMM(dispMM)
-            if (value == '' || value == 0) {
-              let angle = ''
-              setAngle(angle)
-            } else {
-              let angle = ',角度' + value + '@@度@@'
-              setAngle(angle)
-            }
-          } else if (name == 'hzbrmc_chu') {
-            // 处
-            // let chu = ',' + value + '@@处@@'
-            // setChu(chu)
-            if (value == '' || value == 0) {
-              let chu = ''
-              setChu(chu)
-            } else {
-              let chu = ',' + value + '@@处@@'
-              setChu(chu)
-            }
-          } else if (name == 'hzbrmc_tiao') {
-            // 条
-            // let tiao = ',' + value + '@@条@@'
-            // setTiao(tiao)
-            if (value == '' || value == 0) {
-              let tiao = ''
-              setTiao(tiao)
-            } else {
-              let tiao = ',' + value + '@@条@@'
-              setTiao(tiao)
-            }
-          } else if (name == 'hzbrmc_range_fenbu_m') {
-            // 分布范围 - 米
-            // let rangeFenbuM = ',分布范围' + value + '@@米@@'
-            // setRangeFenbuM(rangeFenbuM)
-            if (value == '' || value == 0) {
-              let rangeFenbuM = ''
-              setRangeFenbuM(rangeFenbuM)
-            } else {
-              let rangeFenbuM = ',分布范围' + value + '@@米@@'
-              setRangeFenbuM(rangeFenbuM)
-            }
-          } else if (name == 'hzbrmc_range_length_m') {
-            // 长度范围 - 米
-            // let rangeLengthM = ',长度范围' + value + '@@米@@'
-            // setRangeLengthM(rangeLengthM)
-            if (value == '' || value == 0) {
-              let rangeLengthM = ''
-              setRangeLengthM(rangeLengthM)
-            } else {
-              let rangeLengthM = ',长度范围' + value + '@@米@@'
-              setRangeLengthM(rangeLengthM)
-            }
-          } else if (name == 'hzbrmc_range_width_mm') {
-            // 宽度范围 - 毫米
-            // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-            // setRangeWidthMM(rangeWidthMM)
-            if (value == '' || value == 0) {
-              let rangeWidthMM = ''
-              setRangeWidthMM(rangeWidthMM)
-            } else {
-              let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
-              setRangeWidthMM(rangeWidthMM)
-            }
-          } else if (name == 'hzbrmc_range_spacing_cm') {
-            // 间距范围 - 厘米
-            // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-            // setRangeSpacingCM(rangeSpacingCM)
-            if (value == '' || value == 0) {
-              let rangeSpacingCM = ''
-              setRangeSpacingCM(rangeSpacingCM)
-            } else {
-              let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
-              setRangeSpacingCM(rangeSpacingCM)
-            }
-          } else if (name == 'hzbrmc_lb_left_length_m') {
-            // 左腹板长度 - 米
-            // let leftLengthM = ',左腹板长度' + value + '@@米@@'
-            // setLeftLengthM(leftLengthM)
-            if (value == '' || value == 0) {
-              let leftLengthM = ''
-              setLeftLengthM(leftLengthM)
-            } else {
-              let leftLengthM = ',左腹板长度' + value + '@@米@@'
-              setLeftLengthM(leftLengthM)
-            }
-          } else if (name == 'hzbrmc_lb_bottom_length_m') {
-            // 底板长度 - 米
-            // let bottomLengthM = ',底板长度' + value + '@@米@@'
-            // setBottomLengthM(bottomLengthM)
-            if (value == '' || value == 0) {
-              let bottomLengthM = ''
-              setBottomLengthM(bottomLengthM)
-            } else {
-              let bottomLengthM = ',底板长度' + value + '@@米@@'
-              setBottomLengthM(bottomLengthM)
-            }
-          } else if (name == 'hzbrmc_lb_right_length_m') {
-            // 右腹板长度 - 米
-            // let rightLengthM = ',右腹板长度' + value + '@@米@@'
-            // setRightLengthM(rightLengthM)
-            if (value == '' || value == 0) {
-              let rightLengthM = ''
-              setRightLengthM(rightLengthM)
-            } else {
-              let rightLengthM = ',右腹板长度' + value + '@@米@@'
-              setRightLengthM(rightLengthM)
-            }
-          } else if (name == 'hzbrmc_lb_left_width_mm') {
-            // 左腹板宽度 - 毫米
-            // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-            // setLeftWidthMM(leftWidthMM)
-            if (value == '' || value == 0) {
-              let leftWidthMM = ''
-              setLeftWidthMM(leftWidthMM)
-            } else {
-              let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
-              setLeftWidthMM(leftWidthMM)
-            }
-          } else if (name == 'hzbrmc_lb_bottom_width_mm') {
-            // 底板宽度 - 毫米
-            // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-            // setBottomWidthMM(bottomWidthMM)
-            if (value == '' || value == 0) {
-              let bottomWidthMM = ''
-              setBottomWidthMM(bottomWidthMM)
-            } else {
-              let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
-              setBottomWidthMM(bottomWidthMM)
-            }
-          } else if (name == 'hzbrmc_lb_right_width_mm') {
-            // 右腹板宽度 - 毫米
-            // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-            // setRightWidthMM(rightWidthMM)
-            if (value == '' || value == 0) {
-              let rightWidthMM = ''
-              setRightWidthMM(rightWidthMM)
-            } else {
-              let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
-              setRightWidthMM(rightWidthMM)
-            }
-          } else if (name == 'hzbrmc_slant_m') {
-            // 倾斜量 - 米
-            // let slantM = ',倾斜量' + value + '@@米@@'
-            // setSlantM(slantM)
-            if (value == '' || value == 0) {
-              let slantM = ''
-              setSlantM(slantM)
-            } else {
-              let slantM = ',倾斜量' + value + '@@米@@'
-              setSlantM(slantM)
+          if (true) {
+            if (name == 'scale') {
+              // 标度
+              let biaodu = ',标度' + value + '@@'
+              setBiaodu(biaodu)
+            } else if (name == 'hzbrmc_length_m') {
+              //长度 - 米
+              if (value == '' || value == 0) {
+                let lengthM = ''
+                setLengthM(lengthM)
+                // handleFormChenge(diseaseData.lengthM,lengthM)
+              } else {
+                let lengthM = ',长度' + value + '@@米@@'
+                setLengthM(lengthM)
+              }
+            } else if (name == 'hzbrmc_length_cm') {
+              // 长度 - 厘米
+              // let lengthCM = ',长度' + value + '@@厘米@@'
+              // setLengthCM(lengthCM)
+              if (value == '' || value == 0) {
+                let lengthCM = ''
+                setLengthCM(lengthCM)
+              } else {
+                let lengthCM = ',长度' + value + '@@厘米@@'
+                setLengthCM(lengthCM)
+              }
+            } else if (name == 'hzbrmc_length_mm') {
+              // 长度 - 毫米
+              // let lengthMM = ',长度' + value + '@@毫米@@'
+              // setLengthMM(lengthMM)
+              if (value == '' || value == 0) {
+                let lengthMM = ''
+                setLengthMM(lengthMM)
+              } else {
+                let lengthMM = ',长度' + value + '@@毫米@@'
+                setLengthMM(lengthMM)
+              }
+            } else if (name == 'hzbrmc_width_m') {
+              // 宽度 - 米
+              // let widthM = ',宽度' + value + '@@米@@'
+              // setWidthM(widthM)
+              if (value == '' || value == 0) {
+                let widthM = ''
+                setWidthM(widthM)
+              } else {
+                let widthM = ',宽度' + value + '@@米@@'
+                setWidthM(widthM)
+              }
+            } else if (name == 'hzbrmc_width_cm') {
+              // 宽度 - 厘米
+              // let widthCM = ',宽度' + value + '@@厘米@@'
+              // setWidthCM(widthCM)
+              if (value == '' || value == 0) {
+                let widthCM = ''
+                setWidthCM(widthCM)
+              } else {
+                let widthCM = ',宽度' + value + '@@厘米@@'
+                setWidthCM(widthCM)
+              }
+            } else if (name == 'hzbrmc_width_mm') {
+              // 宽度 - 毫米
+              if (value == '' || value == 0) {
+                // console.log('宽度毫米设为0');
+                let widthMM = ''
+                setWidthMM(widthMM)
+              } else {
+                let widthMM = ',宽度' + value + '@@毫米@@'
+                setWidthMM(widthMM)
+              }
+            } else if (name == 'hzbrmc_height_m') {
+              // 高度 - 米
+              // let heightM = ',高度' + value + '@@米@@'
+              // setHeightM(heightM)
+              if (value == '' || value == 0) {
+                let heightM = ''
+                setHeightM(heightM)
+              } else {
+                let heightM = ',高度' + value + '@@米@@'
+                setHeightM(heightM)
+              }
+            } else if (name == 'hzbrmc_height_cm') {
+              // 高度 - 厘米
+              if (value == '' || value == 0) {
+                let heightCM = ''
+                setHeightCM(heightCM)
+              } else {
+                let heightCM = ',高度' + value + '@@厘米@@'
+                setHeightCM(heightCM)
+              }
+            } else if (name == 'hzbrmc_height_mm') {
+              // 高度 - 毫米
+              // let heightMM = ',高度' + value + '@@毫米@@'
+              // setHeightMM(heightMM)
+              if (value == '' || value == 0) {
+                let heightMM = ''
+                setHeightMM(heightMM)
+              } else {
+                let heightMM = ',高度' + value + '@@毫米@@'
+                setHeightMM(heightMM)
+              }
+            } else if (name == 'hzbrmc_area_face') {
+              // 面域 - %
+              // let areaFace = ',面域' + value + '@@%@@'
+              // setAreaFace(areaFace)
+              if (value == '' || value == 0) {
+                let areaFace = ''
+                setAreaFace(areaFace)
+              } else {
+                let areaFace = ',面域' + value + '@@%@@'
+                setAreaFace(areaFace)
+              }
+            } else if (name == 'hzbrmc_area_per') {
+              // 面积占比 - %
+              // let areaPer = ',面积占比' + value + '@@%@@'
+              // setAreaPer(areaPer)
+              if (value == '' || value == 0) {
+                let areaPer = ''
+                setAreaPer(areaPer)
+              } else {
+                let areaPer = ',面积占比' + value + '@@%@@'
+                setAreaPer(areaPer)
+              }
+            } else if (name == 'hzbrmc_area_m') {
+              // 面积 - 平方米
+              // let areaM = ',面积' + value + '@@平方米@@'
+              // setAreaM(areaM)
+              if (value == '' || value == 0) {
+                let areaM = ''
+                setAreaM(areaM)
+              } else {
+                let areaM = ',面积' + value + '@@平方米@@'
+                setAreaM(areaM)
+              }
+            } else if (name == 'hzbrmc_area_cm') {
+              // 面积 - 平方厘米
+              // let areaCM = ',面积' + value + '@@平方厘米@@'
+              // setAreaCM(areaCM)
+              if (value == '' || value == 0) {
+                let areaCM = ''
+                setAreaCM(areaCM)
+              } else {
+                let areaCM = ',面积' + value + '@@平方厘米@@'
+                setAreaCM(areaCM)
+              }
+            } else if (name == 'hzbrmc_area_mm') {
+              // 面积 - 平方毫米
+              // let areaMM = ',面积' + value + '@@平方毫米@@'
+              // setAreaMM(areaMM)
+              if (value == '' || value == 0) {
+                let areaMM = ''
+                setAreaMM(areaMM)
+              } else {
+                let areaMM = ',面积' + value + '@@平方毫米@@'
+                setAreaMM(areaMM)
+              }
+            } else if (name == 'hzbrmc_heightdiff_cm') {
+              // 高差 - 厘米
+              // let heightDiffCM = ',高差' + value + '@@厘米@@'
+              // setHeightDiffCM(heightDiffCM)
+              if (value == '' || value == 0) {
+                let heightDiffCM = ''
+                setHeightDiffCM(heightDiffCM)
+              } else {
+                let heightDiffCM = ',高差' + value + '@@厘米@@'
+                setHeightDiffCM(heightDiffCM)
+              }
+            } else if (name == 'hzbrmc_heightdiff_mm') {
+              // 高差 - 毫米
+              // let heightDiffMM = ',高差' + value + '@@毫米@@'
+              // setHeightDiffMM(heightDiffMM)
+              if (value == '' || value == 0) {
+                let heightDiffMM = ''
+                setHeightDiffMM(heightDiffMM)
+              } else {
+                let heightDiffMM = ',高差' + value + '@@毫米@@'
+                setHeightDiffMM(heightDiffMM)
+              }
+            } else if (name == 'hzbrmc_spacing_cm') {
+              // 间距 - 厘米
+              // let spacingCM = ',间距' + value + '@@厘米@@'
+              // setSpacingCM(spacingCM)
+              if (value == '' || value == 0) {
+                let spacingCM = ',间距' + value + '@@厘米@@'
+                setSpacingCM(spacingCM)
+              } else {
+                let spacingCM = ',间距' + value + '@@厘米@@'
+                setSpacingCM(spacingCM)
+              }
+            } else if (name == 'hzbrmc_deformation_mm') {
+              // 变形 - 毫米
+              // let deformationMM = ',变形' + value + '@@毫米@@'
+              // setDeformationMM(deformationMM)
+              if (value == '' || value == 0) {
+                let deformationMM = ''
+                setDeformationMM(deformationMM)
+              } else {
+                let deformationMM = ',变形' + value + '@@毫米@@'
+                setDeformationMM(deformationMM)
+              }
+            } else if (name == 'hzbrmc_num') {
+              // 个数 - 个
+              // let num = ',个数' + value + '@@个@@'
+              // setNum(num)
+              if (value == '' || value == 0) {
+                let num = ''
+                setNum(num)
+              } else {
+                let num = ',个数' + value + '@@个@@'
+                setNum(num)
+              }
+            } else if (name == 'hzbrmc_range_cm') {
+              // 距离 - 厘米
+              // let rangeCM = ',距离' + value + '@@厘米@@'
+              // setRangeCM(rangeCM)
+              if (value == '' || value == 0) {
+                let rangeCM = ''
+                setRangeCM(rangeCM)
+              } else {
+                let rangeCM = ',距离' + value + '@@厘米@@'
+                setRangeCM(rangeCM)
+              }
+            } else if (name == 'hzbrmc_range_mm') {
+              // 距离 - 毫米
+              // let rangeMM = ',距离' + value + '@@毫米@@'
+              // setRangeMM(rangeMM)
+              if (value == '' || value == 0) {
+                let rangeMM = ''
+                setRangeMM(rangeMM)
+              } else {
+                let rangeMM = ',距离' + value + '@@毫米@@'
+                setRangeMM(rangeMM)
+              }
+            } else if (name == 'hzbrmc_depth_cm') {
+              // 深度 - 厘米
+              // let depthCM = ',深度' + value + '@@厘米@@'
+              // setDepthCM(depthCM)
+              if (value == '' || value == 0) {
+                let depthCM = ''
+                setDepthCM(depthCM)
+              } else {
+                let depthCM = ',深度' + value + '@@厘米@@'
+                setDepthCM(depthCM)
+              }
+            } else if (name == 'hzbrmc_depth_mm') {
+              // 深度 - 毫米
+              // let depthMM = ',深度' + value + '@@毫米@@'
+              // setDepthMM(depthMM)
+              if (value == '' || value == 0) {
+                let depthMM = ''
+                setDepthMM(depthMM)
+              } else {
+                let depthMM = ',深度' + value + '@@毫米@@'
+                setDepthMM(depthMM)
+              }
+            } else if (name == 'hzbrmc_volume_m') {
+              // 体积 - 立方米
+              // let volumeM = ',体积' + value + '@@立方米@@'
+              // setVolumeM(volumeM)
+              if (value == '' || value == 0) {
+                let volumeM = ''
+                setVolumeM(volumeM)
+              } else {
+                let volumeM = ',体积' + value + '@@立方米@@'
+                setVolumeM(volumeM)
+              }
+            } else if (name == 'hzbrmc_volume_cm') {
+              // 体积 - 立方厘米
+              // let volumeCM = ',体积' + value + '@@立方厘米@@'
+              // setVolumeCM(volumeCM)
+              if (value == '' || value == 0) {
+                let volumeCM = ''
+                setVolumeCM(volumeCM)
+              } else {
+                let volumeCM = ',体积' + value + '@@立方厘米@@'
+                setVolumeCM(volumeCM)
+              }
+            } else if (name == 'hzbrmc_disp_cm') {
+              // 位移 - 厘米
+              // let dispCM = ',位移' + value + '@@厘米@@'
+              // setDispCM(dispCM)
+              if (value == '' || value == 0) {
+                let dispCM = ''
+                setDispCM(dispCM)
+              } else {
+                let dispCM = ',位移' + value + '@@厘米@@'
+                setDispCM(dispCM)
+              }
+            } else if (name == 'hzbrmc_disp_mm') {
+              // 位移 - 毫米
+              // let dispMM = ',位移' + value + '@@毫米@@'
+              // setDispMM(dispMM)
+              if (value == '' || value == 0) {
+                let dispMM = ''
+                setDispMM(dispMM)
+              } else {
+                let dispMM = ',位移' + value + '@@毫米@@'
+                setDispMM(dispMM)
+              }
+            } else if (name == 'hzbrmc_angle_c') {
+              // 角度 - 度
+              // let dispMM = ',角度' + value + '@@度@@'
+              // setDispMM(dispMM)
+              if (value == '' || value == 0) {
+                let angle = ''
+                setAngle(angle)
+              } else {
+                let angle = ',角度' + value + '@@度@@'
+                setAngle(angle)
+              }
+            } else if (name == 'hzbrmc_chu') {
+              // 处
+              // let chu = ',' + value + '@@处@@'
+              // setChu(chu)
+              if (value == '' || value == 0) {
+                let chu = ''
+                setChu(chu)
+              } else {
+                let chu = ',' + value + '@@处@@'
+                setChu(chu)
+              }
+            } else if (name == 'hzbrmc_tiao') {
+              // 条
+              // let tiao = ',' + value + '@@条@@'
+              // setTiao(tiao)
+              if (value == '' || value == 0) {
+                let tiao = ''
+                setTiao(tiao)
+              } else {
+                let tiao = ',' + value + '@@条@@'
+                setTiao(tiao)
+              }
+            } else if (name == 'hzbrmc_range_fenbu_m') {
+              // 分布范围 - 米
+              // let rangeFenbuM = ',分布范围' + value + '@@米@@'
+              // setRangeFenbuM(rangeFenbuM)
+              if (value == '' || value == 0) {
+                let rangeFenbuM = ''
+                setRangeFenbuM(rangeFenbuM)
+              } else {
+                let rangeFenbuM = ',分布范围' + value + '@@米@@'
+                setRangeFenbuM(rangeFenbuM)
+              }
+            } else if (name == 'hzbrmc_range_length_m') {
+              // 长度范围 - 米
+              // let rangeLengthM = ',长度范围' + value + '@@米@@'
+              // setRangeLengthM(rangeLengthM)
+              if (value == '' || value == 0) {
+                let rangeLengthM = ''
+                setRangeLengthM(rangeLengthM)
+              } else {
+                let rangeLengthM = ',长度范围' + value + '@@米@@'
+                setRangeLengthM(rangeLengthM)
+              }
+            } else if (name == 'hzbrmc_range_width_mm') {
+              // 宽度范围 - 毫米
+              // let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+              // setRangeWidthMM(rangeWidthMM)
+              if (value == '' || value == 0) {
+                let rangeWidthMM = ''
+                setRangeWidthMM(rangeWidthMM)
+              } else {
+                let rangeWidthMM = ',宽度范围'+ value + '@@毫米@@'
+                setRangeWidthMM(rangeWidthMM)
+              }
+            } else if (name == 'hzbrmc_range_spacing_cm') {
+              // 间距范围 - 厘米
+              // let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+              // setRangeSpacingCM(rangeSpacingCM)
+              if (value == '' || value == 0) {
+                let rangeSpacingCM = ''
+                setRangeSpacingCM(rangeSpacingCM)
+              } else {
+                let rangeSpacingCM = ',间距范围' + value + '@@厘米@@'
+                setRangeSpacingCM(rangeSpacingCM)
+              }
+            } else if (name == 'hzbrmc_lb_left_length_m') {
+              // 左腹板长度 - 米
+              // let leftLengthM = ',左腹板长度' + value + '@@米@@'
+              // setLeftLengthM(leftLengthM)
+              if (value == '' || value == 0) {
+                let leftLengthM = ''
+                setLeftLengthM(leftLengthM)
+              } else {
+                let leftLengthM = ',左腹板长度' + value + '@@米@@'
+                setLeftLengthM(leftLengthM)
+              }
+            } else if (name == 'hzbrmc_lb_bottom_length_m') {
+              // 底板长度 - 米
+              // let bottomLengthM = ',底板长度' + value + '@@米@@'
+              // setBottomLengthM(bottomLengthM)
+              if (value == '' || value == 0) {
+                let bottomLengthM = ''
+                setBottomLengthM(bottomLengthM)
+              } else {
+                let bottomLengthM = ',底板长度' + value + '@@米@@'
+                setBottomLengthM(bottomLengthM)
+              }
+            } else if (name == 'hzbrmc_lb_right_length_m') {
+              // 右腹板长度 - 米
+              // let rightLengthM = ',右腹板长度' + value + '@@米@@'
+              // setRightLengthM(rightLengthM)
+              if (value == '' || value == 0) {
+                let rightLengthM = ''
+                setRightLengthM(rightLengthM)
+              } else {
+                let rightLengthM = ',右腹板长度' + value + '@@米@@'
+                setRightLengthM(rightLengthM)
+              }
+            } else if (name == 'hzbrmc_lb_left_width_mm') {
+              // 左腹板宽度 - 毫米
+              // let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+              // setLeftWidthMM(leftWidthMM)
+              if (value == '' || value == 0) {
+                let leftWidthMM = ''
+                setLeftWidthMM(leftWidthMM)
+              } else {
+                let leftWidthMM = ',左腹板宽度' + value + '@@毫米@@'
+                setLeftWidthMM(leftWidthMM)
+              }
+            } else if (name == 'hzbrmc_lb_bottom_width_mm') {
+              // 底板宽度 - 毫米
+              // let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+              // setBottomWidthMM(bottomWidthMM)
+              if (value == '' || value == 0) {
+                let bottomWidthMM = ''
+                setBottomWidthMM(bottomWidthMM)
+              } else {
+                let bottomWidthMM = ',底板宽度' + value + '@@毫米@@'
+                setBottomWidthMM(bottomWidthMM)
+              }
+            } else if (name == 'hzbrmc_lb_right_width_mm') {
+              // 右腹板宽度 - 毫米
+              // let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+              // setRightWidthMM(rightWidthMM)
+              if (value == '' || value == 0) {
+                let rightWidthMM = ''
+                setRightWidthMM(rightWidthMM)
+              } else {
+                let rightWidthMM = ',右腹板宽度' + value + '@@毫米@@'
+                setRightWidthMM(rightWidthMM)
+              }
+            } else if (name == 'hzbrmc_slant_m') {
+              // 倾斜量 - 米
+              // let slantM = ',倾斜量' + value + '@@米@@'
+              // setSlantM(slantM)
+              if (value == '' || value == 0) {
+                let slantM = ''
+                setSlantM(slantM)
+              } else {
+                let slantM = ',倾斜量' + value + '@@米@@'
+                setSlantM(slantM)
+              }
             }
           }
+          
+          setDiseaseData(_data);
+
+        } catch (error) {
+          console.log('error321',error);
         }
         
-        setDiseaseData(_data);
+        
+        
+
+        
       };
 
       // 填入病害描述内容
@@ -2476,10 +2533,38 @@ export function DiseaseB({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+      let unitt = JSON.stringify(diseaseData, [
+                                  'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+                                'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+                                'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+                                'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+                                'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+                                'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+                                'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+                                'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+                                'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+                                'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      // const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+      //   hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+      //   hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+      //   hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+      //   hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+      //   hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+      //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+      //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+      //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
         ...diseaseData,
         [name]: value,
       };
+
       if (name === 'checktypeid') {
         const _type = route.params.type.list.find(
           item => value === item.checktypeid,
@@ -4117,6 +4202,33 @@ export function DiseaseC({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      // const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+      //   hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+      //   hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+      //   hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+      //   hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+      //   hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+      //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+      //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+      //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
         ...diseaseData,
         [name]: value,
@@ -5621,10 +5733,39 @@ export function DiseaseD({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      // const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+      //   hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+      //   hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+      //   hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+      //   hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+      //   hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+      //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+      //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+      //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
         ...diseaseData,
         [name]: value,
       };
+
       if (name === 'checktypeid') {
         const _type = route.params.type.list.find(
           item => value === item.checktypeid,
@@ -7129,6 +7270,34 @@ export function DiseaseE({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      // const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+      //   hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+      //   hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+      //   hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+      //   hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+      //   hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+      //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+      //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+      //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
         ...diseaseData,
         [name]: value,
@@ -8634,6 +8803,33 @@ export function DiseaseK({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      // const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+      //   hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+      //   hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+      //   hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+      //   hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+      //   hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+      //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+      //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+      //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
         ...diseaseData,
         [name]: value,
@@ -10244,6 +10440,33 @@ export function DiseaseG({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      // const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+      //   hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+      //   hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+      //   hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+      //   hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+      //   hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+      //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+      //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+      //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
         ...diseaseData,
         [name]: value,
@@ -11843,6 +12066,33 @@ export function DiseaseH({route, navigation}) {
 
     const handleScaleOpen = () => scaleInfoRef.current.open();
     const handleFormChenge = ({name, value}) => {
+      // const _data = {
+      //   ...diseaseData,
+      //   [name]: value,
+      // };
+      let unitt = JSON.stringify(diseaseData, [
+          'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
+        'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
+        'hzbrmc_width_cm','hzbrmc_width_mm','hzbrmc_height_m','hzbrmc_height_cm','hzbrmc_height_mm',
+        'hzbrmc_area_face','hzbrmc_area_per','hzbrmc_area_m','hzbrmc_area_cm','hzbrmc_area_mm',
+        'hzbrmc_heightdiff_cm','hzbrmc_heightdiff_mm','hzbrmc_spacing_cm','hzbrmc_deformation_mm',
+        'hzbrmc_num','hzbrmc_range_cm','hzbrmc_range_mm','hzbrmc_depth_cm','hzbrmc_depth_mm',
+        'hzbrmc_volume_m','hzbrmc_volume_cm','hzbrmc_disp_cm','hzbrmc_disp_mm','hzbrmc_angle_c',
+        'hzbrmc_chu','hzbrmc_tiao','hzbrmc_range_fenbu_m','hzbrmc_range_length_m','hzbrmc_range_width_mm',
+        'hzbrmc_range_spacing_cm','hzbrmc_lb_left_length_m','hzbrmc_lb_bottom_length_m','hzbrmc_lb_right_length_m',
+        'hzbrmc_lb_left_width_mm','hzbrmc_lb_bottom_width_mm','hzbrmc_lb_right_width_mm','hzbrmc_slant_m'])
+      // console.log(unitt);
+      let unit = JSON.parse(unitt)
+      diseaseData['unit'] = unit
+      // const {area,areatype,scale,hzbrmc_length_m,hzbrmc_length_cm,hzbrmc_length_mm,hzbrmc_width_m,hzbrmc_width_cm,
+      //   hzbrmc_width_mm,hzbrmc_height_m,hzbrmc_height_cm,hzbrmc_height_mm,hzbrmc_area_face,hzbrmc_area_per,
+      //   hzbrmc_area_m,hzbrmc_area_cm,hzbrmc_area_mm,hzbrmc_heightdiff_cm,hzbrmc_heightdiff_mm,hzbrmc_spacing_cm,
+      //   hzbrmc_deformation_mm,hzbrmc_num,hzbrmc_range_cm,hzbrmc_range_mm,hzbrmc_depth_cm,hzbrmc_depth_mm,
+      //   hzbrmc_volume_m,hzbrmc_volume_cm,hzbrmc_disp_cm,hzbrmc_disp_mm,hzbrmc_angle_c,hzbrmc_chu,hzbrmc_tiao,
+      //   hzbrmc_range_fenbu_m,hzbrmc_range_length_m,hzbrmc_range_width_mm,hzbrmc_range_spacing_cm,hzbrmc_lb_left_length_m,
+      //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
+      //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
+      //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       const _data = {
         ...diseaseData,
         [name]: value,

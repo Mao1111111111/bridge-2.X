@@ -11,7 +11,7 @@ import Pid from './Pid';
 import ModalDropdown from 'react-native-modal-dropdown';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Headerbar({items, pid, proNameList, navigation,list}) {
+export default function Headerbar({items, pid, proNameList, bridgeList, navigation,list}) {
   const {
     state: {theme},
   } = React.useContext(Context);
@@ -43,22 +43,18 @@ export default function Headerbar({items, pid, proNameList, navigation,list}) {
   };
 
   const [proList, setProList] = React.useState([])
+  const [briList, setBriList] = React.useState([])
+  // 桥梁所有数据
+  const [brigeAllValue, setBrigeAllValue] = React.useState([])
+
 
   React.useEffect(()=> {
-    // let proList = []
-    // proNameList.forEach(item => {
-    //   // console.log(item);
-    //   proList.push(
-    //     item.proName
-    //   )
-    // });
-    // setProList(proList)
-    // console.log('proList666',proNameList);
-    getStorage()
+    getProStorage()
+    getBriStorage()
   },[])
 
   // 读取存储的项目数据
-  const getStorage = async(item) => {
+  const getProStorage = async(item) => {
     try {
       // 将读取到的value JSON字符 转为 JSON对象
       const value = JSON.parse(await AsyncStorage.getItem('proList'))
@@ -76,17 +72,29 @@ export default function Headerbar({items, pid, proNameList, navigation,list}) {
     }
   }
 
-  const test = () => {
-    const aaa = '654'
-    return (
-      <View>
-        <Text>{aaa}</Text>
-      </View>
-    )
+  // 读取存储的桥梁数据
+  const getBriStorage = async(item) => {
+    try {
+      // 将读取到的value JSON字符 转为 JSON对象
+      const value = JSON.parse(await AsyncStorage.getItem('briList'))
+      setBrigeAllValue(value)
+      // console.log('读取的value2',value);
+      let briList = []
+      // console.log('111112',value.length);
+      value.forEach((item) => {
+        // console.log(item.bridgeName);
+        briList.push(item.bridgeName)
+      })
+      setBriList(briList)
+      // console.log('11111');
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  // 分类选择
-  _selectType = (indexA, value) => {
+
+  // 分类选择 - 项目
+  _selectProType = (indexA, value) => {
     console.log('---', indexA, value)
     // console.log('listlist的内容',list);
     let resetItem = ''
@@ -99,6 +107,24 @@ export default function Headerbar({items, pid, proNameList, navigation,list}) {
       project: resetItem,
     })
   }
+
+  // 分类选择 - 桥梁
+  _selectBriType = (indexB, value) => {
+    console.log('---', indexB, value)
+    // console.log('brigeAllValue1',brigeAllValue);
+    // console.log('brigeAllValue2',brigeAllValue[0].list);
+    brigeAllValue[0].list.forEach((item) => {
+      if (JSON.stringify(value) == JSON.stringify(item.bridgename)) {
+        // console.log('0000.0000',brigeAllValue[0].project);
+        navigation.navigate('Collection/Detect/BridgeTest', {
+          project: brigeAllValue[0].project,
+          bridge: item,
+        })
+      }
+    })
+  }
+
+
   // 下拉列表分隔符
   _separator = () => {
     return(
@@ -165,25 +191,60 @@ export default function Headerbar({items, pid, proNameList, navigation,list}) {
             <></>
           ) : (
             // 最后一个导航，显示并 超长截取
-            <ModalDropdown
-              adjustFrame={this._adjustType}
-              options={proList} // 选项内容
-              dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-              dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
-              dropdownTextStyle={[{width:130,textAlign:'center'}]}
-              onSelect={this._selectType} // 点击选项时，执行的方法
-              defaultValue={proList[0]}
-              onDropdownWillShow={()=>getStorage()}
-            >
-              {/* <TouchableOpacity onPress={()=>getStorage()}> */}
-              <Text style={[tailwind.textSm, tailwind.fontBold]}>
-                {item.name.slice(0, 12)}
-                {item.name.length > 12 ? '...' : ''}
-              </Text>
-            {/* </TouchableOpacity> */}
-            </ModalDropdown>
-            
-            
+            // <ModalDropdown
+            //   adjustFrame={this._adjustType}
+            //   options={proList} // 选项内容
+            //   dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
+            //   dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
+            //   dropdownTextStyle={[{width:130,textAlign:'center'}]}
+            //   onSelect={this._selectType} // 点击选项时，执行的方法
+            //   defaultValue={proList[0]}
+            //   onDropdownWillShow={()=>getStorage()}
+            // >
+            //   {/* <TouchableOpacity onPress={()=>getStorage()}> */}
+            //   <Text style={[tailwind.textSm, tailwind.fontBold]}>
+            //     {item.name.slice(0, 12)}
+            //     {item.name.length > 12 ? '...' : ''}
+            //   </Text>
+            // {/* </TouchableOpacity> */}
+            // </ModalDropdown>
+            pid == 'P1001' ? (
+              <ModalDropdown
+                adjustFrame={this._adjustType}
+                options={proList} // 选项内容
+                dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
+                dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
+                dropdownTextStyle={[{width:130,textAlign:'center'}]}
+                onSelect={this._selectProType} // 点击选项时，执行的方法
+                defaultValue={proList[0]}
+                onDropdownWillShow={()=>getProStorage()}
+              >
+                <Text style={[tailwind.textSm, tailwind.fontBold]}>
+                  {item.name.slice(0, 12)}
+                  {item.name.length > 12 ? '...' : ''}
+                </Text>
+              </ModalDropdown>
+            ) : (
+              pid == 'P1101' ? (
+                <ModalDropdown
+                  adjustFrame={this._adjustType}
+                  options={briList} // 选项内容
+                  dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
+                  dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
+                  dropdownTextStyle={[{width:130,textAlign:'center'}]}
+                  onSelect={this._selectBriType} // 点击选项时，执行的方法
+                  defaultValue={briList[0]}
+                  onDropdownWillShow={()=>getBriStorage()}
+                >
+                  <Text style={[tailwind.textSm, tailwind.fontBold]}>
+                    {item.name.slice(0, 12)}
+                    {item.name.length > 12 ? '...' : ''}
+                  </Text>
+                </ModalDropdown>
+              ) : (
+                <></>
+              )
+            )
           )}
         </React.Fragment>
       ))}
