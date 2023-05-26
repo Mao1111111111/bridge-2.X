@@ -11,7 +11,7 @@ import Pid from './Pid';
 import ModalDropdown from 'react-native-modal-dropdown';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Headerbar({items, pid, proNameList, bridgeList,
+export default function Headerbar({route,items, pid, proNameList, bridgeList,
   navigation,list,project,bridge, labelname, membername}) {
   const {
     state: {theme},
@@ -23,7 +23,7 @@ export default function Headerbar({items, pid, proNameList, bridgeList,
 
   // 对导航的显示内容进行处理
   const getText = item => {
-    console.log('getText item',pid,project,bridge, labelname, membername);
+    // console.log('getText item',pid,project,bridge, labelname, membername,route);
     return item.isIcon ? (
       // 如果是 icon图标，显示icon
       <Icon style={[{color:'#2b427d'}]} name={item.name} size={20} /> //首页home图标
@@ -96,12 +96,30 @@ export default function Headerbar({items, pid, proNameList, bridgeList,
     }
   }
 
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+
   const topage = (e) => {
     console.log('eee',e);
     if (e == '项目') {
       console.log('123');
       // () => navigation.navigate('src/screen/Collection/Detect/Project')
-      navigation.navigate('Collection/Detect/Project', {})
+      navigation.navigate('Collection/Detect/Project')
+    } else if (e == '桥梁') {
+      console.log('123');
+      // () => navigation.navigate('src/screen/Collection/Detect/Project')
+      // {
+      //   name: `${project.projectname}`,
+      // navigation.navigate('Collection/Detect/ProjectDetail', {project})
+      // }
+      navigation.goBack()
     }
   }
 
@@ -295,13 +313,16 @@ export default function Headerbar({items, pid, proNameList, bridgeList,
                       </TouchableOpacity>
                       
                       <Text>    \   </Text>
-                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>
-                        桥梁：{bridge}
-                      </Text>
+                      <TouchableOpacity onPress={() => topage('桥梁')}>
+                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>
+                          桥梁：{bridge}
+                        </Text>
+                      </TouchableOpacity>
+                      
                     </View>
                   ) 
                 }
-                <View style={[{height:3}]}></View>
+                <View style={[{height:1}]}></View>
                 {/* 第二行 */}
                 {
                   labelname == undefined || labelname == '' ? (

@@ -21,7 +21,7 @@ import HeaderTabs from './HeaderTabs';
 import MemberEdit from './MemberEdit';
 import Media from './Media';
 
-export default function Main({navigation}) {
+export default function Main({navigation, route}) {
   // 全局样式
   const {
     state: {theme},
@@ -290,7 +290,7 @@ export default function Main({navigation}) {
 
   return (
     // 外部盒子 = 样式 + 顶部导航 + 导航左侧标签
-    <Box headerItems={getHeaderItems()} pid="P1301" project={project.projectname} bridge={bridge.bridgename}>
+    <Box headerItems={getHeaderItems()} pid="P1301" navigation={navigation} route={route} project={project.projectname} bridge={bridge.bridgename}>
       {/* 年份tab + 数据/影音tab，onChangeTab 为点击数据/影音tab时 */}
       <HeaderTabs onChangeTab={setPageType} />
       {pageType !== '数据' ? (
