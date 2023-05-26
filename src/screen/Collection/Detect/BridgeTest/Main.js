@@ -183,6 +183,7 @@ export default function Main({navigation}) {
 
   // 获取 顶部导航项
   const getHeaderItems = () => {
+    console.log('project',bridge.bridgename);
     // 没有项目名时，返回 []
     if (!project.projectname) {
       return [];
@@ -210,6 +211,9 @@ export default function Main({navigation}) {
         // 桥梁桩号 - 桥梁名称 - 桥幅属性
         name: `${bridge.bridgestation}-${bridge.bridgename}-${paramname}`,
       },
+      {
+        project
+      }
     ];
   };
 
@@ -227,6 +231,7 @@ export default function Main({navigation}) {
     if (!nowEdit) {
       return;
     }
+    // console.log('nowEdit',nowEdit);
     navigation.navigate('Collection/Detect/BridgeTest/Member', {
       data: nowEdit,
       list: [],
@@ -285,7 +290,7 @@ export default function Main({navigation}) {
 
   return (
     // 外部盒子 = 样式 + 顶部导航 + 导航左侧标签
-    <Box headerItems={getHeaderItems()} pid="P1301">
+    <Box headerItems={getHeaderItems()} pid="P1301" project={project.projectname} bridge={bridge.bridgename}>
       {/* 年份tab + 数据/影音tab，onChangeTab 为点击数据/影音tab时 */}
       <HeaderTabs onChangeTab={setPageType} />
       {pageType !== '数据' ? (

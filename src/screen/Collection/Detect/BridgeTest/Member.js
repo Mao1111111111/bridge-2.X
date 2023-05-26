@@ -244,6 +244,8 @@ export default function Member({route, navigation,item}) {
   );
 
   React.useEffect(() => {
+    console.log('projectprojectproject',project);
+    console.log('projectprojectproject',bridge);
     if (!partsList || !data || !basememberinfo) {
       return;
     }
@@ -308,7 +310,7 @@ export default function Member({route, navigation,item}) {
         onPress: () => navigation.navigate('Collection/Detect/BridgeTest/Main'),
       },
       {
-        name: data.title,
+        labelname: data.title,
       },
     ];
   };
@@ -351,6 +353,8 @@ export default function Member({route, navigation,item}) {
 
   // 页面跳转
   const handleEditPage = path => {
+    // let list = parts.filter(item => checkedList.has(item.id))
+    // console.log('P1501 checkedList',list[0].membername);
     if (!checkedList.size) {
       return;
     }
@@ -427,7 +431,7 @@ export default function Member({route, navigation,item}) {
   }
 
   return (
-    <Box pid="P1501" headerItems={getHeaderItems()}>
+    <Box pid="P1501" headerItems={getHeaderItems()} labelname={data.title} project={project.projectname} bridge={bridge.bridgename}>
       {/* 年份 + 数据影音 tab，当选中构件时，数据影音tab禁用 */}
       <HeaderTabs onChangeTab={setPageType} disabled={checkedList.size} />
       {/* 影音 */}

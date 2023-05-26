@@ -7,16 +7,19 @@ import EditMenu from './EditMenu';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 
 // 盒子
-export function Box({pid, children, headerItems}) {
+export function Box({pid, children, headerItems,project,bridge,labelname,membername}) {
+  useEffect(() => {
+    // console.log('Box headerItems',headerItems,labelname);
+  },[])
   return (
     // 点击空白处，收起键盘
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={[tailwind.flex1]}>
-        <View style={[tailwind.mX19,{position:'absolute',top:13,left:70}]}>
+        <View style={[tailwind.mX19,{position:'absolute',top:5,left:70}]}>
           {/* 顶部导航 */}
-          <Headerbar items={headerItems || []} pid={pid || ''} />
+          <Headerbar items={headerItems || []} pid={pid || ''} project={project} bridge={bridge} labelname={labelname || ''} membername={membername || ''} />
         </View>
-        <View style={[tailwind.mY6]}></View>
+        <View style={[tailwind.mY8]}></View>
         {children}
       </View>
     </TouchableWithoutFeedback>

@@ -11,7 +11,8 @@ import Pid from './Pid';
 import ModalDropdown from 'react-native-modal-dropdown';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Headerbar({items, pid, proNameList, bridgeList, navigation,list}) {
+export default function Headerbar({items, pid, proNameList, bridgeList,
+  navigation,list,project,bridge, labelname, membername}) {
   const {
     state: {theme},
   } = React.useContext(Context);
@@ -22,6 +23,7 @@ export default function Headerbar({items, pid, proNameList, bridgeList, navigati
 
   // 对导航的显示内容进行处理
   const getText = item => {
+    console.log('getText item',pid,project,bridge, labelname, membername);
     return item.isIcon ? (
       // 如果是 icon图标，显示icon
       <Icon style={[{color:'#2b427d'}]} name={item.name} size={20} /> //首页home图标
@@ -49,6 +51,8 @@ export default function Headerbar({items, pid, proNameList, bridgeList, navigati
 
 
   React.useEffect(()=> {
+    // console.log('itemsss',items,pid);
+    // console.log('items.name',items[0].name);
     getProStorage()
     getBriStorage()
   },[])
@@ -89,6 +93,15 @@ export default function Headerbar({items, pid, proNameList, bridgeList, navigati
       // console.log('11111');
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  const topage = (e) => {
+    console.log('eee',e);
+    if (e == '项目') {
+      console.log('123');
+      // () => navigation.navigate('src/screen/Collection/Detect/Project')
+      navigation.navigate('Collection/Detect/Project', {})
     }
   }
 
@@ -167,19 +180,25 @@ export default function Headerbar({items, pid, proNameList, bridgeList, navigati
         <React.Fragment key={index}>
           {index !== items.length - 1 ? (
             // 如果不是最后一个，加上
-            <React.Fragment>
-              <TouchableOpacity onPress={item.onPress}>
-                {/* getText 对显示内容进行处理：1）icon 2）超长截取 */}
-                {getText(item)}
-              </TouchableOpacity>
-              <Text style={[tailwind.textSm, tailwind.mX1]}>\</Text>
-            </React.Fragment>
+            // <React.Fragment>
+            //   <TouchableOpacity onPress={item.onPress}>
+            //     {/* getText 对显示内容进行处理：1）icon 2）超长截取 */}
+            //     {getText(item)}
+            //   </TouchableOpacity>
+            //   <Text style={[tailwind.textSm, tailwind.mX1]}>\</Text>
+            // </React.Fragment>
+            pid == 'P1001' || pid == 'P1101' ? (
+              <React.Fragment>
+                <TouchableOpacity onPress={item.onPress}>
+                  {/* getText 对显示内容进行处理：1）icon 2）超长截取 */}
+                  {getText(item)}
+                </TouchableOpacity>
+                <Text style={[tailwind.textSm, tailwind.mX1]}>\</Text>
+              </React.Fragment>
+            ) : (
+              <></>
+            )
           ) : (
-            // 最后一个导航，显示并 超长截取
-            // <Text style={[tailwind.textSm, tailwind.fontBold]}>
-            //   {item.name.slice(0, 12)}
-            //   {item.name.length > 12 ? '...' : ''}
-            // </Text>
             <></>
           )}
         </React.Fragment>
@@ -248,6 +267,75 @@ export default function Headerbar({items, pid, proNameList, bridgeList, navigati
           )}
         </React.Fragment>
       ))}
+      {
+        pid !== 'P1001' || pid !== 'P1101' ? (
+          <React.Fragment>
+              <View>
+                {/* 第一行 */}
+                {
+                  project == undefined || project == '' ? (
+                    <></>
+                  ) : (
+                      bridge == undefined || bridge == '' ? (
+                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>项目：{project}</Text>
+                      ) : (
+                        <></>
+                      )
+                  ) 
+                }
+                {
+                  bridge == undefined || bridge == '' && project == undefined || project == '' ? (
+                    <></>
+                  ) : (
+                    <View style={[tailwind.flex1,tailwind.flexRow]}>
+                      <TouchableOpacity onPress={() => topage('项目')}>
+                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>
+                          项目：{project}
+                        </Text>
+                      </TouchableOpacity>
+                      
+                      <Text>    \   </Text>
+                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>
+                        桥梁：{bridge}
+                      </Text>
+                    </View>
+                  ) 
+                }
+                <View style={[{height:3}]}></View>
+                {/* 第二行 */}
+                {
+                  labelname == undefined || labelname == '' ? (
+                    <></>
+                  ) : (
+                    membername == undefined || membername == '' ? (
+                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>部件：{labelname}</Text>
+                    ) : (
+                      <></>
+                    )
+                  ) 
+                }
+                {
+                 labelname == undefined || labelname == '' && membername == undefined || membername == '' ? (
+                    <></>
+                  ) : (
+                    <View style={[tailwind.flex1,tailwind.flexRow]}>
+                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>
+                        部件：{labelname}
+                      </Text>
+                      <Text>    \   </Text>
+                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>
+                        构件：{membername}
+                      </Text>
+                    </View>
+                  ) 
+                }
+              </View>
+        </React.Fragment>
+        ) : (
+          <></>
+        )
+        
+      }
     </View>
   );
 }
