@@ -172,7 +172,7 @@ export default React.forwardRef(({onSubmitOver}, ref) => {
         return;
       }
       // 编辑数据，更新数据库中信息；新增数据
-      if (data) {
+      if (title=='编辑项目') {
         // 如果data存在，那么是编辑，数据库更新数据
         await project.update({
           ...values,
@@ -186,7 +186,6 @@ export default React.forwardRef(({onSubmitOver}, ref) => {
           username: userInfo.nickname,
         });
       }
-      console.log('新增项目表单的data',values.projectno);
       // 解除loading
       setLoading(false);
       // 执行父组件传递过来的函数
@@ -202,10 +201,7 @@ export default React.forwardRef(({onSubmitOver}, ref) => {
 
   // 当养护区 或 路线 变化时，重置项目名称
   React.useEffect(() => {
-    console.log("!firstOpen",!firstOpen);
-    console.log("firstOpen",firstOpen);
     if(!firstOpen){
-      console.log("111");
       setName(e => {
         const yaer = e.substring(0, 4);
         return `${yaer}${areacode?.name || ''}${routecode?.name || ''}`;
