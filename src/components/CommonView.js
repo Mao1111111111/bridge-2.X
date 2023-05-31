@@ -7,16 +7,19 @@ import EditMenu from './EditMenu';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 
 // 盒子
-export function Box({pid, children, headerItems}) {
+export function Box({navigation,route,pid, children, headerItems,project,bridge,labelname,membername}) {
+  useEffect(() => {
+    // console.log('Box headerItems',headerItems,labelname);
+  },[])
   return (
     // 点击空白处，收起键盘
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={[tailwind.flex1]}>
-        <View style={[tailwind.mX19,{position:'absolute',top:13,left:70}]}>
+        <View style={[tailwind.mX19,{position:'absolute',top:8,left:70}]}>
           {/* 顶部导航 */}
-          <Headerbar items={headerItems || []} pid={pid || ''} />
+          <Headerbar navigation={navigation} items={headerItems || []} pid={pid || ''} project={project} bridge={bridge} labelname={labelname || ''} membername={membername || ''} />
         </View>
-        <View style={[tailwind.mY6]}></View>
+        <View style={[tailwind.mY8]}></View>
         {children}
       </View>
     </TouchableWithoutFeedback>
@@ -192,6 +195,10 @@ export default function CommonView({
   pid,
   children,
   headerItems,
+  proNameList,
+  bridgeList,
+  navigation,
+  list,
   tabBar,
   onAdd,
   onEdit,
@@ -301,7 +308,14 @@ export default function CommonView({
             {/* 页面路径与用户信息 */}
             {/* <View style={[tailwind.mX19,{width:700}]}> */}
               {/* 顶部导航 可以显示 1）导航按钮 2）icon图标按钮 3）对过长的标题截取 */}
-              <Headerbar items={headerItems || []} pid={pid || ''} />
+              <Headerbar
+                items={headerItems || []}
+                pid={pid || ''}
+                proNameList={proNameList || [] }
+                bridgeList={bridgeList || []}
+                navigation={navigation}
+                list={list}
+              />
             {/* </View> */}
             {/* 嵌入公共盒子的内容，即主要内容 */}
             {children}

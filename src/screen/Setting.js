@@ -564,7 +564,7 @@ export default function Setting() {
       <View
         style={
           [
-            tailwind.mY2,
+            tailwind.mY8,
             // tailwind.mX19,
             {
               width:55,
@@ -598,14 +598,14 @@ export default function Setting() {
           ></Image>
         </Pressable>
       </View>
-      <ImageBackground source={require('../iconImg/settingMainBg.jpg')}
+      <ImageBackground 
         style={
           [
-            tailwind.mY3,
+            tailwind.mY12,
             // tailwind.mX19,
             {
               width:710,
-              height:453,
+              height:440,
               position:'absolute',
               left:75
             }
@@ -613,6 +613,7 @@ export default function Setting() {
         }
       >
         {/* <Headerbar items={[{name: '用户设置'}]} /> */}
+        <View style={tailwind.mY2} />
         {getPage()}
       </ImageBackground>
       <View

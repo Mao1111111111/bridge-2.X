@@ -354,6 +354,7 @@ export default function DiseaseList({route, navigation}) {
 
           console.log('DiseaseList route', route);
           console.log('res[0].jsondata', route.params.title);
+          // console.log('list',list);
         });
     }, [list, isLoading, dataGroupId]),
   );
@@ -452,8 +453,8 @@ export default function DiseaseList({route, navigation}) {
   }; */
 
   const handleModelCallBack = data => {
-    console.log("data6661",data.secondDisTypeData.paneltype);
-    console.log("data6662",waitingData);
+    // console.log("data6661",data.secondDisTypeData.paneltype);
+    // console.log("data6662",waitingData);
     const url =
       data.secondDisTypeData.paneltype === 'p1001'
         ? 'Collection/Detect/BridgeTest/Member/DiseaseEdit'
@@ -572,16 +573,16 @@ export default function DiseaseList({route, navigation}) {
   }
 
   return (
-    <Box headerItems={getHeaderItems()} pid="P1603">
+    <Box headerItems={getHeaderItems()} navigation={navigation} pid="P1603" labelname={route.params.title} membername={list[0].membername} project={project.projectname} bridge={bridge.bridgename}>
       <HeaderTabs disabled={true} />
-      <View style={tailwind.flex1}>
+      <View style={[tailwind.flex1]}>
         <Content
           onAdd={() => handleAdd({list: [], index: total})}
           onEdit={nowEdit && (() => handleEdit(nowEdit))}
           onDelete={nowEdit && handleDelete}
           onBack={goBack}
           onAhead={nowEdit && (() => handleEdit(nowEdit))}>
-          <View style={[styles.card, {width:700, backgroundColor:'#fff'}]}>
+          <View style={[styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               <View style={[tailwind.flex1]}>
                 <Text style={[styles.title, {color:'#2b427d'}]}>

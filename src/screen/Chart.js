@@ -68,7 +68,7 @@ export default function Chart() {
       <ImageBackground
         style={
           [
-            tailwind.mY2,
+            tailwind.mY8,
             // tailwind.mX18,
             {
               position:'absolute',

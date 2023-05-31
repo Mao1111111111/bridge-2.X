@@ -1,5 +1,5 @@
 // 导入 、克隆桥梁
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity,ImageBackground} from 'react-native';
 import {Divider} from 'react-native-paper';
 import {useFocusEffect} from '@react-navigation/native';
@@ -17,6 +17,7 @@ import * as bridge from '../../../database/bridge';
 import * as bridgeProjectBind from '../../../database/bridge_project_bind';
 import {alert, confirm} from '../../../utils/alert';
 import CommonView from '../../../components/CommonView';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 克隆
 const Clone = React.forwardRef(({onSubmitOver}, ref) => {
@@ -597,20 +598,20 @@ export default function ProjectDetail({route, navigation}) {
   // 顶部导航项
   const headerItems = [
     // 采集平台,点击打开抽屉路由
-    {
-      name: '采集平台',
-      onPress: () =>
-        dispatch({
-          type: 'drawerShowFlg',
-          payload: Math.random().toString(36).slice(-8),
-        }),
-    },
-    {
-      name: '检测平台',
-    },
+    // {
+    //   name: '采集平台',
+    //   onPress: () =>
+    //     dispatch({
+    //       type: 'drawerShowFlg',
+    //       payload: Math.random().toString(36).slice(-8),
+    //     }),
+    // },
+    // {
+    //   name: '检测平台',
+    // },
     // 返回项目管理
     {
-      name: '项目管理',
+      name: '丨 项目管理',
       onPress: () => navigation.navigate('Collection/Detect/Project'),
     },
     // 项目名
@@ -630,6 +631,9 @@ export default function ProjectDetail({route, navigation}) {
     }, []),
   );
 
+  // 桥梁名称列表
+  const [bridgeList, setBridgeList] = useState()
+
   // 检索条件变化、页码变化、项目变化时 触发
   React.useEffect(() => {
     if (!page) {
@@ -637,6 +641,10 @@ export default function ProjectDetail({route, navigation}) {
     }
     // 表格loading
     setLoading(true);
+
+    // console.log('bridge navigation', navigation);
+    let bridgeList = []
+
     // 查询数据
     bridge
       .search({
@@ -648,8 +656,24 @@ export default function ProjectDetail({route, navigation}) {
       })
       .then(res => {
         setList(res.list);
+        console.log('listlist1',list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
+        console.log('bridge res', res.list);
+        // 桥梁名称 bridgename 桥梁桩号 bridgestation 桥梁id bridgeid
+        // console.log('bridge res', res.list[0].bridgename); 
+        res.list.forEach((item)=> {
+          bridgeList.push({
+            project,
+            list,
+            bridgeName:item.bridgename,
+            bridgeStation:item.bridgestation,
+            bridgeId:item.bridgeid
+          })
+        })
+        setBridgeList(bridgeList)
+        setBriStorage(bridgeList)
+        console.log('bridgeList',bridgeList);
       })
       .finally(() => setLoading(false));
   }, [search, page, project]);
@@ -706,6 +730,18 @@ export default function ProjectDetail({route, navigation}) {
     });
   };
 
+  // 全局保存桥梁列表数据
+  const setBriStorage = async(value) => {
+    // console.log('valueeeeeee',value);
+    try {
+      const name = 'briList'
+      const jsonValue = JSON.stringify(value)
+      await AsyncStorage.setItem(name, jsonValue)
+    } catch (err) {
+      console.log('setBriStorage err',err);
+    }
+  }
+
   // 新增、修改、导入、克隆完成后，重置页码，重置选中
   const handleSubmitOver = async () => {
     try {
@@ -752,6 +788,9 @@ export default function ProjectDetail({route, navigation}) {
     <CommonView
       //顶部导航 
       headerItems={headerItems}
+      // 桥梁名称列表
+      bridgeList={bridgeList}
+      navigation={navigation}
       // 顶部导航左侧的标签
       pid="P1101"
       // 新增
@@ -777,120 +816,123 @@ export default function ProjectDetail({route, navigation}) {
           onPress: () => cloneRef.current.open(project),
         },
       ]}>
-        {/* 检索 */}
-      <View style={[styles.searchCard, theme.primaryBgStyle]}>
-        <TextInput
-          name="bridgename"
-          label="桥梁名称:"
-          ref={el => (searchRef.current[0] = el)}
-          style={[tailwind.mR4, tailwind.flex1]}
-        />
-        <Select
-          name="areacode"
-          label="路段:"
-          labelName="name"
-          valueName="code"
-          value={areacode.code}
-          onChange={setAreacode}
-          style={[tailwind.mR4, tailwind.flex1]}
-          ref={el => (searchRef.current[1] = el)}
-          values={[{name: '无', code: ''}, ...(areaList || [])]}
-        />
-        <Select
-          name="routecode"
-          label="路线:"
-          labelName="name"
-          valueName="code"
-          value={routecode.code}
-          onChange={setRoutecode}
-          style={[tailwind.mR4, tailwind.flex1]}
-          ref={el => (searchRef.current[2] = el)}
-          values={[
-            {name: '无', code: ''},
-            ...(routeList?.filter(item => item.pcode === areacode.code) || []),
-          ]}
-        />
-        {/* <Button onPress={handleSearch} style={[{backgroundColor: '#2b427d'}]}>检索</Button> */}
-        {/* 检索按钮 */}
-        <ImageBackground
-          source={require('../../../iconImg/search.png')} style={[{width:38, height:28}]}
-        >
-          {/* <Pressable OnPressIn={handleSearch}></Pressable> */}
-          <Text onPress={handleSearch}>{'         '}</Text>
-        </ImageBackground>
-      </View>
-      <View style={tailwind.mY1} />
-      {/* 表格 */}
-      <View style={[styles.tableCard, theme.primaryBgStyle]}>
-        <Table.Box
-          loading={loading}
-          numberOfPages={pageTotal}
-          total={total}
-          pageNo={page?.pageNo || 0}
-          onPageChange={e =>
-            setPage({
-              pageSize: 10,
-              pageNo: e,
-            })
-          }
-          header={
-            <Table.Header>
-              <Table.Title title="选择" flex={1} />
-              <Table.Title title="序号" flex={1} />
-              <Table.Title title="桩号" flex={2} />
-              <Table.Title title="桥梁名称" flex={3} />
-              <Table.Title title="桥幅" />
-              <Table.Title title="病害构件" />
-              <Table.Title title="媒体文件" />
-              <Table.Title title="检测日期" flex={2} />
-              <Table.Title title="存储" />
-            </Table.Header>
-          }>
-          <FlatList
-            data={list}
-            extraData={list}
-            renderItem={({item, index}) => (
-              <Table.Row key={index}>
-                <Table.Cell flex={1}>
-                  <Checkbox
-                    checked={(nowChecked || {}) === item}
-                    onPress={() => handleCheck(item)}
-                  />
-                </Table.Cell>
-                <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                <Table.Cell flex={2} notText={true}>
-                  {/* 跳转到桥梁检测 */}
-                  <TouchableOpacity
-                    // style={[styles.linkBox]}
-                    onPress={() =>
-                      navigation.navigate('Collection/Detect/BridgeTest', {
-                        project: project,
-                        bridge: item,
-                      })
-                    }>
-                    <Text style={[{color: '#2b427d', textDecorationLine: 'underline'}]}>{item.bridgestation}</Text>
-                  </TouchableOpacity>
-                </Table.Cell>
-                <Table.Cell flex={3}>{item.bridgename}</Table.Cell>
-                <Table.Cell>
-                  {
-                    bridgeside?.find(it => it.paramid === item.bridgeside)
-                      .paramname
-                  }
-                </Table.Cell>
-                <Table.Cell>{item.member}</Table.Cell>
-                <Table.Cell>{item.file}</Table.Cell>
-                <Table.Cell flex={2}>
-                  {(item.date || '').split(' ')[0] || '未检测'}
-                </Table.Cell>
-                <Table.Cell>
-                  {item.datasources === 0 ? '本地' : '云端'}
-                </Table.Cell>
-              </Table.Row>
-            )}
-          />
-        </Table.Box>
-      </View>
+        <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+          {/* 检索 */}
+          <View style={[styles.searchCard]}>
+            <TextInput
+              name="bridgename"
+              label="桥梁名称:"
+              ref={el => (searchRef.current[0] = el)}
+              style={[tailwind.mR4, tailwind.flex1]}
+            />
+            <Select
+              name="areacode"
+              label="路段:"
+              labelName="name"
+              valueName="code"
+              value={areacode.code}
+              onChange={setAreacode}
+              style={[tailwind.mR4, tailwind.flex1]}
+              ref={el => (searchRef.current[1] = el)}
+              values={[{name: '无', code: ''}, ...(areaList || [])]}
+            />
+            <Select
+              name="routecode"
+              label="路线:"
+              labelName="name"
+              valueName="code"
+              value={routecode.code}
+              onChange={setRoutecode}
+              style={[tailwind.mR4, tailwind.flex1]}
+              ref={el => (searchRef.current[2] = el)}
+              values={[
+                {name: '无', code: ''},
+                ...(routeList?.filter(item => item.pcode === areacode.code) || []),
+              ]}
+            />
+            {/* <Button onPress={handleSearch} style={[{backgroundColor: '#2b427d'}]}>检索</Button> */}
+            {/* 检索按钮 */}
+            <ImageBackground
+              source={require('../../../iconImg/search.png')} style={[{width:38, height:28}]}
+            >
+              {/* <Pressable OnPressIn={handleSearch}></Pressable> */}
+              <Text onPress={handleSearch}>{'         '}</Text>
+            </ImageBackground>
+          </View>
+          <View style={tailwind.mY1} />
+          {/* 表格 */}
+          <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',padding:10}]}>
+            <Table.Box
+              loading={loading}
+              numberOfPages={pageTotal}
+              total={total}
+              pageNo={page?.pageNo || 0}
+              onPageChange={e =>
+                setPage({
+                  pageSize: 10,
+                  pageNo: e,
+                })
+              }
+              header={
+                <Table.Header>
+                  <Table.Title title="序号" flex={1} />
+                  <Table.Title title="桩号" flex={2} />
+                  <Table.Title title="桥梁名称" flex={3} />
+                  <Table.Title title="桥幅" />
+                  <Table.Title title="病害构件" />
+                  <Table.Title title="媒体文件" />
+                  <Table.Title title="检测日期" flex={2} />
+                  <Table.Title title="存储" />
+                  <Table.Title title="选择" flex={1} />
+                </Table.Header>
+              }>
+              <FlatList
+                data={list}
+                extraData={list}
+                renderItem={({item, index}) => (
+                  <Table.Row key={index}>
+                    <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                    <Table.Cell flex={2} notText={true}>
+                      {/* 跳转到桥梁检测 */}
+                      <TouchableOpacity
+                        // style={[styles.linkBox]}
+                        onPress={() =>
+                          navigation.navigate('Collection/Detect/BridgeTest', {
+                            project: project,
+                            bridge: item,
+                          })
+                        }>
+                        <Text style={[{color: '#2b427d', textDecorationLine: 'underline'}]}>{item.bridgestation}</Text>
+                      </TouchableOpacity>
+                    </Table.Cell>
+                    <Table.Cell flex={3}>{item.bridgename}</Table.Cell>
+                    <Table.Cell>
+                      {
+                        bridgeside?.find(it => it.paramid === item.bridgeside)
+                          .paramname
+                      }
+                    </Table.Cell>
+                    <Table.Cell>{item.member}</Table.Cell>
+                    <Table.Cell>{item.file}</Table.Cell>
+                    <Table.Cell flex={2}>
+                      {(item.date || '').split(' ')[0] || '未检测'}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {item.datasources === 0 ? '本地' : '云端'}
+                    </Table.Cell>
+                    <Table.Cell flex={1}>
+                      <Checkbox
+                        checked={(nowChecked || {}) === item}
+                        onPress={() => handleCheck(item)}
+                      />
+                    </Table.Cell>
+                  </Table.Row>
+                )}
+              />
+            </Table.Box>
+          </View>
+        </View>
+       
       {/* 克隆桥梁 模态框 */}
       <Clone ref={cloneRef} onSubmitOver={handleSubmitOver} />
       {/* 导入桥梁 模态框 */}

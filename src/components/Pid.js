@@ -7,8 +7,8 @@ export default function ({pid, size}) {
   return (
     <View
       style={[
-        {backgroundColor: '#2b427d'},
-        tailwind.pX3,
+        {backgroundColor: '#e8e8e8'}, // e8e8e8 2b427d
+        tailwind.pX1,
         size === 'small' ? tailwind.h4 : tailwind.h5,
         tailwind.roundedSm,
         tailwind.justifyCenter,

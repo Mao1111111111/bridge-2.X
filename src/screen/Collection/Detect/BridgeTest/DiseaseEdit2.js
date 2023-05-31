@@ -42,6 +42,10 @@ export default function DiseaseEdit2({route, navigation}) {
     navigation,
   });
 
+  const {
+    state: {project, bridge, fileList, isLoading, groupList},
+  } = React.useContext(Context);
+
   const [areaparam, areanode] = hooks.useArea({diseaseData, baseData});
 
   const infoList = hooks.useInfoComponents({diseaseData, baseData});
@@ -69,8 +73,8 @@ export default function DiseaseEdit2({route, navigation}) {
   React.useEffect(() => {
     // route内容为DiseaseList文件handleModelCallBack传入的data数据
     // console.log('route', route);
-    console.log('当前选择的membertype： ', route.params.routeParams.membertype + ' - ' + route.params.routeParams.title);
-    console.log('params: ', navigation.routeParams);
+    // console.log('当前选择的membertype： ', route.params.routeParams.membertype + ' - ' + route.params.routeParams.title);
+    // console.log('params: ', route.params.data);
     return () => {
       if (version) {
         const {memberList, type, dataGroupId} = route.params;
@@ -127,10 +131,10 @@ export default function DiseaseEdit2({route, navigation}) {
   }, [baseData, saveData, version, route.params, dispatch]);
 
   React.useEffect(()=>{
-    console.log('routeroute9 jsondata:', route.params);
-    console.log('构件:', route.params.title);
+    // console.log('routeroute9 jsondata:', route.params.memberList[0].membername);
+    // console.log('构件:', route.params.title);
     setPileTitle(route.params.title)
-    console.log('桩号:', route.params.memberList[0].membername);
+    // console.log('桩号:', route.params.memberList[0].membername);
     setPileNum(route.params.memberList[0].membername)
     // console.log('memberLength:', route.params.data.jsondata.memberLength);
     let list = []
@@ -140,7 +144,7 @@ export default function DiseaseEdit2({route, navigation}) {
         list.push(data)
       })
       //这里的list就是字段数据
-      console.log("listlistlist",list);
+      // console.log("listlistlist",list);
     }
     // console.log('route.params.jsondata::::',route.params.data.jsondata);
   },[baseData])
@@ -203,7 +207,7 @@ export default function DiseaseEdit2({route, navigation}) {
   }
 
   return (
-    <Box headerItems={headerItems} pid="P1603">
+    <Box headerItems={headerItems} navigation={navigation} pid="P1604" labelname={route.params.title} membername={route.params.memberList[0].membername} project={project.projectname} bridge={bridge.bridgename}>
       <HeaderTabs
         onChangeTab={setPageType}
         disabled={route.params.memberList.length > 1}
@@ -244,7 +248,8 @@ export default function DiseaseEdit2({route, navigation}) {
         // onAdd={false}
         onBack={goBack}
         >
-          <View style={[styles.card, {width:700, backgroundColor:'#fff'}]}>
+          <View style={[styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+          
             <View style={[tailwind.flex1]}>
               <View style={tailwind.flexRow}>
                 <View style={tailwind.mX2} />

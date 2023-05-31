@@ -16,8 +16,10 @@ import * as bridgeProjectBind from '../../../database/bridge_project_bind';
 import * as project from '../../../database/project';
 import {alert, confirm} from '../../../utils/alert';
 import {BoxShadow} from 'react-native-shadow'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Project({navigation}) {
+  
   // 全局参数 -- 养护区列表、路线列表、用户信息
   const {
     state: {areaList, routeList, userInfo},
@@ -55,19 +57,19 @@ export default function Project({navigation}) {
   // 顶部导航
   const headerItems = [
     // 采集平台点击，打开抽屉导航
+    // {
+    //   name: '采集平台',
+    //   onPress: () =>
+    //     dispatch({
+    //       type: 'drawerShowFlg',
+    //       payload: Math.random().toString(36).slice(-8),
+    //     }),
+    // },
+    // {
+    //   name: '检测平台',
+    // },
     {
-      name: '采集平台',
-      onPress: () =>
-        dispatch({
-          type: 'drawerShowFlg',
-          payload: Math.random().toString(36).slice(-8),
-        }),
-    },
-    {
-      name: '检测平台',
-    },
-    {
-      name: '项目管理',
+      name: '丨 项目管理',
     },
   ];
 
@@ -111,6 +113,9 @@ export default function Project({navigation}) {
     }
   }, [areaList, routeList, areacode]);
 
+  // 项目名称列表
+  const [proNameList, setProNameList] = useState()
+
   // 当 检索条件、页码、用户信息变化时，触发
   React.useEffect(() => {
     // 如果页码为0 或 没有用户信息 那么返回
@@ -119,6 +124,9 @@ export default function Project({navigation}) {
     }
     // 设置表格loading
     setLoading(true);
+
+    let proNameList = []
+
     // 在数据库中查询
     project
       .search({
@@ -132,13 +140,29 @@ export default function Project({navigation}) {
       .then(res => {
         // 设置数据列表
         setList(res.list);
+        // console.log('项目列表的数据',list);
         // 设置共几页
         setPageTotal(res.page.pageTotal);
         // 设置共几条
         setTotal(res.page.total);
+        // console.log('project res', res.list);
+        // console.log('project res', res.list[0].projectname);
+        res.list.forEach((item)=>{
+          // console.log('item');
+          proNameList.push({
+            proName:item.projectname,
+            proNum:item.projectno
+          })
+        })
+        // console.log(proNameList);
+        setProNameList(proNameList)
+        // console.log('proNameList',proNameList);
+        setProStorage(proNameList)
       })
       .finally(() => setLoading(false));
   }, [search, page, userInfo]);
+
+
 
   // 点击检索
   const handleSearch = () => {
@@ -162,7 +186,7 @@ export default function Project({navigation}) {
   // 删除
   const handleDelete = async () => {
     // 查询当前项目下是否有检测桥梁
-    const res = await bridgeProjectBind.listByProject(nowChecked.projectid);
+    const res = await bridgeProjectBind.bridgeList(nowChecked.projectid);
     // 如果有，则不可以删除
     if (res.length) {
       alert('该项目含有检测桥梁，不可删除');
@@ -236,7 +260,8 @@ export default function Project({navigation}) {
   };
 
   // 新增或修改 结束后 执行的函数
-  const handleSubmitOver = () => {
+  const handleSubmitOver = (newProName, newProNum) => {
+    console.log('newProName',newProName,newProNum);
     setSearch({});
     searchRef.current.forEach(item => item.clear());
     setPage({
@@ -244,7 +269,27 @@ export default function Project({navigation}) {
       pageNo: 0,
     });
     setNowChecked(null);
+    let newProvalue = [
+      {
+        proName:newProName,
+        proNum:newProNum
+      }
+    ]
+    // console.log('确认添加项目');
+    setProStorage(newProvalue)
   };
+
+  const setProStorage = async(value) => {
+    // 存储项目名称数据
+    // console.log('存储项目数据 全局', value);
+    try {
+      const name = 'proList'
+      const jsonValue = JSON.stringify(value)
+      await AsyncStorage.setItem(name, jsonValue)
+    } catch (error) {
+      console.log('存入项目数据失败!', error);
+    }
+  }
 
   // 点击选择框时
   const handleCheck = item => {
@@ -282,6 +327,10 @@ export default function Project({navigation}) {
       pid="P1001"
       //导航项
       headerItems={headerItems}
+      // 项目名称列表
+      proNameList={proNameList}
+      navigation={navigation}
+      list={list}
       //---左侧按钮----
       // 新增
       onAdd={() => formRef.current.open()}
@@ -300,11 +349,10 @@ export default function Project({navigation}) {
           onPress: handleStatusChange,
         },
       ]}>
-        
-        {/* 检索 */}
+      <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+         {/* 检索 */}
       <View style={[
         styles.searchCard,
-        theme.primaryBgStyle
       ]}>
         <TextInput
           name="projectname"
@@ -350,8 +398,7 @@ export default function Project({navigation}) {
       </View>
       <View style={tailwind.mY1} />
       {/* 项目信息表格 */}
-      {/* <View style={[styles.tableCard, {backgroundColor:'rgba(255,255,255,1)'}]}> */}
-      <View style={[styles.tableCard, theme.primaryBgStyle]}>
+      <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',padding:10}]}>
         <Table.Box
           loading={loading}
           style={tailwind.roundedSm}
@@ -370,13 +417,13 @@ export default function Project({navigation}) {
           }
           header={
             <Table.Header>
-              <Table.Title title="选择" flex={1} />
               <Table.Title title="序号" flex={0.7} />
               <Table.Title title="项目名称" flex={3} />
               <Table.Title title="已采集" flex={0.7} />
               <Table.Title title="创建人" flex={1} />
               <Table.Title title="创建时间" flex={2} />
               <Table.Title title="最后操作时间" flex={2} />
+              <Table.Title title="选择" flex={1} />
             </Table.Header>
           }>
           <FlatList
@@ -392,23 +439,26 @@ export default function Project({navigation}) {
                   })
                 }>
                 {/* 选择框 */}
+                
+                <Table.Cell flex={0.7}>{item.id}</Table.Cell>
+                <Table.Cell flex={3}>{item.projectname}</Table.Cell>
+                <Table.Cell flex={0.7}>{item.yicaiji || 0}</Table.Cell>
+                <Table.Cell flex={1}>{item.username}</Table.Cell>
+                <Table.Cell flex={2}>{item.c_date}</Table.Cell>
+                <Table.Cell flex={2}>{item.u_date}</Table.Cell>
                 <Table.Cell flex={1}>
                   <Checkbox
                     checked={(nowChecked || {}).id === item.id}
                     onPress={() => handleCheck(item)}
                   />
                 </Table.Cell>
-                <Table.Cell flex={0.7}>{index+1}</Table.Cell>
-                <Table.Cell flex={3}>{item.projectname}</Table.Cell>
-                <Table.Cell flex={0.7}>{item.yicaiji || 0}</Table.Cell>
-                <Table.Cell flex={1}>{item.username}</Table.Cell>
-                <Table.Cell flex={2}>{item.c_date}</Table.Cell>
-                <Table.Cell flex={2}>{item.u_date}</Table.Cell>
               </Table.Row>
             )}
           />
         </Table.Box>
       </View>
+      </View>
+       
       {/* 项目的 新增、修改表单 */}
       <Form ref={formRef} onSubmitOver={handleSubmitOver} />
     </CommonView>
