@@ -269,7 +269,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
         adjustFrame={this._adjustType}
         options={type} // 选项内容
         dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-        dropdownStyle={[{width:100,height:155,alignItems:'center'}]}
+        dropdownStyle={[{width:100,height:180,alignItems:'center'}]}
         dropdownTextStyle={[{width:80,textAlign:'center'}]}
         onSelect={this._selectType} // 点击选项时，执行的方法
         defaultValue={'采集平台'}

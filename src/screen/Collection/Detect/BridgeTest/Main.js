@@ -342,7 +342,9 @@ export default function Main({navigation, route}) {
               disabled: !nowEdit,
             },
           ]}>
-          <View style={[tailwind.flexRow, tailwind.flex1]}>
+          {/* <View style={[styles.tableCard,{backgroundColor:'rgba(168,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+            </View> */}
+          <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
             {/* 左侧 */}
             <View style={[styles.card, theme.primaryBgStyle]}>
               {/* tab */}

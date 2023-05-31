@@ -207,7 +207,7 @@ export default function DiseaseEdit2({route, navigation}) {
   }
 
   return (
-    <Box headerItems={headerItems} pid="P1604" labelname={route.params.title} membername={route.params.memberList[0].membername} project={project.projectname} bridge={bridge.bridgename}>
+    <Box headerItems={headerItems} navigation={navigation} pid="P1604" labelname={route.params.title} membername={route.params.memberList[0].membername} project={project.projectname} bridge={bridge.bridgename}>
       <HeaderTabs
         onChangeTab={setPageType}
         disabled={route.params.memberList.length > 1}
@@ -248,7 +248,8 @@ export default function DiseaseEdit2({route, navigation}) {
         // onAdd={false}
         onBack={goBack}
         >
-          <View style={[styles.card, {width:700, backgroundColor:'#fff'}]}>
+          <View style={[styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+          
             <View style={[tailwind.flex1]}>
               <View style={tailwind.flexRow}>
                 <View style={tailwind.mX2} />

@@ -107,20 +107,16 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
   }
 
   const topage = (e) => {
-    console.log('eee',e);
-    if (e == '项目') {
-      console.log('123');
-      // () => navigation.navigate('src/screen/Collection/Detect/Project')
-      navigation.navigate('Collection/Detect/Project')
-    } else if (e == '桥梁') {
-      console.log('123');
-      // () => navigation.navigate('src/screen/Collection/Detect/Project')
-      // {
-      //   name: `${project.projectname}`,
-      // navigation.navigate('Collection/Detect/ProjectDetail', {project})
-      // }
-      navigation.goBack()
+    try {
+      console.log('eee',e);
+      if (e == '项目') {
+        // console.log('123');
+        navigation.navigate('Collection/Detect/Project')
+      }
+    } catch (error) {
+      console.log('Headerbar topage',error);
     }
+    
   }
 
 

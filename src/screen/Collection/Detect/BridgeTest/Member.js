@@ -244,8 +244,8 @@ export default function Member({route, navigation,item}) {
   );
 
   React.useEffect(() => {
-    console.log('projectprojectproject',project);
-    console.log('projectprojectproject',bridge);
+    // console.log('projectprojectproject',project);
+    // console.log('projectprojectproject',bridge);
     if (!partsList || !data || !basememberinfo) {
       return;
     }
@@ -434,72 +434,77 @@ export default function Member({route, navigation,item}) {
     <Box pid="P1501" navigation={navigation} route={route} headerItems={getHeaderItems()} labelname={data.title} project={project.projectname} bridge={bridge.bridgename}>
       {/* 年份 + 数据影音 tab，当选中构件时，数据影音tab禁用 */}
       <HeaderTabs onChangeTab={setPageType} disabled={checkedList.size} />
-      {/* 影音 */}
-      <View style={[pageType === '数据' ? tailwind.hidden : tailwind.flex1]}>
-        {getMedia()}
-      </View>
-      {/* 数据 */}
-      <View style={[pageType !== '数据' ? tailwind.hidden : tailwind.flex1]}>
-        <Content
-        onBack={goBack}
-        onAhead={checkedList.size == 1 && goAhead}
-          // 右侧按钮组
-          operations={[
-            {
-              // name: 'eye',
-              // 查看构件 跳转到病害管理
-              img:'look',
-              disabled: checkedList.size < 1,
-              onPress: () =>
-                handleEditPage(
-                  'Collection/Detect/BridgeTest/Member/DiseaseList',
-                ),
-            },
-            {
-              // name: 'thumb-up',
-              // 设置好构件
-              img:'singleGood',
-              color: colors.green600,
-              onPress: () =>
-                handleEditPage('Collection/Detect/BridgeTest/Member/GoodEdit'),
-            },
-            {
-              // name: 'thumb-up',
-              // 全部设置为好构件
-              img:'allGood',
-              color: colors.green600,
-              border: true,
-              onPress: handleGoodAll,
-            },
-          ]}>
-          <View style={[theme.primaryBgStyle, styles.card, tailwind.flex1]}>
-            {/* 左侧构件列表 */}
-            <View style={[styles.listBox]}>
-              <BigData
-                title={data.title}
-                // 组列表 ,部件 或 跨 列表
-                data={list}
-                // 组改变时，即点击左侧列表时
-                onGroupChange={item => {
-                  console.log("item",item);
-                  // 如果跨编号存在
-                  if (item.stepno) {
-                    console.info('???');
-                    // 设置当前选中的跨编号
-                    setNowGroup(item.stepno);
-                  }
-                  // 重置选中的构件列表
-                  setCheckedList(new Set());
-                }}
-                // 选中的构件改变时
-                onChange={handleCheckedChange}
-              />
+      {/* <View style={tailwind.mY2} /> */}
+          {/* 影音 */}
+        <View style={[pageType === '数据' ? tailwind.hidden : tailwind.flex1]}>
+          {getMedia()}
+        </View>
+        {/* 数据 */}
+        <View style={[pageType !== '数据' ? tailwind.hidden : tailwind.flex1]}>
+          <Content
+          onBack={goBack}
+          onAhead={checkedList.size == 1 && goAhead}
+            // 右侧按钮组
+            operations={[
+              {
+                // name: 'eye',
+                // 查看构件 跳转到病害管理
+                img:'look',
+                disabled: checkedList.size < 1,
+                onPress: () =>
+                  handleEditPage(
+                    'Collection/Detect/BridgeTest/Member/DiseaseList',
+                  ),
+              },
+              {
+                // name: 'thumb-up',
+                // 设置好构件
+                img:'singleGood',
+                color: colors.green600,
+                onPress: () =>
+                  handleEditPage('Collection/Detect/BridgeTest/Member/GoodEdit'),
+              },
+              {
+                // name: 'thumb-up',
+                // 全部设置为好构件
+                img:'allGood',
+                color: colors.green600,
+                border: true,
+                onPress: handleGoodAll,
+              },
+            ]}>
+            {/* <View style={[styles.tableCard,{backgroundColor:'rgba(168,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+            </View> */}
+            <View style={[theme.primaryBgStyle, styles.card, tailwind.flex1, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+              {/* 左侧构件列表 */}
+              <View style={[styles.listBox]}>
+                <BigData
+                  title={data.title}
+                  // 组列表 ,部件 或 跨 列表
+                  data={list}
+                  // 组改变时，即点击左侧列表时
+                  onGroupChange={item => {
+                    console.log("item",item);
+                    // 如果跨编号存在
+                    if (item.stepno) {
+                      console.info('???');
+                      // 设置当前选中的跨编号
+                      setNowGroup(item.stepno);
+                    }
+                    // 重置选中的构件列表
+                    setCheckedList(new Set());
+                  }}
+                  // 选中的构件改变时
+                  onChange={handleCheckedChange}
+                />
+              </View>
+              {/* 右侧 操作历史 */}
+              <LogList list={editLogList} />
             </View>
-            {/* 右侧 操作历史 */}
-            <LogList list={editLogList} />
-          </View>
-        </Content>
-      </View>
+          </Content>
+        </View>
+      
+      
     </Box>
   );
 }

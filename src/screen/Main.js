@@ -117,17 +117,17 @@ export default function Main() {
 
   const headerItems = [
     // 采集平台点击，打开抽屉导航
-    {
-      name: '采集平台',
-      onPress: () =>
-        dispatch({
-          type: 'drawerShowFlg',
-          payload: Math.random().toString(36).slice(-8),
-        }),
-    },
-    {
-      name: '检测平台',
-    },
+    // {
+    //   name: '采集平台',
+    //   onPress: () =>
+    //     dispatch({
+    //       type: 'drawerShowFlg',
+    //       payload: Math.random().toString(36).slice(-8),
+    //     }),
+    // },
+    // {
+    //   name: '检测平台',
+    // },
     {
       name: '项目管理',
     },
@@ -140,7 +140,7 @@ export default function Main() {
         ...DefaultTheme.colors,
         // app界面最底层背景颜色
         // background: theme.screenBgColor,
-        background:'rgba(255)'
+        background:'rgba(255,255,255,0)'
       },
     });
   }, [theme]);

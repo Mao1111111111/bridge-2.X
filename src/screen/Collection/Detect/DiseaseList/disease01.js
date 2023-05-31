@@ -1962,7 +1962,7 @@ export function DiseaseA({route, navigation}) {
     return (
     <View style={tailwind.flexRow}>
       {/* 病害填写表格区域 */}
-      <ScrollView style={{height:350}}>
+      <ScrollView style={{height:'100%'}}>
         <View>
         <View style={[tailwind.flexRow, tailwind.justifyBetween]}>
           <LabelItem label="编号:">

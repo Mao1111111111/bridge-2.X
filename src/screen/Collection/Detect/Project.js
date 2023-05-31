@@ -57,19 +57,19 @@ export default function Project({navigation}) {
   // 顶部导航
   const headerItems = [
     // 采集平台点击，打开抽屉导航
+    // {
+    //   name: '采集平台',
+    //   onPress: () =>
+    //     dispatch({
+    //       type: 'drawerShowFlg',
+    //       payload: Math.random().toString(36).slice(-8),
+    //     }),
+    // },
+    // {
+    //   name: '检测平台',
+    // },
     {
-      name: '采集平台',
-      onPress: () =>
-        dispatch({
-          type: 'drawerShowFlg',
-          payload: Math.random().toString(36).slice(-8),
-        }),
-    },
-    {
-      name: '检测平台',
-    },
-    {
-      name: '项目管理',
+      name: '丨 项目管理',
     },
   ];
 
@@ -349,11 +349,10 @@ export default function Project({navigation}) {
           onPress: handleStatusChange,
         },
       ]}>
-        
-        {/* 检索 */}
+      <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+         {/* 检索 */}
       <View style={[
         styles.searchCard,
-        theme.primaryBgStyle
       ]}>
         <TextInput
           name="projectname"
@@ -399,8 +398,7 @@ export default function Project({navigation}) {
       </View>
       <View style={tailwind.mY1} />
       {/* 项目信息表格 */}
-      {/* <View style={[styles.tableCard, {backgroundColor:'rgba(255,255,255,1)'}]}> */}
-      <View style={[styles.tableCard, theme.primaryBgStyle]}>
+      <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',padding:10}]}>
         <Table.Box
           loading={loading}
           style={tailwind.roundedSm}
@@ -419,7 +417,6 @@ export default function Project({navigation}) {
           }
           header={
             <Table.Header>
-              
               <Table.Title title="序号" flex={0.7} />
               <Table.Title title="项目名称" flex={3} />
               <Table.Title title="已采集" flex={0.7} />
@@ -460,6 +457,8 @@ export default function Project({navigation}) {
           />
         </Table.Box>
       </View>
+      </View>
+       
       {/* 项目的 新增、修改表单 */}
       <Form ref={formRef} onSubmitOver={handleSubmitOver} />
     </CommonView>
