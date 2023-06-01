@@ -15,7 +15,7 @@ export function Box({navigation,route,pid, children, headerItems,project,bridge,
     // 点击空白处，收起键盘
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={[tailwind.flex1]}>
-        <View style={[tailwind.mX19,{position:'absolute',top:8,left:70}]}>
+        <View style={[tailwind.mX19,{position:'absolute',top:8,left:90}]}>
           {/* 顶部导航 */}
           <Headerbar navigation={navigation} items={headerItems || []} pid={pid || ''} project={project} bridge={bridge} labelname={labelname || ''} membername={membername || ''} />
         </View>
