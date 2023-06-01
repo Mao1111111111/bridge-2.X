@@ -106,6 +106,22 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
   }, [isTabBarShow, tabHeight]);
 
   const handlePress = (route, index, value) => {
+    console.log('value555',route.name);
+    let menuTitle = value
+    setMenuTitle(menuTitle)
+    console.log('menuTitle', menuTitle);
+    const event = navigation.emit({
+      type: 'tabPress',
+      target: route.key,
+    });
+    const isFocused = state.index === index;
+    if (!isFocused && !event.defaultPrevented) {
+      // console.log('执行了路由跳转',route.name);
+      navigation.navigate('Setting');
+    }
+  };
+
+  const handlePress1 = (route, index, value) => {
     console.log('value666',route.name);
     let menuTitle = value
     setMenuTitle(menuTitle)
@@ -140,24 +156,25 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
 
   const type = ['用户设置','退出登录']
   // 左上角的一级菜单选项
-  const typeL = ['采集平台','数据同步','数据统计']
+  const typeL = ['采集平台','数据同步','数据统计','用户设置']
   
   // 分类选择
   _selectType = (indexA, value) => {
     console.log('---', indexA, value)
       {state.routes.map((route, index) =>(
-        value == '用户设置' ? handlePress(route, index, value) : <></>
+        indexA == '0' && indexA == index ? handlePress(route, index, value) : <></>
       ))}
       indexA == '1' ? asklogOut() : <></>
   }
   // 分类选择 左上角
   _selectTypeL = (indexA, value) => {
     console.log('---', indexA, value)
-      {state.routes.map((route, index) =>(
-        indexA == '0' && indexA == index ? handlePress(route, index, value) :
-        indexA == '1' && indexA == index ? handlePress(route, index, value) :
-        indexA == '2' && indexA == index ? handlePress(route, index, value) : <></>
-      ))}
+    {state.routes.map((route, index) =>(
+      indexA == '0' && indexA == index ? handlePress1(route, index, value) :
+      indexA == '1' && indexA == index ? handlePress1(route, index, value) :
+      indexA == '2' && indexA == index ? handlePress1(route, index, value) :
+      indexA == '3' && indexA == index ? handlePress1(route, index, value) : <></>
+    ))}
   }
   // 下拉列表分隔符
   _separator = () => {
@@ -239,7 +256,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
         adjustFrame={this._adjustTypeL}
         options={typeL} // 选项内容
         dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-        dropdownStyle={[{width:120,height:110,alignItems:'center'}]}
+        dropdownStyle={[{width:120,height:145,alignItems:'center'}]}
         dropdownTextStyle={[{width:100,textAlign:'center'}]}
         onSelect={this._selectTypeL} // 点击选项时，执行的方法
         defaultValue={'采集平台'}

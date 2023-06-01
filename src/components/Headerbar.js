@@ -51,7 +51,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
 
 
   React.useEffect(()=> {
-    // console.log('itemsss',items,pid);
+    console.log('pid',pid);
     // console.log('items.name',items[0].name);
     getProStorage()
     getBriStorage()
@@ -175,6 +175,19 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
       // }
       ]}>
       {/* 如项目管理中，顶部导航最左边的标签 */}
+      {/* {pid && pid !== 'P1001' || pid !== 'P1101' ? (
+        <View style={[styles.pid]}>
+          <Pid pid={pid} size="medium" />
+        </View>
+      ) : (
+        pid && pid == 'P1001' || pid == 'P1101' ? (
+          <View style={[styles.pid1]}>
+            <Pid pid={pid} size="medium" />
+          </View>
+        ) : (
+          <></>
+        )
+      )} */}
       {pid ? (
         <View style={[styles.pid]}>
           <Pid pid={pid} size="medium" />
@@ -182,6 +195,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
       ) : (
         <></>
       )}
+      
       {/* <Text>{'  '}</Text> */}
       {/* 顶部导航左侧的 蓝色粗竖线 */}
       {/* <Image style={{ height: 20, width: 5, alignItems: 'center' }}
@@ -291,7 +305,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
                     <></>
                   ) : (
                       bridge == undefined || bridge == '' ? (
-                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>项目：{project}</Text>
+                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:14}]}>项目：{project}</Text>
                       ) : (
                         <></>
                       )
@@ -303,14 +317,14 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
                   ) : (
                     <View style={[tailwind.flex1,tailwind.flexRow]}>
                       <TouchableOpacity onPress={() => topage('项目')}>
-                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>
+                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:14}]}>
                           项目：{project}
                         </Text>
                       </TouchableOpacity>
                       
                       <Text>    \   </Text>
                       <TouchableOpacity onPress={() => topage('桥梁')}>
-                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>
+                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:14}]}>
                           桥梁：{bridge}
                         </Text>
                       </TouchableOpacity>
@@ -325,7 +339,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
                     <></>
                   ) : (
                     membername == undefined || membername == '' ? (
-                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>部件：{labelname}</Text>
+                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:12}]}>部件：{labelname}</Text>
                     ) : (
                       <></>
                     )
@@ -336,11 +350,11 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
                     <></>
                   ) : (
                     <View style={[tailwind.flex1,tailwind.flexRow]}>
-                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>
+                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:12}]}>
                         部件：{labelname}
                       </Text>
                       <Text>    \   </Text>
-                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d'}]}>
+                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:12}]}>
                         构件：{membername}
                       </Text>
                     </View>
@@ -374,8 +388,17 @@ const styles = StyleSheet.create({
     ...tailwind.mB1,
     ...tailwind.justifyCenter,
     position:'absolute',
-    top:490,
-    right:0,
+    top:495,
+    left:635,
+    // width:60
+  },
+  pid1: {
+    ...tailwind.mL2,
+    ...tailwind.mB1,
+    ...tailwind.justifyCenter,
+    position:'absolute',
+    top:498,
+    left:650,
     // width:60
   },
   user: {
