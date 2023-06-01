@@ -87,6 +87,8 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
     extrapolate: 'clamp',
   });
 
+  const [menuTitle, setMenuTitle] = useState('采集平台') 
+
   React.useEffect(() => {
     if (isTabBarShow) {
       Animated.timing(tabHeight, {
@@ -103,14 +105,18 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
     }
   }, [isTabBarShow, tabHeight]);
 
-
-  const handlePress = (route, index) => {
+  const handlePress = (route, index, value) => {
+    console.log('value666',route.name);
+    let menuTitle = value
+    setMenuTitle(menuTitle)
+    console.log('menuTitle', menuTitle);
     const event = navigation.emit({
       type: 'tabPress',
       target: route.key,
     });
     const isFocused = state.index === index;
     if (!isFocused && !event.defaultPrevented) {
+      // console.log('执行了路由跳转',route.name);
       navigation.navigate(route.name);
     }
   };
@@ -132,18 +138,26 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
     setVisible(false)
   };
 
-  const type = ['采集平台', '数据同步','数据统计','用户设置','退出登录']
+  const type = ['用户设置','退出登录']
+  // 左上角的一级菜单选项
+  const typeL = ['采集平台','数据同步','数据统计']
   
   // 分类选择
   _selectType = (indexA, value) => {
     console.log('---', indexA, value)
       {state.routes.map((route, index) =>(
-        indexA == '0' && indexA == index ? handlePress(route, index) :
-        indexA == '1' && indexA == index ? handlePress(route, index) :
-        indexA == '2' && indexA == index ? handlePress(route, index) :
-        indexA == '3' && indexA == index ? handlePress(route, index) : <></>
+        value == '用户设置' ? handlePress(route, index, value) : <></>
       ))}
-      indexA == '4' ? asklogOut() : <></>
+      indexA == '1' ? asklogOut() : <></>
+  }
+  // 分类选择 左上角
+  _selectTypeL = (indexA, value) => {
+    console.log('---', indexA, value)
+      {state.routes.map((route, index) =>(
+        indexA == '0' && indexA == index ? handlePress(route, index, value) :
+        indexA == '1' && indexA == index ? handlePress(route, index, value) :
+        indexA == '2' && indexA == index ? handlePress(route, index, value) : <></>
+      ))}
   }
   // 下拉列表分隔符
   _separator = () => {
@@ -156,6 +170,13 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
     return({
       top: 25,
       right: 15
+    })
+  }
+  // 下拉框位置 左上角
+  _adjustTypeL = () => {
+    return({
+      top: 25,
+      left: 25
     })
   }
 
@@ -198,21 +219,54 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
         }
       >v1.083</Text> */}
       {/* 检测公司名称 */}
-      <Text
+      {/* <Text
         style={
           [
             {
-              fontSize:11,
+              fontSize:14,
               color:'#394f86',
               fontWeight: 'bold',
               left:20,
-              top:15,
-              width:120,
-              textAlign:'center'
+              top:17,
+              width:100,
+              textAlign:'center',
+              borderWidth:2,
             }
           ]
         }
-      >黑龙江省工程质量{'\n'}道桥检测中心有限公司</Text>
+      >采集平台</Text> */}
+      <ModalDropdown
+        adjustFrame={this._adjustTypeL}
+        options={typeL} // 选项内容
+        dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
+        dropdownStyle={[{width:120,height:110,alignItems:'center'}]}
+        dropdownTextStyle={[{width:100,textAlign:'center'}]}
+        onSelect={this._selectTypeL} // 点击选项时，执行的方法
+        defaultValue={'采集平台'}
+      >
+        <ImageBackground
+          source={require('../iconImg/dropdownMenu.png')} style={[{width:136, height:34,left:20,top:13}]}
+        >
+          <View style={styles.user}>
+            <Text
+              style={
+                [
+                  {
+                    fontSize:14,
+                    color:'#394f86',
+                    fontWeight: 'bold',
+                    width:100,
+                    textAlign:'center',
+                    bottom:2,
+                    right:20
+                  }
+                ]
+              }
+            >{menuTitle}</Text>
+          </View>
+        </ImageBackground>
+        
+      </ModalDropdown>
       {/* 导航样式一 中间导航按钮 */}
       {/* {state.routes.map((route, index) => (
         <TouchableOpacity
@@ -269,10 +323,10 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
         adjustFrame={this._adjustType}
         options={type} // 选项内容
         dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-        dropdownStyle={[{width:100,height:180,alignItems:'center'}]}
+        dropdownStyle={[{width:100,height:75,alignItems:'center'}]}
         dropdownTextStyle={[{width:80,textAlign:'center'}]}
         onSelect={this._selectType} // 点击选项时，执行的方法
-        defaultValue={'采集平台'}
+        defaultValue={'用户设置'}
       >
         
         <View style={styles.user}>
@@ -285,23 +339,18 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
       </ModalDropdown>
 
       <Modal onClose={close} visible={visible} title="退出登录" showHead>
-      <View style={[styles.modelBody, theme.primaryBgStyle,{height: 80}]}>
-        <View style={[tailwind.flexRow,tailwind.flex1, tailwind.mL2, tailwind.mT1]}>
-          <TouchableOpacity onPress={close}>
-            <Text style={[tailwind.mB1,tailwind.mX8,tailwind.mY8]}>取消</Text>
-          </TouchableOpacity>
-          
-          <View style={tailwind.mY1} />
-          <TouchableOpacity onPress={handleLogout}>
-            <Text style={[tailwind.mB1,tailwind.mX16,,tailwind.mY8]}>确认</Text>
-          </TouchableOpacity>
-          
+        <View style={[styles.modelBody, theme.primaryBgStyle,{height: 80}]}>
+          <View style={[tailwind.flexRow,tailwind.flex1, tailwind.mL2, tailwind.mT1]}>
+            <TouchableOpacity onPress={close}>
+              <Text style={[tailwind.mB1,tailwind.mX8,tailwind.mY8]}>取消</Text>
+            </TouchableOpacity>
+            <View style={tailwind.mY1} />
+            <TouchableOpacity onPress={handleLogout}>
+              <Text style={[tailwind.mB1,tailwind.mX16,,tailwind.mY8]}>确认</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        
-        
-        
-      </View>
-    </Modal>
+      </Modal>
     </Animated.View>
   );
 };
