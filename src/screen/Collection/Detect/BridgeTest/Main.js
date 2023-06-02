@@ -88,7 +88,19 @@ export default function Main({navigation, route}) {
 
   // 当部件列表变化时 重新设置部件表格的数据
   React.useEffect(() => {
-    memberList.length && setTable1Data(listToPage(memberList, pageRow));
+    if(memberList.length>0){
+      setTable1Data(listToPage(memberList, pageRow));
+    }else{
+      setTable1Data([])
+    }
+    if (bridgereportid) {
+      // 获取检测桥梁的 病害条数
+      getDiseaseDataTotal(bridgereportid).then(res =>
+        setDiseaseDataTotal(res.count),
+      );
+      // 获取检测桥梁的 标记条数
+      getMainTotal(bridgereportid).then(res => setMianTotal(res.count));
+    }
   }, [memberList]);
 
   // 当跨列表数据变化时, 重新设置跨表格的数据

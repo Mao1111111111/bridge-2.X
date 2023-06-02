@@ -701,10 +701,12 @@ export const getData =async (
     //----将部件图片信息存入部件
     partMedia.forEach(item=>{
       let index = partData.findIndex(i=> i.membertype==item.dataid)
-      partData[index].media.push({
-        ...item,
-        dataid:partData[index].partid
-      })
+      if(index!==-1){
+        partData[index].media.push({
+          ...item,
+          dataid:partData[index].partid
+        })
+      }
     })
     //部件数据 存入 测试数据
     data.testData['detailTestData'] = partData
@@ -723,7 +725,7 @@ export const getData =async (
     }
     return newData
   }catch(e){
-    console.log("e",e);
+    console.log("e111",e);
     const bindData = await bridgeProjectBind.getById(id);
     const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
     let data = {
