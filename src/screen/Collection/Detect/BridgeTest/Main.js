@@ -301,16 +301,32 @@ export default function Main({navigation, route}) {
           dataid={bridge.bridgeid}
           categoryList={[
             {
-              value: 'front',
-              label: '桥梁正面照',
+              value: 'L0101',
+              label: '桥梁左侧起点立面照',
             },
             {
-              value: 'facade',
-              label: '桥梁立面照',
+              value: 'L0102',
+              label: '桥梁右侧起点立面照',
+            },
+            {
+              value: 'L0201',
+              label: '桥梁左侧终点立面照',
+            },
+            {
+              value: 'L0202',
+              label: '桥梁右侧终点立面照',
+            },
+            {
+              value: 'Z01',
+              label: '桥梁起点正面照',
+            },
+            {
+              value: 'Z02',
+              label: '桥梁终点正面照',
             },
             {
               value: 'remake',
-              label: '工作照片',
+              label: '工作照',
             },
           ]}
         />

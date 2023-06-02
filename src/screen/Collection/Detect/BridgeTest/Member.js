@@ -367,7 +367,7 @@ export default function Member({route, navigation,item}) {
   };
 
   // 影音组件
-  const getMedia = () => {
+  const getMedia = (e) => {
     try {
       // console.log('listlist',list);
       const nowEdit = parts.find(item => checkedList.has(item.id));
@@ -407,6 +407,7 @@ export default function Member({route, navigation,item}) {
           categoryList={categoryList}
           memberList={list}
           route={route}
+          pid={e}
         />
       );
     } catch (err) {
@@ -437,7 +438,7 @@ export default function Member({route, navigation,item}) {
       {/* <View style={tailwind.mY2} /> */}
           {/* 影音 */}
         <View style={[pageType === '数据' ? tailwind.hidden : tailwind.flex1]}>
-          {getMedia()}
+          {getMedia('P1501')}
         </View>
         {/* 数据 */}
         <View style={[pageType !== '数据' ? tailwind.hidden : tailwind.flex1]}>

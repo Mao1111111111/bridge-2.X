@@ -149,7 +149,7 @@ const RowMediaComponent = ({item, onPress, isActive}) => {
 };
 
 // 媒体组件
-export default function Media({categoryList, type, dataid, defaultFileName,pileTitle,pileNum,memberList,route}) {
+export default function Media({categoryList, type, dataid, pid, defaultFileName,pileTitle,pileNum,memberList,route}) {
   // categoryList-类型列表，defaultFileName-默认文件名
   // 全局样式
   const {
@@ -272,7 +272,7 @@ export default function Media({categoryList, type, dataid, defaultFileName,pileT
         setMemberArr(memberArr)
         // console.log('memberArrmemberArrmemberArr',memberArr);
     } catch (err) {
-      console.log('ee',err);
+      // console.log('media ee',err);
     }
    
   }, [type, fileList, categoryList, dataid, isInit]);
@@ -480,6 +480,7 @@ export default function Media({categoryList, type, dataid, defaultFileName,pileT
   };
 
   const handleChenge = _.debounce(({name, value}) => {
+    console.log('media handleChenge',name, value);
     const data = fileList.find(({mediaid}) => mediaid === nowEdit);
     data[name] = value;
     data.isUpdate = true;
@@ -674,7 +675,27 @@ export default function Media({categoryList, type, dataid, defaultFileName,pileT
                 label="标题："
                 onChange={handleChenge}
               /> */}
-              <TouchableOpacity onPress={openMadol}>
+              {
+                pid == 'P1501' ? (
+                  <TouchableOpacity onPress={openMadol}>
+                    <WriteInputSlide
+                      ref={e => (form.current.filename = e)}
+                      name="filename"
+                      label="标题："
+                      onChange={handleChenge}
+                      dataArr={memberArr}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <WriteInput
+                    ref={e => (form.current.filename = e)}
+                    name="filename"
+                    label="标题："
+                    onChange={handleChenge}
+                  />
+                )
+              }
+              {/* <TouchableOpacity onPress={openMadol}>
                 <WriteInputSlide
                   ref={e => (form.current.filename = e)}
                   name="filename"
@@ -682,7 +703,7 @@ export default function Media({categoryList, type, dataid, defaultFileName,pileT
                   onChange={handleChenge}
                   dataArr={memberArr}
                 />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               
               <View style={tailwind.mY2} />
               {categoryList ? (
