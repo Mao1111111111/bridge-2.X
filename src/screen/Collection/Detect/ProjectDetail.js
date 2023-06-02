@@ -636,6 +636,7 @@ export default function ProjectDetail({route, navigation}) {
 
   // 检索条件变化、页码变化、项目变化时 触发
   React.useEffect(() => {
+    console.log('桥梁列表的route',route.params.list);
     if (!page) {
       return;
     }
@@ -791,6 +792,8 @@ export default function ProjectDetail({route, navigation}) {
       // 桥梁名称列表
       bridgeList={bridgeList}
       navigation={navigation}
+      projectList={route.params.list}
+      list={list}
       // 顶部导航左侧的标签
       pid="P1101"
       // 新增
@@ -900,6 +903,7 @@ export default function ProjectDetail({route, navigation}) {
                           navigation.navigate('Collection/Detect/BridgeTest', {
                             project: project,
                             bridge: item,
+                            list: route.params.list
                           })
                         }>
                         <Text style={[{color: '#2b427d', textDecorationLine: 'underline'}]}>{item.bridgestation}</Text>

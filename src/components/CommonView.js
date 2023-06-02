@@ -7,8 +7,9 @@ import EditMenu from './EditMenu';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 
 // 盒子
-export function Box({navigation,route,pid, children, headerItems,project,bridge,labelname,membername}) {
+export function Box({navigation,route,pid, children, headerItems,project,projectList,bridge,labelname,membername}) {
   useEffect(() => {
+    console.log('box route',projectList);
     // console.log('Box headerItems',headerItems,labelname);
   },[])
   return (
@@ -17,7 +18,7 @@ export function Box({navigation,route,pid, children, headerItems,project,bridge,
       <View style={[tailwind.flex1]}>
         <View style={[tailwind.mX19,{position:'absolute',top:12,left:85}]}>
           {/* 顶部导航 */}
-          <Headerbar navigation={navigation} items={headerItems || []} pid={pid || ''} project={project} bridge={bridge} labelname={labelname || ''} membername={membername || ''} />
+          <Headerbar navigation={navigation} route={route} items={headerItems || []} pid={pid || ''} projectList={projectList} project={project} bridge={bridge} labelname={labelname || ''} membername={membername || ''} />
         </View>
         <View style={[tailwind.mY8]}></View>
         {children}
@@ -209,6 +210,7 @@ export default function CommonView({
   onAhead,
   onStick,
   operations,
+  projectList
 }) {
 
   const [doneImg, setDoneImg] = useState() // 完成
@@ -218,7 +220,7 @@ export default function CommonView({
   const [cloneDisImg, setCloneDisImg] = useState() // 克隆 - 禁用
 
   useEffect(() => {
-    // console.log('223344');
+    console.log('2233445',projectList);
     // 设置按钮的初始状态
     // console.log('operations', operations);
     let doneImg = require('../iconImg/done.png')
@@ -315,6 +317,7 @@ export default function CommonView({
                 bridgeList={bridgeList || []}
                 navigation={navigation}
                 list={list}
+                projectList={projectList}
               />
             {/* </View> */}
             {/* 嵌入公共盒子的内容，即主要内容 */}

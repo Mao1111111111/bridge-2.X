@@ -93,6 +93,7 @@ export default function Main({navigation, route}) {
 
   // 当跨列表数据变化时, 重新设置跨表格的数据
   React.useEffect(() => {
+    console.log('P1301 route',project);
     kuaList.length && setTable2Data(listToPage(kuaList, pageRow));
   }, [kuaList]);
 
@@ -290,7 +291,7 @@ export default function Main({navigation, route}) {
 
   return (
     // 外部盒子 = 样式 + 顶部导航 + 导航左侧标签
-    <Box headerItems={getHeaderItems()} pid="P1301" navigation={navigation} route={route} project={project.projectname} bridge={bridge.bridgename}>
+    <Box headerItems={getHeaderItems()} pid="P1301" navigation={navigation} route={route} projectList={project} project={project.projectname} bridge={bridge.bridgename}>
       {/* 年份tab + 数据/影音tab，onChangeTab 为点击数据/影音tab时 */}
       <HeaderTabs onChangeTab={setPageType} />
       {pageType !== '数据' ? (

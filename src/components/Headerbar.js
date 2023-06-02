@@ -12,7 +12,7 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Headerbar({route,items, pid, proNameList, bridgeList,
-  navigation,list,project,bridge, labelname, membername}) {
+  navigation,list,project,projectList,bridge, labelname, membername}) {
   const {
     state: {theme},
   } = React.useContext(Context);
@@ -51,7 +51,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
 
 
   React.useEffect(()=> {
-    console.log('pid',pid);
+    console.log('pid6---',project,projectList);
     // console.log('items.name',items[0].name);
     getProStorage()
     getBriStorage()
@@ -112,6 +112,12 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
       if (e == '项目') {
         // console.log('123');
         navigation.navigate('Collection/Detect/Project')
+      } else if (e == '桥梁' && pid == 'P1301') {
+        navigation.goBack()
+      } else if (e == '桥梁' && pid !== 'P1301') {
+        navigation.navigate('Collection/Detect/ProjectDetail', {
+          project: projectList,
+        })
       }
     } catch (error) {
       console.log('Headerbar topage',error);

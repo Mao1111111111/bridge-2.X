@@ -140,7 +140,7 @@ export default function Project({navigation}) {
       .then(res => {
         // 设置数据列表
         setList(res.list);
-        // console.log('项目列表的数据',list);
+        console.log('项目列表的数据',list);
         // 设置共几页
         setPageTotal(res.page.pageTotal);
         // 设置共几条
@@ -330,6 +330,7 @@ export default function Project({navigation}) {
       // 项目名称列表
       proNameList={proNameList}
       navigation={navigation}
+      projectList={list}
       list={list}
       //---左侧按钮----
       // 新增
@@ -436,6 +437,7 @@ export default function Project({navigation}) {
                 onPress={() =>
                   navigation.navigate('Collection/Detect/ProjectDetail', {
                     project: item,
+                    list
                   })
                 }>
                 {/* 选择框 */}

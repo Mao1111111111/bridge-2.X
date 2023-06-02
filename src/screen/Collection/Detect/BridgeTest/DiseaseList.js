@@ -573,7 +573,7 @@ export default function DiseaseList({route, navigation}) {
   }
 
   return (
-    <Box headerItems={getHeaderItems()} navigation={navigation} pid="P1603" labelname={route.params.title} membername={list[0].membername} project={project.projectname} bridge={bridge.bridgename}>
+    <Box headerItems={getHeaderItems()} navigation={navigation} pid="P1603" labelname={route.params.title} membername={list[0].membername} projectList={project} project={project.projectname} bridge={bridge.bridgename}>
       <HeaderTabs disabled={true} />
       <View style={[tailwind.flex1]}>
         <Content
