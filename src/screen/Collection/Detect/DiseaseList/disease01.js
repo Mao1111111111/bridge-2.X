@@ -5089,10 +5089,42 @@ export function DiseaseC({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          let writePositionTxt = '/'
-          setWritePositionTxt(writePositionTxt)
-          diseaseData['writePositionTxt'] = writePositionTxt
-          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          var areaName = ''
+          setAreaName(areaName)
+          console.log('diseaseData.area为空');
+
+          // 墩/台描述
+            // 长度描述
+            if (lengthText == '0' || lengthText == '0.0') {
+              var lengthNum = ''
+              setLengthNum(lengthNum)
+            } else if (lengthText !== '0' || lengthText !== '0.0') {
+              var lengthNum = lengthText + 'm'
+              setLengthNum(lengthNum)
+            }
+
+          if (heightNum == '' && lengthNum == '') {
+            let writePositionTxt = '/' + areaName
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            setDiseaseData(diseaseData)
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else {
+            if (lengthNum == '') {
+              let writePositionTxt = areaName + lengthNum + heightNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            } else {
+              // 位置描述 = / + 病害区域 + 桥台 + 长度 + 高度
+              let writePositionTxt = pier + lengthNum + '处'
+              setWritePositionTxt(writePositionTxt)
+              diseaseData['writePositionTxt'] = writePositionTxt
+              setDiseaseData(diseaseData)
+              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            }
+          }
         } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0) {
             console.log('有数据了');
             console.log('构件区域列表：：',areaparam);

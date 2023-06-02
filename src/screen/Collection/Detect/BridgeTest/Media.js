@@ -211,12 +211,16 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
       setNowEdit(fileList[0]?.mediaid || '');
       setIsInit(false);
     }
-
-    // console.log('图片标题来源defaultFileName',defaultFileName,categoryList[0].label);
     try {
       // 进入页面时执行两次向右切换图片，使其达到默认选中第一张图片的目的
       handleNext()
       handleNext()
+    } catch (error) {
+      console.log('Media3',error);
+    }
+
+    // console.log('图片标题来源defaultFileName',defaultFileName,categoryList[0].label);
+    try {
       // console.log('memberList',memberList,route.params.data.title);
       // console.log('-----------------------');
       // console.log('memberList list',memberList[0].list);
@@ -497,19 +501,23 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
   };
 
   const handleChenge = _.debounce(({name, value}) => {
-    console.log('media handleChenge',name, value);
-    const data = fileList.find(({mediaid}) => mediaid === nowEdit);
-    data[name] = value;
-    data.isUpdate = true;
-    if (name === 'category') {
-      data.filename = categoryList.find(item => item.value === value).label;
+    try {
+      console.log('media handleChenge',name, value);
+      const data = fileList.find(({mediaid}) => mediaid === nowEdit);
+      data[name] = value;
+      data.isUpdate = true;
+      if (name === 'category') {
+        data.filename = categoryList.find(item => item.value === value).label;
+      }
+      const _list = [...list];
+      const inx = list.findIndex(({mediaid}) => mediaid === nowEdit);
+      _list[inx][name] = value;
+      setList(_list);
+      setTimeout(() => {});
+      dispatch({type: 'cacheFileData', payload: data});
+    } catch (error) {
+      console.log('Media handleChenge',error);
     }
-    const _list = [...list];
-    const inx = list.findIndex(({mediaid}) => mediaid === nowEdit);
-    _list[inx][name] = value;
-    setList(_list);
-    setTimeout(() => {});
-    dispatch({type: 'cacheFileData', payload: data});
   }, 500);
 
   const openMadol = () => {

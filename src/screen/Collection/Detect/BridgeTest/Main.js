@@ -93,7 +93,6 @@ export default function Main({navigation, route}) {
 
   // 当跨列表数据变化时, 重新设置跨表格的数据
   React.useEffect(() => {
-    console.log('P1301 route',project);
     kuaList.length && setTable2Data(listToPage(kuaList, pageRow));
   }, [kuaList]);
 

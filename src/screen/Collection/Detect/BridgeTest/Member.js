@@ -369,8 +369,9 @@ export default function Member({route, navigation,item}) {
   // 影音组件
   const getMedia = (e) => {
     try {
-      // console.log('listlist',list);
+      
       const nowEdit = parts.find(item => checkedList.has(item.id));
+      
       const dataid = nowEdit
         ? nowEdit.memberid
         : data.type === 'member'
@@ -399,6 +400,7 @@ export default function Member({route, navigation,item}) {
             : basememberinfo.find(item => item.membertype === nowGroup)
                 ?.membername
           : nowEdit.membername;
+      console.log('nowEdit',dataid);
       return (
         <Media
           navigation={navigation}
