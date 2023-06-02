@@ -577,6 +577,8 @@ function MemberEdit({onClose}, ref) {
           ({membertype}) => membertype === memberList[nowEdit]?.membertype,
         ),
       );
+    }else{
+      setList([])
     }
   }, [partsList, nowEdit, memberList]);
 
