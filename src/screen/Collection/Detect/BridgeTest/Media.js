@@ -28,6 +28,7 @@ import fs from '../../../../utils/fs';
 import MediaBar from './MediaBar';
 import Modal from "react-native-modal"
 import { CascadePicker } from "react-native-slidepicker";
+import { log } from 'console';
 
 const MediaComponent = ({file}) => {
   const {dispatch} = React.useContext(Context);
@@ -213,6 +214,9 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
 
     // console.log('图片标题来源defaultFileName',defaultFileName,categoryList[0].label);
     try {
+      // 进入页面时执行两次向右切换图片，使其达到默认选中第一张图片的目的
+      handleNext()
+      handleNext()
       // console.log('memberList',memberList,route.params.data.title);
       // console.log('-----------------------');
       // console.log('memberList list',memberList[0].list);
@@ -233,7 +237,6 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
               }
           })
         })
-        
       });
       
         let secList = []
@@ -439,6 +442,8 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
       console.log('最后一张图片',list[list.length - 1].mediaid);
       console.log('nowEdit',nowEdit);
       dispatch({type: 'cacheFileData', payload: item});
+      handleNext()
+      handleNext()
     } catch (error) {
       console.log('handledelete error', error);
     }
@@ -455,19 +460,8 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
     setNowEdit(item.mediaid);
   };
 
-  const handleNext = () => {
-    if (list.length === 1) {
-      return;
-    }
-    const _list = [...list];
-    const inx = _list.findIndex(({mediaid}) => mediaid === nowEdit) + 1;
-    if (inx >= _list.length) {
-      return;
-    }
-    listRef.current.scrollToIndex({index: inx});
-    setNowEdit(_list[inx].mediaid);
-  };
 
+  // 左切换
   const handlePrev = () => {
     console.log('handlePrev');
     if (list.length === 1) {
@@ -476,6 +470,22 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
     const _list = [...list];
     const inx = _list.findIndex(({mediaid}) => mediaid === nowEdit) - 1;
     if (inx <= 0) {
+      return;
+    }
+    listRef.current.scrollToIndex({index: inx});
+    setNowEdit(_list[inx].mediaid);
+  };
+
+  // 右切换
+  const handleNext = () => {
+    console.log('handleNext');
+    if (list.length === 1) {
+      return;
+    }
+    const _list = [...list];
+    const inx = _list.findIndex(({mediaid}) => mediaid === nowEdit) + 1;
+    console.log('handleNext inx',inx);
+    if (inx >= _list.length) {
       return;
     }
     listRef.current.scrollToIndex({index: inx});
