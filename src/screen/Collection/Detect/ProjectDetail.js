@@ -53,6 +53,9 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
   // 检索数据
   const [search, setSearch] = React.useState({});
 
+  // 选中的桥幅属性
+  const [selBridgeside, setSelBridgeside] = React.useState('');
+
   // 桥梁组件的引用
   const bridgeRef = React.useRef();
 
@@ -72,6 +75,7 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
       });
       // 重置检索条件
       setSearch('');
+      setSelBridgeside('all')
       // 打开模态框
       setVisible(true);
     },
@@ -84,11 +88,15 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
     if (!page) {
       return;
     }
+    let _search = search
+    if(_search.bridgeside == 'all'){
+       _search.bridgeside = ''
+    }
     // 表格loading
     setLoading(true);
     // 查询桥梁数据 -- 查询的是 所有桥梁的数据
     bridge
-      .search({param: search, page})
+      .search({param: _search, page})
       .then(res => {
         setList(res.list);
         setPageTotal(res.page.pageTotal);
@@ -188,10 +196,12 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
             values={[
               {
                 paramname: '无',
-                paramid: '',
+                paramid: 'all',
               },
               ...(bridgeside || []),
             ]}
+            value={selBridgeside}
+            onChange={el =>setSelBridgeside(el.paramid)}
             ref={el => (searchRef.current.bridgeside = el)}
             style={[tailwind.mR6, tailwind.flex1]}
           />
