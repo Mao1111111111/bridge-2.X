@@ -186,7 +186,7 @@ export default function Project({navigation}) {
   // 删除
   const handleDelete = async () => {
     // 查询当前项目下是否有检测桥梁
-    const res = await bridgeProjectBind.bridgeList(nowChecked.projectid);
+    const res = await bridgeProjectBind.listByProject(nowChecked.projectid);
     // 如果有，则不可以删除
     if (res.length) {
       alert('该项目含有检测桥梁，不可删除');
