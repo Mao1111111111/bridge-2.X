@@ -404,6 +404,7 @@ export default function DiseaseEdit({route, navigation}) {
             : tailwind.flex1,
         ]}>
         <Media
+          navigation={navigation}
           type="diseaseParts"
           dataid={version}
           defaultFileName={defaultFileName}

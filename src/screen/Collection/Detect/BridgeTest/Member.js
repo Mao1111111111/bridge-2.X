@@ -401,6 +401,7 @@ export default function Member({route, navigation,item}) {
           : nowEdit.membername;
       return (
         <Media
+          navigation={navigation}
           dataid={dataid}
           type={checkedList.size === 0 ? 'member' : 'parts'}
           defaultFileName={`${defaultFileName}状况`}

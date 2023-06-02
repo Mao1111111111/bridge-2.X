@@ -184,7 +184,7 @@ export default function Main({navigation, route}) {
 
   // 获取 顶部导航项
   const getHeaderItems = () => {
-    console.log('project',bridge.bridgename);
+    // console.log('project',bridge.bridgename);
     // 没有项目名时，返回 []
     if (!project.projectname) {
       return [];
@@ -297,6 +297,7 @@ export default function Main({navigation, route}) {
       {pageType !== '数据' ? (
         //---------影音---------
         <Media
+          navigation={navigation}
           type="bridge"
           dataid={bridge.bridgeid}
           categoryList={[
@@ -614,6 +615,7 @@ export default function Main({navigation, route}) {
                               ({mediatype}) => mediatype === 'voice',
                             ),
                           )}
+                          MB
                         </Text>
                       </View>
                       <View style={[tailwind.flex1, styles.tableCol]}>

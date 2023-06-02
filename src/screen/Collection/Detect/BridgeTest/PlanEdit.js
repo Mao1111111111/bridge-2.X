@@ -262,13 +262,23 @@ export default function PlanEdit({navigation, route}) {
     updateUploadState()
   };
 
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+
   return (
-    <Box headerItems={getHeaderItems()} pid="P1301">
+    <Box headerItems={getHeaderItems()} pid="P1301" navigation={navigation} route={route} projectList={project} project={project.projectname} bridge={bridge.bridgename}>
       {/* 年份 + 影音 tab */}
       <HeaderTabs disabled={true} />
       <View style={tailwind.flex1}>
-        <Content>
-          <View style={[styles.card, {width:710, backgroundColor:'#fff'}]}>
+        <Content onBack={goBack}>
+          <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5,padding:10}]}>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               {/* 左侧 */}
               <View style={[tailwind.flex1]}>

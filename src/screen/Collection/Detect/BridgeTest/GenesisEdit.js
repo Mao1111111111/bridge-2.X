@@ -233,22 +233,27 @@ export default function GenesisEdit({navigation, route}) {
 
   // 获取类别名
   const getTypeName = item => {
-    // console.info(getBaseData().桥梁各部件病害信息);
-    // 获取病害数据
-    const jsondata = JSON.parse(item.jsondata);
-    // 如果 病害数据中 部件类型标号 存在
-    if (jsondata?.areatype) {
-      const membertype = list.find(
-        ({memberid}) => memberid === item.dataid,
-      )?.membertype;
-      const components = membercheck.list.find(
-        it => membertype === it.membertype,
-      ).list;
-      return components.find(
-        ({checktypeid}) => checktypeid === jsondata.checktypeid,
-      )?.checkinfoshort;
+    try {
+      // console.info(getBaseData().桥梁各部件病害信息);
+      // 获取病害数据
+      const jsondata = JSON.parse(item.jsondata);
+      // 如果 病害数据中 部件类型标号 存在
+      if (jsondata?.areatype) {
+        const membertype = list.find(
+          ({memberid}) => memberid === item.dataid,
+        )?.membertype;
+        const components = membercheck.list.find(
+          it => membertype === it.membertype,
+        ).list;
+        return components.find(
+          ({checktypeid}) => checktypeid === jsondata.checktypeid,
+        )?.checkinfoshort;
+      }
+      return '';
+    } catch (err) {
+      console.log('GenesisEdit getTypeName err',err);
     }
-    return '';
+    
   };
 
   // 右侧 病害成因选择变化时
@@ -285,15 +290,25 @@ export default function GenesisEdit({navigation, route}) {
     updateUploadState()
   };
 
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+
   return (
     // 外部盒子
-    <Box headerItems={getHeaderItems()} pid="P1301">
+    <Box headerItems={getHeaderItems()} pid="P1301" navigation={navigation} route={route} projectList={project} project={project.projectname} bridge={bridge.bridgename}>
       {/* 年份导航 + 数据影音切换 */}
       <HeaderTabs disabled={true} />
       {/* 内容 */}
       <View style={tailwind.flex1}>
-        <Content>
-          <View style={[styles.card, {width:710, backgroundColor:'#fff'}]}>
+        <Content onBack={goBack}>
+          <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5,padding:10}]}>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               {/* 左侧 */}
               <View style={[tailwind.flex1]}>

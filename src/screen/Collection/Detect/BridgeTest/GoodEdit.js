@@ -157,6 +157,7 @@ export default function GoodEdit({route, navigation}) {
       )}
       <View style={[pageType === '数据' ? tailwind.hidden : tailwind.flex1]}>
         <Media
+          navigation={navigation}
           type="goodParts"
           dataid={list[0].memberid}
           categoryList={[

@@ -222,6 +222,7 @@ export default function DiseaseEdit2({route, navigation}) {
             : tailwind.flex1,
         ]}>
         <Media
+          navigation={navigation}
           type="diseaseParts"
           dataid={version}
           defaultFileName={defaultFileName}

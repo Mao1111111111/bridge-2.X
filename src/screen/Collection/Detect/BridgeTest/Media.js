@@ -149,7 +149,7 @@ const RowMediaComponent = ({item, onPress, isActive}) => {
 };
 
 // 媒体组件
-export default function Media({categoryList, type, dataid, pid, defaultFileName,pileTitle,pileNum,memberList,route}) {
+export default function Media({categoryList, type, dataid, pid, defaultFileName,pileTitle,pileNum,memberList,route,navigation}) {
   // categoryList-类型列表，defaultFileName-默认文件名
   // 全局样式
   const {
@@ -341,6 +341,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
     return categoryList[0].label;
   };
 
+  // 添加
   const handleAdd = () => {
     dispatch({type: 'isLoading', payload: true});
     const mediaid = uuid.v4();
@@ -426,12 +427,17 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
     });
   };
 
+  // 删除
   const handleDelete = () => {
     try {
+      console.log('Media 删除');
       dispatch({type: 'isLoading', payload: true});
       const item = fileList.find(({mediaid}) => mediaid === nowEdit);
       item.isDelete = true;
       setNowEdit(list[list.length - 1].mediaid || '');
+      console.log('media list',list);
+      console.log('最后一张图片',list[list.length - 1].mediaid);
+      console.log('nowEdit',nowEdit);
       dispatch({type: 'cacheFileData', payload: item});
     } catch (error) {
       console.log('handledelete error', error);
@@ -463,6 +469,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
   };
 
   const handlePrev = () => {
+    console.log('handlePrev');
     if (list.length === 1) {
       return;
     }
@@ -519,9 +526,19 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
       
     }
   }
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
 
   return (
     <Content
+      onBack={goBack}
       onAdd={handleAdd}
       onCopy={list.length === 1 ? null : handleCopy}
       onDelete={list.length === 1 ? null : handleDelete} // 当照片数量为0时,禁用删除按钮
