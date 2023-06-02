@@ -164,6 +164,7 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
         notScroll={true}
         width={800}
         height={500}
+        keyboardVerticalOffset={-250}
         onClose={() => setVisible(false)}>
         {/* 顶部检索区域 */}
         <View style={[tailwind.pB2, tailwind.pX4, tailwind.flexRow]}>
@@ -459,6 +460,7 @@ const Inducts = React.forwardRef(({onSubmitOver}, ref) => {
       notScroll={true}
       width={800}
       height={500}
+      keyboardVerticalOffset={-250}
       onClose={() => setVisible(false)}>
       <View style={tailwind.flex1}>
         {/* 检索区域 */}
@@ -636,7 +638,6 @@ export default function ProjectDetail({route, navigation}) {
 
   // 检索条件变化、页码变化、项目变化时 触发
   React.useEffect(() => {
-    console.log('桥梁列表的route',route.params.list);
     if (!page) {
       return;
     }
@@ -657,7 +658,6 @@ export default function ProjectDetail({route, navigation}) {
       })
       .then(res => {
         setList(res.list);
-        console.log('listlist1',list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
         console.log('bridge res', res.list);
@@ -695,10 +695,10 @@ export default function ProjectDetail({route, navigation}) {
     });
     // 设置查询参数
     setSearch(values);
-    setPage({
+    /* setPage({
       pageSize: 10,
       pageNo: 0,
-    });
+    }); */
   };
 
   // 删除数据
