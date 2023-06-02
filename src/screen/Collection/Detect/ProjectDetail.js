@@ -53,6 +53,9 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
   // 检索数据
   const [search, setSearch] = React.useState({});
 
+  // 选中的桥幅属性
+  const [selBridgeside, setSelBridgeside] = React.useState('');
+
   // 桥梁组件的引用
   const bridgeRef = React.useRef();
 
@@ -72,6 +75,7 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
       });
       // 重置检索条件
       setSearch('');
+      setSelBridgeside('all')
       // 打开模态框
       setVisible(true);
     },
@@ -84,11 +88,15 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
     if (!page) {
       return;
     }
+    let _search = search
+    if(_search.bridgeside == 'all'){
+       _search.bridgeside = ''
+    }
     // 表格loading
     setLoading(true);
     // 查询桥梁数据 -- 查询的是 所有桥梁的数据
     bridge
-      .search({param: search, page})
+      .search({param: _search, page})
       .then(res => {
         setList(res.list);
         setPageTotal(res.page.pageTotal);
@@ -164,6 +172,7 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
         notScroll={true}
         width={800}
         height={500}
+        keyboardVerticalOffset={-250}
         onClose={() => setVisible(false)}>
         {/* 顶部检索区域 */}
         <View style={[tailwind.pB2, tailwind.pX4, tailwind.flexRow]}>
@@ -187,10 +196,12 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
             values={[
               {
                 paramname: '无',
-                paramid: '',
+                paramid: 'all',
               },
               ...(bridgeside || []),
             ]}
+            value={selBridgeside}
+            onChange={el =>setSelBridgeside(el.paramid)}
             ref={el => (searchRef.current.bridgeside = el)}
             style={[tailwind.mR6, tailwind.flex1]}
           />
@@ -459,6 +470,7 @@ const Inducts = React.forwardRef(({onSubmitOver}, ref) => {
       notScroll={true}
       width={800}
       height={500}
+      keyboardVerticalOffset={-250}
       onClose={() => setVisible(false)}>
       <View style={tailwind.flex1}>
         {/* 检索区域 */}
@@ -636,7 +648,6 @@ export default function ProjectDetail({route, navigation}) {
 
   // 检索条件变化、页码变化、项目变化时 触发
   React.useEffect(() => {
-    console.log('桥梁列表的route',route.params.list);
     if (!page) {
       return;
     }
@@ -657,7 +668,6 @@ export default function ProjectDetail({route, navigation}) {
       })
       .then(res => {
         setList(res.list);
-        console.log('listlist1',list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
         console.log('bridge res', res.list);
@@ -695,10 +705,10 @@ export default function ProjectDetail({route, navigation}) {
     });
     // 设置查询参数
     setSearch(values);
-    setPage({
+    /* setPage({
       pageSize: 10,
       pageNo: 0,
-    });
+    }); */
   };
 
   // 删除数据
