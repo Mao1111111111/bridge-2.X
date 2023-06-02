@@ -135,8 +135,18 @@ export default function GoodEdit({route, navigation}) {
     ];
   };
 
+  // 回退
+  const goBack = () => {
+    console.log('点击了goBack');
+    try {
+      navigation.goBack()
+    } catch (e) {
+      console.log('goBack err', e);
+    }
+  }
+
   return (
-    <Box headerItems={getHeaderItems()} pid="P1603">
+    <Box headerItems={getHeaderItems()} pid="P1603" navigation={navigation} route={route} projectList={project} project={project.projectname} bridge={bridge.bridgename}>
       {list.length === 1 ? (
         <HeaderTabs
           onChangeTab={setPageType}
@@ -155,8 +165,10 @@ export default function GoodEdit({route, navigation}) {
         />
       </View>
       <View style={[pageType !== '数据' ? tailwind.hidden : tailwind.flex1]}>
-        <Content hideMenu={true}>
-          <View style={[styles.card, theme.primaryBgStyle]}>
+        <Content
+          onBack={goBack}
+        >
+          <View style={[theme.primaryBgStyle, styles.card, tailwind.flex1, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               <View style={[styles.flex2]}>
                 <Textarea
@@ -164,8 +176,8 @@ export default function GoodEdit({route, navigation}) {
                   name="remark"
                   ref={remarkRef}
                   onChange={({name, value}) => setData({[name]: value})}
-                  labelStyle={[styles.title, theme.primaryTextStyle]}
-                  style={{height:100}}
+                  labelStyle={[styles.title, theme.primaryTextStyle,{color:'#2b427d'}]}
+                  style={{height:100,color:'#2b427d'}}
                 />
               </View>
               {list.length > 1 ? (
