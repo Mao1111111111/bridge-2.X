@@ -9,7 +9,7 @@ import * as partsPlanGenesisData from '../../database/parts_plan_genesis_data';
 import {score, numeric} from '../../utils/score';
 import {groupMap, listToGroup} from '../../utils/common';
 import dayjs from 'dayjs';
-import DeviceInfo from 'react-native-device-info';
+import { getUniqueId } from 'react-native-device-info';
 
 const getMediaMap = (list, type) => {
   //list是病害下的一组图片
@@ -415,56 +415,91 @@ export const getData =async (
   try{
     let data = {}
     //****************** 版本号和设备id ******************
-    let deviceId = await DeviceInfo.getUniqueId().then((res) => {
-      return res.toUpperCase()
-    })
+    let deviceId = ''
+    try{
+      deviceId = (getUniqueId()).toUpperCase()
+    }catch(e){
+      console.log('deviceId',e);
+      return errorDeal(id,e,'获取设备id失败')
+    }
     data['deviceId'] = deviceId
     data['dataVersion'] = '1.0'
     //****************** 桥梁绑定信息 ******************
-    const bindData = await bridgeProjectBind.getById(id);
-
-    //const {bridgereportbindid,binddate,...newBindData} = bindData
-    //data = newBindData
+    let bindData = null
+    try{
+      bindData = await bridgeProjectBind.getById(id);
+    }catch(e){
+      console.log('桥梁项目绑定信息',e);
+      return errorDeal(id,e,'获取桥梁项目绑定信息失败')
+    }
+    
     //****************** 桥梁信息 ******************
     //----获取 桥梁信息
-    const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
+    let bridgeData = null
+    try{
+      bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
+    }catch(e){
+      console.log('获取桥梁信息',e);
+      return errorDeal(id,e,'获取桥梁信息失败')
+    }
     data = {
       ...bridgeData,
       ...data
     }
-    data.bridgeconfig = JSON.parse(data.bridgeconfig)
+    try{
+      data.bridgeconfig = data.bridgeconfig?JSON.parse(data.bridgeconfig):{}
+    }catch(e){
+      console.log('解析桥梁配置信息',e);
+      return errorDeal(id,e,'解析桥梁配置信息失败')
+    }
     //----桥梁的部件、构件数据
     //初始构件数据
-    let initialMemberData = await bridgeMember.list(data.bridgeid)
+    let initialMemberData = null
+    try{
+      initialMemberData = await bridgeMember.list(data.bridgeid)
+    }catch(e){
+      console.log('获取桥梁构件列表',e);
+      return errorDeal(id,e,'获取桥梁构件列表失败')
+    }
     //初始部件数据
     let initialPartData = []
     //整合
-    initialMemberData.forEach(item=>{
-      let index = initialPartData.findIndex(i=> i.membertype==item.membertype)
-
-      if(index==-1){
-        //不存在
-        let part = basememberinfo.find(i=>i.membertype==item.membertype)
-        let newPart = {
-          bridgertype:part.bridgertype,
-          membername:part.membername,
-          membertype:part.membertype,
-          positionid:part.positionid,
-          weight:part.weight,
-          memberData:[item]
+    try{
+      initialMemberData.forEach(item=>{
+        let index = initialPartData.findIndex(i=> i.membertype==item.membertype)
+        if(index==-1){
+          //不存在
+          let part = basememberinfo.find(i=>i.membertype==item.membertype)
+          let newPart = {
+            bridgertype:part.bridgertype,
+            membername:part.membername,
+            membertype:part.membertype,
+            positionid:part.positionid,
+            weight:part.weight,
+            memberData:[item]
+          }
+          initialPartData.push(newPart)
+        }else{
+          initialPartData[index].memberData.push(item)
         }
-        initialPartData.push(newPart)
-      }else{
-        initialPartData[index].memberData.push(item)
-      }
-    })
+      })
+    }catch(e){
+      console.log('初始化部件数据',e);
+      return errorDeal(id,e,'初始化部件数据失败')
+    }
     //桥梁结构信息
     data['structureInfo'] = initialPartData
     //****************** 检测数据--基本数据 ******************
     //绑定项目信息
     data['testData'] = bindData
     //获取桥梁检测信息 -- 桥梁检测列表
-    const bridgeReportData = await bridgeReport.get(bindData);
+    let bridgeReportData = null
+    try{
+      bridgeReportData = await bridgeReport.get(bindData);
+    }catch(e){
+      console.log('获取桥梁检测信息',e);
+      return errorDeal(id,e,'获取桥梁检测信息失败')
+    }
     //如果没有检测数据，那么返回空的data
     if (!bridgeReportData) {
       return null;
@@ -483,20 +518,31 @@ export const getData =async (
     }
     //****************** 检测数据--媒体数据 ******************
     //----获取照片文件列表 -- 文件表
-    const fileList = await bridgeReportFile.list(bindData);
+    let fileList = null
+    try{
+      fileList = await bridgeReportFile.list(bindData);
+    }catch(e){
+      console.log('获取照片文件列表',e);
+      return errorDeal(id,e,'获取照片文件列表失败')
+    }
     // 处理照片数据
-    fileList.forEach(item=>{
-      // 真正应用的路径
-      let appliedPath = item.filepath
-      if(item.is_source==0){
-        appliedPath = item.copypath
-      }
-      // 路径名字
-      let pathArr = appliedPath.split('/')
-      let pathName = pathArr[pathArr.length-1]
-      item['appliedPath'] = appliedPath
-      item['pathName'] = pathName
-    })
+    try{
+      fileList.forEach(item=>{
+        // 真正应用的路径
+        let appliedPath = item.filepath
+        if(item.is_source==0){
+          appliedPath = item.copypath
+        }
+        // 路径名字
+        let pathArr = appliedPath.split('/')
+        let pathName = pathArr[pathArr.length-1]
+        item['appliedPath'] = appliedPath
+        item['pathName'] = pathName
+      })
+    }catch(e){
+      console.log('处理照片数据',e);
+      return errorDeal(id,e,'处理照片数据失败')
+    }
     //桥梁媒体信息
     let bridgeMedia = []
     //部件媒体信息
@@ -506,211 +552,299 @@ export const getData =async (
     //好构件媒体信息
     let goodMemberMedia = []
     //媒体信息分配
-    fileList.forEach(item=>{
-      if(item.type=='bridge'){
-        bridgeMedia.push(item)
-      }else if(item.type=='member'){
-        partMedia.push(item)
-      }else if(item.type=='diseaseParts'){
-        diseasePartsMedia.push(item)
-      }else if(item.type=='goodParts'){
-        goodMemberMedia.push(item)
-      }
-    })
+    try{
+      fileList.forEach(item=>{
+        if(item.type=='bridge'){
+          bridgeMedia.push(item)
+        }else if(item.type=='member'){
+          partMedia.push(item)
+        }else if(item.type=='diseaseParts'){
+          diseasePartsMedia.push(item)
+        }else if(item.type=='goodParts'){
+          goodMemberMedia.push(item)
+        }
+      })
+    }catch(e){
+      console.log('媒体信息分配',e);
+      return errorDeal(id,e,'媒体信息分配失败')
+    }
     //存入桥梁媒体信息
     data.testData['bridgeMedia'] = bridgeMedia
     //****************** 检测数据--养护计划 ******************
     //获取 养护计划 和 病害成因 数据，并根据category分类
-    const planGenesis = listToGroup(
-      await partsPlanGenesisData.list(bindData),
-      'category',
-    );
+    let planGenesis = null
+    try{
+      planGenesis = listToGroup(
+        await partsPlanGenesisData.list(bindData),
+        'category',
+      );
+    }catch(e){
+      console.log('获取 养护计划 和 病害成因 数据',e);
+      return errorDeal(id,e,'获取养护计划和病害成因数据失败')
+    }
     //养护计划
-    const planData = planGenesis.plan?planGenesis.plan:[]
+    let planData = planGenesis.plan?planGenesis.plan:[]
     //病害成因
-    const genesisData = planGenesis.genesisData?planGenesis.genesisData:[]
+    let genesisData = planGenesis.genesisData?planGenesis.genesisData:[]
     //****************** 检测数据--构件数据 ******************
     //获取构件数据 -- 与上面构件的区别是 会有新添加的构件
-    let memberData = await bridgeReportMember.list({bridgeid: bindData.bridgeid,bridgereportid:bindData.bridgereportid})
+    let memberData = null
+    try{
+      memberData = await bridgeReportMember.list({bridgeid: bindData.bridgeid,bridgereportid:bindData.bridgereportid})
+    }catch(e){
+      console.log('获取测试构件数据',e);
+      return errorDeal(id,e,'获取测试构件数据失败')
+    }
     //处理构件数据
-    memberData.forEach(item=>{
-      item.dpscoresauto = 100
-      if(item.memberstatus=='200'){
-        item['diseaseData']=[]
-      }else if(item.memberstatus=='100'){
-        item['goodData']=[]
-        item['media']=[]
-      }
-    })
+    try{
+      memberData.forEach(item=>{
+        item.dpscoresauto = 100
+        if(item.memberstatus=='200'){
+          item['diseaseData']=[]
+        }else if(item.memberstatus=='100'){
+          item['goodData']=[]
+          item['media']=[]
+        }
+      })
+    }catch(e){
+      console.log('处理构件数据',e);
+      return errorDeal(id,e,'处理构件数据失败')
+    }
     //----病害构件
-    const diseaseMember = memberData.filter(
+    let diseaseMember = memberData.filter(
       ({memberstatus}) => memberstatus === '200',
     );
     //获取 病害数据
-    let diseaseData = await partsCheckstatusData.getDisease(
-      bindData.bridgereportid,
-      diseaseMember.map(item => item.memberid),
-    )
+    let diseaseData = null
+    try{
+      diseaseData = await partsCheckstatusData.getDisease(
+        bindData.bridgereportid,
+        diseaseMember.map(item => item.memberid),
+      )
+    }catch(e){
+      console.log('获取 病害数据',e);
+      return errorDeal(id,e,'获取病害数据失败')
+    }
     //处理 病害数据 和 构件数据
-    diseaseMember.forEach(e=>{
-      const list = diseaseData
-          .filter(({dataid}) => e.memberid === dataid)
-          .map(item => {
-            //数据解析
-            const jsondata = JSON.parse(item?.jsondata || '{}');
-            if (jsondata?.standard?.scale) {
-              item.score =
-                numeric(jsondata?.standard?.scale)[item?.jsondata?.scale] || 0;
-            }
-            item.parentdataid = ''
-            item.jsondata = jsondata
-            item.membername = e.membername;
-            item.membertype = e.membertype;
-            return item;
-          });
-      //如果只一条病害数据 
-      if (list.length === 1) {
-        //memberData 构件数据
-        //查找这条病害输入哪条构件数据
-        const inx = memberData.findIndex(
-          ({memberid}) => memberid === list[0].memberid,
-        );
-        //计算 dpscoresauto
-        if (memberData[inx]) {
-          memberData[inx].dpscoresauto =
-            100 - (list[0].score || 0);
-        }
-      }
-      //如果有多条病害数据
-      //计算dpscoresauto
-      if (list.length > 1) {
-        const m = {};
-        list.forEach(item => {
-          if (m[item.scalegroupid || 'not']) {
-            m[item.scalegroupid || 'not'].push(item.score || 0);
-          } else {
-            m[item.scalegroupid || 'not'] = [item.score || 0];
-          }
-        });
-        const scoreList = [...(m.not || [])];
-        Object.keys(m)
-          .filter(key => key !== 'not')
-          .forEach(key => {
-            scoreList.push(Math.max(...m[key]));
-          });
-        const inx = memberData.findIndex(
-          ({memberid}) => memberid === list[0].dataid,
-        );
-        if (memberData[inx]) {
-          memberData[inx].dpscoresauto = parseFloat(
-            (100 - score(scoreList).reduce((a, c) => a + c)).toFixed(3),
+    try{
+      diseaseMember.forEach(e=>{
+        const list = diseaseData
+            .filter(({dataid}) => e.memberid === dataid)
+            .map(item => {
+              //数据解析
+              const jsondata = JSON.parse(item?.jsondata || '{}');
+              if (jsondata?.standard?.scale) {
+                item.score =
+                  numeric(jsondata?.standard?.scale)[item?.jsondata?.scale] || 0;
+              }
+              item.parentdataid = ''
+              item.jsondata = jsondata
+              item.membername = e.membername;
+              item.membertype = e.membertype;
+              return item;
+            });
+        //如果只一条病害数据 
+        if (list.length === 1) {
+          //memberData 构件数据
+          //查找这条病害输入哪条构件数据
+          const inx = memberData.findIndex(
+            ({memberid}) => memberid === list[0].memberid,
           );
+          //计算 dpscoresauto
+          if (memberData[inx]) {
+            memberData[inx].dpscoresauto =
+              100 - (list[0].score || 0);
+          }
         }
-      }
-    })
+        //如果有多条病害数据
+        //计算dpscoresauto
+        if (list.length > 1) {
+          const m = {};
+          list.forEach(item => {
+            if (m[item.scalegroupid || 'not']) {
+              m[item.scalegroupid || 'not'].push(item.score || 0);
+            } else {
+              m[item.scalegroupid || 'not'] = [item.score || 0];
+            }
+          });
+          const scoreList = [...(m.not || [])];
+          Object.keys(m)
+            .filter(key => key !== 'not')
+            .forEach(key => {
+              scoreList.push(Math.max(...m[key]));
+            });
+          const inx = memberData.findIndex(
+            ({memberid}) => memberid === list[0].dataid,
+          );
+          if (memberData[inx]) {
+            memberData[inx].dpscoresauto = parseFloat(
+              (100 - score(scoreList).reduce((a, c) => a + c)).toFixed(3),
+            );
+          }
+        }
+      })
+    }catch(e){
+      console.log('处理 病害数据 和 构件数据',e);
+      return errorDeal(id,e,'处理病害数据和构件数据失败')
+    }
     //病害数据 添加 媒体 属性
     diseaseData.forEach(item=>{item['media']=[]})
     //将 病害媒体数据 存入病害
-    diseasePartsMedia.forEach(item=>{
-      let index = diseaseData.findIndex(i=> i.version==item.dataid)
-      if(index!==-1){
-        diseaseData[index].media.push(item)
-      }
-    })
+    try{
+      diseasePartsMedia.forEach(item=>{
+        let index = diseaseData.findIndex(i=> i.version==item.dataid)
+        if(index!==-1){
+          diseaseData[index].media.push(item)
+        }
+      })
+    }catch(e){
+      console.log('将 病害媒体数据 存入病害',e);
+      return errorDeal(id,e,'病害媒体数据存入病害失败')
+    }
     //将 养护计划数据 存入病害
-    planData.forEach(item=>{
-      let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
-      let jsondata = JSON.parse(item?.jsondata || '{}')
-      diseaseData[index].maintenancePlan = {
-        ...item,
-        jsondata:jsondata
-      }
-    })
+    try{
+      planData.forEach(item=>{
+        let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
+        let jsondata = JSON.parse(item?.jsondata || '{}')
+        if(index!==-1){
+            diseaseData[index].maintenancePlan = {
+            ...item,
+            jsondata:jsondata
+          }
+        }
+      })
+    }catch(e){
+      console.log('养护计划数据存入病害失败',e);
+      return errorDeal(id,e,'养护计划数据存入病害失败')
+    }
     //将 病害成因数据 存入病害
-    genesisData.forEach(item=>{
-      let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
-      let jsondata = JSON.parse(item?.jsondata || '{}')
-      diseaseData[index].diseaseCause = {
-        ...item,
-        jsondata:jsondata
-      }
-    })
+    try{
+      genesisData.forEach(item=>{
+        let index = diseaseData.findIndex(i=> i.version==item.checkstatusdataid)
+        let jsondata = JSON.parse(item?.jsondata || '{}')
+        if(index!==-1){
+            diseaseData[index].diseaseCause = {
+            ...item,
+            jsondata:jsondata
+          }
+        }
+      })
+    }catch(e){
+      console.log('病害成因数据 存入病害',e);
+      return errorDeal(id,e,'病害成因数据存入病害失败')
+    }
     //将 病害数据 存入构件
-    diseaseData.forEach(item=>{
-      let index = memberData.findIndex(i=> i.memberid==item.dataid)
-      memberData[index].diseaseData.push(item)
-    })
+    try{
+      diseaseData.forEach(item=>{
+        let index = memberData.findIndex(i=> i.memberid==item.dataid)
+        if(index!==-1){
+          memberData[index].diseaseData.push(item)
+        }
+      })
+    }catch(e){
+      console.log('病害数据存入构件',e);
+      return errorDeal(id,e,'病害数据存入构件失败')
+    }
     //----好构件
-    const goodsMember = memberData.filter(
+    let goodsMember = memberData.filter(
       ({memberstatus}) => memberstatus === '100',
     );
     //获取 好构件 的 数据
-    const _goodsData = goodsMember.length
-    ? await partsCheckstatusData.getGoods(
-        bindData.bridgereportid,
-        goodsMember.map(it => it.memberid),
-      )
-    : []
+    let _goodsData = null
+    try{
+      _goodsData = goodsMember.length
+      ? await partsCheckstatusData.getGoods(
+          bindData.bridgereportid,
+          goodsMember.map(it => it.memberid),
+        )
+      : []
+    }catch(e){
+      console.log('获取 好构件 的 数据',e);
+      return errorDeal(id,e,'获取好构件的数据失败')
+    }
     //好构件数据
-    const goodsData = [];
+    let goodsData = [];
     //处理 好构件数据
-    goodsMember.forEach(e => {
-      const goods = _goodsData
-        .filter(({dataid}) => e.memberid === dataid)
-        .sort((a, b) => a.u_date - b.u_date)[0];
-      if (goods) {
-        goods.parentdataid = ''
-        goods.membername = e.membername;
-        goods.membertype = e.membertype;
-        goodsData.push(goods);
-      }
-    });
-    
+    try{
+      goodsMember.forEach(e => {
+        const goods = _goodsData
+          .filter(({dataid}) => e.memberid === dataid)
+          .sort((a, b) => a.u_date - b.u_date)[0];
+        if (goods) {
+          goods.parentdataid = ''
+          goods.membername = e.membername;
+          goods.membertype = e.membertype;
+          goodsData.push(goods);
+        }
+      });
+    }catch(e){
+      console.log('处理好构件数据失败',e);
+      return errorDeal(id,e,'处理好构件数据失败')
+    }
     //将 好构件 的 媒体数据 存入构件
-    goodMemberMedia.forEach(item=>{
-      let index = memberData.findIndex(i=> i.memberid==item.dataid)
-      memberData[index].media.push(item)
-    })
+    try{
+      goodMemberMedia.forEach(item=>{
+        let index = memberData.findIndex(i=> i.memberid==item.dataid)
+        if(index!==-1){
+          memberData[index].media.push(item)
+        }
+      })
+    }catch(e){
+      console.log('好构件的媒体数据存入构件失败',e);
+      return errorDeal(id,e,'好构件的媒体数据存入构件失败')
+    }
     //将 好构件数据 存入 好构件
-    goodsData.forEach(item=>{
-      let index = memberData.findIndex(i=> i.memberid==item.dataid)
-      if(index!==-1){
-        memberData[index].goodData.push(item)
-      }
-    })
-   
-    
+    try{
+      goodsData.forEach(item=>{
+        let index = memberData.findIndex(i=> i.memberid==item.dataid)
+        if(index!==-1){
+          memberData[index].goodData.push(item)
+        }
+      })
+    }catch(e){
+      console.log('好构件数据 存入 好构件',e);
+      return errorDeal(id,e,'好构件数据存入好构件失败')
+    }
     //****************** 检测数据--部件数据 ******************
     //部件数据
     let partData = []
-    //整合
-    memberData.forEach(async (item)=>{
-      let exist = partData.findIndex(i=> i.membertype==item.membertype)
-      if(exist==-1){
-        //不存在
-        let part = basememberinfo.find(i=>i.membertype==item.membertype)
-        part["memberData"] = [item]
-        part["media"] = []
-        part["partid"] = item.bridgereportid + '_' + item.position + '_' + item.membertype
-        partData.push(part)
-      }else{
-        //存在
-        partData[exist].memberData.push(item)
-      }
-    })
+    //整合部件数据
+    try{
+      memberData.forEach(async (item)=>{
+        let exist = partData.findIndex(i=> i.membertype==item.membertype)
+        if(exist==-1){
+          //不存在
+          let part = basememberinfo.find(i=>i.membertype==item.membertype)
+          part["memberData"] = [item]
+          part["media"] = []
+          part["partid"] = item.bridgereportid + '_' + item.position + '_' + item.membertype
+          partData.push(part)
+        }else{
+          //存在
+          partData[exist].memberData.push(item)
+        }
+      })
+    }catch(e){
+      console.log('整合部件数据失败',e);
+      return errorDeal(id,e,'整合部件数据失败')
+    }
     //----将部件图片信息存入部件
-    partMedia.forEach(item=>{
-      let index = partData.findIndex(i=> i.membertype==item.dataid)
-      if(index!==-1){
-        partData[index].media.push({
-          ...item,
-          dataid:partData[index].partid
-        })
-      }
-    })
+    try{
+      partMedia.forEach(item=>{
+        let index = partData.findIndex(i=> i.membertype==item.dataid)
+        if(index!==-1){
+          partData[index].media.push({
+            ...item,
+            dataid:partData[index].partid
+          })
+        }
+      })
+    }catch(e){
+      console.log('部件图片信息存入部件失败',e);
+      return errorDeal(id,e,'部件图片信息存入部件失败')
+    }
     //部件数据 存入 测试数据
     data.testData['detailTestData'] = partData
-
     // 处理媒体数据
     let mediaData = []
     fileList.forEach(item=>{
@@ -726,6 +860,12 @@ export const getData =async (
     return newData
   }catch(e){
     console.log("e111",e);
+    return errorDeal(id,e,'')
+  }
+}
+
+const errorDeal = async (id,_err,errDescribe) => {
+  try{
     const bindData = await bridgeProjectBind.getById(id);
     const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
     let data = {
@@ -734,7 +874,17 @@ export const getData =async (
         ...bridgeData,
         ...bindData
       },
-      err:e
+      err:(errDescribe?(errDescribe+','):'') + String(_err.message)
+    }
+    return data
+  }catch(e){
+    console.log('获取桥梁数据和绑定数据',e);
+    let data = {
+      state:false,
+      data:{
+        bridgename:'桥梁名称获取出错'
+      },
+      err:_err + ',' + e + errDescribe?errDescribe:''
     }
     return data
   }

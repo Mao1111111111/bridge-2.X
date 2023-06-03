@@ -212,7 +212,7 @@ function Provider({children}) {
               state.membercheckdata,
               basememberinfo
             );
-            console.log("allData",JSON.stringify(allData) );
+            // console.log("allData",JSON.stringify(allData) );
             if(allData.state){
               // 数据整理成功
               const data = allData.data
@@ -411,12 +411,12 @@ function Provider({children}) {
             }else{
               // 数据整理失败
               let errObj = state.promptFontErr
-              let name = state.testDataUploadProject.projectname + '-' + allData.data.bridgename
+              let name = state.testDataUploadProject.projectname + '-' + allData.data.bridgename?allData.data.bridgename:''
               if(errObj[name]){
-                errObj[name]['collateDataErr'] = '数据整理错误'
+                errObj[name]['collateDataErr'] = '数据整理错误，错误原因：' + allData.err
               }else{
                 errObj[name] = {
-                  collateDataErr:'数据整理错误'
+                  collateDataErr:'数据整理错误，错误原因：' + allData.err
                 }
               }
               dispatch({
