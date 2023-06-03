@@ -47,6 +47,11 @@ export default function Base({navigation}) {
   // 全局属性 -- 养护区列表、路线列表、桥梁类型参数、桥幅属性、功能类型
   const {areaList, routeList, bridgetype, bridgeside, bridgefunc} = globalState;
 
+  // 路段列表
+  const [areaList2,setAreaList2] = React.useState([])
+  // 路线列表
+  const [routeList2,setRouteList] = React.useState([])
+
   // 页面聚焦时，设置桥梁全局属性
   useFocusEffect(
     React.useCallback(() => {
@@ -65,10 +70,30 @@ export default function Base({navigation}) {
         type: 'footBarType',
         payload: 'root',
       });
+      // 设置路段列表
+      let _areaList = []
+      areaList.forEach(item=>{
+        _areaList.push({
+          ...item,
+          label:item.name,
+          name:'areacode'
+        })
+      })
+      setAreaList2(_areaList)
+      // 设置路线列表
+      let _routeList = []
+      routeList.forEach(item=>{
+        _routeList.push({
+          ...item,
+          label:item.name,
+          name:'routecode'
+        })
+      })
+      setRouteList(_routeList)
     }, [dispatch]),
   );
 
-  const handleChange = ({name, value}) => {
+  const handleChange = ({name,value}) => {
     // 当表单值变化时，修改 桥梁全局参数 中的 表单值
     if (name === 'bridgetype') {
       dispatch({
@@ -143,18 +168,18 @@ export default function Base({navigation}) {
             <Select
               name="areacode"
               label="所属路段:"
-              labelName="name"
+              labelName="label"
               valueName="code"
-              values={areaList}
+              values={areaList2}
               value={values.areacode}
               onChange={handleChange}
             />
             <Select
               name="routecode"
               label="所属路线:"
-              labelName="name"
+              labelName="label"
               valueName="code"
-              values={routeList}
+              values={routeList2}
               value={values.routecode}
               onChange={handleChange}
             />
