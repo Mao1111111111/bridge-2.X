@@ -279,7 +279,7 @@ const Provider = ({bridge, project, children}) => {
           dataid: item.memberid,
           jsondata: JSON.stringify(item.jsondata || {}),
           memberstatus: item.memberstatus,
-          datatype: item.datatype,
+          datatype: item.datatype?item.datatype:'',
           version: item.version,
           dataGroupId: item.dataGroupId,
           userid: userInfo.userid,

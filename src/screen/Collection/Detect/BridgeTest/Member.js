@@ -23,6 +23,7 @@ import Media from './Media';
 import {useFocusEffect} from '@react-navigation/native';
 import * as editLog from '../../../../database/edit_log';
 import Button from '../../../../components/Button';
+import * as partsCheckstatusData from '../../../../database/parts_checkstatus_data';
 
 const Item = ({title, color, checked, onPress}) => {
   const {
@@ -244,8 +245,6 @@ export default function Member({route, navigation,item}) {
   );
 
   React.useEffect(() => {
-    // console.log('projectprojectproject',project);
-    // console.log('projectprojectproject',bridge);
     if (!partsList || !data || !basememberinfo) {
       return;
     }
@@ -283,7 +282,6 @@ export default function Member({route, navigation,item}) {
     setNowGroup(_list ? _list[0].stepno : null);
     setList(_list);
     setParts(_parts);
-    // console.log('list', _list);
   }, [partsList, data, basememberinfo]);
 
   // 顶部导航
@@ -353,14 +351,23 @@ export default function Member({route, navigation,item}) {
 
   // 页面跳转
   const handleEditPage = path => {
-    // let list = parts.filter(item => checkedList.has(item.id))
-    // console.log('P1501 checkedList',list[0].membername);
     if (!checkedList.size) {
       return;
     }
+    // 查询是否录入过数据
+    let list = parts.filter(item => checkedList.has(item.id))
+    list.forEach(async item=>{
+      await partsCheckstatusData.getByDataid(item.memberid).then(res=>{
+        if(res.length>0){
+          item['version'] = res[0].version
+        }else{
+          item['version'] = uuid.v4()
+        }
+      })
+    })
     navigation.navigate(path, {
       title: data.title,
-      list: parts.filter(item => checkedList.has(item.id)),
+      list: list,
       dataGroupId: checkedList.size > 1 ? uuid.v4() : '',
       routeParams: data,
     });
@@ -400,7 +407,7 @@ export default function Member({route, navigation,item}) {
             : basememberinfo.find(item => item.membertype === nowGroup)
                 ?.membername
           : nowEdit.membername;
-      console.log('nowEdit',dataid);
+
       return (
         <Media
           navigation={navigation}
@@ -488,7 +495,6 @@ export default function Member({route, navigation,item}) {
                   data={list}
                   // 组改变时，即点击左侧列表时
                   onGroupChange={item => {
-                    console.log("item",item);
                     // 如果跨编号存在
                     if (item.stepno) {
                       console.info('???');

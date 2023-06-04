@@ -16,14 +16,17 @@ import * as editLog from '../../../../database/edit_log';
 import dayjs from 'dayjs';
 
 export default function GoodEdit({route, navigation}) {
+  // 主题
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
 
+  // 桥幅属性、用户信息
   const {
     state: {bridgeside, userInfo},
   } = React.useContext(GlobalContext);
 
+  // 项目信息、桥梁信息
   const {
     state: {project, bridge},
     dispatch,
@@ -31,7 +34,7 @@ export default function GoodEdit({route, navigation}) {
 
   const [pageType, setPageType] = React.useState('数据');
 
-  const [data, setData] = React.useState();
+  const [data, setData] = React.useState('');
 
   const [version, setVersion] = React.useState('');
 
@@ -39,8 +42,14 @@ export default function GoodEdit({route, navigation}) {
 
   const {title, list} = route.params;
 
+  // 是否编辑备注
+  const [editRemarks,setEditRemarks] = React.useState(false)
+
+
+  // 设置版本号
   useFocusEffect(React.useCallback(() => setVersion(uuid.v4()), []));
 
+  // 进入标记良好界面就将编辑记录存入数据库
   useFocusEffect(
     React.useCallback(() => {
       list.forEach(item =>
@@ -56,48 +65,49 @@ export default function GoodEdit({route, navigation}) {
     }, [list, project, bridge, userInfo]),
   );
 
+  // 初始化数据 -- 有问题
   useFocusEffect(
     React.useCallback(() => {
-      if (version && list.length === 1) {
-        partsCheckstatusData
-          .get({
-            ...list[0],
-            dataid: list[0].memberid,
-            memberstatus: '100',
-            version,
-          })
-          .then(res => {
-            if (res) {
-              const {remark} = JSON.parse(res.jsondata);
-              setData({remark});
-              remarkRef.current.setValue(remark);
-            }
-          });
-      }
+      // 获取备注信息
+      partsCheckstatusData
+      .getByDataid(list[0].memberid)
+      .then(res => {
+        if (res.length>0) {
+          const {remark} = JSON.parse(res[0].jsondata);
+          setData(remark?{remark}:{});
+          remarkRef.current.setValue(remark);
+        }else{
+          setData({});
+          remarkRef.current.setValue('');
+        }
+      });
     }, [list, version]),
   );
 
+  // 退出时保存数据
   useFocusEffect(
     React.useCallback(() => {
       if (!version) {
         return;
       }
-      const handleSave = () => {
-        if (!list) {
-          return;
-        }
-        const _list = [...list];
-        _list.forEach(item => {
-          item.memberstatus = '100';
-          item.jsondata = data;
-          item.version = version;
-        });
-        dispatch({type: 'cachePartsList', payload: _list});
+      return () => {
+        handleSave()
       };
-      handleSave();
-      return handleSave;
-    }, [list, dispatch, data, version]),
+    }, [dispatch,data,list, version,editRemarks]),
   );
+  const handleSave = () => {
+    if(editRemarks||data!==''){
+      if (!list) {
+        return;
+      }
+      const _list = [...list];
+      _list.forEach(item => {
+        item.memberstatus = '100';
+        item.jsondata = data;
+      });
+      dispatch({type: 'cachePartsList', payload: _list});
+    }
+  };
 
   const getHeaderItems = () => {
     let paramname = '';
@@ -137,7 +147,6 @@ export default function GoodEdit({route, navigation}) {
 
   // 回退
   const goBack = () => {
-    console.log('点击了goBack');
     try {
       navigation.goBack()
     } catch (e) {
@@ -147,6 +156,7 @@ export default function GoodEdit({route, navigation}) {
 
   return (
     <Box headerItems={getHeaderItems()} pid="P1603" navigation={navigation} route={route} projectList={project} project={project.projectname} bridge={bridge.bridgename}>
+      {/* 长度等于1时，顶部年份导航 */}
       {list.length === 1 ? (
         <HeaderTabs
           onChangeTab={setPageType}
@@ -156,6 +166,7 @@ export default function GoodEdit({route, navigation}) {
         <View style={tailwind.mT3} />
       )}
       <View style={[pageType === '数据' ? tailwind.hidden : tailwind.flex1]}>
+        {/* 每天数据，默认存入第一个构件 */}
         <Media
           navigation={navigation}
           type="goodParts"
@@ -172,15 +183,17 @@ export default function GoodEdit({route, navigation}) {
           <View style={[theme.primaryBgStyle, styles.card, tailwind.flex1, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               <View style={[styles.flex2]}>
+                {/* 描述 */}
                 <Textarea
                   label="描述"
                   name="remark"
                   ref={remarkRef}
-                  onChange={({name, value}) => setData({[name]: value})}
+                  onChange={({name, value}) => {setData({[name]: value});setEditRemarks(true)}}
                   labelStyle={[styles.title, theme.primaryTextStyle,{color:'#2b427d'}]}
                   style={{height:100,color:'#2b427d'}}
                 />
               </View>
+              {/* 选择的构建大于一个时，右侧构建列表 */}
               {list.length > 1 ? (
                 <>
                   <View style={[tailwind.mX4]} />

@@ -139,6 +139,13 @@ export const get = async data => {
   return getResult(await db().executeSql(sql, param), 'object');
 };
 
+// 通过 构件的 memberid查询
+export const getByDataid = async dataid => {
+  const sql = 'select * from parts_checkstatus_data where dataid = ?';
+  const param = [dataid];
+  return getResult(await db().executeSql(sql, param), 'array');
+};
+
 export const getByVersion = async version => {
   const sql = 'select * from parts_checkstatus_data where version = ?';
   const param = [version];
