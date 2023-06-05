@@ -9,7 +9,8 @@ import * as partsPlanGenesisData from '../../database/parts_plan_genesis_data';
 import {score, numeric} from '../../utils/score';
 import {groupMap, listToGroup} from '../../utils/common';
 import dayjs from 'dayjs';
-import { getUniqueId } from 'react-native-device-info';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DeviceInfo from 'react-native-device-info';
 
 const getMediaMap = (list, type) => {
   //list是病害下的一组图片
@@ -417,7 +418,12 @@ export const getData =async (
     //****************** 版本号和设备id ******************
     let deviceId = ''
     try{
-      deviceId = (getUniqueId()).toUpperCase()
+      // 获取设备id
+      deviceId = await AsyncStorage.getItem('deviceId'); 
+      if(!deviceId){
+        await getDeviceId()
+        deviceId = await AsyncStorage.getItem('deviceId'); 
+      }
     }catch(e){
       console.log('deviceId',e);
       return errorDeal(id,e,'获取设备id失败')
@@ -603,7 +609,6 @@ export const getData =async (
           item['diseaseData']=[]
         }else if(item.memberstatus=='100'){
           item['goodData']=[]
-          item['media']=[]
         }
       })
     }catch(e){
@@ -774,24 +779,13 @@ export const getData =async (
           goods.parentdataid = ''
           goods.membername = e.membername;
           goods.membertype = e.membertype;
+          goods.media = []
           goodsData.push(goods);
         }
       });
     }catch(e){
       console.log('处理好构件数据失败',e);
       return errorDeal(id,e,'处理好构件数据失败')
-    }
-    //将 好构件 的 媒体数据 存入构件
-    try{
-      goodMemberMedia.forEach(item=>{
-        let index = memberData.findIndex(i=> i.memberid==item.dataid)
-        if(index!==-1){
-          memberData[index].media.push(item)
-        }
-      })
-    }catch(e){
-      console.log('好构件的媒体数据存入构件失败',e);
-      return errorDeal(id,e,'好构件的媒体数据存入构件失败')
     }
     //将 好构件数据 存入 好构件
     try{
@@ -804,6 +798,18 @@ export const getData =async (
     }catch(e){
       console.log('好构件数据 存入 好构件',e);
       return errorDeal(id,e,'好构件数据存入好构件失败')
+    }
+    //将 好构件 的 媒体数据 存入好构件数据
+    try{
+      goodMemberMedia.forEach(item=>{
+        let index = memberData.findIndex(i=> i.memberid==item.dataid)
+        if(index!==-1){
+          memberData[index].goodData[0].media.push(item)
+        }
+      })
+    }catch(e){
+      console.log('好构件的媒体数据存入构件失败',e);
+      return errorDeal(id,e,'好构件的媒体数据存入构件失败')
     }
     //****************** 检测数据--部件数据 ******************
     //部件数据
@@ -888,6 +894,13 @@ const errorDeal = async (id,_err,errDescribe) => {
     }
     return data
   }
+}
+
+// 获取设备id
+const getDeviceId = async () => {
+  await DeviceInfo.getUniqueId().then(async res=>{
+    await AsyncStorage.setItem('deviceId', res.toUpperCase());
+  })
 }
 //获取
 /* const fun = key => {
