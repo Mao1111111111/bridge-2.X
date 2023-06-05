@@ -213,8 +213,11 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
     }
     try {
       // 进入页面时执行两次向右切换图片，使其达到默认选中第一张图片的目的
-      handleNext()
-      handleNext()
+      
+      setTimeout(() => {
+        handleNext2()
+      }, 1500);
+      // handleNext()
     } catch (error) {
       console.log('Media3',error);
     }
@@ -473,6 +476,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
     }
     const _list = [...list];
     const inx = _list.findIndex(({mediaid}) => mediaid === nowEdit) - 1;
+    console.log('handlePrev inx',inx);
     if (inx <= 0) {
       return;
     }
@@ -494,6 +498,23 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
     }
     listRef.current.scrollToIndex({index: inx});
     setNowEdit(_list[inx].mediaid);
+  };
+
+  const handleNext2 = () => {
+    try {
+      console.log('handleNext');
+      const _list = [...list];
+      const inx = 1;
+      console.log('handleNext inx',inx);
+      if (inx >= _list.length) {
+        return;
+      }
+      // listRef.current.scrollToIndex({index: inx});
+      setNowEdit(_list[inx].mediaid);
+    } catch (error) {
+      console.log('Media handleNext2',error);
+    }
+    
   };
 
   const getEditData = () => {
