@@ -68,6 +68,7 @@ export default function PlanEdit({navigation, route}) {
       if (res.data && res.data.length) {
         setMembercheck(res.data[0]);
       }
+      // console.log('初始化的membercheck',membercheck);
     });
   }, []);
 
@@ -85,6 +86,7 @@ export default function PlanEdit({navigation, route}) {
       }
       setTableData(listToPage(res, 10));
     });
+    
   }, [list, bridgereportid]);
 
   // 初始化 图片、描述、养护计划
@@ -177,6 +179,7 @@ export default function PlanEdit({navigation, route}) {
       }
     }
     updateUploadState()
+    // console.log('tabledata~~',tableData);
   }, [nowEdit, fileList, list, bridgereportid, userInfo]);
 
   // 顶部导航
@@ -218,19 +221,31 @@ export default function PlanEdit({navigation, route}) {
 
   // 获取类别名
   const getTypeName = item => {
-    const jsondata = JSON.parse(item.jsondata);
-    if (jsondata?.areatype) {
-      const membertype = list.find(
-        ({memberid}) => memberid === item.dataid,
-      )?.membertype;
-      const components = membercheck.list.find(
-        it => membertype === it.membertype,
-      ).list;
-      return components.find(
-        ({checktypeid}) => checktypeid === jsondata.checktypeid,
-      )?.checkinfoshort;
+     try {
+      // console.info(getBaseData().桥梁各部件病害信息);
+      // 获取病害数据
+      const jsondata = JSON.parse(item.jsondata);
+      // 如果 病害数据中 部件类型标号 存在
+      // console.log('getTypeName list',list);
+      // console.log('养护计划 getTypeName jsondata',jsondata);
+      // console.log('养护计划 getTypeName jsondata.areatype',jsondata.areatype);
+      if (jsondata?.areatype || jsondata.areatype !== undefined || jsondata.areatype !== '') {
+        const membertype = list.find(
+          ({memberid}) => memberid === item.dataid,
+        )?.membertype;
+        // console.log('membercheck',membercheck);
+        const components = membercheck.list.find(
+          it => membertype === it.membertype,
+        ).list;
+        return components.find(
+          ({checktypeid}) => checktypeid === jsondata.checktypeid,
+        )?.checkinfoshort;
+      }
+      return '';
+    } catch (err) {
+      console.log('GenesisEdit getTypeName err',err);
     }
-    return '';
+    
   };
 
   // 养护计划选择时，更新养护计划

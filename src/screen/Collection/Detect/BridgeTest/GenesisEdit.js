@@ -238,10 +238,14 @@ export default function GenesisEdit({navigation, route}) {
       // 获取病害数据
       const jsondata = JSON.parse(item.jsondata);
       // 如果 病害数据中 部件类型标号 存在
-      if (jsondata?.areatype) {
+      // console.log('getTypeName list',list);
+      console.log('病害成因 getTypeName jsondata',jsondata);
+      console.log('病害成因 getTypeName jsondata.areatype',jsondata.areatype);
+      if (jsondata?.areatype || jsondata.areatype !== undefined || jsondata.areatype !== '') {
         const membertype = list.find(
           ({memberid}) => memberid === item.dataid,
         )?.membertype;
+        console.log('membercheck',membercheck);
         const components = membercheck.list.find(
           it => membertype === it.membertype,
         ).list;
