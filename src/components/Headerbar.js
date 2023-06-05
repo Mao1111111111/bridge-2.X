@@ -51,7 +51,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
 
 
   React.useEffect(()=> {
-    console.log('pid6---',project,projectList);
+    // console.log('pid6---',project,projectList);
     // console.log('items.name',items[0].name);
     getProStorage()
     getBriStorage()

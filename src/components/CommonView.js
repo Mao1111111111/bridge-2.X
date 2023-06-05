@@ -9,7 +9,7 @@ import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 // 盒子
 export function Box({navigation,route,pid, children, headerItems,project,projectList,bridge,labelname,membername}) {
   useEffect(() => {
-    console.log('box route',projectList);
+    // console.log('box route',projectList);
     // console.log('Box headerItems',headerItems,labelname);
   },[])
   return (
@@ -220,7 +220,7 @@ export default function CommonView({
   const [cloneDisImg, setCloneDisImg] = useState() // 克隆 - 禁用
 
   useEffect(() => {
-    console.log('2233445',projectList);
+    // console.log('2233445',projectList);
     // 设置按钮的初始状态
     // console.log('operations', operations);
     let doneImg = require('../iconImg/done.png')
