@@ -140,7 +140,7 @@ export default function Project({navigation}) {
       .then(res => {
         // 设置数据列表
         setList(res.list);
-        console.log('项目列表的数据',list);
+        // console.log('项目列表的数据',list);
         // 设置共几页
         setPageTotal(res.page.pageTotal);
         // 设置共几条

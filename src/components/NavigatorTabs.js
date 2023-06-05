@@ -106,10 +106,10 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
   }, [isTabBarShow, tabHeight]);
 
   const handlePress = (route, index, value) => {
-    console.log('value555',route.name);
+    // console.log('value555',route.name);
     let menuTitle = value
     setMenuTitle(menuTitle)
-    console.log('menuTitle', menuTitle);
+    // console.log('menuTitle', menuTitle);
     const event = navigation.emit({
       type: 'tabPress',
       target: route.key,
@@ -122,10 +122,10 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
   };
 
   const handlePress1 = (route, index, value) => {
-    console.log('value666',route.name);
+    // console.log('value666',route.name);
     let menuTitle = value
     setMenuTitle(menuTitle)
-    console.log('menuTitle', menuTitle);
+    // console.log('menuTitle', menuTitle);
     const event = navigation.emit({
       type: 'tabPress',
       target: route.key,

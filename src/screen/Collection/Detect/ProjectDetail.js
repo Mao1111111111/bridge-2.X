@@ -670,7 +670,7 @@ export default function ProjectDetail({route, navigation}) {
         setList(res.list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
-        console.log('bridge res', res.list);
+        // console.log('bridge res', res.list);
         // 桥梁名称 bridgename 桥梁桩号 bridgestation 桥梁id bridgeid
         // console.log('bridge res', res.list[0].bridgename); 
         res.list.forEach((item)=> {
@@ -684,7 +684,7 @@ export default function ProjectDetail({route, navigation}) {
         })
         setBridgeList(bridgeList)
         setBriStorage(bridgeList)
-        console.log('bridgeList',bridgeList);
+        // console.log('bridgeList',bridgeList);
       })
       .finally(() => setLoading(false));
   }, [search, page, project]);
