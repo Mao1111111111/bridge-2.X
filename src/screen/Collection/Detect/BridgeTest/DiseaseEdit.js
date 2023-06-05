@@ -205,6 +205,7 @@ export default function DiseaseEdit({route, navigation}) {
 
   React.useEffect(() => {
     saveData.current = {...diseaseData};
+    console.log('进入DiseaseEdit页面~~~~~~~~~1~');
   }, [diseaseData]);
 
   useFocusEffect(

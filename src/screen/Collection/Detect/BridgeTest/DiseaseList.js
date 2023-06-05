@@ -353,7 +353,7 @@ export default function DiseaseList({route, navigation}) {
           setTableData(listToPage(_list, 10));
 
           console.log('DiseaseList route', route);
-          console.log('res[0].jsondata', route.params.title);
+          console.log('res[0].jsondata', route.params.list[0].membertype);
           // console.log('list',list);
         });
     }, [list, isLoading, dataGroupId]),
@@ -401,6 +401,7 @@ export default function DiseaseList({route, navigation}) {
   };
 
   const handleAdd = data => {
+    console.log('222');
     if(list[0].membertype=='b100006'){
       let a = groupList.find(({membertype}) => membertype === 'b100001').list
       setGroup(a)
@@ -453,8 +454,10 @@ export default function DiseaseList({route, navigation}) {
   }; */
 
   const handleModelCallBack = data => {
-    // console.log("data6661",data.secondDisTypeData.paneltype);
-    // console.log("data6662",waitingData);
+    console.log("data6661",data.secondDisTypeData.paneltype);
+    console.log("data6662",waitingData,routeParams);
+    console.log('route.params.list[0].membertype1',route.params.list[0].membertype);
+    const kuaMembertype = route.params.list[0].membertype
     const url =
       data.secondDisTypeData.paneltype === 'p1001'
         ? 'Collection/Detect/BridgeTest/Member/DiseaseEdit'
@@ -465,11 +468,13 @@ export default function DiseaseList({route, navigation}) {
       thridData:data.thridDisTypeData,
       data: {
         ...waitingData,
-        version:uuid.v4()
+        version:uuid.v4(),
+        kuaMembertype
       },
       memberList: list,
       dataGroupId,
       routeParams,
+      
     });
     setWaitingData({});
   };
