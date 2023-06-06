@@ -105,7 +105,7 @@ export default function NotSync({list, onUpload}) {
           />
         </Table.Box>
         <Table.Pagination
-          // pageNo={tablePageNo}
+          pageNo={tablePageNo}
           onPageChange={setTablePageNo}
           numberOfPages={tableData.length}
         />

@@ -636,7 +636,7 @@ export default function DiseaseList({route, navigation}) {
                   />
                 </View>
                 <Table.Pagination
-                  // pageNo={tablePageNo}
+                  pageNo={tablePageNo}
                   onPageChange={setTablePageNo}
                   numberOfPages={tableData.length}
                 />

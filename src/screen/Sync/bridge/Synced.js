@@ -104,7 +104,7 @@ export default function Synced({list, onUpload}) {
           />
         </Table.Box>
         <Table.Pagination
-          // pageNo={tablePageNo} //页码数字的背景色
+          pageNo={tablePageNo} //页码数字的背景色
           onPageChange={setTablePageNo}
           numberOfPages={tableData.length}
         />

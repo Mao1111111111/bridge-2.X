@@ -102,7 +102,7 @@ export default function Synced({list, onUpload}) {
           />
         </Table.Box>
         <Table.Pagination
-          // pageNo={tablePageNo}
+          pageNo={tablePageNo}
           onPageChange={setTablePageNo}
           numberOfPages={tableData.length}
         />

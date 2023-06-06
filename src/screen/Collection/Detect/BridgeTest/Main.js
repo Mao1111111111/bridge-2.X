@@ -442,7 +442,7 @@ export default function Main({navigation, route}) {
                           style={[tailwind.flexRow, tailwind.justifyBetween]}>
                           <Button onPress={handleEdit} style={[{backgroundColor:'#2b427d'}]}>编辑部件</Button>
                           <Table.Pagination
-                            // pageNo={table1PageNo}
+                            pageNo={table1PageNo}
                             onPageChange={setTable1PageNo}
                             numberOfPages={table1Data.length}
                           />
@@ -502,7 +502,7 @@ export default function Main({navigation, route}) {
                           style={[tailwind.flexRow, tailwind.justifyBetween]}>
                           <Button onPress={handleEdit} style={[{backgroundColor:'#2b427d'}]}>编辑部件</Button>
                           <Table.Pagination
-                            // pageNo={table2PageNo} // 页码数字的背景色
+                            pageNo={table2PageNo} // 页码数字的背景色
                             onPageChange={setTable2PageNo}
                             numberOfPages={table2Data.length}
                           />

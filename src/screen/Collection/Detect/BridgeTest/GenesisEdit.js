@@ -346,7 +346,7 @@ export default function GenesisEdit({navigation, route}) {
                   />
                 </View>
                 <Table.Pagination
-                  // pageNo={tablePageNo}
+                  pageNo={tablePageNo}
                   onPageChange={setTablePageNo}
                   numberOfPages={tableData.length}
                 />
