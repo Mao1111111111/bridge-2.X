@@ -100,7 +100,7 @@ export function Recording({onChange}) {
         return;
       });
     } catch (err) {
-      console.info(err);
+      console.info('err',err);
       setIsRecording(false);
     }
   };
@@ -117,7 +117,7 @@ export function Recording({onChange}) {
           duration: recordTime,
         });
     } catch (err) {
-      console.info(err);
+      console.info('err',err);
     } finally {
       setIsRecording(false);
     }
@@ -226,7 +226,7 @@ export function Player({audio, style}) {
 
   React.useEffect(() => {
     setDuration(audio?.duration || 0);
-    console.info(audio);
+    console.info("audio",audio);
   }, [audio]);
 
   useFocusEffect(

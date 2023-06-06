@@ -45,25 +45,22 @@ export default function GoodEdit({route, navigation}) {
   // 是否编辑备注
   const [editRemarks,setEditRemarks] = React.useState(false)
 
-
   // 设置版本号
   useFocusEffect(React.useCallback(() => setVersion(uuid.v4()), []));
 
   // 进入标记良好界面就将编辑记录存入数据库
-  useFocusEffect(
-    React.useCallback(() => {
-      list.forEach(item =>
-        editLog.save({
-          projectid: project.projectid,
-          bridgeid: bridge.bridgeid,
-          title: item.membername,
-          page_key: '标记为良好',
-          userid: userInfo.userid,
-          binddate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-        }),
-      );
-    }, [list, project, bridge, userInfo]),
-  );
+  React.useEffect(()=>{
+    list.forEach(item =>
+      editLog.save({
+        projectid: project.projectid,
+        bridgeid: bridge.bridgeid,
+        title: item.membername,
+        page_key: '标记为良好',
+        userid: userInfo.userid,
+        binddate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      }),
+    );
+  },[])
 
   // 初始化数据 -- 有问题
   useFocusEffect(
@@ -90,12 +87,12 @@ export default function GoodEdit({route, navigation}) {
       if (!version) {
         return;
       }
-      return () => {
-        handleSave()
+      return async () => {
+        await handleSave()
       };
     }, [dispatch,data,list, version,editRemarks]),
   );
-  const handleSave = () => {
+  const handleSave =async () => {
     if(editRemarks||data!==''){
       if (!list) {
         return;

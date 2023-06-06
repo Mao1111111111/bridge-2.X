@@ -31,11 +31,6 @@ export default function Other({navigation}) {
   const {bridgepadno, bridgeabutment, bridgewall, bridgepier, bridgelightsys} =
     globalState;
 
-  // 桥墩形式 变化时，打印桥墩形式
-  React.useEffect(() => {
-    console.info(bridgepier);
-  }, [bridgepier]);
-
   // 页面聚焦时
   useFocusEffect(
     React.useCallback(() => {

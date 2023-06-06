@@ -762,7 +762,7 @@ export default function ProjectDetail({route, navigation}) {
       });
       setNowChecked(null);
     } catch (err) {
-      console.info(err);
+      console.info("err");
     } finally {
       setLoading(false);
     }

@@ -72,7 +72,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
         setProList(proList)
         // console.log('11111');
     } catch (error) {
-      console.log(error);
+      console.log("error",error);
     }
   }
 

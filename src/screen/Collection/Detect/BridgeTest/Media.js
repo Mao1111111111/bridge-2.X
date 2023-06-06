@@ -28,7 +28,6 @@ import fs from '../../../../utils/fs';
 import MediaBar from './MediaBar';
 import Modal from "react-native-modal"
 import { CascadePicker } from "react-native-slidepicker";
-import { log } from 'console';
 
 const MediaComponent = ({file}) => {
   const {dispatch} = React.useContext(Context);
@@ -183,7 +182,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
     if (!type || !fileList || !categoryList) {
       return;
     }
-    console.info(type);
+    // console.info(type);
     const set = new Set(categoryList.map(({value}) => value));
     const _list = [{mediatype: 'plus', mediaid: '-1'}];
     switch (type) {
@@ -325,7 +324,6 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
 
   // 图片标题
   const getFileName = () => {
-    console.log('media type', type,pileNum,defaultFileName);
     let resetName = ''
     // 构件 DiseaseEdit2 传入
     if (defaultFileName && type == 'diseaseParts') {
@@ -486,13 +484,11 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
 
   // 右切换
   const handleNext = () => {
-    console.log('handleNext');
     if (list.length === 1) {
       return;
     }
     const _list = [...list];
     const inx = _list.findIndex(({mediaid}) => mediaid === nowEdit) + 1;
-    console.log('handleNext inx',inx);
     if (inx >= _list.length) {
       return;
     }
@@ -502,10 +498,8 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
 
   const handleNext2 = () => {
     try {
-      console.log('handleNext');
       const _list = [...list];
       const inx = 1;
-      console.log('handleNext inx',inx);
       if (inx >= _list.length) {
         return;
       }
@@ -556,7 +550,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
       if (data) {
         if (data[0].name == '主梁') {
           let labelText = data[2].name + '梁状况'
-          console.log(labelText);
+          // console.log(labelText);
           setPickerVisible(false)
           setLabelText(labelText)
         }

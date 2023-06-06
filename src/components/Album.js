@@ -26,7 +26,7 @@ export default function Album({onChange, type, disabled}) {
           fileSize: file.fileSize,
         });
     } catch (err) {
-      console.info(err);
+      console.info('err',err);
     }
   };
 

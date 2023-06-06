@@ -146,7 +146,7 @@ const Provider = props => {
         // 获取完用户信息后，初始化结束
         dispatch({type: 'isInit', payload: true});
       })
-      .catch(console.log);
+      .catch((e)=>console.log("eeeeee"));
   }, []);
 
   // useEffect1

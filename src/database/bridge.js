@@ -49,9 +49,6 @@ export const remove = async id => {
 
 export const checkNameAndCode = async data => {
   let res = null;
-  console.info(data.bridgestation);
-  console.info(data.bridgename);
-  console.info(data.bridgeside);
   if (data.id) {
     let sql =
       'select * from bridge where bridgestation = ? and bridgename = ? and bridgeside =? and id != ?';
