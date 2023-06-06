@@ -104,7 +104,8 @@ const RowMediaComponent = ({item, onPress, isActive}) => {
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
-
+  // console.log("item",item);
+  // console.log("isActive",isActive);
   const getActiveStyle = () => {
     return {
       borderColor: isActive ? theme.primaryColor : 'transparent',
@@ -207,15 +208,15 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
     }
     setList(_list);
     if (isInit) {
-      setNowEdit(fileList[0]?.mediaid || '');
+      setNowEdit(_list[1]?.mediaid || '');
       setIsInit(false);
     }
     try {
       // 进入页面时执行两次向右切换图片，使其达到默认选中第一张图片的目的
       
-      setTimeout(() => {
-        handleNext2()
-      }, 1500);
+      // setTimeout(() => {
+      //   handleNext2()
+      // }, 1500);
       // handleNext()
     } catch (error) {
       console.log('Media3',error);
@@ -353,17 +354,6 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
   const handleAdd = () => {
     dispatch({type: 'isLoading', payload: true});
     const mediaid = uuid.v4();
-    console.info({
-      isAdd: true,
-      inx: list.length,
-      filename: getFileName(),
-      category: categoryList[0].value,
-      remark: '',
-      is_source: 1,
-      type,
-      dataid,
-      mediaid,
-    });
     dispatch({
       type: 'cacheFileData',
       payload: {
@@ -858,7 +848,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
                 <RowMediaComponent
                   key={index}
                   item={item}
-                  isActive={item.mediaid === nowEdit}
+                  isActive={item.mediaid == nowEdit}
                   onPress={() =>
                     item.mediatype === 'plus' ? handleAdd() : handleEdit(item)
                   }
