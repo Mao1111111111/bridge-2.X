@@ -137,3 +137,8 @@ export const getByBridge = async ({param, page}) => {
     page,
   );
 };
+
+export const getByProjectid = async projectid => {
+  const sql = 'select * from project where projectid = ?';
+  return getResult(await db().executeSql(sql, [projectid]), 'object');
+};

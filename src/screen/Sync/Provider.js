@@ -1,6 +1,7 @@
 import React from 'react';
 import * as uploadData from '../../utils/upload-data';
 import * as bridge from '../../database/bridge';
+import * as project from '../../database/project';
 import * as bridgeProjectBind from '../../database/bridge_project_bind';
 import * as bridgeMember from '../../database/bridge_member';
 import * as uploadStateRecord from '../../database/upload_state_record';
@@ -46,7 +47,7 @@ function Provider({children}) {
     testDataFefreshFlg: null,
     testDataUploadingIds: [],
     testDataUploadEndIds: [],
-    testDataUploadProject: null,
+    //testDataUploadProject: null,
     nowUploadingTestDataInx: -1,
 
     planMeta: [],
@@ -135,7 +136,6 @@ function Provider({children}) {
   React.useEffect(() => {
     if (
       !userInfo ||
-      !state.testDataUploadProject ||
       !state.planMeta ||
       !state.membercheckdata ||
       !state.genesisMate
@@ -162,10 +162,6 @@ function Provider({children}) {
         dispatch({
           type: 'testDataUploadEndIds',
           payload: [],
-        });
-        dispatch({
-          type: 'testDataUploadProject',
-          payload: null,
         });
         dispatch({
           type: 'testDataFefreshFlg',
@@ -291,7 +287,7 @@ function Provider({children}) {
                 await uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
                 }).catch(err=>{
                   let errObj = state.promptFontErr
-                  let name = state.testDataUploadProject.projectname + '-' + data.bridgename
+                  let name = data.testData.projectname + '-' + data.bridgename
                   if(errObj[name]){
                     errObj[name]['testDataFont'] = err
                   }else{
@@ -308,7 +304,7 @@ function Provider({children}) {
                 })
               }).catch(err=>{
                 let errObj = state.promptFontErr
-                let name = state.testDataUploadProject.projectname + '-' + data.bridgename
+                let name = data.testData.projectname + '-' + data.bridgename
                 if(errObj[name]){
                   errObj[name]['testDataFont'] = err
                 }else{
@@ -359,7 +355,7 @@ function Provider({children}) {
                         console.log("res",res);
                       }).catch(err=>{
                         let errObj = state.promptFontErr
-                        let name = state.testDataUploadProject.projectname + '-' + data.bridgename
+                        let name = data.testData.projectname + '-' + data.bridgename
                         if(errObj[name]['mediaDataFont']){
                           errObj[name]['mediaDataFont'].push(err)
                         }else{
@@ -374,7 +370,7 @@ function Provider({children}) {
                       })
                     }).catch(err=>{
                         let errObj = state.promptFontErr
-                        let name = state.testDataUploadProject.projectname + '-' + data.bridgename
+                        let name = data.testData.projectname + '-' + data.bridgename
                         if(errObj[name]['mediaDataFont']){
                           errObj[name]['mediaDataFont'].push(err)
                         }else{
@@ -400,8 +396,8 @@ function Provider({children}) {
                 await uploadLog.save({
                   dataid: state.testDataUploadingIds[inx],
                   category: '检测数据',
-                  to_projcet_id: state.testDataUploadProject.projectid,
-                  to_projcet_name: state.testDataUploadProject.projectname,
+                  to_projcet_id: data.testData.projectid,
+                  to_projcet_name: data.testData.projectname,
                 });
               }else{
                 await uploadStateRecord.update({
@@ -412,7 +408,8 @@ function Provider({children}) {
             }else{
               // 数据整理失败
               let errObj = state.promptFontErr
-              let name = state.testDataUploadProject.projectname + '-' + allData.data.bridgename?allData.data.bridgename:''
+              let name = allData.data.projectname + '-' + (allData.data.bridgename?allData.data.bridgename:'')
+              console.log("name",name);
               if(errObj[name]){
                 errObj[name]['collateDataErr'] = '数据整理错误，错误原因：' + allData.err
               }else{
@@ -533,7 +530,8 @@ function Provider({children}) {
             let errObj = state.promptFontErr
             const bindData = await bridgeProjectBind.getById(state.testDataUploadingIds[inx]);
             const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
-            let name = state.testDataUploadProject.projectname + '-' + bridgeData.bridgename
+            const projectData = await project.getByProjectid(bindData.projectid)
+            let name = projectData.projectname + '-' + bridgeData.bridgename
             if(errObj[name]){
               errObj[name]['otherErr'] = err
             }else{
@@ -564,7 +562,6 @@ function Provider({children}) {
     }
   }, [
     state.testDataUploadingIds,
-    state.testDataUploadProject,
     state.nowUploadingTestDataInx,
     state.planMeta,
     state.membercheckdata,

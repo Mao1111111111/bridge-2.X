@@ -89,11 +89,11 @@ export default function TestData({navigation}) {
 
   const [list, setList] = React.useState([]);
 
-  const [project, setProject] = React.useState([]);
+  //const [project, setProject] = React.useState([]);
 
   const [waitingData, setWaitingData] = React.useState([]);
 
-  const projectModelRef = React.useRef();
+  //const projectModelRef = React.useRef();
 
   const tabs = [
     {
@@ -155,60 +155,69 @@ export default function TestData({navigation}) {
   // }, [list]);
 
   // 获取项目列表
-  useEffect(() => {
-    const getproject = async (user_id, access_token) => {
-      // 获取组
-      const {
-        list: [groupsData],
-      } = await syncGroups(user_id, access_token);
-      // 获取组项目
-      const datas = (
-        await Promise.all(
-          groupsData.groups
-            .filter(item => item.group.group_id)
-            .map(async item => {
-              const res = await syncGetProject(
-                item.group.group_id,
-                access_token,
-              );
-              if (res.list.length) {
-                return res.list[0].projects;
-              }
-              return [];
-            }),
-        )
-      ).flat();
-      // 获取组用户项目
-      const {
-        list: [{projects}],
-      } = await syncGetProject(user_id, access_token);
-      // 合并组和用户项目并去重
-      const projectMap = {};
-      datas
-        .concat(projects)
-        .forEach(item => (projectMap[item.projectid] = item));
-      setProject(Object.keys(projectMap).map(key => projectMap[key]));
-    };
-    if (userInfo) {
-      getproject(userInfo.userid, userInfo.token.access_token);
-    }
-  }, [userInfo]);
+  // useEffect(() => {
+  //   const getproject = async (user_id, access_token) => {
+  //     // 获取组
+  //     const {
+  //       list: [groupsData],
+  //     } = await syncGroups(user_id, access_token);
+  //     // 获取组项目
+  //     const datas = (
+  //       await Promise.all(
+  //         groupsData.groups
+  //           .filter(item => item.group.group_id)
+  //           .map(async item => {
+  //             const res = await syncGetProject(
+  //               item.group.group_id,
+  //               access_token,
+  //             );
+  //             if (res.list.length) {
+  //               return res.list[0].projects;
+  //             }
+  //             return [];
+  //           }),
+  //       )
+  //     ).flat();
+  //     // 获取组用户项目
+  //     const {
+  //       list: [{projects}],
+  //     } = await syncGetProject(user_id, access_token);
+  //     // 合并组和用户项目并去重
+  //     const projectMap = {};
+  //     datas
+  //       .concat(projects)
+  //       .forEach(item => (projectMap[item.projectid] = item));
+  //     setProject(Object.keys(projectMap).map(key => projectMap[key]));
+  //   };
+  //   if (userInfo) {
+  //     getproject(userInfo.userid, userInfo.token.access_token);
+  //   }
+  // }, [userInfo]);
 
   const handleUpload = e => {
-    setWaitingData(e);
-    projectModelRef.current.open();
-  };
-
-  const handleModelCallBack = e => {
-    dispatch({
-      type: 'testDataUploadProject',
-      payload: e,
-    });
+    // setWaitingData(e);
+    // console.log('e',e);
+    //projectModelRef.current.open();
+    // dispatch({
+    //   type: 'testDataUploadProject',
+    //   payload: e,
+    // });
     dispatch({
       type: 'testDataUploadingIds',
-      payload: Array.from(new Set([...waitingData])),
+      payload: Array.from(new Set([...e])),
     });
   };
+
+  // const handleModelCallBack = e => {
+  //   dispatch({
+  //     type: 'testDataUploadProject',
+  //     payload: e,
+  //   });
+  //   dispatch({
+  //     type: 'testDataUploadingIds',
+  //     payload: Array.from(new Set([...waitingData])),
+  //   });
+  // };
 
   const renderTable = () => {
     switch (active) {
@@ -274,11 +283,11 @@ export default function TestData({navigation}) {
         </View>
         {renderTable()}
       </View>
-      <ProjectModel
+      {/* <ProjectModel
         ref={projectModelRef}
         callBack={handleModelCallBack}
         projectList={project}
-      />
+      /> */}
     </Box>
   );
 }

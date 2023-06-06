@@ -1,4 +1,5 @@
 import * as bridge from '../../database/bridge';
+import * as project from '../../database/project';
 import * as bridgeReport from '../../database/bridge_report';
 import * as bridgeMember from '../../database/bridge_member';
 import * as bridgeProjectBind from '../../database/bridge_project_bind';
@@ -438,7 +439,15 @@ export const getData =async (
       console.log('桥梁项目绑定信息',e);
       return errorDeal(id,e,'获取桥梁项目绑定信息失败')
     }
-    
+    //****************** 项目信息 ******************
+    let projectData = null
+    try{
+      projectData = await project.getByProjectid(bindData.projectid)
+      bindData['projectname'] = projectData.projectname
+    }catch(e){
+      console.log('项目信息',e);
+      return errorDeal(id,e,'获取项目信息失败')
+    }
     //****************** 桥梁信息 ******************
     //----获取 桥梁信息
     let bridgeData = null
@@ -874,11 +883,13 @@ const errorDeal = async (id,_err,errDescribe) => {
   try{
     const bindData = await bridgeProjectBind.getById(id);
     const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
+    const projectData = await project.getByProjectid(bindData.projectid)
     let data = {
       state:false,
       data:{
         ...bridgeData,
-        ...bindData
+        ...bindData,
+        projectname:projectData.projectname
       },
       err:(errDescribe?(errDescribe+','):'') + String(_err.message)
     }
