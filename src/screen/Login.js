@@ -71,24 +71,38 @@ export default function Login() {
     );
     try {
       // 根据凭证获取 access_token
-      const token = await fetchAuthorize(credentials);
+      // const token = await fetchAuthorize(credentials);
+      // console.log("token",token);
       // 当授权失败时，显示登录失败，并取消按钮loading，取消同步
-      if (token.resultCode) {
-        alert('登录失败');
-        setIsLoading(false);
-        setIsSync(false);
-        return;
-      }
+      // if (token.resultCode) {
+      //   alert('登录失败');
+      //   setIsLoading(false);
+      //   setIsSync(false);
+      //   return;
+      // }
       // 当授权成功时，继续执行以下代码
       // 获取用户信息
-      const {resultJson} = await fetchUsersProfile(token.access_token);
+      // const {resultJson} = await fetchUsersProfile(token.access_token);
+      //console.log("resultJson",resultJson);
 
       //============权限============
-      const credentials_1 = new Buffer.from(`${'test'}:${'test'}`).toString(
+      /* const credentials_1 = new Buffer.from(`${'test'}:${'test'}`).toString(
+        'base64',
+      ); */
+      const credentials_1 = new Buffer.from(`${username}:${password}`).toString(
         'base64',
       );
       //---1、获取应用注册初始化令牌
-      const token_1 = await fetchInitAccessToken(credentials_1)
+      let token_1 = null
+      try{
+        token_1 = await fetchInitAccessToken(credentials_1)
+        if(!token_1||!token_1.access_token){
+          return loginErr()
+        }
+      }catch(e){
+        console.log('fetchInitAccessToken',e);
+        return loginErr()
+      }
       //---2、注册应用
       //注册应用的body
       const RegisterAppBody = {
@@ -100,52 +114,91 @@ export default function Login() {
         response_types: ["code"],
         token_endpoint_auth_method: "client_secret_basic"
       }
-      let ApplicationInfo = await fetchRegisterApplication(token_1.access_token,RegisterAppBody)
+      let ApplicationInfo = null
+      try{
+        ApplicationInfo = await fetchRegisterApplication(token_1.access_token,RegisterAppBody)
+        if(!ApplicationInfo||!ApplicationInfo.client_id){
+          return loginErr()
+        }
+      }catch(e){
+        console.log('fetchRegisterApplication',e);
+        return loginErr()
+      }
       //---3、获取访问令牌
       //获取访问令牌的body
-      /* const GetAccessTokenBody = {
+      const GetAccessTokenBody = {
         grant_type:"password",
         password:password,
         username:username,
         scope:"user disarm"
-      } */
-      const GetAccessTokenBody = {
+      }
+      /* const GetAccessTokenBody = {
         grant_type:"password",
         password:'test',
         username:'test',
         scope:"user disarm"
-      }
+      } */
       const arr = []
       for(let key in GetAccessTokenBody){
        arr.push(`${encodeURIComponent(key)}=${encodeURIComponent(GetAccessTokenBody[key])}`)
       }
       //clientInfo
-      const clientInfo = new Buffer.from(`${'6ATSUozZMswx8dmWGFUQiiTwJSf3BLI5zzQ1PPtwka'}:${'77e30374ba9335e045fcb504eb31419cb91a838c89fb29e0'}`).toString('base64',)
-      //const clientInfo = new Buffer.from(`${ApplicationInfo.client_id}:${ApplicationInfo.client_secret}`).toString('base64',)
-      let accessTokenInfo = await fetchoOtainAccessToken(clientInfo,arr.join('&'))
-      console.log("accessTokenInfo",accessTokenInfo);
+      //const clientInfo = new Buffer.from(`${'6ATSUozZMswx8dmWGFUQiiTwJSf3BLI5zzQ1PPtwka'}:${'77e30374ba9335e045fcb504eb31419cb91a838c89fb29e0'}`).toString('base64',)
+      const clientInfo = new Buffer.from(`${ApplicationInfo.client_id}:${ApplicationInfo.client_secret}`).toString('base64',)
+      let accessTokenInfo = null
+      try{
+        accessTokenInfo = await fetchoOtainAccessToken(clientInfo,arr.join('&'))
+        if(!accessTokenInfo||!accessTokenInfo.access_token){
+          return loginErr()
+        }
+      }catch(e){
+        console.log('accessTokenInfo',e);
+        return loginErr()
+      }
       //---4、获取用户信息
-     /*  const userInfo = await fetchObtainUserInfo(accessTokenInfo.access_token)
-      console.log("userInfo",userInfo); */
+      let userInfo = null
+      try{
+        userInfo = await fetchObtainUserInfo(accessTokenInfo.access_token)
+        if(!userInfo||!userInfo.userid){
+          return loginErr()
+        }
+      }catch(e){
+        console.log('fetchObtainUserInfo',e);
+        return loginErr()
+      }
 
       // 登录时间
       const loginDate = dayjs().format('YYYY-MM-DD HH:mm:ss');
       // 整理用户信息
       const userData = {
-        ...resultJson,
+        ...{
+          company:{
+            companyid:userInfo.company.id,
+            companyname:userInfo.company.name
+          },
+          groups:[],
+          nickname:'test11',
+          roles:userInfo.role,
+          userid:userInfo.userid,
+          username:userInfo.username
+        },
         loginDate,
         token:{
-          ...token,
+          ...{
+            access_token:'',
+            refresh_token:''
+          },
           auth_access_token:accessTokenInfo.access_token,
-          /* client_id:ApplicationInfo.client_id,
-          client_secret:ApplicationInfo.client_secret */
-          client_id:'6ATSUozZMswx8dmWGFUQiiTwJSf3BLI5zzQ1PPtwka',
-          client_secret:'77e30374ba9335e045fcb504eb31419cb91a838c89fb29e0'
+          client_id:ApplicationInfo.client_id,
+          client_secret:ApplicationInfo.client_secret
+         /*  client_id:'6ATSUozZMswx8dmWGFUQiiTwJSf3BLI5zzQ1PPtwka',
+          client_secret:'77e30374ba9335e045fcb504eb31419cb91a838c89fb29e0' */
         },
         password,
         islogin: 1,
         pin: password,
       };
+      console.log("userData",userData);
       // 将用户信息存入数据库中
       //如果数据库中有这个用户,那么更新数据;如果没有这个用户,那么插入这个用户信息到数据库
       await user.login(userData);
@@ -163,6 +216,13 @@ export default function Login() {
     }
   };
 
+  // 登录失败
+  const loginErr = () => {
+    alert('登录失败');
+    setIsLoading(false);
+    setIsSync(false);
+    return;
+  }
   // 离线登录
   const handleOfflineLogin = async () => {
     // 按钮loading

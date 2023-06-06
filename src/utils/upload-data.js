@@ -62,6 +62,7 @@ export const syncGroups = (userid, access_token) =>
  * https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/vy7ggt
  * 输入参数：数组//要创建的多条桥梁构件列表对象(https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/vy7ggt?inner=AXJXh)
  */
+// 用了桥梁上传
 export const syncCreateBridgeMemberList = (objects, access_token) =>
   new Promise((resolve, reject) => {
     const url = [host, '/api/v1/sync/createbridgememberlist'];
@@ -93,6 +94,7 @@ export const syncCreateBridgeMemberList = (objects, access_token) =>
  * https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/wu280x
  * 输入参数：要创建的多条桥梁列表对象(https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/wu280x?inner=AXJXh)
  */
+// 用了桥梁上传
 export const syncCreateBridgeList = (objects, access_token) =>
   new Promise((resolve, reject) => {
     const url = [host, '/api/v1/sync/createbridgelist'];
@@ -123,6 +125,7 @@ export const syncCreateBridgeList = (objects, access_token) =>
  * https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/ayep1s
  * 输入参数：项目编码、要创建的多条桥梁检测列表对象(https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/ayep1s?inner=AXJXh)
  */
+// 未用
 export const syncCreateReportList = (project_id, objects, access_token) =>
   new Promise((resolve, reject) => {
     const url = [host, '/api/v1/sync/createreportlist'];
@@ -148,6 +151,7 @@ export const syncCreateReportList = (project_id, objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateReportList("test_project_id", []));
+// 未用
 export const syncCreateReportListToObs = (project_id, objects, access_token) =>
   new Promise((resolve, reject) => {
     console.info('桥梁项目关联数据');
@@ -165,6 +169,7 @@ export const syncCreateReportListToObs = (project_id, objects, access_token) =>
  * https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/aco8zg
  * 输入参数：要创建的多条桥梁检测构件列表对象（https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/aco8zg?inner=AXJXh）
  */
+// 未用
 export const syncCreateReportMemberList = (objects, access_token) =>
   new Promise((resolve, reject) => {
     const url = [host, '/api/v1/sync/createreportmemberlist'];
@@ -190,6 +195,7 @@ export const syncCreateReportMemberList = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateReportMemberList([]));
+// 未用
 export const syncCreateReportMemberListToObs = (objects, access_token) =>
   new Promise((resolve, reject) => {
     console.info('桥梁项目关联构件数据');
@@ -205,6 +211,7 @@ export const syncCreateReportMemberListToObs = (objects, access_token) =>
  * https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/gc9s1z
  * 输入参数：要创建的多条桥梁检测构件检测记录对象(https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/gc9s1z)
  */
+// 未用
 export const syncCreateMemberCheckStatus = (objects, access_token) =>
   new Promise((resolve, reject) => {
     const url = [host, '/api/v1/sync/createmembercheckstatus'];
@@ -231,6 +238,7 @@ export const syncCreateMemberCheckStatus = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateMemberCheckStatus([]));
+// 未用
 export const syncCreateMemberCheckStatusToObs = (objects, access_token) =>
   new Promise((resolve, reject) => {
     console.info('检测记录');
@@ -246,6 +254,7 @@ export const syncCreateMemberCheckStatusToObs = (objects, access_token) =>
  * https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/dv15xf
  * 输入参数：要创建的多条数据记录对象(https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/dv15xf?inner=AXJXh)
  */
+// 未用
 export const syncCreateCheckStatusDataJson = (objects, access_token) =>
   new Promise((resolve, reject) => {
     const url = [host, '/api/v1/sync/createcheckstatusdatajson'];
@@ -271,6 +280,7 @@ export const syncCreateCheckStatusDataJson = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateMemberCheckStatus([]));
+// 未用
 export const syncCreateCheckStatusDataJsonToObs = (objects, access_token) =>
   new Promise((resolve, reject) => {
     console.info('检测记录扩展数据');
@@ -286,6 +296,7 @@ export const syncCreateCheckStatusDataJsonToObs = (objects, access_token) =>
  * https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/mg8vfp
  * 输入参数：要创建的多条病害程度值对象(https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/mg8vfp?inner=AXJXh)
  */
+// 未用
 export const syncCreateCheckStatusDataStrValue = (objects, access_token) =>
   new Promise((resolve, reject) => {
     const url = [host, '/api/v1/sync/createcheckstatusdatastrvalue'];
@@ -311,6 +322,7 @@ export const syncCreateCheckStatusDataStrValue = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateCheckStatusDataStrValue([]));
+// 未用
 export const syncCreateCheckStatusDataStrValueToObs = (objects, access_token) =>
   new Promise((resolve, reject) => {
     console.info('病害程度值');
@@ -326,6 +338,7 @@ export const syncCreateCheckStatusDataStrValueToObs = (objects, access_token) =>
  * https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/xztavu
  * 输入参数：要创建的多条裂缝记录对象（https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/xztavu?inner=AXJXh）
  */
+// 未用
 export const syncCreateMemberCheckStatusC1003 = (objects, access_token) =>
   new Promise((resolve, reject) => {
     const url = [host, '/api/v1/sync/createmembercheckstatusc1003'];
@@ -351,6 +364,7 @@ export const syncCreateMemberCheckStatusC1003 = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateMemberCheckStatusC1003([]));
+// 未用
 export const syncCreateMemberCheckStatusC1003ToObs = (objects, access_token) =>
   new Promise((resolve, reject) => {
     console.info('裂缝数据');
@@ -366,6 +380,7 @@ export const syncCreateMemberCheckStatusC1003ToObs = (objects, access_token) =>
  * https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/ndxen6
  * 输入参数：要创建的多条媒体数据对象(https://jldandroid.yuque.com/staff-gng0zp/ee6qgq/ndxen6?inner=juipg)
  */
+// 未用
 export const syncCreateCheckStatusMedia = (objects, access_token) =>
   new Promise((resolve, reject) => {
     const url = [host, '/api/v1/sync/createcheckstatusmedia'];
@@ -391,6 +406,7 @@ export const syncCreateCheckStatusMedia = (objects, access_token) =>
       .catch(err => reject(err));
   });
 //console.log(await syncCreateCheckStatusMedia([]));
+// 未用
 export const syncCreateCheckStatusMediaToObs = (objects, access_token) =>
   new Promise((resolve, reject) => {
     console.info('媒体数据');
@@ -407,6 +423,7 @@ export const syncCreateCheckStatusMediaToObs = (objects, access_token) =>
  * 输入参数：上传文件内容（基于RFC1867标准的HTML中表单的文件）。 filename 必须包含文件扩展名
  * 文件类型：mp3, mp4, jpeg, jpg, png
  */
+// 用了，桥梁上传
 export const upload = (file, filename, access_token) =>
   new Promise(async (resolve, reject) => {
     const url = [host, '/api/v1/upload/'];

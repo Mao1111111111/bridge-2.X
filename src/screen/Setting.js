@@ -78,7 +78,7 @@ const BaseData = ({onLoading, isLoading}) => {
       });
       syncCommonData(
         userInfo?.company?.companyid,
-        userInfo.token.access_token,
+        userInfo.token.auth_access_token,
         res => {
           setData(e => ({
             ...e,

@@ -154,6 +154,7 @@ export default function TestData({navigation}) {
   //   console.info(list);
   // }, [list]);
 
+  // 获取项目列表
   useEffect(() => {
     const getproject = async (user_id, access_token) => {
       // 获取组

@@ -131,6 +131,7 @@ function Provider({children}) {
     }
   }, [state.bridgeUploadingIds, state.nowUploadingBridgeInx, userInfo]);
 
+  // 检测数据上传
   React.useEffect(() => {
     if (
       !userInfo ||
