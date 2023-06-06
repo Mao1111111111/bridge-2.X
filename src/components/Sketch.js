@@ -60,6 +60,20 @@ export default function Sketch({id, source, onSave, maxHeight, maxWidth}) {
 
   const [img, setImg] = React.useState(0);
 
+  const [showChart, setShowChart] = React.useState(false)
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setShowChart(true);
+    }, 1000);
+  },[])
+
+  React.useEffect(() => {
+    return () => {
+      setShowChart(false);
+    }
+  },[])
+
   const [webviewStyle, setWebviewStyle] = React.useState({
     height: maxHeight,
     width: maxWidth,
@@ -273,33 +287,36 @@ export default function Sketch({id, source, onSave, maxHeight, maxWidth}) {
           ]}>
           <View
             style={{width: webviewStyle.width, height: webviewStyle.height}}>
-            <WebView
-              ref={ref}
-              overScrollMode="never"
-              onStartShouldSetResponder={() => true}
-              onResponderTerminate={() => false}
-              originWhitelist={['*']}
-              mixedContentMode="always"
-              scalesPageToFit={false}
-              scrollEnabled={false}
-              startInLoadingState={true}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              automaticallyAdjustContentInsets={false}
-              showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-              bounces={false}
-              onLoadEnd={handleLoadEnd}
-              thirdPartyCookiesEnabled
-              allowUniversalAccessFromFileURLs
-              onError={() => {
-                console.info('error');
-              }}
-              onMessage={handleMessage}
-              source={{
-                uri: 'file:///android_asset/sketch.html?' + id,
-              }}
-            />
+              {
+                showChart?<WebView
+                            ref={ref}
+                            overScrollMode="never"
+                            onStartShouldSetResponder={() => true}
+                            onResponderTerminate={() => false}
+                            originWhitelist={['*']}
+                            mixedContentMode="always"
+                            scalesPageToFit={false}
+                            scrollEnabled={false}
+                            startInLoadingState={true}
+                            javaScriptEnabled={true}
+                            domStorageEnabled={true}
+                            automaticallyAdjustContentInsets={false}
+                            showsHorizontalScrollIndicator={false}
+                            showsVerticalScrollIndicator={false}
+                            bounces={false}
+                            onLoadEnd={handleLoadEnd}
+                            thirdPartyCookiesEnabled
+                            allowUniversalAccessFromFileURLs
+                            onError={() => {
+                              console.info('error',e);
+                            }}
+                            onMessage={handleMessage}
+                            source={{
+                              uri: 'file:///android_asset/sketch.html?' + id,
+                            }}
+                          />:null
+              }
+            
           </View>
         </View>
       </View>
