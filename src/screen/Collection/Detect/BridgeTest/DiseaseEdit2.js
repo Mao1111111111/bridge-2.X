@@ -1,5 +1,6 @@
 import React from 'react';
 import {tailwind} from 'react-native-tailwindcss';
+import dayjs from 'dayjs';
 import {
   View,
   Text,
@@ -21,6 +22,8 @@ import Media from './Media';
 import ScaleInfo from './ScaleInfo';
 import * as hooks from './DiseaseHooks';
 import {DiseaseA, DiseaseB, DiseaseC, DiseaseD, DiseaseE, DiseaseK, DiseaseG, DiseaseH} from '../DiseaseList/disease01'
+import * as editLog from '../../../../database/edit_log';
+import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
 
 export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
   const {
@@ -46,6 +49,10 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
     state: {project, bridge, fileList, isLoading, groupList},
   } = React.useContext(Context);
 
+  const {
+    state: {userInfo},
+  } = React.useContext(GlobalContext);
+
   const [areaparam, areanode] = hooks.useArea({diseaseData, baseData});
 
   const infoList = hooks.useInfoComponents({diseaseData, baseData});
@@ -66,6 +73,19 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
     console.log('diseaseEdit2 kuaMembertype',route.params.data.kuaMembertype);
   }, [itemData]);
 
+  React.useEffect(() => {
+    const {memberList} = route.params;
+    memberList.forEach(item =>
+      editLog.save({
+        projectid: project.projectid,
+        bridgeid: bridge.bridgeid,
+        title: item.membername,
+        page_key: '病害录入',
+        userid: userInfo.userid,
+        binddate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      }),
+    )
+  }, []);
 
   React.useEffect(() => {
     saveData.current = {...diseaseData};

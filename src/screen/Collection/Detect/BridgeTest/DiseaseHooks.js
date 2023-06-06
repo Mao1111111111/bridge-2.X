@@ -40,16 +40,16 @@ export const useP1001Init = ({route, navigation}) => {
       const ver = data?.version ? data?.version : uuid.v4();
       dispatch({type: 'isLoading', payload: true});
       (async () => {
-        memberList.forEach(item =>
-          editLog.save({
-            projectid: project.projectid,
-            bridgeid: bridge.bridgeid,
-            title: item.membername,
-            page_key: '病害录入',
-            userid: userInfo.userid,
-            binddate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-          }),
-        );
+        // memberList.forEach(item =>
+        //   editLog.save({
+        //     projectid: project.projectid,
+        //     bridgeid: bridge.bridgeid,
+        //     title: item.membername,
+        //     page_key: '病害录入',
+        //     userid: userInfo.userid,
+        //     binddate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        //   }),
+        // );
         const res = await getBaseData(memberList, type);
         if (res.infoComponents.length && res.components.length) {
           const _diseaseData = {...(data?.jsondata || {})};
@@ -231,16 +231,16 @@ export const useP1002Init = ({route, navigation}) => {
       const {memberList, data, type} = route.params;
       (async () => {
         dispatch({type: 'isLoading', payload: true});
-        memberList.forEach(item =>
-          editLog.save({
-            projectid: project.projectid,
-            bridgeid: bridge.bridgeid,
-            title: item.membername,
-            page_key: '病害录入',
-            userid: userInfo.userid,
-            binddate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-          }),
-        );
+        // memberList.forEach(item =>
+        //   editLog.save({
+        //     projectid: project.projectid,
+        //     bridgeid: bridge.bridgeid,
+        //     title: item.membername,
+        //     page_key: '病害录入',
+        //     userid: userInfo.userid,
+        //     binddate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        //   }),
+        // );
         const ver = data?.version ? data.version : uuid.v4();
         const res = await getBaseData(memberList, type);
         if (res.infoComponents.length && res.components.length && data) {

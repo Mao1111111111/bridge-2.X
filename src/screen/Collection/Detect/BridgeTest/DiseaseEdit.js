@@ -1,6 +1,7 @@
 import React from 'react';
 import {tailwind} from 'react-native-tailwindcss';
 import {useFocusEffect} from '@react-navigation/native';
+import dayjs from 'dayjs';
 import {
   View,
   Text,
@@ -22,6 +23,7 @@ import * as hooks from './DiseaseHooks';
 import HeaderTabs from './HeaderTabs';
 import ScaleInfo from './ScaleInfo';
 import Media from './Media';
+import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
 
 const CrackForm = ({baseData, diseaseData, inx, onChange}) => {
   const {
@@ -157,7 +159,7 @@ export default function DiseaseEdit({route, navigation}) {
     state: {theme},
   } = React.useContext(ThemeContext);
 
-  const {dispatch: dispatch} = React.useContext(Context);
+  const {project, bridge, dispatch: dispatch} = React.useContext(Context);
 
   const [pageType, setPageType] = React.useState('数据');
 
@@ -174,6 +176,10 @@ export default function DiseaseEdit({route, navigation}) {
   const saveData = React.useRef(null);
 
   const scaleInfoRef = React.useRef();
+
+  const {
+    state: {userInfo},
+  } = React.useContext(GlobalContext);
 
   const [
     baseData,
@@ -263,6 +269,20 @@ export default function DiseaseEdit({route, navigation}) {
       };
     }, [route.params, dispatch, version, baseData]),
   );
+
+  React.useEffect(() => {
+    const {memberList} = route.params;
+    memberList.forEach(item =>
+      editLog.save({
+        projectid: project.projectid,
+        bridgeid: bridge.bridgeid,
+        title: item.membername,
+        page_key: '病害录入',
+        userid: userInfo.userid,
+        binddate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      }),
+    )
+  }, []);
 
   const getAreaName = item => {
     const {components} = baseData;
