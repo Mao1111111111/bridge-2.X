@@ -67,17 +67,17 @@ export default function Index() {
 
   const routes = [
     {
-      name: 'Collection/Sync/Main',
-      component: Main,
-    },
-    {
-      name: 'Collection/Sync/Bridge',
-      component: Bridge,
-    },
-    {
       name: 'Collection/Sync/TestData',
       component: TestData,
     },
+    // {
+    //   name: 'Collection/Sync/Main',
+    //   component: Main,
+    // },
+    // {
+    //   name: 'Collection/Sync/Bridge',
+    //   component: Bridge,
+    // }
   ];
 
   return !networkState?.isConnected ? (
