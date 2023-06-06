@@ -465,7 +465,7 @@ export default function Main({navigation, route}) {
                             <Table.Title title="编辑时间" flex={3} />
                           </Table.Header>
                           <FlatList
-                            scrollEnabled={false}
+                            scrollEnabled={true}
                             data={table2Data[table2PageNo - 1] || []}
                             extraData={table2Data}
                             renderItem={({item, index}) => (

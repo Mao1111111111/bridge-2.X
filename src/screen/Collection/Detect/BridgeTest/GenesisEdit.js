@@ -327,7 +327,6 @@ export default function GenesisEdit({navigation, route}) {
                     <Table.Title title="构件" flex={2} />
                   </Table.Header>
                   <FlatList
-                    scrollEnabled={false}
                     data={tableData[tablePageNo - 1] || []}
                     extraData={tableData}
                     renderItem={({item, index}) => (
