@@ -155,12 +155,11 @@ export default function Main({navigation, route}) {
         />
       );
     };
-
     // 获取数据-- 符合条件的所有图片 -- 桥梁检测文件列表过滤
     const datas = fileList.filter(
       // 如果是传入类型的图片，并且是图片或虚拟图片，那么存入数据
       item =>
-        item.category === category &&
+        item.category.substring(0,1) === category &&
         new Set(['image', 'virtualimage']).has(item.mediatype),
     );
     // 显示的图片数据--一张
@@ -522,9 +521,9 @@ export default function Main({navigation, route}) {
               </Text>
               {/* 图片 */}
               <View style={[tailwind.flexRow, tailwind.mY2]}>
-                <View style={tailwind.flex1}>{getImg('front', '正面照')}</View>
+                <View style={tailwind.flex1}>{getImg('L', '正面照')}</View>
                 <View style={tailwind.mX2} />
-                <View style={tailwind.flex1}>{getImg('facade', '立面照')}</View>
+                <View style={tailwind.flex1}>{getImg('Z', '立面照')}</View>
               </View>
               {/* 描述表单 */}
               <View style={tailwind.flex1}>
