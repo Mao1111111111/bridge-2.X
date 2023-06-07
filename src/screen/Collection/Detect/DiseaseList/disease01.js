@@ -1781,7 +1781,8 @@ export function DiseaseA({route, navigation}) {
           
 
           if (diseaseData.area == undefined) {
-            var areaName = ''
+            // console.log('area未定义 areaparam',areaparam);
+            var areaName = areaparam[0].label
             setAreaName(areaName)
             console.log('diseaseData.area为空');
             // 墩/台描述
@@ -1831,7 +1832,7 @@ export function DiseaseA({route, navigation}) {
             }
 
             if (lengthNum == '' && widthNum == '' && heightNum == '') {
-              let writePositionTxt = '/' + areaName
+              let writePositionTxt = areaName
               setWritePositionTxt(writePositionTxt)
               diseaseData['writePositionTxt'] = writePositionTxt
               setDiseaseData(diseaseData)
@@ -5107,7 +5108,7 @@ export function DiseaseC({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined || diseaseData.area == '') {
-        let areaName = ''
+          let areaName = ''
           console.log('diseaseData.area为空');
           // 墩/台描述
           // 长度描述
@@ -6729,11 +6730,21 @@ export function DiseaseD({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
+          var areaName = areaparam[0].label
+            setAreaName(areaName)
           console.log('没有填入位置描述内容');
-          let writePositionTxt = '/'
-          setWritePositionTxt(writePositionTxt)
-          diseaseData['writePositionTxt'] = writePositionTxt
-          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          if (areaName == '' || areaName == undefined) {
+            let writePositionTxt = '/'
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else {
+            let writePositionTxt = areaName
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          }
+          
         } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0){
           console.log('有数据了');
           console.log('构件区域列表：：',areaparam);
@@ -8271,10 +8282,20 @@ export function DiseaseE({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          let writePositionTxt = '/'
-          setWritePositionTxt(writePositionTxt)
-          diseaseData['writePositionTxt'] = writePositionTxt
-          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          var areaName = areaparam[0].label
+            setAreaName(areaName)
+          console.log('没有填入位置描述内容');
+          if (areaName == '' || areaName == undefined) {
+            let writePositionTxt = '/'
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else {
+            let writePositionTxt = areaName
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          }
         } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0){
           console.log('有数据了');
           console.log('构件区域列表：：',areaparam);
@@ -9815,7 +9836,8 @@ export function DiseaseK({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined || diseaseData.area == '') {
-          let areaName = ''
+            var areaName = areaparam[0].label
+            setAreaName(areaName)
             console.log('diseaseData.area为空');
             // 墩/台描述
             // 长度描述
@@ -9853,7 +9875,7 @@ export function DiseaseK({route, navigation}) {
             // }
 
             if (lengthNum == '' && widthNum == '') {
-              let writePositionTxt = '/' + areaName
+              let writePositionTxt = areaName
               setWritePositionTxt(writePositionTxt)
               diseaseData['writePositionTxt'] = writePositionTxt
               setDiseaseData(diseaseData)
@@ -11458,8 +11480,8 @@ export function DiseaseG({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          var areaName = ''
-          setAreaName(areaName)
+          var areaName = areaparam[0].label
+            setAreaName(areaName)
           console.log('diseaseData.area为空');
 
           // 宽度描述
@@ -11486,7 +11508,7 @@ export function DiseaseG({route, navigation}) {
           }
 
           if (heightNum == '' && widthNum == '') {
-            let writePositionTxt = '/' + areaName
+            let writePositionTxt = areaName
             setWritePositionTxt(writePositionTxt)
             diseaseData['writePositionTxt'] = writePositionTxt
             setDiseaseData(diseaseData)
@@ -13090,7 +13112,7 @@ export function DiseaseH({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          var areaName = ''
+          var areaName = areaparam[0].label
           setAreaName(areaName)
           console.log('diseaseData.area为空');
 
@@ -13118,7 +13140,7 @@ export function DiseaseH({route, navigation}) {
           }
 
           if (heightNum == '' && lengthNum == '') {
-            let writePositionTxt = '/' + areaName
+            let writePositionTxt = areaName
             setWritePositionTxt(writePositionTxt)
             diseaseData['writePositionTxt'] = writePositionTxt
             setDiseaseData(diseaseData)
