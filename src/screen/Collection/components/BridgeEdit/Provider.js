@@ -191,85 +191,86 @@ const Provider = ({values, project, children}) => {
   // 当 桥梁全局参数 的 表单对象变化时 或 全局参数的
   React.useEffect(() => {
     // 设置上部部件数据
-    const setTopData = () => {
-      const pCode = 'b10';
-      const code = {
-        position: '上部结构',
-        pCode,
-      };
-      // 计算跨，总数-1
-      const kua =
-        parseInt(state.values.b200001num, 10) +
-        parseInt(state.values.b200002num, 10) -
-        1;
-      const _data = {};
-      // 是否存在上部结构
-      if (state.values?.top) {
-        Object.keys(state.values.top).forEach(
-          name =>
-            (_data[name] = state.values.top[name]
-              ? rules[name](name, state.values, code, kua)
-              : []),
-        );
-        dispatch({type: 'topPartsData', payload: _data});
-      }
-    };
-    const setBottomData = () => {
-      const pCode = 'b20';
-      const code = {
-        position: '下部结构',
-        pCode,
-      };
-      const kua =
-        parseInt(state.values.b200001num, 10) +
-        parseInt(state.values.b200002num, 10) -
-        1;
-      if (state.values?.bottom) {
-        const _data = {};
-        Object.keys(state.values.bottom).forEach(
-          name =>
-            (_data[name] = state.values.bottom[name]
-              ? rules[name](
-                  name,
-                  state.values,
-                  code,
-                  kua,
-                  name === 'b200004'
-                    ? globalState.bridgewall?.find(
-                        item => item.paramid === state.values.bridgewall,
-                      )?.paramname || globalState.bridgewall[0].paramname
-                    : '',
-                )
-              : []),
-        );
-        dispatch({type: 'bottomPartsData', payload: _data});
-      }
-    };
-    const setPmxData = () => {
-      const pCode = 'b30';
-      const code = {
-        position: '桥面系',
-        pCode,
-      };
-      const kua =
-        parseInt(state.values.b200001num, 10) +
-        parseInt(state.values.b200002num, 10) -
-        1;
-      if (state.values?.pmx) {
-        const _data = {};
-        Object.keys(state.values.pmx).forEach(
-          name =>
-            (_data[name] = state.values.pmx[name]
-              ? rules[name](name, state.values, code, kua)
-              : []),
-        );
-        dispatch({type: 'pmxData', payload: _data});
-      }
-    };
-
-    setTopData();
-    setBottomData();
-    setPmxData();
+    // const setTopData = () => {
+    //   const pCode = 'b10';
+    //   const code = {
+    //     position: '上部结构',
+    //     pCode,
+    //   };
+    //   // 计算跨，总数-1
+    //   const kua =
+    //     parseInt(state.values.b200001num, 10) +
+    //     parseInt(state.values.b200002num, 10) -
+    //     1;
+    //   const _data = {};
+    //   // 是否存在上部结构
+    //   if (state.values?.top) {
+    //     Object.keys(state.values.top).forEach(
+    //       name =>
+    //         (_data[name] = state.values.top[name]
+    //           ? rules[name](name, state.values, code, kua)
+    //           : []),
+    //     );
+    //     console.log("state.values.top",state.values.top);
+    //     console.log("_data",_data);
+    //     dispatch({type: 'topPartsData', payload: _data});
+    //   }
+    // };
+    // const setBottomData = () => {
+    //   const pCode = 'b20';
+    //   const code = {
+    //     position: '下部结构',
+    //     pCode,
+    //   };
+    //   const kua =
+    //     parseInt(state.values.b200001num, 10) +
+    //     parseInt(state.values.b200002num, 10) -
+    //     1;
+    //   if (state.values?.bottom) {
+    //     const _data = {};
+    //     Object.keys(state.values.bottom).forEach(
+    //       name =>
+    //         (_data[name] = state.values.bottom[name]
+    //           ? rules[name](
+    //               name,
+    //               state.values,
+    //               code,
+    //               kua,
+    //               name === 'b200004'
+    //                 ? globalState.bridgewall?.find(
+    //                     item => item.paramid === state.values.bridgewall,
+    //                   )?.paramname || globalState.bridgewall[0].paramname
+    //                 : '',
+    //             )
+    //           : []),
+    //     );
+    //     dispatch({type: 'bottomPartsData', payload: _data});
+    //   }
+    // };
+    // const setPmxData = () => {
+    //   const pCode = 'b30';
+    //   const code = {
+    //     position: '桥面系',
+    //     pCode,
+    //   };
+    //   const kua =
+    //     parseInt(state.values.b200001num, 10) +
+    //     parseInt(state.values.b200002num, 10) -
+    //     1;
+    //   if (state.values?.pmx) {
+    //     const _data = {};
+    //     Object.keys(state.values.pmx).forEach(
+    //       name =>
+    //         (_data[name] = state.values.pmx[name]
+    //           ? rules[name](name, state.values, code, kua)
+    //           : []),
+    //     );
+    //     dispatch({type: 'pmxData', payload: _data});
+    //   }
+    // };
+    // setTopData();
+    // setBottomData();
+    // setPmxData();
   }, [state.values, globalState.bridgewall]);
 
   return (

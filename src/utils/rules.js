@@ -9,6 +9,7 @@ const setInx = data => {
 
 // 生成主梁/挂梁
 const getZhuliangAndGuanliang = (name, values, code, kua) => {
+  console.log("111");
   const liang = parseInt(values.b100001num || '0', 10);
   const _data = [];
   for (let kuaInx = 1; kuaInx <= kua; kuaInx++) {

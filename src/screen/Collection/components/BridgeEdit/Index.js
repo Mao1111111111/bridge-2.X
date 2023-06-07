@@ -21,6 +21,7 @@ import * as bridge from '../../../../database/bridge';
 import * as bridgeMember from '../../../../database/bridge_member';
 import * as bridgeProjectBind from '../../../../database/bridge_project_bind';
 import dayjs from 'dayjs';
+import rules from '../../../../utils/rules';
 
 // 桥梁表单顶部
 const Header = ({onClose}) => {
@@ -169,40 +170,38 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
     setLoading(true);
     // parts 存放当前桥梁所有构件的信息
     const parts = [];
-    Object.keys(topPartsData).forEach(key =>
-      parts.push(
-        ...topPartsData[key].map(it => {
-          it.membertype = key;
-          return it;
-        }),
-      ),
-    );
-    Object.keys(bottomPartsData).forEach(key =>
-      parts.push(
-        ...bottomPartsData[key].map(it => {
-          it.membertype = key;
-          return it;
-        }),
-      ),
-    );
-    Object.keys(pmxData).forEach(key =>
-      parts.push(
-        ...pmxData[key].map(it => {
-          it.membertype = key;
-          return it;
-        }),
-      ),
-    );
+    // Object.keys(topPartsData).forEach(key =>
+    //   parts.push(
+    //     ...topPartsData[key].map(it => {
+    //       it.membertype = key;
+    //       return it;
+    //     }),
+    //   ),
+    // );
+    // Object.keys(bottomPartsData).forEach(key =>
+    //   parts.push(
+    //     ...bottomPartsData[key].map(it => {
+    //       it.membertype = key;
+    //       return it;
+    //     }),
+    //   ),
+    // );
+    // Object.keys(pmxData).forEach(key =>
+    //   parts.push(
+    //     ...pmxData[key].map(it => {
+    //       it.membertype = key;
+    //       return it;
+    //     }),
+    //   ),
+    // );
     // 判断是 克隆 、编辑、新增
     if (isClone) {
       clone(_values, parts);
       return;
     }
     if (isUpdate) {
-      console.info('update');
       update(_values, parts);
     } else {
-      console.info('add');
       add(_values, parts);
     }
   };
@@ -236,24 +235,99 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         userid: userInfo.userid,
         username: userInfo.nickname,
       });
-      parts.forEach((item,index)=>{
-        item.memberid = bridgeid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
-      })
+      // 处理构件数据并存入数据库
+      // 上部结构
+      if(values?.top){
+        const pCode = 'b10';
+        const code = {
+          position: '上部结构',
+          pCode,
+        };
+        // 计算跨，总数-1
+        const kua =
+          parseInt(values.b200001num, 10) +
+          parseInt(values.b200002num, 10) -
+          1;
+        let topKeyList = Object.keys(values.top)
+        for(let i=0;i<topKeyList.length;i++){
+          let name = topKeyList[i]
+          let memeberData = values.top[name]
+          ? rules[name](name, values, code, kua)
+          : []
+          await memberDataToDatabase(memeberData,name,time,bridgeid)
+        }
+      }
+      // 下部结构
+      if(values?.bottom){
+        const pCode = 'b20';
+        const code = {
+          position: '下部结构',
+          pCode,
+        };
+        // 计算跨，总数-1
+        const kua =
+          parseInt(values.b200001num, 10) +
+          parseInt(values.b200002num, 10) -
+          1;
+        let bottomKeyList = Object.keys(values.bottom)
+        for(let i=0;i<bottomKeyList.length;i++){
+          let name = bottomKeyList[i]
+          let memeberData = values.bottom[name]
+          ? rules[name](
+            name,
+            values,
+            code,
+            kua,
+            name === 'b200004'
+              ? globalState.bridgewall?.find(
+                  item => item.paramid === values.bridgewall,
+                )?.paramname || globalState.bridgewall[0].paramname
+              : '',
+          )
+          : []
+          await memberDataToDatabase(memeberData,name,time,bridgeid)
+        }
+      }
+      console.log("values?.pmx",values?.pmx);
+      // 桥面系
+      if(values?.pmx){
+        const pCode = 'b30';
+        const code = {
+          position: '桥面系',
+          pCode,
+        };
+        // 计算跨，总数-1
+        const kua =
+          parseInt(values.b200001num, 10) +
+          parseInt(values.b200002num, 10) -
+          1;
+        let pmxKeyList = Object.keys(values.pmx)
+        for(let i=0;i<pmxKeyList.length;i++){
+          let name = pmxKeyList[i]
+          let memeberData = values.pmx[name]
+          ? rules[name](name, values, code, kua)
+          : []
+          await memberDataToDatabase(memeberData,name,time,bridgeid)
+        }
+      }
+      // parts.forEach((item,index)=>{
+      //   item.memberid = bridgeid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
+      // })
       // 将当前桥梁的 所有构件存入 桥梁构件表
-      await Promise.all(
-        parts.map(
-          it =>
-            new Promise((resolve, reject) => {
-              bridgeMember
-                .save({
-                  ...it,
-                  bridgeid: bridgeid,
-                })
-                .then(resolve)
-                .catch(reject);
-            }),
-        ),
-      );
+      // await Promise.all(
+      //   parts.map(
+      //     it =>
+      //       new Promise((resolve, reject) => {
+      //         bridgeMember
+      //           .save({
+      //             ...it,
+      //             bridgeid: bridgeid,
+      //           })
+      //           .then(resolve)
+      //           .catch(reject);
+      //       }),
+      //   ),
+      // );
       // 如果是在项目中新建的桥梁，那么将桥梁和项目绑定 
       if (project.id) {
         // 设置bridgereportid
@@ -294,25 +368,98 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
       await bridgeMember.remove(_values.bridgeid);
       // 当前时间戳
       let time = (new Date()).valueOf()
+      // 上部结构
+      if(values?.top){
+        const pCode = 'b10';
+        const code = {
+          position: '上部结构',
+          pCode,
+        };
+        // 计算跨，总数-1
+        const kua =
+          parseInt(values.b200001num, 10) +
+          parseInt(values.b200002num, 10) -
+          1;
+        let topKeyList = Object.keys(values.top)
+        for(let i=0;i<topKeyList.length;i++){
+          let name = topKeyList[i]
+          let memeberData = values.top[name]
+          ? rules[name](name, values, code, kua)
+          : []
+          await memberDataToDatabase(memeberData,name,time,values.bridgeid)
+        }
+      }
+      // 下部结构
+      if(values?.bottom){
+        const pCode = 'b20';
+        const code = {
+          position: '下部结构',
+          pCode,
+        };
+        // 计算跨，总数-1
+        const kua =
+          parseInt(values.b200001num, 10) +
+          parseInt(values.b200002num, 10) -
+          1;
+        let bottomKeyList = Object.keys(values.bottom)
+        for(let i=0;i<bottomKeyList.length;i++){
+          let name = bottomKeyList[i]
+          let memeberData = values.bottom[name]
+          ? rules[name](
+            name,
+            values,
+            code,
+            kua,
+            name === 'b200004'
+              ? globalState.bridgewall?.find(
+                  item => item.paramid === values.bridgewall,
+                )?.paramname || globalState.bridgewall[0].paramname
+              : '',
+          )
+          : []
+          await memberDataToDatabase(memeberData,name,time,values.bridgeid)
+        }
+      }
+      // 桥面系
+      if(values?.pmx){
+        const pCode = 'b30';
+        const code = {
+          position: '桥面系',
+          pCode,
+        };
+        // 计算跨，总数-1
+        const kua =
+          parseInt(values.b200001num, 10) +
+          parseInt(values.b200002num, 10) -
+          1;
+        let pmxKeyList = Object.keys(values.pmx)
+        for(let i=0;i<pmxKeyList.length;i++){
+          let name = pmxKeyList[i]
+          let memeberData = values.pmx[name]
+          ? rules[name](name, values, code, kua)
+          : []
+          await memberDataToDatabase(memeberData,name,time,values.bridgeid)
+        }
+      }
       // 处理构件数据
-      parts.forEach((item,index)=>{
-        item.memberid = _values.bridgeid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
-      })
+      // parts.forEach((item,index)=>{
+      //   item.memberid = _values.bridgeid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
+      // })
       // 将构件数据重新存入
-      await Promise.all(
-        parts.map(
-          it =>
-            new Promise((resolve, reject) => {
-              bridgeMember
-                .save({
-                  ...it,
-                  bridgeid: _values.bridgeid,
-                })
-                .then(resolve)
-                .catch(reject);
-            }),
-        ),
-      );
+      // await Promise.all(
+      //   parts.map(
+      //     it =>
+      //       new Promise((resolve, reject) => {
+      //         bridgeMember
+      //           .save({
+      //             ...it,
+      //             bridgeid: _values.bridgeid,
+      //           })
+      //           .then(resolve)
+      //           .catch(reject);
+      //       }),
+      //   ),
+      // );
       Alert.alert('消息', '保存成功');
       setLoading(false);
       await onSubmitOver();
@@ -350,24 +497,97 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         userid: userInfo.userid,
         username: userInfo.nickname,
       });
-      parts.forEach((item,index)=>{
-        item.memberid = bridgeid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
-      })
+      // 上部结构
+      if(values?.top){
+        const pCode = 'b10';
+        const code = {
+          position: '上部结构',
+          pCode,
+        };
+        // 计算跨，总数-1
+        const kua =
+          parseInt(values.b200001num, 10) +
+          parseInt(values.b200002num, 10) -
+          1;
+        let topKeyList = Object.keys(values.top)
+        for(let i=0;i<topKeyList.length;i++){
+          let name = topKeyList[i]
+          let memeberData = values.top[name]
+          ? rules[name](name, values, code, kua)
+          : []
+          await memberDataToDatabase(memeberData,name,time,bridgeid)
+        }
+      }
+      // 下部结构
+      if(values?.bottom){
+        const pCode = 'b20';
+        const code = {
+          position: '下部结构',
+          pCode,
+        };
+        // 计算跨，总数-1
+        const kua =
+          parseInt(values.b200001num, 10) +
+          parseInt(values.b200002num, 10) -
+          1;
+        let bottomKeyList = Object.keys(values.bottom)
+        for(let i=0;i<bottomKeyList.length;i++){
+          let name = bottomKeyList[i]
+          let memeberData = values.bottom[name]
+          ? rules[name](
+            name,
+            values,
+            code,
+            kua,
+            name === 'b200004'
+              ? globalState.bridgewall?.find(
+                  item => item.paramid === values.bridgewall,
+                )?.paramname || globalState.bridgewall[0].paramname
+              : '',
+          )
+          : []
+          await memberDataToDatabase(memeberData,name,time,bridgeid)
+        }
+      }
+      // 桥面系
+      if(values?.pmx){
+        const pCode = 'b30';
+        const code = {
+          position: '桥面系',
+          pCode,
+        };
+        // 计算跨，总数-1
+        const kua =
+          parseInt(values.b200001num, 10) +
+          parseInt(values.b200002num, 10) -
+          1;
+        let pmxKeyList = Object.keys(values.pmx)
+        for(let i=0;i<pmxKeyList.length;i++){
+          let name = pmxKeyList[i]
+          let memeberData = values.pmx[name]
+          ? rules[name](name, values, code, kua)
+          : []
+          await memberDataToDatabase(memeberData,name,time,bridgeid)
+        }
+      }
+      // parts.forEach((item,index)=>{
+      //   item.memberid = bridgeid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
+      // })
       // 存入当前桥梁的所有构件
-      await Promise.all(
-        parts.map(
-          it =>
-            new Promise((resolve, reject) => {
-              bridgeMember
-                .save({
-                  ...it,
-                  bridgeid: bridgeid,
-                })
-                .then(resolve)
-                .catch(reject);
-            }),
-        ),
-      );
+      // await Promise.all(
+      //   parts.map(
+      //     it =>
+      //       new Promise((resolve, reject) => {
+      //         bridgeMember
+      //           .save({
+      //             ...it,
+      //             bridgeid: bridgeid,
+      //           })
+      //           .then(resolve)
+      //           .catch(reject);
+      //       }),
+      //   ),
+      // );
       // 如果是在项目中克隆的桥梁，那么将数据存入桥梁项目绑定表
       if (project.id) {
         if (project.id) {
@@ -390,6 +610,27 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
       setLoading(false);
     }
   };
+
+  // 将构件存入数据库
+  const memberDataToDatabase = async (memeberData,name,time,bridgeid) => {
+    await Promise.all(
+      memeberData.forEach((i,index)=>{
+        let data = i
+        data.membertype = name,
+        data.memberid = bridgeid + '_' + name + '_' + (time).toString(36) + '_' + index
+          // 存入数据库
+          new Promise((resolve, reject) => {
+              bridgeMember
+                .save({
+                  ...data,
+                  bridgeid: bridgeid,
+                })
+                .then(resolve)
+                .catch(reject)
+          })
+      })
+    )
+  }
 
   // 模态框显示状态变化时、路由变化时 触发
   React.useEffect(() => {
