@@ -304,7 +304,7 @@ export function DiseaseA({route, navigation}) {
           diseaseData['lengthText'] = lengthText
           diseaseData['widthText'] = widthText
           diseaseData['heightText'] = heightText
-          // diseaseData['remark'] = route.params.thridData.checkinfoshort
+          diseaseData['remark'] = route.params.thridData.checkinfoshort
 
 
           // console.log('打印一下病害名称:',route);
@@ -333,6 +333,12 @@ export function DiseaseA({route, navigation}) {
             let writePositionTxt = '/'
             setWritePositionTxt(writePositionTxt)
             diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          }
+
+          if (diseaseData.scale == '4' || diseaseData.scale == '') {
+            diseaseData['scale'] = '2'
+            handleFormChenge('2',diseaseData.scale)
           }
         } catch (err){
           console.log('err10', err);
@@ -1775,7 +1781,8 @@ export function DiseaseA({route, navigation}) {
           
 
           if (diseaseData.area == undefined) {
-            var areaName = ''
+            // console.log('area未定义 areaparam',areaparam);
+            var areaName = areaparam[0].label
             setAreaName(areaName)
             console.log('diseaseData.area为空');
             // 墩/台描述
@@ -1825,7 +1832,7 @@ export function DiseaseA({route, navigation}) {
             }
 
             if (lengthNum == '' && widthNum == '' && heightNum == '') {
-              let writePositionTxt = '/' + areaName
+              let writePositionTxt = areaName
               setWritePositionTxt(writePositionTxt)
               diseaseData['writePositionTxt'] = writePositionTxt
               setDiseaseData(diseaseData)
@@ -2395,7 +2402,7 @@ export function DiseaseB({route, navigation}) {
 
         if (diseaseData.areatype == 'at0000' && sliceArea == 'at000') {
           console.log(sliceArea);
-          console.log('xu~~~~~');
+          // console.log('xu~~~~~');
           diseaseData['area'] = '/'
         }
 
@@ -2409,15 +2416,14 @@ export function DiseaseB({route, navigation}) {
         if (diseaseData.diseaseName == '' || diseaseData.diseaseName == undefined) {
           let diseaseName = route.params.thridData.checkinfoshort
           // setDiseaseName(diseaseName)
-          console.log('0000000');
-          console.log('~~~~~~~diseaseName~~~~~',diseaseName);
+          // console.log('0000000');
+          // console.log('~~~~~~~diseaseName~~~~~',diseaseName);
           diseaseData['diseaseName'] = diseaseName
           handleFormChenge(diseaseName, diseaseData.diseaseName)
           // setDiseaseName(diseaseName)
         }
         
         
-        // console.log(diseaseData);
         if (diseaseData.remark == '' || diseaseData.remark == undefined) {
           let infoshort = route.params.thridData.checkinfoshort
           setInfoShort(infoshort)
@@ -2430,7 +2436,15 @@ export function DiseaseB({route, navigation}) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
+
+        // console.log('scale',scale, diseaseData.scale);
+        if (diseaseData.scale == '4' || diseaseData.scale == '') {
+          diseaseData['scale'] = '2'
+          handleFormChenge('2',diseaseData.scale)
+        }
+      
 
       } catch {
       }
@@ -4101,6 +4115,11 @@ export function DiseaseC({route, navigation}) {
           handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
+        if (diseaseData.scale == '4' || diseaseData.scale == '') {
+          diseaseData['scale'] = '2'
+          handleFormChenge('2',diseaseData.scale)
+        }
+
       } catch {
       }
     }, [diseaseData]);
@@ -5088,72 +5107,98 @@ export function DiseaseC({route, navigation}) {
       try {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
-        if (diseaseData.area == undefined) {
-          var areaName = ''
-          setAreaName(areaName)
+        if (diseaseData.area == undefined || diseaseData.area == '') {
+          let areaName = ''
           console.log('diseaseData.area为空');
-
           // 墩/台描述
-            // 长度描述
-            if (lengthText == '0' || lengthText == '0.0') {
-              var lengthNum = ''
-              setLengthNum(lengthNum)
-            } else if (lengthText !== '0' || lengthText !== '0.0') {
-              var lengthNum = lengthText + 'm'
-              setLengthNum(lengthNum)
+          // 长度描述
+          if (lengthText == '0' || lengthText == '0.0') {
+            var lengthNum = ''
+            setLengthNum(lengthNum)
+            // let pier = ''
+            // setPier(pier)
+          } else if (lengthText !== '0' || lengthText !== '0.0') {
+            var lengthNum = lengthText + 'm'
+            setLengthNum(lengthNum)
+          }
+          
+          // 宽度描述
+          if (widthText == '0' || widthText == '0.0') {
+            var widthNum = ''
+            setWidthNum(widthNum)
+          } else if (widthText !== '0' || widthText !== '0.0') {
+            if (lengthNum == '') {
+              var widthNum = '距左侧' + widthText + 'm'
+              setWidthNum(widthNum)
+            } else {
+              var widthNum = ',距左侧' + widthText + 'm'
+              setWidthNum(widthNum)
             }
+          }
 
-          if (heightNum == '' && lengthNum == '') {
+          // 距顶描述
+          // if (heightText == '0' || heightText == '0.0') {
+          //   var heightNum = ''
+          //   setHeightNum(heightNum)
+          // } else if (heightText !== '0' || heightText !== '0.0') {
+          //   var heightNum = ',距顶' + heightText + 'm'
+          //   setHeightNum(heightNum)
+          // }
+
+          if (lengthNum == '' && widthNum == '') {
             let writePositionTxt = '/' + areaName
             setWritePositionTxt(writePositionTxt)
             diseaseData['writePositionTxt'] = writePositionTxt
             setDiseaseData(diseaseData)
             handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
           } else {
+            console.log('55555');
+            // console.log('kankan areaName', areaName);
+
             if (lengthNum == '') {
-              let writePositionTxt = areaName + lengthNum + heightNum + '处'
+              let writePositionTxt = areaName + widthNum + '处'
               setWritePositionTxt(writePositionTxt)
               diseaseData['writePositionTxt'] = writePositionTxt
               setDiseaseData(diseaseData)
               handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
             } else {
-              // 位置描述 = / + 病害区域 + 桥台 + 长度 + 高度
-              let writePositionTxt = pier + lengthNum + '处'
+              // 位置描述 = / + 病害区域 + 桥台 + 长度
+              let writePositionTxt = areaName + pier + lengthNum + widthNum + '处'
               setWritePositionTxt(writePositionTxt)
               diseaseData['writePositionTxt'] = writePositionTxt
               setDiseaseData(diseaseData)
               handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
             }
           }
-        } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0) {
-            console.log('有数据了');
-            console.log('构件区域列表：：',areaparam);
-            console.log('表单中的构件区域',diseaseData.area);
-            console.log('构件类型',labelName);
-            if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
-              console.log('empty~~~');
-              var areaName = '/'
-              diseaseData['area'] = areaName
-              handleFormChenge(areaName, diseaseData.area)
-            } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
-              console.log('not empty~~~~');
-              var areaName = diseaseData.area
-              diseaseData['area'] = areaName
-              handleFormChenge(areaName, diseaseData.area)
-            }
-            if (areaparam !== []) {
-              let areaArr = areaparam
-              let inputArea = diseaseData.area
-              console.log('inputArea',inputArea);
-              for (let i = 0; i < areaArr.length; i++) {
-                if (inputArea == areaArr[i].value) {
-                  console.log('此时选中的构件是：',areaArr[i].label);
-                  var areaName = areaArr[i].label
-                  console.log(areaName);
-                  setAreaName(areaName)
-                }
+        } else {
+          console.log('有数据了');
+          console.log('构件区域列表：：',areaparam);
+          console.log('表单中的构件区域',diseaseData.area);
+          console.log('构件类型',labelName);
+          if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
+            console.log('empty~~~');
+            var areaName = ''
+            diseaseData['area'] = areaName
+            handleFormChenge(areaName, diseaseData.area)
+          } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
+            console.log('not empty~~~~');
+            var areaName = diseaseData.area
+            diseaseData['area'] = areaName
+            handleFormChenge(areaName, diseaseData.area)
+          }
+          if (areaparam !== []) {
+            let areaArr = areaparam
+            let inputArea = diseaseData.area
+            console.log('inputArea',inputArea);
+            for (let i = 0; i < areaArr.length; i++) {
+              if (inputArea == areaArr[i].value) {
+                console.log('此时选中的构件是：',areaArr[i].label);
+                var areaName = areaArr[i].label
+                console.log(areaName);
+                setAreaName(areaName)
               }
             }
+          }
             
             
             // 墩/台描述
@@ -5161,27 +5206,57 @@ export function DiseaseC({route, navigation}) {
             if (lengthText == '0' || lengthText == '0.0') {
               var lengthNum = ''
               setLengthNum(lengthNum)
-              // let pier = ''
-              // setPier(pier)
             } else if (lengthText !== '0' || lengthText !== '0.0') {
               var lengthNum = lengthText + 'm'
               setLengthNum(lengthNum)
             }
             
+            // 宽度描述
+            if (widthText == '0' || widthText == '0.0') {
+              var widthNum = ''
+              setWidthNum(widthNum)
+            } else if (widthText !== '0' || widthText !== '0.0') {
+              if (lengthNum == '') {
+                var widthNum = '距左侧' + widthText + 'm'
+                setWidthNum(widthNum)
+              } else {
+                var widthNum = ',距左侧' + widthText + 'm'
+                setWidthNum(widthNum)
+              }
+            }
+
+            // 距顶描述
+            // if (heightText == '0' || heightText == '0.0') {
+            //   var heightNum = ''
+            //   setHeightNum(heightNum)
+            // } else if (heightText !== '0' || heightText !== '0.0') {
+            //   var heightNum = ',距顶' + heightText + 'm'
+            //   setHeightNum(heightNum)
+            // }
+
             console.log('kankan areaName', areaName);
-            if (lengthNum == '0' || lengthNum == '') {
-              // 位置描述 = / + 病害区域 + 桥台 + 长度
+            if (lengthNum == '' && widthNum == '') {
               let writePositionTxt = areaName
               setWritePositionTxt(writePositionTxt)
               diseaseData['writePositionTxt'] = writePositionTxt
               setDiseaseData(diseaseData)
               handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
-            } else if (lengthNum !== '0' || lengthNum !== '') {
-              let writePositionTxt = areaName + pier + lengthNum + '处'
-              setWritePositionTxt(writePositionTxt)
-              diseaseData['writePositionTxt'] = writePositionTxt
-              setDiseaseData(diseaseData)
-              handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+            } else {
+              console.log('65666');
+              // console.log('kankan areaName', areaName);
+              if (lengthNum == '') {
+                let writePositionTxt = areaName + lengthNum + widthNum + '处'
+                setWritePositionTxt(writePositionTxt)
+                diseaseData['writePositionTxt'] = writePositionTxt
+                setDiseaseData(diseaseData)
+                handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+              } else {
+                let writePositionTxt = areaName + pier + lengthNum + widthNum + '处'
+                setWritePositionTxt(writePositionTxt)
+                diseaseData['writePositionTxt'] = writePositionTxt
+                setDiseaseData(diseaseData)
+                handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+              }
             }
         }
       } catch (err) {
@@ -5655,12 +5730,17 @@ export function DiseaseD({route, navigation}) {
           diseaseData['description'] = diseaseData.remark
         }
 
-        console.log('diseaseData.writePositionTxt00000000',diseaseData.writePositionTxt);
+        // console.log('diseaseData.writePositionTxt00000000',diseaseData.writePositionTxt);
         if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
           handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+        }
+
+        if (diseaseData.scale == '4' || diseaseData.scale == '') {
+          diseaseData['scale'] = '2'
+          handleFormChenge('2',diseaseData.scale)
         }
       } catch {
       }
@@ -6650,11 +6730,21 @@ export function DiseaseD({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
+          var areaName = areaparam[0].label
+            setAreaName(areaName)
           console.log('没有填入位置描述内容');
-          let writePositionTxt = '/'
-          setWritePositionTxt(writePositionTxt)
-          diseaseData['writePositionTxt'] = writePositionTxt
-          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          if (areaName == '' || areaName == undefined) {
+            let writePositionTxt = '/'
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else {
+            let writePositionTxt = areaName
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          }
+          
         } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0){
           console.log('有数据了');
           console.log('构件区域列表：：',areaparam);
@@ -6662,7 +6752,7 @@ export function DiseaseD({route, navigation}) {
           console.log('构件类型',labelName);
           if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
             console.log('empty~~~');
-            var areaName = '/'
+            var areaName = ''
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
@@ -7197,6 +7287,11 @@ export function DiseaseE({route, navigation}) {
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
           handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+        }
+
+        if (diseaseData.scale == '4' || diseaseData.scale == '') {
+          diseaseData['scale'] = '2'
+          handleFormChenge('2',diseaseData.scale)
         }
       } catch {
       }
@@ -8187,10 +8282,20 @@ export function DiseaseE({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          let writePositionTxt = '/'
-          setWritePositionTxt(writePositionTxt)
-          diseaseData['writePositionTxt'] = writePositionTxt
-          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          var areaName = areaparam[0].label
+            setAreaName(areaName)
+          console.log('没有填入位置描述内容');
+          if (areaName == '' || areaName == undefined) {
+            let writePositionTxt = '/'
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          } else {
+            let writePositionTxt = areaName
+            setWritePositionTxt(writePositionTxt)
+            diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+          }
         } else if (lengthText !== 0 || widthText !== 0 || heightText !== 0){
           console.log('有数据了');
           console.log('构件区域列表：：',areaparam);
@@ -8198,7 +8303,7 @@ export function DiseaseE({route, navigation}) {
           console.log('构件类型',diseaseData.areatype);
           if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
             console.log('empty~~~');
-            var areaName = '/'
+            var areaName = ''
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
@@ -8731,6 +8836,19 @@ export function DiseaseK({route, navigation}) {
         }
         if (diseaseData.description == '' || diseaseData.description == undefined) {
           diseaseData['description'] = diseaseData.remark
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+        }
+
+        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+          let writePositionTxt = '/'
+          setWritePositionTxt(writePositionTxt)
+          diseaseData['writePositionTxt'] = writePositionTxt
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+        }
+
+        if (diseaseData.scale == '4' || diseaseData.scale == '') {
+          diseaseData['scale'] = '2'
+          handleFormChenge('2',diseaseData.scale)
         }
       } catch {
       }
@@ -9718,7 +9836,8 @@ export function DiseaseK({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined || diseaseData.area == '') {
-          let areaName = ''
+            var areaName = areaparam[0].label
+            setAreaName(areaName)
             console.log('diseaseData.area为空');
             // 墩/台描述
             // 长度描述
@@ -9756,7 +9875,7 @@ export function DiseaseK({route, navigation}) {
             // }
 
             if (lengthNum == '' && widthNum == '') {
-              let writePositionTxt = '/' + areaName
+              let writePositionTxt = areaName
               setWritePositionTxt(writePositionTxt)
               diseaseData['writePositionTxt'] = writePositionTxt
               setDiseaseData(diseaseData)
@@ -9787,7 +9906,7 @@ export function DiseaseK({route, navigation}) {
           console.log('构件类型',labelName);
           if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
             console.log('empty~~~');
-            var areaName = '/'
+            var areaName = ''
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
@@ -10368,6 +10487,12 @@ export function DiseaseG({route, navigation}) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+        }
+
+        if (diseaseData.scale == '4' || diseaseData.scale == '') {
+          diseaseData['scale'] = '2'
+          handleFormChenge('2',diseaseData.scale)
         }
       } catch {
       }
@@ -11355,8 +11480,8 @@ export function DiseaseG({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          var areaName = ''
-          setAreaName(areaName)
+          var areaName = areaparam[0].label
+            setAreaName(areaName)
           console.log('diseaseData.area为空');
 
           // 宽度描述
@@ -11383,7 +11508,7 @@ export function DiseaseG({route, navigation}) {
           }
 
           if (heightNum == '' && widthNum == '') {
-            let writePositionTxt = '/' + areaName
+            let writePositionTxt = areaName
             setWritePositionTxt(writePositionTxt)
             diseaseData['writePositionTxt'] = writePositionTxt
             setDiseaseData(diseaseData)
@@ -11411,7 +11536,7 @@ export function DiseaseG({route, navigation}) {
           console.log('构件类型',labelName);
           if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
             console.log('empty~~~');
-            var areaName = '/'
+            var areaName = ''
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
@@ -11994,6 +12119,12 @@ export function DiseaseH({route, navigation}) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+        }
+
+        if (diseaseData.scale == '4' || diseaseData.scale == '') {
+          diseaseData['scale'] = '2'
+          handleFormChenge('2',diseaseData.scale)
         }
       } catch {
       }
@@ -12981,7 +13112,7 @@ export function DiseaseH({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          var areaName = ''
+          var areaName = areaparam[0].label
           setAreaName(areaName)
           console.log('diseaseData.area为空');
 
@@ -13009,7 +13140,7 @@ export function DiseaseH({route, navigation}) {
           }
 
           if (heightNum == '' && lengthNum == '') {
-            let writePositionTxt = '/' + areaName
+            let writePositionTxt = areaName
             setWritePositionTxt(writePositionTxt)
             diseaseData['writePositionTxt'] = writePositionTxt
             setDiseaseData(diseaseData)
@@ -13037,7 +13168,7 @@ export function DiseaseH({route, navigation}) {
           console.log('构件类型',labelName);
           if (labelName == 'at0000' && diseaseData.area == undefined || diseaseData.area == '' || diseaseData.area == '/') {
             console.log('empty~~~');
-            var areaName = '/'
+            var areaName = ''
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
