@@ -288,7 +288,6 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
           await memberDataToDatabase(memeberData,name,time,bridgeid)
         }
       }
-      console.log("values?.pmx",values?.pmx);
       // 桥面系
       if(values?.pmx){
         const pCode = 'b30';
@@ -613,23 +612,28 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
 
   // 将构件存入数据库
   const memberDataToDatabase = async (memeberData,name,time,bridgeid) => {
-    await Promise.all(
-      memeberData.forEach((i,index)=>{
+    try{
+     await Promise.all(
+      memeberData.map((i,index)=>{
         let data = i
         data.membertype = name,
         data.memberid = bridgeid + '_' + name + '_' + (time).toString(36) + '_' + index
-          // 存入数据库
-          new Promise((resolve, reject) => {
-              bridgeMember
-                .save({
-                  ...data,
-                  bridgeid: bridgeid,
-                })
-                .then(resolve)
-                .catch(reject)
-          })
+        //  存入数据库
+        new Promise((resolve, reject) => {
+            bridgeMember
+              .save({
+                ...data,
+                bridgeid: bridgeid,
+              })
+              .then(resolve)
+              .catch(reject)
+        })
       })
     )
+    }catch(e){
+      console.log('将构件存入数据库',e);
+    }
+    
   }
 
   // 模态框显示状态变化时、路由变化时 触发
