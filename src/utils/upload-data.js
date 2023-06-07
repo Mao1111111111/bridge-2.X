@@ -494,7 +494,7 @@ new Promise(async (resolve, reject) => {
   //上传到云后，反馈到后端
   export const syncUploadToObsAfterFeedback = (params) =>
   new Promise((resolve, reject) => {
-      fetch('http://114.116.196.47:10807/api/obs/object-upload-notify', {
+      fetch('http://server1.api.jianlide.cn:5002/api/obs/object-upload-notify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

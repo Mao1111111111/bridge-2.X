@@ -257,7 +257,7 @@ function Provider({children}) {
                 obsstorage:1,
                 objecttype:'txt',
                 objectsize:fileSize,
-                downserver:'00000000-0000-0000-0000-bcaec5b80c54',
+                downserver:'00000000-0000-0000-0000-0242ac130006',
                 projectkey:data.testData.projectid,
                 objectinfo:{
                   companyid:userInfo.company.companyid,
