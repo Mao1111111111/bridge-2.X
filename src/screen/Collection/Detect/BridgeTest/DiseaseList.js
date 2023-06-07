@@ -313,6 +313,10 @@ export default function DiseaseList({route, navigation}) {
           res.forEach((item, index) => {
             if (!_list.find(it => it.version === item.version)) {
               console.log('病害录入页面返回传入的数据',item.jsondata);
+              console.log('病害录入页面返回传入的scale',item.jsondata.areatype);
+              if (item.jsondata.scale =='4') {
+                item.jsondata.scale = '2'
+              }
               item.jsondata = JSON.parse(item.jsondata || '{}');
               item.index = index + 1;
               if (item?.jsondata?.standard?.scale) {
@@ -415,6 +419,7 @@ export default function DiseaseList({route, navigation}) {
   };
 
   const handleEdit = data => {
+    console.log('data',data);
     if (!data) {
       return;
     }
@@ -422,6 +427,7 @@ export default function DiseaseList({route, navigation}) {
       .map(item => item.list)
       .flat()
       .find(item => data.jsondata.checktypegroupid === item.checktypegroupid);
+      const kuaMembertype = route.params.list[0].membertype
     const url =
       type.paneltype === 'p1001'
         ? 'Collection/Detect/BridgeTest/Member/DiseaseEdit'
@@ -433,6 +439,7 @@ export default function DiseaseList({route, navigation}) {
       memberList: list,
       dataGroupId,
       routeParams,
+      kuaMembertype
     });
   };
 
