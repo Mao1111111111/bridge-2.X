@@ -304,7 +304,7 @@ export function DiseaseA({route, navigation}) {
           diseaseData['lengthText'] = lengthText
           diseaseData['widthText'] = widthText
           diseaseData['heightText'] = heightText
-          // diseaseData['remark'] = route.params.thridData.checkinfoshort
+          diseaseData['remark'] = route.params.thridData.checkinfoshort
 
 
           // console.log('打印一下病害名称:',route);
@@ -333,6 +333,7 @@ export function DiseaseA({route, navigation}) {
             let writePositionTxt = '/'
             setWritePositionTxt(writePositionTxt)
             diseaseData['writePositionTxt'] = writePositionTxt
+            handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
           }
 
           if (diseaseData.scale == '4' || diseaseData.scale == '') {
@@ -2434,6 +2435,7 @@ export function DiseaseB({route, navigation}) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
         // console.log('scale',scale, diseaseData.scale);
@@ -8813,6 +8815,14 @@ export function DiseaseK({route, navigation}) {
         }
         if (diseaseData.description == '' || diseaseData.description == undefined) {
           diseaseData['description'] = diseaseData.remark
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
+        }
+
+        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+          let writePositionTxt = '/'
+          setWritePositionTxt(writePositionTxt)
+          diseaseData['writePositionTxt'] = writePositionTxt
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
         if (diseaseData.scale == '4' || diseaseData.scale == '') {
@@ -10455,6 +10465,7 @@ export function DiseaseG({route, navigation}) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
         if (diseaseData.scale == '4' || diseaseData.scale == '') {
@@ -12086,6 +12097,7 @@ export function DiseaseH({route, navigation}) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
+          handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
         if (diseaseData.scale == '4' || diseaseData.scale == '') {
