@@ -3,7 +3,7 @@ import {ProgressBar} from 'react-native-paper';
 import {tailwind} from 'react-native-tailwindcss';
 import {useFocusEffect} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {View, Text, Image, FlatList, StyleSheet} from 'react-native';
+import {View, Text, Image, FlatList, StyleSheet,Dimensions} from 'react-native';
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
 import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
@@ -86,8 +86,13 @@ export default function Main({navigation, route}) {
   // 当页面改变时,清空当前选中
   React.useEffect(() => setNowEdit(null), [pageType]);
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+
   // 当部件列表变化时 重新设置部件表格的数据
   React.useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    console.log('当前屏幕宽度',windowWidth);
+    setScreenWidth(windowWidth)
     if(memberList.length>0){
       setTable1Data(listToPage(memberList, pageRow));
     }else{
@@ -370,9 +375,13 @@ export default function Main({navigation, route}) {
               disabled: !nowEdit,
             },
           ]}>
-          {/* <View style={[styles.tableCard,{backgroundColor:'rgba(168,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+          {/* <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
             </View> */}
-          <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+          <View style={
+            screenWidth > 830 ? [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}] 
+            :
+            [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+          }>
             {/* 左侧 */}
             <View style={[styles.card, theme.primaryBgStyle]}>
               {/* tab */}

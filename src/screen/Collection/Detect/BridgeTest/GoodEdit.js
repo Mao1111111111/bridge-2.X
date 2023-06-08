@@ -2,7 +2,7 @@ import React from 'react';
 import uuid from 'react-native-uuid';
 import {Chip} from 'react-native-paper';
 import {tailwind} from 'react-native-tailwindcss';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet,Dimensions} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
@@ -48,6 +48,8 @@ export default function GoodEdit({route, navigation}) {
   // 设置版本号
   useFocusEffect(React.useCallback(() => setVersion(uuid.v4()), []));
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+
   // 进入标记良好界面就将编辑记录存入数据库
   React.useEffect(()=>{
     list.forEach(item =>
@@ -60,6 +62,9 @@ export default function GoodEdit({route, navigation}) {
         binddate: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       }),
     );
+
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
   },[])
 
   // 初始化数据 -- 有问题
@@ -177,7 +182,12 @@ export default function GoodEdit({route, navigation}) {
         <Content
           onBack={goBack}
         >
-          <View style={[theme.primaryBgStyle, styles.card, tailwind.flex1, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+          {/* [theme.primaryBgStyle, styles.card, tailwind.flex1, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}] */}
+          <View style={
+            screenWidth > 830 ? [theme.primaryBgStyle, styles.card, tailwind.flex1, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]
+            :
+            [theme.primaryBgStyle, styles.card, tailwind.flex1, {backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+          }>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               <View style={[styles.flex2]}>
                 {/* 描述 */}

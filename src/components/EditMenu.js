@@ -1,7 +1,7 @@
 // 编辑侧边按钮菜单 - 左侧
 // 右侧按钮在文件CommonView里
 import React,{useState,useEffect} from 'react';
-import {NativeModules, Button, Image,TouchableOpacity, Pressable} from 'react-native';
+import {NativeModules, Button, Image,TouchableOpacity, Pressable,Dimensions} from 'react-native';
 import {CircleButton} from './Button';
 import {View} from 'react-native';
 import {tailwind} from 'react-native-tailwindcss';
@@ -33,6 +33,7 @@ export default function EditMenu({
   const [goAheadImg, setGoAheadImg] = useState() //页面前进 - 允许点击
   const [goAheadDisImg, setGoAheadDisImg] = useState() //页面前进 - 禁用
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
 
   useEffect(() => {
     // console.log('223344');
@@ -57,6 +58,8 @@ export default function EditMenu({
     setGoAheadImg(goAheadImg)
     let goAheadDisImg = require('../iconImg/goAheadDis.png')
     setGoAheadDisImg(goAheadDisImg)
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
   }, [])
 
            
@@ -144,8 +147,14 @@ export default function EditMenu({
       <TouchableOpacity>
         {/* 这里是控制按钮的显示效果 */}
         <Pressable onPressIn={addPulldown} onPressOut={addPullup} onPress={onAdd} disabled={!onAdd}>
-          <Image style={
+          {/* <Image style={
             { height: 45, width: 45, alignItems: 'center' }}
+            source={onAdd ? addImg : addDisImg}
+          /> */}
+          <Image style={
+            screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] : 
+            [{ height: 35, width: 35, alignItems: 'center',right:8 }]
+          }
             source={onAdd ? addImg : addDisImg}
           />
         </Pressable>
@@ -165,7 +174,9 @@ export default function EditMenu({
       <View>
         <Pressable onPressIn={editPulldown} onPressOut={editPullup} onPress={onEdit} disabled={!onEdit}>
           <Image style={
-            { height: 45, width: 45, alignItems: 'center' }}
+            screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] : 
+            [{ height: 35, width: 35, alignItems: 'center',right:8 }]
+          }
             source={onEdit ? editImg : editDisImg}
           />
         </Pressable>
@@ -178,7 +189,9 @@ export default function EditMenu({
       <View>
         <Pressable onPressIn={deletePulldown} onPressOut={deletePullup} onPress={onDelete} disabled={!onDelete}>
           <Image style={
-            { height: 45, width: 45, alignItems: 'center' }}
+            screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] : 
+            [{ height: 35, width: 35, alignItems: 'center',right:8 }]
+          }
             source={onDelete ? deleteImg : deleteDisImg}
           />
         </Pressable>
@@ -188,7 +201,9 @@ export default function EditMenu({
       <View>
         <Pressable onPressIn={goBackPulldown} onPressOut={goBackPullup} onPress={onBack} disabled={!onBack}>
           <Image style={
-            { height: 45, width: 45, alignItems: 'center' }}
+            screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] : 
+            [{ height: 35, width: 35, alignItems: 'center',right:8 }]
+          }
             source={onBack ? goBackImg : goBackDisImg}
           />
         </Pressable>
@@ -198,7 +213,9 @@ export default function EditMenu({
       <View>
         <Pressable onPressIn={goAheadPulldown} onPressOut={goAheadPullup} onPress={onAhead} disabled={!onAhead}>
           <Image style={
-            { height: 45, width: 45, alignItems: 'center' }}
+            screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] : 
+            [{ height: 35, width: 35, alignItems: 'center',right:8 }]
+          }
             source={onAhead ? goAheadImg : goAheadDisImg}
           />
         </Pressable>

@@ -12,6 +12,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Dimensions
 } from 'react-native';
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
@@ -232,6 +233,7 @@ export default function Member({route, navigation,item}) {
   // data是部件数据 data = {"done": 2, "lastEditDate": "2023-04-06 14:27:13", "membertype": "b200001", "title": "桥台", "total": 2, "type": "member"}
   const {data} = route.params;
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
 
   useFocusEffect(
     React.useCallback(() => {
@@ -245,6 +247,8 @@ export default function Member({route, navigation,item}) {
   );
 
   React.useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
     if (!partsList || !data || !basememberinfo) {
       return;
     }
@@ -484,9 +488,12 @@ export default function Member({route, navigation,item}) {
                 onPress: handleGoodAll,
               },
             ]}>
-            {/* <View style={[styles.tableCard,{backgroundColor:'rgba(168,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
-            </View> */}
-            <View style={[theme.primaryBgStyle, styles.card, tailwind.flex1, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+            {/* <View style={[theme.primaryBgStyle, styles.card, tailwind.flex1, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}></View> */}
+            <View style={
+              screenWidth > 830 ? [theme.primaryBgStyle, styles.card, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}] 
+              :
+              [theme.primaryBgStyle, styles.card, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+            }>
               {/* 左侧构件列表 */}
               <View style={[styles.listBox]}>
                 <BigData

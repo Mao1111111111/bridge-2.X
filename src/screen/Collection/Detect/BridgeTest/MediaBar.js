@@ -1,6 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import {tailwind} from 'react-native-tailwindcss';
-import {View, Pressable, Image, ImageBackground} from 'react-native';
+import {View, Pressable, Image, ImageBackground,Dimensions} from 'react-native';
 import {RecordingModal} from '../../../../components/Audio';
 import Camera from '../../../../components/Camera';
 import Album from '../../../../components/Album';
@@ -37,6 +37,8 @@ export default function MediaBar({
   const [cameraImg, setCameraImg] = useState()
   const [cameraDisImg, serCameraDisImg] = useState()
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+
   useEffect(() => {
     let cameraImg = require('../../../../iconImg/camera.png')
     setCameraImg(cameraImg)
@@ -46,6 +48,9 @@ export default function MediaBar({
     setAddPhotoImg(addPhotoImg)
     let addPhotoDisImg = require('../../../../iconImg/addPhotoDis.png')
     setAddPhotoDisImg(addPhotoDisImg)
+
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
   }, [])
 
   const addPhotoPulldown = () => {
@@ -75,10 +80,14 @@ export default function MediaBar({
         disabled={disableExternal}
         onPress={externalChange}
       /> */}
+      {/* { height: 45, width: 45, alignItems: 'center' } */}
       {/* 生成一张虚拟照片 */}
       <Pressable disabled={disableExternal} onPress={externalChange}
       onPressIn={addPhotoPulldown} onPressOut={addPhotoPullup}>
-        <Image style={{ height: 45, width: 45, alignItems: 'center' }}
+        <Image style={
+          screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+          [{ height: 35, width: 35, alignItems: 'center',left:8 }]
+        }
           source={disableExternal ? addPhotoDisImg : addPhotoImg}
         />
       </Pressable>

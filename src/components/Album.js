@@ -1,6 +1,6 @@
 // 打开本地文件夹
 import React,{useState, useEffect} from 'react';
-import {View, Pressable, Image, ImageBackground} from 'react-native';
+import {View, Pressable, Image, ImageBackground,Dimensions} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {CircleButton} from './Button';
 
@@ -34,11 +34,16 @@ export default function Album({onChange, type, disabled}) {
   const [fileImg, setFileImg] = useState()
   const [fileDisImg, setFileDisImg] = useState()
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+
   useEffect(() => {
     let fileImg = require('../iconImg/file.png')
     setFileImg(fileImg)
     let fileDisImg = require('../iconImg/fileDis.png')
     setFileDisImg(fileDisImg)
+
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
   },[])
 
   // 按下时
@@ -56,7 +61,10 @@ export default function Album({onChange, type, disabled}) {
   return (
     // <CircleButton disabled={disabled} name="folder-open" onPress={openCamera} />
     <Pressable disabled={disabled} onPress={openCamera} onPressIn={albumPulldown} onPressOut={albumPullup}>
-      <Image style={{ height: 45, width: 45, alignItems: 'center' }}
+      <Image style={
+          screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+          [{ height: 35, width: 35, alignItems: 'center',left:8 }]
+        }
         source={disabled ? fileDisImg : fileImg}
       />
     </Pressable>

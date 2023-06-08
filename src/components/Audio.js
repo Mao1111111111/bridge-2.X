@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Easing,
   Platform,
-  Text, Pressable, Image
+  Text, Pressable, Image,Dimensions
 } from 'react-native';
 import AudioRecorderPlayer, {
   AudioEncoderAndroidType,
@@ -47,6 +47,8 @@ export function Recording({onChange}) {
     outputRange: [2, 7],
     extrapolate: 'clamp',
   });
+
+  
 
   React.useEffect(() => {
     return () => {
@@ -148,11 +150,16 @@ export function RecordingModal({onChange, disabled}) {
   const [audioImg, setAudioImg] = useState()
   const [audioDisImg, setAudioDisImg] = useState()
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+
   useEffect(() => {
     let audioImg = require('../iconImg/audio.png')
     setAudioImg(audioImg)
     let audioDisImg = require('../iconImg/audioDis.png')
     setAudioDisImg(audioDisImg)
+
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
   },[])
 
   const audioPulldown = () => {
@@ -173,7 +180,10 @@ export function RecordingModal({onChange, disabled}) {
       /> */}
       <Pressable disabled={disabled} onPress={() => setVisible(true)}
       onPressIn={audioPulldown} onPressOut={audioPullup}>
-        <Image style={{ height: 45, width: 45, alignItems: 'center' }}
+        <Image style={
+          screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+          [{ height: 35, width: 35, alignItems: 'center',left:8}]
+        }
           source={disabled ? audioDisImg : audioImg}
         />
       </Pressable>

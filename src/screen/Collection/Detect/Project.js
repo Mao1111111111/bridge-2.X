@@ -2,7 +2,7 @@
 import React,{useState,useEffect} from 'react';
 import Form from '../components/ProjectForm';
 import {tailwind} from 'react-native-tailwindcss';
-import {View, StyleSheet, FlatList, Text,Image,TouchableOpacity, Pressable, ImageBackground} from 'react-native';
+import {View, StyleSheet, FlatList, Text,Image,TouchableOpacity, Pressable, ImageBackground,Dimensions} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import Table from '../../../components/Table';
 import Select from '../../../components/Select';
@@ -89,6 +89,7 @@ export default function Project({navigation}) {
   const [deleteImg, setDeleteImg] = useState() // 删除 - 允许点击
   const [deleteDisImg, setdeleteDisImg] = useState() // 删除 - 禁用
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
 
   useEffect(() => {
     // console.log('223344');
@@ -97,6 +98,9 @@ export default function Project({navigation}) {
     setDeleteImg(deleteImg)
     let deleteDisImg = require('../../../../src/iconImg/deleteDis.png')
     setdeleteDisImg(deleteDisImg)
+    const windowWidth = Dimensions.get('window').width;
+    console.log('当前屏幕宽度',windowWidth);
+    setScreenWidth(windowWidth)
   }, [])
 
   React.useEffect(() => {
@@ -350,7 +354,13 @@ export default function Project({navigation}) {
           onPress: handleStatusChange,
         },
       ]}>
-      <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+      {/* <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}> */}
+      {/* <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:29,width:715,top:1,borderRadius:5}]}> */}
+      <View style={
+        screenWidth > 830 ? [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}] 
+        :
+        [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+      }>
          {/* 检索 */}
       <View style={[
         styles.searchCard,

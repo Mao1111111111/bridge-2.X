@@ -1,6 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import {tailwind} from 'react-native-tailwindcss';
-import {View, TouchableWithoutFeedback, Keyboard, Image} from 'react-native';
+import {View, TouchableWithoutFeedback, Keyboard, Image,Dimensions} from 'react-native';
 import {CircleButton} from './Button';
 import Headerbar from './Headerbar';
 import EditMenu from './EditMenu';
@@ -16,7 +16,7 @@ export function Box({navigation,route,pid, children, headerItems,project,project
     // 点击空白处，收起键盘
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={[tailwind.flex1]}>
-        <View style={[tailwind.mX19,{position:'absolute',top:12,left:85}]}>
+        <View style={[tailwind.mX19,{position:'absolute',top:12,left:73}]}>
           {/* 顶部导航 */}
           <Headerbar navigation={navigation} route={route} items={headerItems || []} pid={pid || ''} projectList={projectList} project={project} bridge={bridge} labelname={labelname || ''} membername={membername || ''} />
         </View>
@@ -56,6 +56,8 @@ export function Content({
   const [allGoodImg, setAllGoodImg] = useState() //全部确认
   const [allGoodDisImg, setAllGoodDisImg] = useState() //全部确认 禁用
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+
   useEffect(() => {
     // 设置按钮的初始状态
     // console.log('operations', operations);
@@ -83,6 +85,9 @@ export function Content({
     setAllGoodImg(allGoodImg)
     let allGoodDisImg = require('../iconImg/allGoodDis.png')
     setAllGoodDisImg(allGoodDisImg)
+
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
   }, [])
 
   // 图标按下 变化
@@ -158,12 +163,14 @@ export function Content({
             operations.map((operation, index) => (
               <React.Fragment key={index}>
                 <View style={tailwind.mY1} />
-                {/* <CircleButton {...operation} /> */}
+                {/* <CircleButton {...operation} { height: 45, width: 45, alignItems: 'center' }/> */}
                 <View>
                     {/* Pressable 按钮点击效果 */}
                     <Pressable {...operation} onPressIn={() => imgPulldown(operation.img)} onPressOut={() => imgPullup(operation.img)}>
                       <Image style={
-                      { height: 45, width: 45, alignItems: 'center' }}
+                        screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+                        [{ height: 35, width: 35, alignItems: 'center',left:8 }]
+                      }
                       source={
                         operation.img == 'singleUpload' ? singleUploadImg : 
                         (operation.img == 'allUpload' ? allUploadImg :
@@ -219,6 +226,8 @@ export default function CommonView({
   const [cloneImg, setCloneImg] = useState() // 克隆
   const [cloneDisImg, setCloneDisImg] = useState() // 克隆 - 禁用
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+
   useEffect(() => {
     // console.log('2233445',projectList);
     // 设置按钮的初始状态
@@ -233,6 +242,9 @@ export default function CommonView({
     setCloneImg(cloneImg)
     let cloneDisImg = require('../iconImg/cloneDis.png')
     setCloneDisImg(cloneDisImg)
+    const windowWidth = Dimensions.get('window').width;
+    console.log('当前屏幕宽度',windowWidth);
+    setScreenWidth(windowWidth)
   }, [])
 
 
@@ -324,7 +336,12 @@ export default function CommonView({
             {children}
           </View>
           {/* 右侧 */}
-          <View style={tailwind.mL3}>
+          {/* <View style={tailwind.mL3}> */}
+          {/* <View style={[tailwind.mL3,{left:10}]}> */}
+          <View style={
+            screenWidth > 830 ? [tailwind.mL3] :
+            [tailwind.mL3,{left:8}]
+          }>
             {/* 帮助 按钮 */}
             {/* <CircleButton name="help" /> */}
             {/* 右侧图标整体距离顶部的距离 */}
@@ -335,12 +352,15 @@ export default function CommonView({
                 <React.Fragment key={index}>
                   {/* 右侧各图标之间的距离 */}
                   <View style={tailwind.mY1} />
-                  {/* 项目变更‘完成’按钮 */}
+                  {/* 项目变更‘完成’按钮 { height: 45, width: 45, alignItems: 'center' }*/}
                   {/* <CircleButton {...operation} /> */}
                   <View>
                     <Pressable {...operation} onPressIn={() => donePulldown(operation.img)} onPressOut={() => donePullup(operation.img)}>
                       <Image style={
-                      { height: 45, width: 45, alignItems: 'center' }}
+                      screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+                      { height: 35, width: 35, alignItems: 'center'}
+                        
+                    }
                       // source={operation.disabled ? doneDisImg : doneImg}
                       source={
                         operation.disabled ? doneDisImg :

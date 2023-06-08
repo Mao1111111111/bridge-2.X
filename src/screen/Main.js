@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import {StatusBar, View, StyleSheet, Image, ImageBackground, Text, Pressable} from 'react-native';
+import {StatusBar, View, StyleSheet, Image, ImageBackground, Text, Pressable,Dimensions} from 'react-native';
 import {ActivityIndicator} from 'react-native-paper';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {Context} from '../providers/ThemeProvider';

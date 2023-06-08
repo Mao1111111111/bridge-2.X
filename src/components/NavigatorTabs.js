@@ -1,6 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import {tailwind} from 'react-native-tailwindcss';
-import {Text,View, TouchableOpacity, StyleSheet, Animated, Image, StatusBar,Pressable, ImageBackground} from 'react-native';
+import {Text,View, TouchableOpacity, StyleSheet, Animated, Image, StatusBar,Pressable, ImageBackground,Dimensions} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Context} from '../providers/GlobalProvider';
@@ -90,6 +90,8 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
   const [menuTitle, setMenuTitle] = useState('采集平台') 
 
   React.useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    console.log('当前屏幕宽度',windowWidth);
     if (isTabBarShow) {
       Animated.timing(tabHeight, {
         toValue: 1,

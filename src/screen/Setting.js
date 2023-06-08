@@ -2,7 +2,7 @@ import React,{useState,useEffect} from 'react';
 import dayjs from 'dayjs';
 import {tailwind} from 'react-native-tailwindcss';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {View, Text, TouchableOpacity, FlatList, StyleSheet, ImageBackground, Pressable, Image} from 'react-native';
+import {View, Text, TouchableOpacity, FlatList, StyleSheet, ImageBackground, Pressable, Image,Dimensions} from 'react-native';
 import Table from '../components/Table';
 import Modal from '../components/Modal';
 import {Password} from '../components/Input';
@@ -33,6 +33,8 @@ const BaseData = ({onLoading, isLoading}) => {
   // 数据更新按钮样式
   const [updateData, setUpdateData] = useState()
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+
   const {
     state: {userInfo, networkState},
     dispatch,
@@ -41,6 +43,8 @@ const BaseData = ({onLoading, isLoading}) => {
   useEffect(() => {
     let updateData = require('../iconImg/update.png')
     setUpdateData(updateData)
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
   }, [])
 
   React.useEffect(() => {
@@ -111,7 +115,12 @@ const BaseData = ({onLoading, isLoading}) => {
 
   return (
     <View>
-      <View style={tailwind.flex1}>
+      <View style={
+        screenWidth > 830 ? [tailwind.flex1]
+        :
+        [tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+      }>
+        {/* [,] */}
         <View style={tailwind.mY2} />
         <View style={[tailwind.flexRow,{height: 30}]}>
           {/* <Text style={[tailwind.textLg, tailwind.fontBold]}>基础数据</Text> */}
@@ -166,7 +175,11 @@ const BaseData = ({onLoading, isLoading}) => {
         }]}
           onPressIn={updatePull} onPressOut={updateOut} loading={isLoading} onPress={handleUpdate}
         >
-          <Image style={{ width: 45, height: 45, alignItems: 'center' }}
+          {/* { width: 45, height: 45, alignItems: 'center' } */}
+          <Image style={
+            screenWidth > 830 ? [{ width: 45, height: 45, alignItems: 'center' }]
+            : [{ width: 35, height: 35, alignItems: 'center',right:23 }]
+          }
             source={updateData}
           ></Image>
           <Text style={[{
@@ -268,6 +281,12 @@ const User = () => {
     form.current.open();
   };
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+  useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
+  }, [])
+
   return (
     <View>
       {/* <Text style={[tailwind.textLg, tailwind.fontBold]}>用户信息</Text>
@@ -286,7 +305,11 @@ const User = () => {
         退出登录
       </Button>
       <PINForm ref={form} userInfo={userInfo} /> */}
-      <View style={tailwind.flex1}>
+      <View style={
+        screenWidth > 830 ? [tailwind.flex1]
+        :
+        [tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+      }>
         <View style={tailwind.mY2} />
         <View style={[tailwind.flexRow,{height: 30}]}>
           {/* <Text style={[tailwind.textLg, tailwind.fontBold]}>基础数据</Text> */}
@@ -427,6 +450,12 @@ const Debug = () => {
     }
   };
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+  useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
+  }, [])
+
   return (
     <View>
       {/* <Button
@@ -445,7 +474,11 @@ const Debug = () => {
         >
         导出数据
       </Button> */}
-      <View style={tailwind.flex1}>
+      <View style={
+        screenWidth > 830 ? [tailwind.flex1]
+        :
+        [tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+      }>
       <View style={tailwind.mY2} />
         <View style={[tailwind.flexRow,{height: 30}]}>
           {/* <Text style={[tailwind.textLg, tailwind.fontBold]}>基础数据</Text> */}
@@ -495,6 +528,8 @@ export default function Setting() {
 
   const [isLoading, setIsLoading] = React.useState(false);
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+
   const getPage = () => {
     switch (active) {
       case 'basedata':
@@ -509,6 +544,11 @@ export default function Setting() {
         return <></>;
     }
   };
+
+  useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
+  },[])
 
   return (
     <View style={tailwind.flex1}>
@@ -579,21 +619,34 @@ export default function Setting() {
         <View style={tailwind.mY8} />
         {/* 基础数据 */}
         <Pressable onPress={() => isLoading || setActive('basedata')}>
-          <Image style={{ width: 55, height: 39, alignItems: 'center' }}
+          {/* { width: 55, height: 39, alignItems: 'center' } */}
+          <Image style={
+            screenWidth > 830 ? [{ width: 55, height: 39, alignItems: 'center' }]
+            :
+            [{ width: 35, height: 24, alignItems: 'center' }]
+          }
             source={require('../iconImg/settingData.png')}
           ></Image>
         </Pressable>
         <View style={tailwind.mY1} />
         {/* 用户信息 */}
         <Pressable onPress={() => isLoading || setActive('user')}>
-          <Image style={{ width: 55, height: 39, alignItems: 'center' }}
+          <Image style={
+            screenWidth > 830 ? [{ width: 55, height: 39, alignItems: 'center' }]
+            :
+            [{ width: 35, height: 24, alignItems: 'center' }]
+          }
             source={require('../iconImg/settingUser.png')}
           ></Image>
         </Pressable>
         <View style={tailwind.mY1} />
         {/* 程序调试 */}
         <Pressable onPress={() => isLoading || setActive('debug')}>
-          <Image style={{ width: 55, height: 39, alignItems: 'center' }}
+          <Image style={
+            screenWidth > 830 ? [{ width: 55, height: 39, alignItems: 'center' }]
+            :
+            [{ width: 35, height: 24, alignItems: 'center' }]
+          }
             source={require('../iconImg/settingDebug.png')}
           ></Image>
         </Pressable>

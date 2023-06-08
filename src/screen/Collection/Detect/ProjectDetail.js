@@ -1,6 +1,6 @@
 // 导入 、克隆桥梁
 import React,{useState,useEffect} from 'react';
-import {View, Text, StyleSheet, FlatList, TouchableOpacity,ImageBackground} from 'react-native';
+import {View, Text, StyleSheet, FlatList, TouchableOpacity,ImageBackground,Dimensions} from 'react-native';
 import {Divider} from 'react-native-paper';
 import {useFocusEffect} from '@react-navigation/native';
 import {tailwind} from 'react-native-tailwindcss';
@@ -83,6 +83,7 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
     close,
   }));
 
+  
   // 当检索条件 或 页码 变化时触发
   React.useEffect(() => {
     if (!page) {
@@ -646,8 +647,12 @@ export default function ProjectDetail({route, navigation}) {
   // 桥梁名称列表
   const [bridgeList, setBridgeList] = useState()
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+
   // 检索条件变化、页码变化、项目变化时 触发
   React.useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
     if (!page) {
       return;
     }
@@ -829,7 +834,11 @@ export default function ProjectDetail({route, navigation}) {
           onPress: () => cloneRef.current.open(project),
         },
       ]}>
-        <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+        <View style={
+        screenWidth > 830 ? [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}] 
+        :
+        [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+      }>
           {/* 检索 */}
           <View style={[styles.searchCard]}>
             <TextInput

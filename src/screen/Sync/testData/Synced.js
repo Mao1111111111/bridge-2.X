@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, FlatList} from 'react-native';
+import {View, StyleSheet, FlatList,Dimensions} from 'react-native';
 import {tailwind} from 'react-native-tailwindcss';
 import Table from '../../../components/Table';
 import Checkbox from '../../../components/Checkbox';
@@ -28,9 +28,13 @@ export default function Synced({list, onUpload}) {
 
   const [nowEdit, setNowEdit] = React.useState(new Set());
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+
   React.useEffect(() => {
     setNowEdit(new Set());
     setTableData(listToPage(list, 10));
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
   }, [list]);
 
   const handleEdit = item => {
@@ -66,7 +70,11 @@ export default function Synced({list, onUpload}) {
           onPress: handleAll,
         },
       ]}>
-      <View style={[styles.card, theme.primaryBgStyle]}>
+      <View style={
+        screenWidth > 830 ? [styles.card, theme.primaryBgStyle,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]
+        :
+        [styles.card, theme.primaryBgStyle,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+      }>
         <Table.Box>
           <Table.Header>
             <Table.Title title="选择" flex={1} />

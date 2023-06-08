@@ -2,7 +2,7 @@
   拍照
  */
 import React,{useState,useEffect} from 'react';
-import {View, Pressable, Image, ImageBackground} from 'react-native';
+import {View, Pressable, Image, ImageBackground,Dimensions} from 'react-native';
 import RNFS from 'react-native-fs';
 import uuid from 'react-native-uuid';
 import {CircleButton} from './Button';
@@ -48,6 +48,8 @@ export default function Camera({onChange, type, disabled}) {
   const [videoImg, setVideoImg] = useState()
   const [videoDisImg, setVideoDisImg] = useState()
 
+  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+
   useEffect(() => {
     let fileImg = require('../iconImg/file.png')
     setFileImg(fileImg)
@@ -59,6 +61,9 @@ export default function Camera({onChange, type, disabled}) {
     setVideoImg(videoImg)
     let videoDisImg = require('../iconImg/videoDis.png')
     setVideoDisImg(videoDisImg)
+
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
   }, [])
 
   const cameraPulldown = (type) => {
@@ -91,7 +96,10 @@ export default function Camera({onChange, type, disabled}) {
     <Pressable disabled={disabled} onPress={openCamera}
     onPressIn={() => cameraPulldown(type)}
     onPressOut={() => cameraPullup(type)}>
-      <Image style={{ height: 45, width: 45, alignItems: 'center' }}
+      <Image style={
+          screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+          [{ height: 35, width: 35, alignItems: 'center',left:8}]
+        }
         source={
           disabled && type === 'photo' ? cameraDisImg : // 按钮为禁用状态时，分别判断type的值，以让相机与摄像机显示对应的图片
           (disabled && type !== 'photo' ? videoDisImg :

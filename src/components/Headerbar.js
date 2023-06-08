@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import {tailwind} from 'react-native-tailwindcss';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image,Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Context} from '../providers/ThemeProvider';
 import {Context as GlobalContext} from '../providers/GlobalProvider';
@@ -49,10 +49,14 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
   // 桥梁所有数据
   const [brigeAllValue, setBrigeAllValue] = React.useState([])
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
 
   React.useEffect(()=> {
     // console.log('pid6---',project,projectList);
     // console.log('items.name',items[0].name);
+    const windowWidth = Dimensions.get('window').width;
+    console.log('当前屏幕宽度',windowWidth);
+    setScreenWidth(windowWidth)
     getProStorage()
     getBriStorage()
   },[])
@@ -195,8 +199,13 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
         )
       )} */}
       {pid ? (
-        <View style={[styles.pid]}>
-          <Pid pid={pid} size="medium" />
+        <View style={
+          screenWidth > 830 ? [styles.pid] :
+          [styles.pidSmall]
+        }>
+          <Pid pid={pid} size={
+            screenWidth > 830 ? 'medium' :'small'
+          } />
         </View>
       ) : (
         <></>
@@ -324,7 +333,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
                     <View style={[tailwind.flex1,tailwind.flexRow]}>
                       <TouchableOpacity onPress={() => topage('项目')}>
                         <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:14}]}>
-                          项目：{project}
+                          丨 项目：{project}
                         </Text>
                       </TouchableOpacity>
                       
@@ -345,7 +354,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
                     <></>
                   ) : (
                     membername == undefined || membername == '' ? (
-                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:12}]}>部件：{labelname}</Text>
+                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:12}]}>     部件：{labelname}</Text>
                     ) : (
                       <></>
                     )
@@ -356,8 +365,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
                     <></>
                   ) : (
                     <View style={[tailwind.flex1,tailwind.flexRow]}>
-                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:12}]}>
-                        部件：{labelname}
+                      <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:12}]}>     部件：{labelname}
                       </Text>
                       <Text>    \   </Text>
                       <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:12}]}>
@@ -396,6 +404,15 @@ const styles = StyleSheet.create({
     position:'absolute',
     top:495,
     left:635,
+    // width:60
+  },
+  pidSmall: {
+    ...tailwind.mL2,
+    ...tailwind.mB1,
+    ...tailwind.justifyCenter,
+    position:'absolute',
+    top:495,
+    left:625,
     // width:60
   },
   pid1: {

@@ -3,7 +3,7 @@ import {Modal, Portal} from 'react-native-paper';
 import {tailwind} from 'react-native-tailwindcss';
 import {useFocusEffect} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, FlatList, TouchableOpacity, StyleSheet,Dimensions} from 'react-native';
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
 import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
@@ -278,6 +278,13 @@ export default function DiseaseList({route, navigation}) {
   const typeModelRef = React.useRef();
 
   const {title, list, dataGroupId, routeParams} = route.params;
+
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+
+  React.useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
+  },[])
 
   useFocusEffect(
     React.useCallback(() => {
@@ -594,7 +601,12 @@ export default function DiseaseList({route, navigation}) {
           onDelete={nowEdit && handleDelete}
           onBack={goBack}
           onAhead={nowEdit && (() => handleEdit(nowEdit))}>
-          <View style={[styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+            {/* [styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}] */}
+          <View style={
+            screenWidth > 830 ? [styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]
+            :
+            [styles.card, {backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+          }>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               <View style={[tailwind.flex1]}>
                 <Text style={[styles.title, {color:'#2b427d'}]}>

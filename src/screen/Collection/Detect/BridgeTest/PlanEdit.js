@@ -2,7 +2,7 @@
 import React from 'react';
 import {tailwind} from 'react-native-tailwindcss';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {View, Text, Image, StyleSheet, FlatList} from 'react-native';
+import {View, Text, Image, StyleSheet, FlatList,Dimensions} from 'react-native';
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
 import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
@@ -62,8 +62,12 @@ export default function PlanEdit({navigation, route}) {
   // 类别
   const category = 'plan';
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+
   // 初始化
   React.useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
     storage.getBaseItem('桥梁各部件病害信息').then(res => {
       if (res.data && res.data.length) {
         setMembercheck(res.data[0]);
@@ -293,7 +297,10 @@ export default function PlanEdit({navigation, route}) {
       <HeaderTabs disabled={true} />
       <View style={tailwind.flex1}>
         <Content onBack={goBack}>
-          <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5,padding:10}]}>
+          <View style={
+            screenWidth > 830 ? [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5,padding:10}] :
+            [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5,padding:10}]
+          }>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               {/* 左侧 */}
               <View style={[tailwind.flex1]}>

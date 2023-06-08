@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Dimensions
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Context} from './Provider';
@@ -68,9 +69,13 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
     baseData,
   });
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+
   React.useEffect(() => {
     setDiseaseData(itemData);
     console.log('diseaseEdit2 kuaMembertype',route.params.data.kuaMembertype);
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
   }, [itemData]);
 
   React.useEffect(() => {
@@ -271,7 +276,12 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
         // onAdd={false}
         onBack={goBack}
         >
-          <View style={[styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
+          {/* [styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}] */}
+          <View style={
+            screenWidth > 830 ? [styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]
+            :
+            [styles.card, {backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+          }>
           
             <View style={[tailwind.flex1]}>
               <View style={tailwind.flexRow}>

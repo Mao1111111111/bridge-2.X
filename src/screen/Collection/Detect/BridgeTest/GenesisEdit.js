@@ -2,7 +2,7 @@
 import React from 'react';
 import {tailwind} from 'react-native-tailwindcss';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {View, Text, Image, StyleSheet, FlatList} from 'react-native';
+import {View, Text, Image, StyleSheet, FlatList,Dimensions} from 'react-native';
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
 import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
@@ -71,8 +71,12 @@ export default function GenesisEdit({navigation, route}) {
     });
   }, []);
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+
   // 初始化表格数据 -- 当病害列表、检测id变化时，触发
   React.useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
     if (!list.length || !bridgereportid) {
       return;
     }
@@ -312,7 +316,11 @@ export default function GenesisEdit({navigation, route}) {
       {/* 内容 */}
       <View style={tailwind.flex1}>
         <Content onBack={goBack}>
-          <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5,padding:10}]}>
+          {/* [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5,padding:10}] */}
+          <View style={
+            screenWidth > 830 ? [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5,padding:10}] :
+            [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5,padding:10}]
+          }>
             <View style={[tailwind.flex1, tailwind.flexRow]}>
               {/* 左侧 */}
               <View style={[tailwind.flex1]}>

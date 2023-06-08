@@ -1,7 +1,7 @@
 import React from 'react';
 import {tailwind} from 'react-native-tailwindcss';
 import DeviceInfo from 'react-native-device-info';
-import {View, Text, StyleSheet, ImageBackground} from 'react-native';
+import {View, Text, StyleSheet, ImageBackground,Dimensions} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import fs from '../utils/fs';
 import Headerbar from '../components/Headerbar';
@@ -36,6 +36,13 @@ export default function Chart() {
 
   const [uploadFile, setUploadFile] = React.useState(0);
 
+  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+
+  React.useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
+  }, []);
+
   useFocusEffect(
     React.useCallback(() => {
       const getGB = size => ((size || 0) / 1024 / 1024 / 1024).toFixed(2);
@@ -64,7 +71,11 @@ export default function Chart() {
   );
 
   return (
-    <View style={[tailwind.flex1]}>
+    <View style={
+      screenWidth > 830 ? [tailwind.flex1]
+      :
+      [{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5,marginTop:20}]
+    }>
       <ImageBackground
         style={
           [
