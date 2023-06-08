@@ -74,7 +74,7 @@ export default function GoodEdit({route, navigation}) {
       partsCheckstatusData
       .getByDataid(list[0].memberid)
       .then(res => {
-        if (res.length>0) {
+        if ((res.length>0)&&res[0].memberstatus!=='200') {
           const {remark} = JSON.parse(res[0].jsondata);
           setData(remark?{remark}:{});
           remarkRef.current.setValue(remark);
