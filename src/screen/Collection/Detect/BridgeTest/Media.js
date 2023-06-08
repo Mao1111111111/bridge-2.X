@@ -332,15 +332,40 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
         resetName = pileNum + '梁' + defaultFileName
       } else if (pileTitle == '横隔板' || pileTitle == '湿接段' || pileTitle == '铰缝'
         || pileTitle == '湿接缝' || pileTitle == '支座' || pileTitle == '人行道') {
+          // resetName = pileNum + pileTitle + defaultFileName
+          //             1-1-0-1#    支座          支座老化
+          // console.log('pileNum + pileTitle + defaultFileName', pileNum, pileTitle, defaultFileName);
           resetName = pileNum + pileTitle + defaultFileName
+          if (pileTitle == '支座') {
+            // console.log(defaultFileName.indexOf('支座'));
+            if (defaultFileName.indexOf('支座') == 0) {
+              const length = pileTitle.length
+              const reset = defaultFileName.slice(length)
+              resetName = pileNum + pileTitle + reset
+            }
+          }
       } else if (pileTitle == '墩台基础') {
-        resetName = pileNum + '台基础' + defaultFileName
+        console.log('pileNum + pileTitle + defaultFileName', pileNum, pileTitle, defaultFileName);
+        // resetName = pileNum + '基础' + defaultFileName
+        if (defaultFileName.indexOf('基础') == 0) {
+          // const length = pileTitle.length
+          const reset = defaultFileName.slice(2)
+          resetName = pileNum + pileTitle + reset
+        } else {
+          resetName = pileNum + '基础' + defaultFileName
+        }
       } else if (pileTitle == '桥面铺装') {
-        resetName = pileNum + '跨桥面' + defaultFileName
+        // resetName = pileNum + '桥面' + defaultFileName
+        if (defaultFileName.indexOf('桥面') == 0) {
+          const reset = defaultFileName.slice(2)
+          resetName = pileNum + pileTitle + reset
+        } else {
+          resetName = pileNum + '桥面' + defaultFileName
+        }
       } else {
         resetName = mediaMemberName + mediaDiseaseName
       }
-      console.log('???',defaultFileName);
+      // console.log('???',defaultFileName);
       return resetName;
     }
     // 部件 Member 传入

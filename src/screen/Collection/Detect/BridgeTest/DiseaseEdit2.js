@@ -186,8 +186,6 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
     } catch (error) {
       console.log('diseaseEdit2--',error);
     }
-    
-    // console.log('route.params.jsondata::::',route.params.data.jsondata);
   },[baseData])
 
   const handleScaleOpen = () => scaleInfoRef.current.open();
