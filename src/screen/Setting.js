@@ -175,7 +175,6 @@ const BaseData = ({onLoading, isLoading}) => {
         }]}
           onPressIn={updatePull} onPressOut={updateOut} loading={isLoading} onPress={handleUpdate}
         >
-          {/* { width: 45, height: 45, alignItems: 'center' } */}
           <Image style={
             screenWidth > 830 ? [{ width: 45, height: 45, alignItems: 'center' }]
             : [{ width: 35, height: 35, alignItems: 'center',right:23 }]
