@@ -177,7 +177,7 @@ export default function Login() {
             companyname:userInfo.company.name
           },
           groups:[],
-          nickname:'test11',
+          nickname:userInfo.nickname,
           roles:userInfo.role,
           userid:userInfo.userid,
           username:userInfo.username

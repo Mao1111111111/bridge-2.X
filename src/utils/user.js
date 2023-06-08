@@ -1,5 +1,5 @@
 const host = 'http://testdata.api.jianlide.cn:1088/api';
-const testHost = 'http://114.116.196.47:10808'
+const testHost = 'http://server1.api.jianlide.cn:5000'
 
 // 获取授权，得到access_token
 export const fetchAuthorize = credentials =>
