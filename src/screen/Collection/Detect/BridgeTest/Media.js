@@ -150,7 +150,7 @@ const RowMediaComponent = ({item, onPress, isActive}) => {
 };
 
 // 媒体组件
-export default function Media({categoryList, type, dataid, pid, defaultFileName,pileTitle,pileNum,memberList,route,navigation}) {
+export default function Media({categoryList, type, dataid, pid, defaultFileName,pileTitle,pileNum,memberList,route,navigation,mediaMemberName,mediaDiseaseName}) {
   // categoryList-类型列表，defaultFileName-默认文件名
   // 全局样式
   const {
@@ -338,7 +338,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
       } else if (pileTitle == '桥面铺装') {
         resetName = pileNum + '跨桥面' + defaultFileName
       } else {
-        resetName = pileTitle
+        resetName = mediaMemberName + mediaDiseaseName
       }
       console.log('???',defaultFileName);
       return resetName;

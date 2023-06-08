@@ -157,65 +157,38 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
     };
   }, [baseData, saveData, version, route.params, dispatch]);
 
+  const [mediaMemberName, setMediaMemberName] = React.useState()
+  const [mediaDiseaseName, setMediaDiseaseName] = React.useState()
+
   React.useEffect(()=>{
     // console.log('routeroute9 jsondata:', route.params.memberList[0].membername);
     // console.log('构件:', route.params.title);
-    setPileTitle(route.params.title)
-    // console.log('桩号:', route.params.memberList[0].membername);
-    setPileNum(route.params.memberList[0].membername)
-    // console.log('memberLength:', route.params.data.jsondata.memberLength);
-    let list = []
-    if(baseData.membercheckdata&&route.params.thridData){
-      route.params.thridData.datastr.forEach(item=>{
-        let data = baseData.membercheckdata.find(({strid}) => strid === item)
-        list.push(data)
-      })
-      //这里的list就是字段数据
-      // console.log("listlistlist",list);
+    try {
+      setPileTitle(route.params.title)
+      // console.log('桩号:', route.params.memberList[0].membername);
+      setPileNum(route.params.memberList[0].membername)
+      // 传给media组件的部件名称与病害名称
+      setMediaMemberName(route.params.memberList[0].membername)
+      if (route.params.mediaType == 'add') {
+        setMediaDiseaseName(route.params.thridData.checkinfoshort)
+      } else if (route.params.mediaType == 'edit') {
+        setMediaDiseaseName(route.params.data.jsondata.diseaseName)
+      }
+      let list = []
+      if(baseData.membercheckdata&&route.params.thridData){
+        route.params.thridData.datastr.forEach(item=>{
+          let data = baseData.membercheckdata.find(({strid}) => strid === item)
+          list.push(data)
+        })
+        //这里的list就是字段数据
+        // console.log("listlistlist",list);
+      }
+    } catch (error) {
+      console.log('diseaseEdit2--',error);
     }
+    
     // console.log('route.params.jsondata::::',route.params.data.jsondata);
   },[baseData])
-  // const handleFormChenge = ({name, value}) => {
-  //   const _data = {
-  //     ...diseaseData,
-  //     [name]: value,
-  //   };
-  //   if (name === 'checktypeid') {
-  //     const _type = route.params.type.list.find(
-  //       item => value === item.checktypeid,
-  //     );
-  //     let defaultScaleVal = '';
-  //     if (_type) {
-  //       defaultScaleVal = _type?.standardscale;
-  //     }
-  //     _data.scale = defaultScaleVal;
-  //     const {basestandardtable, infoComponents} = baseData;
-  //     const standardid =
-  //       infoComponents.find(({checktypeid}) => value === checktypeid)
-  //         ?.standardid || '';
-  //     if (standardid) {
-  //       const _standardscale = basestandardtable.find(
-  //         item => standardid === item.standardid,
-  //       )?.standardscale;
-  //       if (_standardscale) {
-  //         _data.standard = {
-  //           scale: _standardscale,
-  //           id: standardid,
-  //         };
-  //       } else {
-  //         const defaultScale = basestandardtable.find(
-  //           item => item.standardid === 'JTG-TH21-2011-T000-0',
-  //         )?.standardscale;
-  //         _data.standard = {
-  //           scale: defaultScale,
-  //           id: 'JTG-TH21-2011-T000-0',
-  //         };
-  //       }
-  //     }
-  //     _data.scale = _data.scale || '';
-  //   }
-  //   setDiseaseData(_data);
-  // };
 
   const handleScaleOpen = () => scaleInfoRef.current.open();
 
@@ -255,6 +228,8 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
           defaultFileName={defaultFileName}
           pileTitle={pileTitle}
           pileNum={pileNum}
+          mediaMemberName={mediaMemberName}
+          mediaDiseaseName={mediaDiseaseName}
           categoryList={[
             {
               value: 'disease',

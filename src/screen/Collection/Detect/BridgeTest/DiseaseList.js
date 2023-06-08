@@ -446,7 +446,8 @@ export default function DiseaseList({route, navigation}) {
       memberList: list,
       dataGroupId,
       routeParams,
-      kuaMembertype
+      kuaMembertype,
+      mediaType:'edit'
     });
   };
 
@@ -488,7 +489,7 @@ export default function DiseaseList({route, navigation}) {
       memberList: list,
       dataGroupId,
       routeParams,
-      
+      mediaType:'add'
     });
     setWaitingData({});
   };

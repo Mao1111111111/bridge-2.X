@@ -4036,6 +4036,12 @@ export function DiseaseC({route, navigation}) {
     const [heightNum, setHeightNum] = useState()
 
     const [diseaseName, setDiseaseName] = useState('')
+
+    // 桥梁id
+    const [bridgeId, setBridgeId] = useState(route.params.memberList[0].bridgeid)
+    // 部件名称
+    const [storageMemberName, setStorageMemberName] =useState(route.params.routeParams.title)
+
     // =================================================
     React.useEffect(() => {
       saveData.current = {...diseaseData};
@@ -4756,6 +4762,26 @@ export function DiseaseC({route, navigation}) {
       console.log('writeDesText', name, value);
       setWriteDesTextValue(value)
 
+      if (name == 'memberLength') {
+        diseaseData['memberLength'] = value
+        handleFormChenge(value, diseaseData.memberLength)
+      } else if (name == 'memberWidth') {
+        diseaseData['memberWidth'] = value
+        handleFormChenge(value, diseaseData.memberWidth)
+      } else if (name == 'memberHeight') {
+        diseaseData['memberHeight'] = value
+        handleFormChenge(value, diseaseData.memberHeight)
+      }
+
+
+      // console.log('diseaseData.memberLength1',diseaseData.memberLength, diseaseData.memberWidth, diseaseData.memberHeight);
+      // console.log('name value1', name, value);
+
+      // 当数据是长宽高的时候，进行数据存储
+      if (name == 'memberLength' || name == 'memberWidth' || name == 'memberHeight') {
+        setStorage(name, value)
+      }
+
       if (true) {
         if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
           var biaodu = ',标度' + diseaseData.scale + '@@'
@@ -5270,6 +5296,65 @@ export function DiseaseC({route, navigation}) {
       writePositionText()
     }
 
+    // 存入数据
+    const setStorage = async(name, value) => {
+      console.log('存储长宽高数据的函数~~', name, value);
+      // 桥梁id + 部件名称 + 长/宽/高
+      const REname = bridgeId + '_' + storageMemberName + '_' + name
+      try {
+        await AsyncStorage.setItem(REname, value)
+      } catch (err) {
+        console.log('存入数据失败!', err);
+      }
+    }
+
+    // 读取数据
+    const getStorage = async(name) => {
+      console.log('读取存储的长宽高的数据~',name);
+      // console.log('diseaseData 有无',diseaseData);
+      try {
+        const value = await AsyncStorage.getItem(name)
+        console.log('value~~~',value);
+        if (value !== null) {
+          console.log('读取到的数据',name,value);
+          if (name == bridgeId + '_' + storageMemberName + '_' + 'memberLength') {
+            console.log('length99999');
+            diseaseData['memberLength'] = value
+            setDiseaseData(diseaseData)
+            handleFormChenge(value, diseaseData.memberLength)
+          }
+          // else if (name == bridgeId + '_' + storageMemberName + '_' + 'memberWidth') {
+          //   console.log('Width99999');
+          //   diseaseData['memberWidth'] = value
+          //   setDiseaseData(diseaseData)
+          //   handleFormChenge(value, diseaseData.memberWidth)
+          // } else if (name == bridgeId + '_' + storageMemberName + '_' + 'memberHeight') {
+          //   console.log('Height99999');
+          //   diseaseData['memberHeight'] = value
+          //   setDiseaseData(diseaseData)
+          //   handleFormChenge(value, diseaseData.memberHeight)
+          // }
+        }
+      } catch (err) {
+        console.log('读取失败~', err);
+      }
+    }
+
+    const writeNum = () => {
+      try {
+        console.log('长宽高的数据::',diseaseData.memberLength,diseaseData.memberWidth,diseaseData.memberHeight);
+        const lengthName = bridgeId + '_' + storageMemberName + '_' + 'memberLength'
+        const lengthValue = AsyncStorage.getItem(lengthName)
+        // const widthName = bridgeId + '_' + storageMemberName + '_' + 'memberWidth'
+        // const widthValue = AsyncStorage.getItem(widthName)
+        // const heightName = bridgeId + '_' + storageMemberName + '_' + 'memberHeight'
+        // const heightValue = AsyncStorage.getItem(heightName)
+        getStorage(lengthName)
+      } catch (e) {
+        console.log('writeNum错误',e);
+      }
+    }
+
 
   {/* ================================================= */}
   {/* 病害填写表格区域 */}
@@ -5363,6 +5448,14 @@ export function DiseaseC({route, navigation}) {
         <View style={[tailwind.flexRow]}>
           <LabelItem label="病害位置(米)" style={tailwind.w18} />
           <Text>长度{lengthText}米</Text>
+          <Text>  </Text>
+          <TouchableOpacity style={{width:80,height:20,borderRadius: 5,
+            backgroundColor: '#2b427d',
+            justifyContent: 'center',
+            overflow: 'hidden'}}
+            onPress={writeNum}>
+            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>填入基础数据</Text>
+          </TouchableOpacity>
         </View>
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow]}>
@@ -8743,6 +8836,12 @@ export function DiseaseK({route, navigation}) {
     const [heightNum, setHeightNum] = useState('')
 
     const [diseaseName, setDiseaseName] = useState('')
+
+    // 桥梁id
+    const [bridgeId, setBridgeId] = useState(route.params.memberList[0].bridgeid)
+    // 部件名称
+    const [storageMemberName, setStorageMemberName] =useState(route.params.routeParams.title)
+
     // =================================================
     React.useEffect(() => {
       saveData.current = {...diseaseData};
@@ -9488,6 +9587,26 @@ export function DiseaseK({route, navigation}) {
       console.log('writeDesText', name, value);
       setWriteDesTextValue(value)
 
+      if (name == 'memberLength') {
+        diseaseData['memberLength'] = value
+        handleFormChenge(value, diseaseData.memberLength)
+      } else if (name == 'memberWidth') {
+        diseaseData['memberWidth'] = value
+        handleFormChenge(value, diseaseData.memberWidth)
+      } else if (name == 'memberHeight') {
+        diseaseData['memberHeight'] = value
+        handleFormChenge(value, diseaseData.memberHeight)
+      }
+
+
+      console.log('diseaseData.memberLength1',diseaseData.memberLength, diseaseData.memberWidth, diseaseData.memberHeight);
+      console.log('name value1', name, value);
+
+      // 当数据是长宽高的时候，进行数据存储
+      if (name == 'memberLength' || name == 'memberWidth' || name == 'memberHeight') {
+        setStorage(name, value)
+      }
+
       if (true) {
         if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
           var biaodu = ',标度' + diseaseData.scale + '@@'
@@ -9827,6 +9946,76 @@ export function DiseaseK({route, navigation}) {
         console.log('allText', allText);
         diseaseData['description'] = allText
         handleFormChenge(allText, diseaseData.description)
+      }
+    }
+
+    // 存入数据
+    const setStorage = async(name, value) => {
+      console.log('存储长宽高数据的函数~~', name, value);
+      // 桥梁id + 部件名称 + 长/宽/高
+      const REname = bridgeId + '_' + storageMemberName + '_' + name
+      try {
+        await AsyncStorage.setItem(REname, value)
+      } catch (err) {
+        console.log('存入数据失败!', err);
+      }
+    }
+
+    const writeNum = () => {
+      try {
+        console.log('长宽高的数据::',diseaseData.memberLength,diseaseData.memberWidth,diseaseData.memberHeight);
+        const lengthName = bridgeId + '_' + storageMemberName + '_' + 'memberLength'
+        const lengthValue = AsyncStorage.getItem(lengthName)
+        const widthName = bridgeId + '_' + storageMemberName + '_' + 'memberWidth'
+        const widthValue = AsyncStorage.getItem(widthName)
+        const heightName = bridgeId + '_' + storageMemberName + '_' + 'memberHeight'
+        const heightValue = AsyncStorage.getItem(heightName)
+        // if (diseaseData.memberLength == undefined || diseaseData.memberLength !== lengthValue) {
+        //   // console.log('长度数据为空');
+        //   getStorage(lengthName)
+        // } else if (diseaseData.memberWidth == undefined || diseaseData.memberWidth !== widthValue) {
+        //   // console.log('宽度数据为空');
+        //   getStorage(widthName)
+        // } else if (diseaseData.memberHeight == undefined || diseaseData.memberHeight !== heightValue) {
+        //   // console.log('高度数据为空');
+        //   getStorage(heightName)
+        // }
+        getStorage(lengthName)
+        getStorage(widthName)
+        getStorage(heightName)
+      } catch (e) {
+        console.log('writeNum错误',e);
+      }
+    }
+
+    // 读取数据
+    const getStorage = async(name) => {
+      console.log('读取存储的长宽高的数据~',name);
+      // console.log('diseaseData 有无',diseaseData);
+      try {
+        const value = await AsyncStorage.getItem(name)
+        console.log('value~~~',value);
+        if (value !== null) {
+          console.log('读取到的数据',name,value);
+          if (name == bridgeId + '_' + storageMemberName + '_' + 'memberLength') {
+            console.log('length99999');
+            diseaseData['memberLength'] = value
+            setDiseaseData(diseaseData)
+            handleFormChenge(value, diseaseData.memberLength)
+          } else if (name == bridgeId + '_' + storageMemberName + '_' + 'memberWidth') {
+            console.log('Width99999');
+            diseaseData['memberWidth'] = value
+            setDiseaseData(diseaseData)
+            handleFormChenge(value, diseaseData.memberWidth)
+          } else if (name == bridgeId + '_' + storageMemberName + '_' + 'memberHeight') {
+            console.log('Height99999');
+            diseaseData['memberHeight'] = value
+            setDiseaseData(diseaseData)
+            handleFormChenge(value, diseaseData.memberHeight)
+          }
+        }
+      } catch (err) {
+        console.log('读取失败~', err);
       }
     }
 
@@ -10116,6 +10305,14 @@ export function DiseaseK({route, navigation}) {
         <View style={[tailwind.flexRow]}>
           <LabelItem label="病害位置(米)" style={tailwind.w18} />
           <Text>长度{lengthText}米；宽度{widthText}米</Text>
+          <Text>  </Text>
+          <TouchableOpacity style={{width:80,height:20,borderRadius: 5,
+            backgroundColor: '#2b427d',
+            justifyContent: 'center',
+            overflow: 'hidden'}}
+            onPress={writeNum}>
+            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>填入基础数据</Text>
+          </TouchableOpacity>
         </View>
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow]}>
@@ -10387,6 +10584,12 @@ export function DiseaseG({route, navigation}) {
     const [heightNum, setHeightNum] = useState('')
 
     const [diseaseName, setDiseaseName] = useState('')
+
+    // 桥梁id
+    const [bridgeId, setBridgeId] = useState(route.params.memberList[0].bridgeid)
+    // 部件名称
+    const [storageMemberName, setStorageMemberName] =useState(route.params.routeParams.title)
+
     // =================================================
     React.useEffect(() => {
       saveData.current = {...diseaseData};
@@ -11132,6 +11335,26 @@ export function DiseaseG({route, navigation}) {
       console.log('writeDesText', name, value);
       setWriteDesTextValue(value)
 
+      if (name == 'memberLength') {
+        diseaseData['memberLength'] = value
+        handleFormChenge(value, diseaseData.memberLength)
+      } else if (name == 'memberWidth') {
+        diseaseData['memberWidth'] = value
+        handleFormChenge(value, diseaseData.memberWidth)
+      } else if (name == 'memberHeight') {
+        diseaseData['memberHeight'] = value
+        handleFormChenge(value, diseaseData.memberHeight)
+      }
+
+
+      console.log('diseaseData.memberLength1',diseaseData.memberLength, diseaseData.memberWidth, diseaseData.memberHeight);
+      console.log('name value1', name, value);
+
+      // 当数据是长宽高的时候，进行数据存储
+      if (name == 'memberLength' || name == 'memberWidth' || name == 'memberHeight') {
+        setStorage(name, value)
+      }
+
       if (true) {
         if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
           var biaodu = ',标度' + diseaseData.scale + '@@'
@@ -11474,6 +11697,76 @@ export function DiseaseG({route, navigation}) {
       }
     }
 
+    // 存入数据
+    const setStorage = async(name, value) => {
+      console.log('存储长宽高数据的函数~~', name, value);
+      // 桥梁id + 部件名称 + 长/宽/高
+      const REname = bridgeId + '_' + storageMemberName + '_' + name
+      try {
+        await AsyncStorage.setItem(REname, value)
+      } catch (err) {
+        console.log('存入数据失败!', err);
+      }
+    }
+
+    const writeNum = () => {
+      try {
+        console.log('长宽高的数据::',diseaseData.memberLength,diseaseData.memberWidth,diseaseData.memberHeight);
+        const lengthName = bridgeId + '_' + storageMemberName + '_' + 'memberLength'
+        const lengthValue = AsyncStorage.getItem(lengthName)
+        const widthName = bridgeId + '_' + storageMemberName + '_' + 'memberWidth'
+        const widthValue = AsyncStorage.getItem(widthName)
+        const heightName = bridgeId + '_' + storageMemberName + '_' + 'memberHeight'
+        const heightValue = AsyncStorage.getItem(heightName)
+        // if (diseaseData.memberLength == undefined || diseaseData.memberLength !== lengthValue) {
+        //   // console.log('长度数据为空');
+        //   getStorage(lengthName)
+        // } else if (diseaseData.memberWidth == undefined || diseaseData.memberWidth !== widthValue) {
+        //   // console.log('宽度数据为空');
+        //   getStorage(widthName)
+        // } else if (diseaseData.memberHeight == undefined || diseaseData.memberHeight !== heightValue) {
+        //   // console.log('高度数据为空');
+        //   getStorage(heightName)
+        // }
+        getStorage(lengthName)
+        getStorage(widthName)
+        getStorage(heightName)
+      } catch (e) {
+        console.log('writeNum错误',e);
+      }
+    }
+
+    // 读取数据
+    const getStorage = async(name) => {
+      console.log('读取存储的长宽高的数据~',name);
+      // console.log('diseaseData 有无',diseaseData);
+      try {
+        const value = await AsyncStorage.getItem(name)
+        console.log('value~~~',value);
+        if (value !== null) {
+          console.log('读取到的数据',name,value);
+          if (name == bridgeId + '_' + storageMemberName + '_' + 'memberLength') {
+            console.log('length99999');
+            diseaseData['memberLength'] = value
+            setDiseaseData(diseaseData)
+            handleFormChenge(value, diseaseData.memberLength)
+          } else if (name == bridgeId + '_' + storageMemberName + '_' + 'memberWidth') {
+            console.log('Width99999');
+            diseaseData['memberWidth'] = value
+            setDiseaseData(diseaseData)
+            handleFormChenge(value, diseaseData.memberWidth)
+          } else if (name == bridgeId + '_' + storageMemberName + '_' + 'memberHeight') {
+            console.log('Height99999');
+            diseaseData['memberHeight'] = value
+            setDiseaseData(diseaseData)
+            handleFormChenge(value, diseaseData.memberHeight)
+          }
+        }
+      } catch (err) {
+        console.log('读取失败~', err);
+      }
+    }
+
     // 填入位置描述内容
     const writePositionText = () => {
       try {
@@ -11749,6 +12042,14 @@ export function DiseaseG({route, navigation}) {
         <View style={[tailwind.flexRow]}>
           <LabelItem label="病害位置(米)" style={tailwind.w18} />
           <Text>距左侧边缘{widthText}米; 距顶部边缘{heightText}米</Text>
+          <Text>  </Text>
+          <TouchableOpacity style={{width:80,height:20,borderRadius: 5,
+            backgroundColor: '#2b427d',
+            justifyContent: 'center',
+            overflow: 'hidden'}}
+            onPress={writeNum}>
+            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>填入基础数据</Text>
+          </TouchableOpacity>
         </View>
         {/* <View style={tailwind.mT2} /> */}
         {/* <View style={[tailwind.flexRow]}>
@@ -12020,6 +12321,12 @@ export function DiseaseH({route, navigation}) {
     const [heightNum, setHeightNum] = useState()
 
     const [diseaseName, setDiseaseName] = useState('')
+
+    // 桥梁id
+    const [bridgeId, setBridgeId] = useState(route.params.memberList[0].bridgeid)
+    // 部件名称
+    const [storageMemberName, setStorageMemberName] =useState(route.params.routeParams.title)
+
     // =================================================
     React.useEffect(() => {
       saveData.current = {...diseaseData};
@@ -12764,6 +13071,26 @@ export function DiseaseH({route, navigation}) {
       console.log('writeDesText', name, value);
       setWriteDesTextValue(value)
 
+      if (name == 'memberLength') {
+        diseaseData['memberLength'] = value
+        handleFormChenge(value, diseaseData.memberLength)
+      } else if (name == 'memberWidth') {
+        diseaseData['memberWidth'] = value
+        handleFormChenge(value, diseaseData.memberWidth)
+      } else if (name == 'memberHeight') {
+        diseaseData['memberHeight'] = value
+        handleFormChenge(value, diseaseData.memberHeight)
+      }
+
+
+      console.log('diseaseData.memberLength1',diseaseData.memberLength, diseaseData.memberWidth, diseaseData.memberHeight);
+      console.log('name value1', name, value);
+
+      // 当数据是长宽高的时候，进行数据存储
+      if (name == 'memberLength' || name == 'memberWidth' || name == 'memberHeight') {
+        setStorage(name, value)
+      }
+
       if (true) {
         if (diseaseData.scale !== '' && diseaseData.scale !== '0' && diseaseData.scale !== '') {
           var biaodu = ',标度' + diseaseData.scale + '@@'
@@ -13106,6 +13433,76 @@ export function DiseaseH({route, navigation}) {
       }
     }
 
+    // 存入数据
+    const setStorage = async(name, value) => {
+      console.log('存储长宽高数据的函数~~', name, value);
+      // 桥梁id + 部件名称 + 长/宽/高
+      const REname = bridgeId + '_' + storageMemberName + '_' + name
+      try {
+        await AsyncStorage.setItem(REname, value)
+      } catch (err) {
+        console.log('存入数据失败!', err);
+      }
+    }
+
+    const writeNum = () => {
+      try {
+        console.log('长宽高的数据::',diseaseData.memberLength,diseaseData.memberWidth,diseaseData.memberHeight);
+        const lengthName = bridgeId + '_' + storageMemberName + '_' + 'memberLength'
+        const lengthValue = AsyncStorage.getItem(lengthName)
+        const widthName = bridgeId + '_' + storageMemberName + '_' + 'memberWidth'
+        const widthValue = AsyncStorage.getItem(widthName)
+        const heightName = bridgeId + '_' + storageMemberName + '_' + 'memberHeight'
+        const heightValue = AsyncStorage.getItem(heightName)
+        // if (diseaseData.memberLength == undefined || diseaseData.memberLength !== lengthValue) {
+        //   // console.log('长度数据为空');
+        //   getStorage(lengthName)
+        // } else if (diseaseData.memberWidth == undefined || diseaseData.memberWidth !== widthValue) {
+        //   // console.log('宽度数据为空');
+        //   getStorage(widthName)
+        // } else if (diseaseData.memberHeight == undefined || diseaseData.memberHeight !== heightValue) {
+        //   // console.log('高度数据为空');
+        //   getStorage(heightName)
+        // }
+        getStorage(lengthName)
+        getStorage(widthName)
+        getStorage(heightName)
+      } catch (e) {
+        console.log('writeNum错误',e);
+      }
+    }
+
+    // 读取数据
+    const getStorage = async(name) => {
+      console.log('读取存储的长宽高的数据~',name);
+      // console.log('diseaseData 有无',diseaseData);
+      try {
+        const value = await AsyncStorage.getItem(name)
+        console.log('value~~~',value);
+        if (value !== null) {
+          console.log('读取到的数据',name,value);
+          if (name == bridgeId + '_' + storageMemberName + '_' + 'memberLength') {
+            console.log('length99999');
+            diseaseData['memberLength'] = value
+            setDiseaseData(diseaseData)
+            handleFormChenge(value, diseaseData.memberLength)
+          } else if (name == bridgeId + '_' + storageMemberName + '_' + 'memberWidth') {
+            console.log('Width99999');
+            diseaseData['memberWidth'] = value
+            setDiseaseData(diseaseData)
+            handleFormChenge(value, diseaseData.memberWidth)
+          } else if (name == bridgeId + '_' + storageMemberName + '_' + 'memberHeight') {
+            console.log('Height99999');
+            diseaseData['memberHeight'] = value
+            setDiseaseData(diseaseData)
+            handleFormChenge(value, diseaseData.memberHeight)
+          }
+        }
+      } catch (err) {
+        console.log('读取失败~', err);
+      }
+    }
+
     // 填入位置描述内容
     const writePositionText = () => {
       try {
@@ -13378,6 +13775,14 @@ export function DiseaseH({route, navigation}) {
         <View style={[tailwind.flexRow]}>
           <LabelItem label="病害位置(米)" style={tailwind.w18} />
           <Text>距左侧{lengthText}米; 距顶部{heightText}米</Text>
+          <Text>  </Text>
+          <TouchableOpacity style={{width:80,height:20,borderRadius: 5,
+            backgroundColor: '#2b427d',
+            justifyContent: 'center',
+            overflow: 'hidden'}}
+            onPress={writeNum}>
+            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>填入基础数据</Text>
+          </TouchableOpacity>
         </View>
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow]}>
