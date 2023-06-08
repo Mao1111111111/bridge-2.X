@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     ...tailwind.justifyCenter,
     position:'absolute',
     top:495,
-    left:635,
+    left:645,
     // width:60
   },
   pidSmall: {
