@@ -7,7 +7,8 @@ import {syncData as syncAreaData} from '../database/area';
 const host = 'http://testdata.api.jianlide.cn:1088';
 const prefix = '/api/v1/base/';
 
-const auth_host = 'http://114.116.196.47:10811'
+// const auth_host = 'http://114.116.196.47:10811'
+const auth_host = 'http://server1.api.jianlide.cn:5001'
 const auth_prefix = '/base/';
 /**
  * 获取桥梁结构数据

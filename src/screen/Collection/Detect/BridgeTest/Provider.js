@@ -326,7 +326,7 @@ const Provider = ({bridge, project, children}) => {
     state.isInit,
     state.bridge,
     state.bridgereportid,
-    userInfo.userid,
+    userInfo?.userid,
   ]);
 
   // ？？？媒体文件保存 -- 缓存文件...变化时触发
