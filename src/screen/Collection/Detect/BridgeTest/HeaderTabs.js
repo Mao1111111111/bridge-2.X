@@ -37,7 +37,7 @@ export default function HeaderTabs({onChangeTab, style, disabled}) {
   return (
     <View style={[styles.tabsBox, style]}>
       {/* 年份tabs */}
-      <Tabs style={[tailwind.mB1,{position:'absolute',left:80}]} defaultActive="2022" tabs={yaer} />
+      {/* <Tabs style={[tailwind.mB1,{position:'absolute',left:80}]} defaultActive="2022" tabs={yaer} /> */}
       {/* 数据影音tabs */}
       <Tabs
         tabs={page}

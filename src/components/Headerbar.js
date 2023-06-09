@@ -332,8 +332,8 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
                   ) : (
                     <View style={[tailwind.flex1,tailwind.flexRow]}>
                       <TouchableOpacity onPress={() => topage('项目')}>
-                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:14}]}>
-                          丨 项目：{project}
+                        <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:14,marginLeft:12}]}>
+                              项目：{project}
                         </Text>
                       </TouchableOpacity>
                       

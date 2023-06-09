@@ -69,7 +69,7 @@ export default function Project({navigation}) {
     //   name: '检测平台',
     // },
     {
-      name: '丨 项目管理',
+      name: '  项目管理',
     },
   ];
 

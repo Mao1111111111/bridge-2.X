@@ -624,7 +624,7 @@ export default function ProjectDetail({route, navigation}) {
     // },
     // 返回项目管理
     {
-      name: '丨 项目管理',
+      name: '  项目管理',
       onPress: () => navigation.navigate('Collection/Detect/Project'),
     },
     // 项目名
