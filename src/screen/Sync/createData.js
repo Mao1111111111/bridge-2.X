@@ -600,7 +600,7 @@ export const getData =async (
     //养护计划
     let planData = planGenesis.plan?planGenesis.plan:[]
     //病害成因
-    let genesisData = planGenesis.genesisData?planGenesis.genesisData:[]
+    let genesisData = planGenesis.genesis?planGenesis.genesis:[]
     //****************** 检测数据--构件数据 ******************
     //获取构件数据 -- 与上面构件的区别是 会有新添加的构件
     let memberData = null
