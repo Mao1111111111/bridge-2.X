@@ -92,12 +92,12 @@ export default function GoodEdit({route, navigation}) {
       if (!version) {
         return;
       }
-      return async () => {
-        await handleSave()
+      return  () => {
+        handleSave()
       };
     }, [dispatch,data,list, version,editRemarks]),
   );
-  const handleSave =async () => {
+  const handleSave = () => {
     if(editRemarks||data!==''){
       if (!list) {
         return;
