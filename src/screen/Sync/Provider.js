@@ -14,6 +14,8 @@ import * as createData from './createData';
 import { BucketName_storeTestData } from '../../assets/OBSConfig';
 import fs from '../../utils/fs'
 import RNFS from 'react-native-fs';
+import DeviceInfo from 'react-native-device-info';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Context = React.createContext();
 
@@ -54,7 +56,8 @@ function Provider({children}) {
     genesisMate: [],
     membercheckdata: [],
 
-    promptFontErr:{}
+    promptFontErr:{},
+    deviceId:''
   });
 
   React.useEffect(() => {
@@ -65,6 +68,15 @@ function Provider({children}) {
       dispatch({type: 'genesisMate', payload: genesisMate});
     });
   }, []);
+
+  // 获取设备id
+  React.useEffect(()=>{
+    DeviceInfo.getUniqueId().then(async res=>{
+      let deviceId = res.toUpperCase()
+      await AsyncStorage.setItem('deviceId', deviceId);
+      dispatch({type: 'deviceId', payload: deviceId});
+    })
+  },[])
 
   // 桥梁上传
   React.useEffect(() => {
