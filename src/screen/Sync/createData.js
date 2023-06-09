@@ -789,6 +789,7 @@ export const getData =async (
           goods.membername = e.membername;
           goods.membertype = e.membertype;
           goods.media = []
+          goods.jsondata = JSON.parse(goods.jsondata)
           goodsData.push(goods);
         }
       });
