@@ -530,9 +530,9 @@ export default function Main({navigation, route}) {
               </Text>
               {/* 图片 */}
               <View style={[tailwind.flexRow, tailwind.mY2]}>
-                <View style={tailwind.flex1}>{getImg('L', '正面照')}</View>
+                <View style={tailwind.flex1}>{getImg('L', '立面照')}</View>
                 <View style={tailwind.mX2} />
-                <View style={tailwind.flex1}>{getImg('Z', '立面照')}</View>
+                <View style={tailwind.flex1}>{getImg('Z', '正面照')}</View>
               </View>
               {/* 描述表单 */}
               <View style={tailwind.flex1}>

@@ -305,9 +305,9 @@ const User = () => {
       </Button>
       <PINForm ref={form} userInfo={userInfo} /> */}
       <View style={
-        screenWidth > 830 ? [tailwind.flex1]
+        screenWidth > 820 ? [tailwind.flex1]
         :
-        [tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+        [tailwind.flex1,{backgroundColor:'rgba(168,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
       }>
         <View style={tailwind.mY2} />
         <View style={[tailwind.flexRow,{height: 30}]}>
@@ -333,7 +333,7 @@ const User = () => {
               tailwind.mX1,
               {
                 width: 698,
-                height: 333
+                height: 333,
               }
             ]
           }
@@ -474,7 +474,7 @@ const Debug = () => {
         导出数据
       </Button> */}
       <View style={
-        screenWidth > 830 ? [tailwind.flex1]
+        screenWidth > 830 ? [{backgroundColor:'rgba(255,255,255,1)',right:5,width:715,top:4,borderRadius:5}]
         :
         [tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
       }>

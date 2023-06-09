@@ -224,19 +224,19 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
         source={require('../iconImg/logo.png')}
       /> */}
       {/* 软件版本 */}
-      {/* <Text
+      <Text
         style={
           [
             {
               fontSize:8,
               color:'#394f86',
               fontWeight: 'bold',
-              right:65,
-              top:25
+              left:8,
+              top:520
             }
           ]
         }
-      >v1.083</Text> */}
+      >v1.20</Text>
       {/* 检测公司名称 */}
       {/* <Text
         style={
@@ -264,7 +264,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
         defaultValue={'采集平台'}
       >
         <ImageBackground
-          source={require('../iconImg/dropdownMenu.png')} style={[{width:136, height:34,left:20,top:13}]}
+          source={require('../iconImg/dropdownMenu.png')} style={[{width:136, height:34,right:10,top:13}]}
         >
           <View style={styles.user}>
             <Text

@@ -346,14 +346,15 @@ export default function Project({navigation}) {
       // onBack={goBack}
       // onAhead={goAhead}
       // 右侧按钮
-      operations={[
-        {
-          // name: 'check', //此处name属性用于原代码里CircleButton用于标识icon
-          img:'check',
-          disabled: !nowChecked,
-          onPress: handleStatusChange,
-        },
-      ]}>
+      // operations={[
+      //   {
+      //     // name: 'check', //此处name属性用于原代码里CircleButton用于标识icon
+      //     img:'check',
+      //     disabled: !nowChecked,
+      //     onPress: handleStatusChange,
+      //   },
+      // ]}
+      >
       {/* <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}> */}
       {/* <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:29,width:715,top:1,borderRadius:5}]}> */}
       <View style={
