@@ -73,7 +73,7 @@ export function DiseaseA({route, navigation}) {
       const [writePositionTxt, setWritePositionTxt] = useState('')
       // -------------------------------------------------
       // 标度,默认为 2
-      const [biaodu, setBiaodu] = useState(2)
+      const [biaodu, setBiaodu] = useState('')
       // 长度 - 米
       const [lengthM, setLengthM] = useState('')
       // 长度 - 厘米
@@ -191,6 +191,8 @@ export function DiseaseA({route, navigation}) {
       React.useEffect(() => {
         saveData.current = {...diseaseData};
         try {
+          console.log('route',route);
+          console.log('route.params.thridData',route.params.memberList);
           if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
             console.log('7777');
             diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -340,6 +342,10 @@ export function DiseaseA({route, navigation}) {
             diseaseData['scale'] = '2'
             handleFormChenge('2',diseaseData.scale)
           }
+          // setTimeout(() => {
+          //   console.log('disea111111111111',diseaseData);
+          // }, 1000);
+          
         } catch (err){
           console.log('err10', err);
         }
@@ -414,7 +420,8 @@ export function DiseaseA({route, navigation}) {
       }, [baseData, saveData, version, route.params, dispatch]);
     
       useEffect(() => {
-        console.log('disea111',diseaseData);
+        // console.log('disea111',diseaseData);
+        // console.log('diseaseData.standard.scale',diseaseData.standard.scale);
         // console.log('route',route);
         // console.log('桥跨：：',route.params.memberList);
         // console.log('桥梁id::',route.params.memberList[0].bridgeid);
@@ -2202,7 +2209,7 @@ export function DiseaseA({route, navigation}) {
           <></>
         )}
         <TouchableOpacity style={styles.bottomButton} onPress={allWrite}>
-          <Text style={[{color:'#fff',fontSize:16}]}>确认</Text>
+          <Text style={[{color:'#fff',fontSize:14}]}>生成描述</Text>
         </TouchableOpacity>
       </View>
       
@@ -3879,7 +3886,7 @@ export function DiseaseB({route, navigation}) {
         <></>
       )}
       <TouchableOpacity style={styles.bottomButton} onPress={allWrite}>
-        <Text style={[{color:'#fff',fontSize:16}]}>确认</Text>
+        <Text style={[{color:'#fff',fontSize:14}]}>生成描述</Text>
       </TouchableOpacity>
     </View>
     <ScaleInfo ref={scaleInfoRef} info={scaleInfo} />
@@ -5570,7 +5577,7 @@ export function DiseaseC({route, navigation}) {
         <></>
       )}
       <TouchableOpacity style={styles.bottomButton} onPress={allWrite}>
-        <Text style={[{color:'#fff',fontSize:16}]}>确认</Text>
+        <Text style={[{color:'#fff',fontSize:14}]}>生成描述</Text>
       </TouchableOpacity>
     </View>
     <ScaleInfo ref={scaleInfoRef} info={scaleInfo} />
@@ -7116,7 +7123,7 @@ export function DiseaseD({route, navigation}) {
         <></>
       )}
       <TouchableOpacity style={styles.bottomButton} onPress={allWrite}>
-        <Text style={[{color:'#fff',fontSize:16}]}>确认</Text>
+        <Text style={[{color:'#fff',fontSize:14}]}>生成描述</Text>
       </TouchableOpacity>
     </View>
     
@@ -8678,7 +8685,7 @@ export function DiseaseE({route, navigation}) {
         <></>
       )}
       <TouchableOpacity style={styles.bottomButton} onPress={allWrite}>
-        <Text style={[{color:'#fff',fontSize:16}]}>确认</Text>
+        <Text style={[{color:'#fff',fontSize:14}]}>生成描述</Text>
       </TouchableOpacity>
     </View>
     
@@ -10426,7 +10433,7 @@ export function DiseaseK({route, navigation}) {
         <></>
       )}
       <TouchableOpacity style={styles.bottomButton} onPress={allWrite}>
-        <Text style={[{color:'#fff',fontSize:16}]}>确认</Text>
+        <Text style={[{color:'#fff',fontSize:14}]}>生成描述</Text>
       </TouchableOpacity>
     </View>
     
@@ -12163,7 +12170,7 @@ export function DiseaseG({route, navigation}) {
         <></>
       )}
       <TouchableOpacity style={styles.bottomButton} onPress={allWrite}>
-        <Text style={[{color:'#fff',fontSize:16}]}>确认</Text>
+        <Text style={[{color:'#fff',fontSize:14}]}>生成描述</Text>
       </TouchableOpacity>
     </View>
     
@@ -13896,10 +13903,9 @@ export function DiseaseH({route, navigation}) {
         <></>
       )}
       <TouchableOpacity style={styles.bottomButton} onPress={allWrite}>
-        <Text style={[{color:'#fff',fontSize:16}]}>确认</Text>
+        <Text style={[{color:'#fff',fontSize:14}]}>生成描述</Text>
       </TouchableOpacity>
     </View>
-    
     <ScaleInfo ref={scaleInfoRef} info={scaleInfo} />
   </View>
   );
