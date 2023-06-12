@@ -908,9 +908,9 @@ const errorDeal = async (id,_err,errDescribe) => {
 }
 
 // 获取设备id
-const getDeviceId = async () => {
-  await DeviceInfo.getUniqueId().then(async res=>{
-    await AsyncStorage.setItem('deviceId', res.toUpperCase());
+const getDeviceId = () => {
+  DeviceInfo.getUniqueId().then(res=>{
+    AsyncStorage.setItem('deviceId', res.toUpperCase());
   })
 }
 //获取

@@ -71,9 +71,9 @@ function Provider({children}) {
 
   // 获取设备id
   React.useEffect(()=>{
-    DeviceInfo.getUniqueId().then(async res=>{
+    DeviceInfo.getUniqueId().then(res=>{
       let deviceId = res.toUpperCase()
-      await AsyncStorage.setItem('deviceId', deviceId);
+      AsyncStorage.setItem('deviceId', deviceId);
       dispatch({type: 'deviceId', payload: deviceId});
     })
   },[])
