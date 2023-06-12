@@ -191,8 +191,8 @@ export function DiseaseA({route, navigation}) {
       React.useEffect(() => {
         saveData.current = {...diseaseData};
         try {
-          console.log('route',route);
-          console.log('route.params.thridData',route.params.memberList);
+          // console.log('route',route);
+          // console.log('route.params.thridData',route.params.memberList);
           if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
             console.log('7777');
             diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -278,18 +278,6 @@ export function DiseaseA({route, navigation}) {
             setHeightText(heightText)
           }
           
-          // console.log('diseaseData.memberLength',diseaseData.memberLength);
-          // console.log('route66:', route.params.thridData.checkinfoshort);
-          // console.log('diseaseData.diseaseName',diseaseData.diseaseName);
-          // if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
-          //   console.log('7777');
-          //   diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
-          //   handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
-          // }
-          
-          
-          // console.log('diseaseData66:', diseaseData);
-          // console.log('diseaseData.area',diseaseData.area);
           if (diseaseData.area == undefined) {
 
           } else if (diseaseData.area !== '' || diseaseData.area !== undefined || diseaseData.area !== '/') {
@@ -426,6 +414,12 @@ export function DiseaseA({route, navigation}) {
         // console.log('桥跨：：',route.params.memberList);
         // console.log('桥梁id::',route.params.memberList[0].bridgeid);
         // console.log('部件',route.params.routeParams.title);
+
+        try {
+          console.log('areatype',itemData.areatype);
+        } catch (error) {
+          console.log('areatype error',error);
+        }
         
         let defaultPier = route.params.memberList[0].membername
         // 提取第一个字符进行判断（表示墩台的数据）
@@ -450,7 +444,7 @@ export function DiseaseA({route, navigation}) {
            if (itemData.areatype == 'at0000' || itemData.areatype == undefined) {
             // console.log('9999');
             diseaseData['area'] = '/'
-            let labelName = itemData.areatype
+            let labelName = 'at0000'
             setLabelName(labelName)
            }
           } catch {
@@ -1788,8 +1782,9 @@ export function DiseaseA({route, navigation}) {
           
 
           if (diseaseData.area == undefined) {
-            // console.log('area未定义 areaparam',areaparam);
-            var areaName = areaparam[0].label
+            console.log('area未定义 areaparam',areaparam);
+            console.log('labelName333222111',labelName);
+            var areaName = ''
             setAreaName(areaName)
             console.log('diseaseData.area为空');
             // 墩/台描述
@@ -9048,7 +9043,7 @@ export function DiseaseK({route, navigation}) {
          if (itemData.areatype == 'at0000' || itemData.areatype == undefined) {
           // console.log('9999');
           diseaseData['area'] = '/'
-          let labelName = itemData.areatype
+          let labelName = 'at0000'
           setLabelName(labelName)
          }
         } catch {
@@ -10032,7 +10027,7 @@ export function DiseaseK({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined || diseaseData.area == '') {
-            var areaName = areaparam[0].label
+            var areaName = ''
             setAreaName(areaName)
             console.log('diseaseData.area为空');
             // 墩/台描述
@@ -10796,7 +10791,7 @@ export function DiseaseG({route, navigation}) {
          if (itemData.areatype == 'at0000' || itemData.areatype == undefined) {
           // console.log('9999');
           diseaseData['area'] = '/'
-          let labelName = itemData.areatype
+          let labelName = 'at0000'
           setLabelName(labelName)
          }
         } catch {
@@ -11780,8 +11775,8 @@ export function DiseaseG({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          var areaName = areaparam[0].label
-            setAreaName(areaName)
+          var areaName = ''
+          setAreaName(areaName)
           console.log('diseaseData.area为空');
 
           // 宽度描述
@@ -12532,7 +12527,7 @@ export function DiseaseH({route, navigation}) {
          if (itemData.areatype == 'at0000' || itemData.areatype == undefined) {
           // console.log('9999');
           diseaseData['area'] = '/'
-          let labelName = itemData.areatype
+          let labelName = 'at0000'
           setLabelName(labelName)
          }
         } catch {
@@ -13516,7 +13511,7 @@ export function DiseaseH({route, navigation}) {
         // console.log('diseaseData.area', diseaseData.area);
         console.log('diseaseData.lengthText',lengthText,widthText,heightText);
         if (diseaseData.area == undefined) {
-          var areaName = areaparam[0].label
+          var areaName = ''
           setAreaName(areaName)
           console.log('diseaseData.area为空');
 
