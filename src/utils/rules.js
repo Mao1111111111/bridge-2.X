@@ -324,13 +324,16 @@ const getQiaotai = (name, values, code, kua) => {
       membername: '0#台盖梁',
       stepno: 1,
     });
-    _data.push({
-      position: code.pCode,
-      membertype: code[name],
-      memberid: uuid.v4(),
-      membername: '0#台台柱',
-      stepno: 1,
-    });
+    if (values.qiaotaizhushu <= 1) {
+      _data.push({
+        position: code.pCode,
+        membertype: code[name],
+        memberid: uuid.v4(),
+        membername: '0#台台柱',
+        stepno: 1,
+      });
+    }
+    
     let qiaotaizhushu = parseInt(values.qiaotaizhushu, 10);
     qiaotaizhushu = isNaN(qiaotaizhushu) ? 0 : values.qiaotaizhushu;
     if (qiaotaizhushu > 1) {
