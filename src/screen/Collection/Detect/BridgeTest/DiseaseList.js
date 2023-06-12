@@ -319,8 +319,8 @@ export default function DiseaseList({route, navigation}) {
           const _list = [];
           res.forEach((item, index) => {
             if (!_list.find(it => it.version === item.version)) {
-              console.log('病害录入页面返回传入的数据',item.jsondata);
-              console.log('病害录入页面返回传入的scale',item.jsondata.areatype);
+              // console.log('病害录入页面返回传入的数据',item.jsondata);
+              // console.log('病害录入页面返回传入的scale',item.jsondata.areatype);
               if (item.jsondata.scale =='4') {
                 item.jsondata.scale = '2'
               }
@@ -471,6 +471,7 @@ export default function DiseaseList({route, navigation}) {
   const handleModelCallBack = data => {
     console.log("data6661",data.secondDisTypeData.paneltype);
     console.log("data6662",waitingData,routeParams);
+    console.log('handleModelCallBack data',data);
     console.log('route.params.list[0].membertype1',route.params.list[0].membertype);
     const kuaMembertype = route.params.list[0].membertype
     const url =

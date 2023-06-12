@@ -63,6 +63,17 @@ export function DiseaseA({route, navigation}) {
       React.useEffect(() => {
         setDiseaseData(itemData);
         // console.log('route.params.data.jsondata',route.params.data.jsondata);
+        try {
+          console.log('itemData',itemData.standard.scale);
+          console.log('diseaseData',diseaseData);
+          // console.log('diseaseData.standard.scale',diseaseData.standard.scale);
+          console.log('areatype',itemData.areatype);
+          setBiaodu(itemData.standard.scale)
+          diseaseData['scale'] = itemData.standard.scale
+          // handleFormChenge(itemData.standard.scale, diseaseData.scale)
+        } catch (error) {
+          console.log('areatype error',error);
+        }
       }, [itemData]);
     
       const [lengthText, setLengthText] = useState(0)
@@ -191,10 +202,11 @@ export function DiseaseA({route, navigation}) {
       React.useEffect(() => {
         saveData.current = {...diseaseData};
         try {
-          // console.log('route',route);
-          // console.log('route.params.thridData',route.params.memberList);
+          console.log('route',route);
+          console.log('route.params.thridData',route.params.data);
+          console.log('areanode',scale);
           if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
-            console.log('7777');
+            // console.log('7777');
             diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
             handleFormChenge(route.params.thridData.checkinfoshort, diseaseData.diseaseName)
           }
@@ -326,13 +338,19 @@ export function DiseaseA({route, navigation}) {
             handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
           }
 
-          if (diseaseData.scale == '4' || diseaseData.scale == '') {
-            diseaseData['scale'] = '2'
-            handleFormChenge('2',diseaseData.scale)
+          try {
+            console.log('diseaseData.scale',diseaseData.scale);
+            // route.params.mediaType
+            if (itemData && route.params.mediaType == 'add') {
+              
+              console.log('itemData321',itemData.standard.scale);
+              diseaseData['scale'] = itemData.standard.scale
+              handleFormChenge(itemData.standard.scale, diseaseData.scale)
+              route.params.mediaType = ''
+            }
+          } catch (error) {
+            console.log('设置标度初始值',error);
           }
-          // setTimeout(() => {
-          //   console.log('disea111111111111',diseaseData);
-          // }, 1000);
           
         } catch (err){
           console.log('err10', err);
@@ -414,12 +432,6 @@ export function DiseaseA({route, navigation}) {
         // console.log('桥跨：：',route.params.memberList);
         // console.log('桥梁id::',route.params.memberList[0].bridgeid);
         // console.log('部件',route.params.routeParams.title);
-
-        try {
-          console.log('areatype',itemData.areatype);
-        } catch (error) {
-          console.log('areatype error',error);
-        }
         
         let defaultPier = route.params.memberList[0].membername
         // 提取第一个字符进行判断（表示墩台的数据）
@@ -1010,11 +1022,6 @@ export function DiseaseA({route, navigation}) {
         } catch (error) {
           console.log('error321',error);
         }
-        
-        
-        
-
-        
       };
 
       // 填入病害描述内容
@@ -1779,8 +1786,6 @@ export function DiseaseA({route, navigation}) {
           // console.log('diseaseData.area', diseaseData.area);
           console.log('diseaseData.lengthText',lengthText,widthText,heightText);
           
-          
-
           if (diseaseData.area == undefined) {
             console.log('area未定义 areaparam',areaparam);
             console.log('labelName333222111',labelName);
@@ -2260,7 +2265,7 @@ export function DiseaseB({route, navigation}) {
     const [writePositionTxt, setWritePositionTxt] = useState('')
     // -------------------------------------------------
     // 标度,默认为 2
-    const [biaodu, setBiaodu] = useState(2)
+    const [biaodu, setBiaodu] = useState('')
     // 长度 - 米
     const [lengthM, setLengthM] = useState('')
     // 长度 - 厘米
@@ -2361,6 +2366,7 @@ export function DiseaseB({route, navigation}) {
     const [widthNum, setWidthNum] = useState()
     const [heightNum, setHeightNum] = useState()
 
+
     // const [diseaseName, setDiseaseName] = useState('')
     // =================================================
     React.useEffect(() => {
@@ -2442,12 +2448,23 @@ export function DiseaseB({route, navigation}) {
         }
 
         // console.log('scale',scale, diseaseData.scale);
-        if (diseaseData.scale == '4' || diseaseData.scale == '') {
-          diseaseData['scale'] = '2'
-          handleFormChenge('2',diseaseData.scale)
+        // if (diseaseData.scale == '4') {
+        //   diseaseData['scale'] = '2'
+        //   handleFormChenge('2',diseaseData.scale)
+        // }
+        try {
+          console.log('diseaseData.scale',diseaseData.scale);
+          // route.params.mediaType
+          if (itemData && route.params.mediaType == 'add') {
+            
+            console.log('itemData321',itemData.standard.scale);
+            diseaseData['scale'] = itemData.standard.scale
+            handleFormChenge(itemData.standard.scale, diseaseData.scale)
+            route.params.mediaType = ''
+          }
+        } catch (error) {
+          console.log('设置标度初始值',error);
         }
-      
-
       } catch {
       }
     }, [diseaseData]);
@@ -3926,6 +3943,13 @@ export function DiseaseC({route, navigation}) {
     React.useEffect(() => {
       setDiseaseData(itemData);
       console.log('itemData:',itemData);
+      try {
+        console.log('itemData',itemData.standard.scale);
+        setBiaodu(itemData.standard.scale)
+        diseaseData['scale'] = itemData.standard.scale
+      } catch (error) {
+        console.log('设置标度初始值',error);
+      }
     }, [itemData]);
   
     const [lengthText, setLengthText] = useState()
@@ -4123,9 +4147,18 @@ export function DiseaseC({route, navigation}) {
           handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
-        if (diseaseData.scale == '4' || diseaseData.scale == '') {
-          diseaseData['scale'] = '2'
-          handleFormChenge('2',diseaseData.scale)
+        try {
+          console.log('diseaseData.scale',diseaseData.scale);
+          // route.params.mediaType
+          if (itemData && route.params.mediaType == 'add') {
+            
+            console.log('itemData321',itemData.standard.scale);
+            diseaseData['scale'] = itemData.standard.scale
+            handleFormChenge(itemData.standard.scale, diseaseData.scale)
+            route.params.mediaType = ''
+          }
+        } catch (error) {
+          console.log('设置标度初始值',error);
         }
 
       } catch {
@@ -5617,6 +5650,13 @@ export function DiseaseD({route, navigation}) {
     React.useEffect(() => {
       setDiseaseData(itemData);
       console.log('itemData:',itemData);
+      try {
+        console.log('itemData',itemData.standard.scale);
+        setBiaodu(itemData.standard.scale)
+        diseaseData['scale'] = itemData.standard.scale
+      } catch (error) {
+        console.log('设置标度初始值',error);
+      }
     }, [itemData]);
   
     const [lengthText, setLengthText] = useState()
@@ -5833,9 +5873,18 @@ export function DiseaseD({route, navigation}) {
           handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
-        if (diseaseData.scale == '4' || diseaseData.scale == '') {
-          diseaseData['scale'] = '2'
-          handleFormChenge('2',diseaseData.scale)
+        try {
+          console.log('diseaseData.scale',diseaseData.scale);
+          // route.params.mediaType
+          if (itemData && route.params.mediaType == 'add') {
+            
+            console.log('itemData321',itemData.standard.scale);
+            diseaseData['scale'] = itemData.standard.scale
+            handleFormChenge(itemData.standard.scale, diseaseData.scale)
+            route.params.mediaType = ''
+          }
+        } catch (error) {
+          console.log('设置标度初始值',error);
         }
       } catch {
       }
@@ -7164,6 +7213,13 @@ export function DiseaseE({route, navigation}) {
     React.useEffect(() => {
       setDiseaseData(itemData);
       console.log('itemData:',itemData);
+      try {
+        console.log('itemData',itemData.standard.scale);
+        setBiaodu(itemData.standard.scale)
+        diseaseData['scale'] = itemData.standard.scale
+      } catch (error) {
+        console.log('设置标度初始值',error);
+      }
     }, [itemData]);
   
     const [lengthText, setLengthText] = useState()
@@ -7384,9 +7440,18 @@ export function DiseaseE({route, navigation}) {
           handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
-        if (diseaseData.scale == '4' || diseaseData.scale == '') {
-          diseaseData['scale'] = '2'
-          handleFormChenge('2',diseaseData.scale)
+        try {
+          console.log('diseaseData.scale',diseaseData.scale);
+          // route.params.mediaType
+          if (itemData && route.params.mediaType == 'add') {
+            
+            console.log('itemData321',itemData.standard.scale);
+            diseaseData['scale'] = itemData.standard.scale
+            handleFormChenge(itemData.standard.scale, diseaseData.scale)
+            route.params.mediaType = ''
+          }
+        } catch (error) {
+          console.log('设置标度初始值',error);
         }
       } catch {
       }
@@ -8726,6 +8791,13 @@ export function DiseaseK({route, navigation}) {
     React.useEffect(() => {
       setDiseaseData(itemData);
       console.log('itemData:',itemData);
+      try {
+        console.log('itemData',itemData.standard.scale);
+        setBiaodu(itemData.standard.scale)
+        diseaseData['scale'] = itemData.standard.scale
+      } catch (error) {
+        console.log('设置标度初始值',error);
+      }
     }, [itemData]);
   
     const [lengthText, setLengthText] = useState()
@@ -8947,9 +9019,18 @@ export function DiseaseK({route, navigation}) {
           handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
-        if (diseaseData.scale == '4' || diseaseData.scale == '') {
-          diseaseData['scale'] = '2'
-          handleFormChenge('2',diseaseData.scale)
+        try {
+          console.log('diseaseData.scale',diseaseData.scale);
+          // route.params.mediaType
+          if (itemData && route.params.mediaType == 'add') {
+            
+            console.log('itemData321',itemData.standard.scale);
+            diseaseData['scale'] = itemData.standard.scale
+            handleFormChenge(itemData.standard.scale, diseaseData.scale)
+            route.params.mediaType = ''
+          }
+        } catch (error) {
+          console.log('设置标度初始值',error);
         }
       } catch {
       }
@@ -10474,6 +10555,13 @@ export function DiseaseG({route, navigation}) {
     React.useEffect(() => {
       setDiseaseData(itemData);
       console.log('itemData:',itemData);
+      try {
+        console.log('itemData',itemData.standard.scale);
+        setBiaodu(itemData.standard.scale)
+        diseaseData['scale'] = itemData.standard.scale
+      } catch (error) {
+        console.log('设置标度初始值',error);
+      }
     }, [itemData]);
   
     const [lengthText, setLengthText] = useState()
@@ -10695,9 +10783,18 @@ export function DiseaseG({route, navigation}) {
           handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
-        if (diseaseData.scale == '4' || diseaseData.scale == '') {
-          diseaseData['scale'] = '2'
-          handleFormChenge('2',diseaseData.scale)
+        try {
+          console.log('diseaseData.scale',diseaseData.scale);
+          // route.params.mediaType
+          if (itemData && route.params.mediaType == 'add') {
+            
+            console.log('itemData321',itemData.standard.scale);
+            diseaseData['scale'] = itemData.standard.scale
+            handleFormChenge(itemData.standard.scale, diseaseData.scale)
+            route.params.mediaType = ''
+          }
+        } catch (error) {
+          console.log('设置标度初始值',error);
         }
       } catch {
       }
@@ -12211,6 +12308,13 @@ export function DiseaseH({route, navigation}) {
     React.useEffect(() => {
       setDiseaseData(itemData);
       console.log('itemData:',itemData);
+      try {
+        console.log('itemData',itemData.standard.scale);
+        setBiaodu(itemData.standard.scale)
+        diseaseData['scale'] = itemData.standard.scale
+      } catch (error) {
+        console.log('设置标度初始值',error);
+      }
     }, [itemData]);
   
     const [lengthText, setLengthText] = useState()
@@ -12431,9 +12535,18 @@ export function DiseaseH({route, navigation}) {
           handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
-        if (diseaseData.scale == '4' || diseaseData.scale == '') {
-          diseaseData['scale'] = '2'
-          handleFormChenge('2',diseaseData.scale)
+        try {
+          console.log('diseaseData.scale',diseaseData.scale);
+          // route.params.mediaType
+          if (itemData && route.params.mediaType == 'add') {
+            
+            console.log('itemData321',itemData.standard.scale);
+            diseaseData['scale'] = itemData.standard.scale
+            handleFormChenge(itemData.standard.scale, diseaseData.scale)
+            route.params.mediaType = ''
+          }
+        } catch (error) {
+          console.log('设置标度初始值',error);
         }
       } catch {
       }

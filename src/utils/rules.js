@@ -250,8 +250,10 @@ const getTiaozhi = (name, values, code, kua) => {
   ]);
 };
 
-// 桥墩
+// 桥墩编号规则
 const getQiaodun = (name, values, code, kua) => {
+  console.log('getQiaodun-------------',name, values);
+  console.log('桥墩柱数：',values.qiaodunzhushu);
   const _data = [];
   const _piaodun_type = values.bridgepier || 'pier100';
   const len = parseInt(values.b200002num, 10);
@@ -264,13 +266,16 @@ const getQiaodun = (name, values, code, kua) => {
         membername: `${inx}#墩盖梁`,
         stepno: inx,
       });
-      _data.push({
-        position: code.pCode,
-        membertype: code[name],
-        memberid: uuid.v4(),
-        membername: `${inx}#墩墩柱`,
-        stepno: inx,
-      });
+      if (values.qiaodunzhushu <= 1) {
+        _data.push({
+          position: code.pCode,
+          membertype: code[name],
+          memberid: uuid.v4(),
+          membername: `${inx}#墩墩柱`,
+          stepno: inx,
+        });
+      }
+      
       let qiaodunzhushu = parseInt(values.qiaodunzhushu, 10);
       qiaodunzhushu = isNaN(qiaodunzhushu) ? 0 : values.qiaodunzhushu;
       if (qiaodunzhushu > 1) {
@@ -307,6 +312,8 @@ const getQiaodun = (name, values, code, kua) => {
 
 // 桥台
 const getQiaotai = (name, values, code, kua) => {
+  console.log('getQiaotai',values,kua);
+  console.log('桥台柱数：',values.qiaotaizhushu);
   const _data = [];
   const _piaotai_type = values.bridgeabutment;
   if (_piaotai_type === 'abutment101') {
@@ -345,13 +352,16 @@ const getQiaotai = (name, values, code, kua) => {
         membername: `${kua}#台盖梁`,
         stepno: kua,
       });
-      _data.push({
-        position: code.pCode,
-        membertype: code[name],
-        memberid: uuid.v4(),
-        membername: `${kua}#台台柱`,
-        stepno: kua,
-      });
+      if (values.qiaotaizhushu <= 1) {
+        _data.push({
+          position: code.pCode,
+          membertype: code[name],
+          memberid: uuid.v4(),
+          membername: `${kua}#台台柱`,
+          stepno: kua,
+        });
+      }
+      
       if (qiaotaizhushu > 1) {
         for (let i = 1; i <= qiaotaizhushu; i++) {
           _data.push({
