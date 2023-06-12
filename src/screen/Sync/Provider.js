@@ -71,11 +71,9 @@ function Provider({children}) {
 
   // 获取设备id
   React.useEffect(()=>{
-    DeviceInfo.getUniqueId().then(res=>{
-      let deviceId = res.toUpperCase()
-      AsyncStorage.setItem('deviceId', deviceId);
-      dispatch({type: 'deviceId', payload: deviceId});
-    })
+    let deviceId = DeviceInfo.getUniqueId()
+    AsyncStorage.setItem('deviceId', deviceId?deviceId.toUpperCase():'');
+    dispatch({type: 'deviceId', payload: deviceId?deviceId.toUpperCase():''});
   },[])
 
   // 桥梁上传

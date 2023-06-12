@@ -422,8 +422,13 @@ export const getData =async (
       // 获取设备id
       deviceId = await AsyncStorage.getItem('deviceId'); 
       if(!deviceId){
-        await getDeviceId()
-        deviceId = await AsyncStorage.getItem('deviceId'); 
+        getDeviceId()
+        setTimeout(() => {
+          deviceId = AsyncStorage.getItem('deviceId');
+        }, 1000); 
+      }
+      if(deviceId==''){
+        return errorDeal(id,e,'设备id为空')
       }
     }catch(e){
       console.log('deviceId',e);
@@ -909,9 +914,8 @@ const errorDeal = async (id,_err,errDescribe) => {
 
 // 获取设备id
 const getDeviceId = () => {
-  DeviceInfo.getUniqueId().then(res=>{
-    AsyncStorage.setItem('deviceId', res.toUpperCase());
-  })
+  let deviceId = DeviceInfo.getUniqueId()
+  AsyncStorage.setItem('deviceId', deviceId?deviceId.toUpperCase():'');
 }
 //获取
 /* const fun = key => {
