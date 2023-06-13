@@ -259,7 +259,7 @@ function Provider({children}) {
                           + data.testData.userid + '/'
                           + data.bridgeid + '/'
                           + data.testData.bridgereportid + '/'
-                          + 'reportData.txt'
+                          + 'reportData.json'
               //---------上传反馈数据
               let feedbackParams = {
                 bucketname:BucketName_storeTestData,
@@ -276,7 +276,7 @@ function Provider({children}) {
                   filenamesys:data.testData.bridgereportid,
                   filesize:Math.floor(fileSize/1024*100)/100,
                   filetypes:'.json',
-                  dirpath:ObsReportDataKey.replace("reportData.txt",""),
+                  dirpath:ObsReportDataKey.replace("reportData.json",""),
                   fileinfo:'',
                   filemd5:'',//obs反馈的etag
                   projectkey:data.testData.projectid,
