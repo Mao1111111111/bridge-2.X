@@ -43,7 +43,7 @@ function ScaleInfo({info}, ref) {
                 <Text>{item.qualitative}</Text>
               </View>
               <View style={[styles.center, styles.flex2, styles.borderB]}>
-                <Text>{item.standardname}</Text>
+                <Text>{item.ration}</Text>
               </View>
             </View>
           )}

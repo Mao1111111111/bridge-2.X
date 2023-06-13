@@ -73,7 +73,7 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
 
   React.useEffect(() => {
     setDiseaseData(itemData);
-    console.log('diseaseEdit2 kuaMembertype',route.params.data.kuaMembertype);
+    console.log('diseaseEdit2 kuaMembertype',scale);
     const windowWidth = Dimensions.get('window').width;
     setScreenWidth(windowWidth)
   }, [itemData]);

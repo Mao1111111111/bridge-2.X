@@ -65,7 +65,6 @@ export function DiseaseA({route, navigation}) {
         // console.log('route.params.data.jsondata',route.params.data.jsondata);
         try {
           console.log('itemData',itemData.standard.scale);
-          console.log('diseaseData',diseaseData);
           // console.log('diseaseData.standard.scale',diseaseData.standard.scale);
           console.log('areatype',itemData.areatype);
           setBiaodu(itemData.standard.scale)
@@ -203,8 +202,10 @@ export function DiseaseA({route, navigation}) {
         saveData.current = {...diseaseData};
         try {
           console.log('route',route);
-          console.log('route.params.thridData',route.params.data);
-          console.log('areanode',scale);
+          console.log('route.params.thridData',route.params.thridData);
+          // console.log('编辑时进入页面的路由参数',route.params.type);
+          // console.log('route',route);
+          // console.log('areanode',scale);
           if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
             // console.log('7777');
             diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -342,10 +343,8 @@ export function DiseaseA({route, navigation}) {
             console.log('diseaseData.scale',diseaseData.scale);
             // route.params.mediaType
             if (itemData && route.params.mediaType == 'add') {
-              
-              console.log('itemData321',itemData.standard.scale);
-              diseaseData['scale'] = itemData.standard.scale
-              handleFormChenge(itemData.standard.scale, diseaseData.scale)
+              diseaseData['scale'] = rightScaleNum
+              handleFormChenge(rightScaleNum, diseaseData.scale)
               route.params.mediaType = ''
             }
           } catch (error) {
@@ -356,8 +355,81 @@ export function DiseaseA({route, navigation}) {
           console.log('err10', err);
         }
       }, [diseaseData]);
+
+      // 重新获取数据的标度选项数组
+      const [rightScale, setRightScale] = useState([])
+      // 默认的标度值
+      const [rightScaleNum, setRightScaleNum] = useState('')
+      // 重新获取数据的标度评定标准表格
+      const [scaleTabel, setScaleTabel] = useState([])
     
       React.useEffect(() => {
+        
+        try {
+          console.log('scale',scale);
+          // console.log('baseData', baseData);
+          // console.log('标度表格信息baseData.basestandardtable',baseData.basestandardtable)
+
+          // 当页面是由新建进入时，存储标度数组，以备编辑进入时使用
+          if (route.params.mediaType == 'add' || route.params.mediaType == '') {
+            // =================================
+            // 获取标度列表与标度默认值
+            let scaleSelect = baseData.basestandardtable
+            let oldArr = ''
+            let scaleNum = ''
+            scaleSelect.forEach(item => {
+              // console.log('33330000',item.standardid);
+              
+              if (route.params.thridData.strandardid == item.standardid) {
+                console.log('当前病害的标度选项',item);
+                // setRightScale(item.standardscalestr)
+                oldArr = item.standardscalestr
+                scaleNum = item.standardscale
+              }
+            });
+            setRightScaleNum(scaleNum)
+            // console.log('rightScale',rightScale);
+            const arr = oldArr.split(',')
+            console.log('arr',arr);
+            
+            let resetArr = []
+            arr.forEach((item, index) => {
+              resetArr.push({
+                label:index + 1,
+                value:item
+              })
+            })
+            console.log('resetArr',resetArr);
+            setRightScale(resetArr)
+            diseaseData['scaleArr'] = rightScale
+            handleFormChenge(rightScale, diseaseData.scaleArr)
+
+            // =================================
+            // 获取标度评定标准表数据
+            let scaleTabel = baseData.standardtableinfo
+            // console.log('表格数据',scaleTabel);
+            let oldTable = []
+            scaleTabel.forEach((item) => {
+              if (route.params.thridData.strandardid == item.standardid) {
+                // console.log('当前的评定表item',item);
+                oldTable.push(item)
+              }
+            })
+            console.log('oldTable',oldTable);
+            setScaleTabel(oldTable)
+            diseaseData['scaleTableArr'] = oldTable
+            handleFormChenge(oldTable, diseaseData.scaleTableArr)
+
+
+          } else if (route.params.mediaType == 'edit') {
+            // 当页面是由编辑进入时
+            setRightScale(diseaseData.scaleArr)
+            setScaleTabel(scaleTabel)
+            // console.log('rightScale222222',rightScale);
+          }
+        } catch (error) {
+          console.log('获取标度数据',error);
+        }
         return () => {
           if (version) {
             const {memberList, type, dataGroupId} = route.params;
@@ -390,7 +462,7 @@ export function DiseaseA({route, navigation}) {
               // .join(',');
               // 1.去掉为空的项 2.当所有数据都为空时，默认为 /
               const strr = str.filter(item => item!=='') == '' ? '/' : str.filter(item => item!=='')
-              // console.log('str', strr);
+              
             let scalegroupid = '';
             if (baseData.scale && baseData.scale.length) {
               scalegroupid =
@@ -2061,7 +2133,7 @@ export function DiseaseA({route, navigation}) {
         )} */}
 
         {/* 修改标度：删除'无'的项 */}
-        {scale.length ? (
+        {/* {scale.length ? (
           <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
             <LabelItem label="标度" />
             <TouchableOpacity onPress={handleScaleOpen}>
@@ -2074,6 +2146,28 @@ export function DiseaseA({route, navigation}) {
             <RadioGroup
               name="scale"
               values={scale.slice(1)} // 初始数据第一项为'无'，提取第二项及以后的数据传入组件
+              value={diseaseData?.scale}
+              onChange={handleFormChenge}
+            />
+          </View>
+        ) : (
+          <></>
+        )} */}
+
+        {/* 修改标度数据源 */}
+        {rightScale.length ? (
+          <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
+            <LabelItem label="标度" />
+            <TouchableOpacity onPress={handleScaleOpen}>
+              <Icon
+                name="information"
+                size={20}
+                style={[tailwind.mR2, {color:'#2b427d'}]}
+              />
+            </TouchableOpacity>
+            <RadioGroup
+              name="scale"
+              values={rightScale} // 初始数据第一项为'无'，提取第二项及以后的数据传入组件
               value={diseaseData?.scale}
               onChange={handleFormChenge}
             />
@@ -2213,7 +2307,7 @@ export function DiseaseA({route, navigation}) {
         </TouchableOpacity>
       </View>
       
-      <ScaleInfo ref={scaleInfoRef} info={scaleInfo} />
+      <ScaleInfo ref={scaleInfoRef} info={scaleTabel} />
     </View>
     );
     {/* ================================================= */}

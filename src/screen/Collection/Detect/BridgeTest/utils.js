@@ -33,6 +33,7 @@ export const getBaseData = async (memberList, type) => {
     scale = baseData['病害评定明细'].data;
     basemembercheckgroup = baseData['病害分组列表和病害明细表'].data;
     standardtableinfo = baseData['规范标度评分表明细'].data;
+    // console.log('getBaseData scale..', basestandardtable);
   } catch (err) {
     console.info('xxx', err);
   }
