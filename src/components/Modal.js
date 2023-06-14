@@ -17,6 +17,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Context as ThemeContext} from '../providers/ThemeProvider';
 import {Context as GlobalContext} from '../providers/GlobalProvider';
 import Pid from './Pid';
+import { FlatList } from 'native-base';
 
 const ModalView = ({notScroll, children}) => {
   return notScroll ? children : <ScrollView>{children}</ScrollView>;

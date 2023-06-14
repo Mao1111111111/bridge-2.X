@@ -1,6 +1,6 @@
 import React from 'react';
 import {tailwind} from 'react-native-tailwindcss';
-import {View, Text, FlatList, StyleSheet} from 'react-native';
+import {View, Text, FlatList, StyleSheet,ScrollView} from 'react-native';
 import Modal from '../../../../components/Modal';
 
 function ScaleInfo({info}, ref) {
@@ -43,7 +43,7 @@ function ScaleInfo({info}, ref) {
                 <Text>{item.qualitative}</Text>
               </View>
               <View style={[styles.center, styles.flex2, styles.borderB]}>
-                <Text>{item.standardname}</Text>
+                <Text>{item.ration}</Text>
               </View>
             </View>
           )}
