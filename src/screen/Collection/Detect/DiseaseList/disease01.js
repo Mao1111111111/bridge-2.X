@@ -2166,7 +2166,7 @@ export function DiseaseA({route, navigation}) {
             </TouchableOpacity>
             <RadioGroup
               name="scale"
-              values={rightScale}
+              values={rightScale} // 初始数据第一项为'无'，提取第二项及以后的数据传入组件
               value={diseaseData?.scale}
               onChange={handleFormChenge}
             />
