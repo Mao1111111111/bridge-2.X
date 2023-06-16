@@ -322,15 +322,12 @@ export function DiseaseA({route, navigation}) {
             setDiseaseName(diseaseName)
           }
 
-          console.log('一级病害id',route.params.stairgroupid);
-          // if (route.params.stairgroupid) {
-            if (diseaseData.stairgroupid == undefined || diseaseData.stairgroupid == '') {
-              console.log('0000.000');
-              diseaseData['stairgroupid'] = route.params.stairgroupid
-              handleFormChenge(route.params.stairgroupid, diseaseData.stairgroupid)
-            }
-          // }
-          
+          // console.log('一级病害id',route.params.stairgroupid);
+          if (diseaseData.stairgroupid == undefined || diseaseData.stairgroupid == '') {
+            // console.log('0000.000');
+            diseaseData['stairgroupid'] = route.params.stairgroupid
+            handleFormChenge(route.params.stairgroupid, diseaseData.stairgroupid)
+          }
 
           // console.log(diseaseData);
           if (diseaseData.remark == '' || diseaseData.remark == undefined) {
@@ -1954,10 +1951,11 @@ export function DiseaseA({route, navigation}) {
               diseaseData['area'] = areaName
               handleFormChenge(areaName, diseaseData.area)
             } else if (labelName == 'at0000' && diseaseData.area !== undefined || diseaseData.area !== '' || diseaseData.area !== '/') {
-              console.log('not empty~~~~');
+              // console.log('not empty~~~~');
               var areaName = diseaseData.area
               diseaseData['area'] = areaName
               handleFormChenge(areaName, diseaseData.area)
+              console.log('not empty~~~~',areaName);
             }
             if (areaparam !== []) {
               let areaArr = areaparam
@@ -2533,6 +2531,11 @@ export function DiseaseB({route, navigation}) {
           // setDiseaseName(diseaseName)
         }
         
+        if (diseaseData.stairgroupid == undefined || diseaseData.stairgroupid == '') {
+          // console.log('0000.000');
+          diseaseData['stairgroupid'] = route.params.stairgroupid
+          handleFormChenge(route.params.stairgroupid, diseaseData.stairgroupid)
+        }
         
         if (diseaseData.remark == '' || diseaseData.remark == undefined) {
           let infoshort = route.params.thridData.checkinfoshort
@@ -4304,6 +4307,12 @@ export function DiseaseC({route, navigation}) {
           setDiseaseName(diseaseName)
         }
         
+        if (diseaseData.stairgroupid == undefined || diseaseData.stairgroupid == '') {
+          // console.log('0000.000');
+          diseaseData['stairgroupid'] = route.params.stairgroupid
+          handleFormChenge(route.params.stairgroupid, diseaseData.stairgroupid)
+        }
+
         // console.log(diseaseData);
         if (diseaseData.remark == '' || diseaseData.remark == undefined) {
           let infoshort = route.params.thridData.checkinfoshort
@@ -6099,6 +6108,12 @@ export function DiseaseD({route, navigation}) {
           setDiseaseName(diseaseName)
         }
 
+        if (diseaseData.stairgroupid == undefined || diseaseData.stairgroupid == '') {
+          // console.log('0000.000');
+          diseaseData['stairgroupid'] = route.params.stairgroupid
+          handleFormChenge(route.params.stairgroupid, diseaseData.stairgroupid)
+        }
+
 
         // console.log(diseaseData);
         if (diseaseData.remark == '' || diseaseData.remark == undefined) {
@@ -7737,6 +7752,11 @@ export function DiseaseE({route, navigation}) {
           setDiseaseName(diseaseName)
         }
 
+        if (diseaseData.stairgroupid == undefined || diseaseData.stairgroupid == '') {
+          // console.log('0000.000');
+          diseaseData['stairgroupid'] = route.params.stairgroupid
+          handleFormChenge(route.params.stairgroupid, diseaseData.stairgroupid)
+        }
 
         // console.log(diseaseData);
         if (diseaseData.remark == '' || diseaseData.remark == undefined) {
@@ -9385,6 +9405,11 @@ export function DiseaseK({route, navigation}) {
           setDiseaseName(diseaseName)
         }
 
+        if (diseaseData.stairgroupid == undefined || diseaseData.stairgroupid == '') {
+          // console.log('0000.000');
+          diseaseData['stairgroupid'] = route.params.stairgroupid
+          handleFormChenge(route.params.stairgroupid, diseaseData.stairgroupid)
+        }
 
         // console.log(diseaseData);
         if (diseaseData.remark == '' || diseaseData.remark == undefined) {
@@ -11220,6 +11245,11 @@ export function DiseaseG({route, navigation}) {
           setDiseaseName(diseaseName)
         }
 
+        if (diseaseData.stairgroupid == undefined || diseaseData.stairgroupid == '') {
+          // console.log('0000.000');
+          diseaseData['stairgroupid'] = route.params.stairgroupid
+          handleFormChenge(route.params.stairgroupid, diseaseData.stairgroupid)
+        }
 
         // console.log(diseaseData);
         if (diseaseData.remark == '' || diseaseData.remark == undefined) {
@@ -13042,6 +13072,11 @@ export function DiseaseH({route, navigation}) {
           setDiseaseName(diseaseName)
         }
 
+        if (diseaseData.stairgroupid == undefined || diseaseData.stairgroupid == '') {
+          // console.log('0000.000');
+          diseaseData['stairgroupid'] = route.params.stairgroupid
+          handleFormChenge(route.params.stairgroupid, diseaseData.stairgroupid)
+        }
 
         // console.log(diseaseData);
         if (diseaseData.remark == '' || diseaseData.remark == undefined) {
