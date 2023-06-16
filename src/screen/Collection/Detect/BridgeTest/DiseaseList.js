@@ -40,6 +40,7 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
     //设置三级菜单
     const res = await getBaseData(memberList, item.list[0]);
     setThridDisTypeList(res.infoComponents)
+    // console.log('一级菜单点击',item);
   }
 
    //二级菜单选中项
@@ -49,6 +50,7 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
      setSecondDisTypeSel(item)
      const res = await getBaseData(memberList, item);
      setThridDisTypeList(res.infoComponents)
+    //  console.log('二级菜单点击',item);
    }
 
    //三级菜单列表
@@ -319,7 +321,7 @@ export default function DiseaseList({route, navigation}) {
           const _list = [];
           res.forEach((item, index) => {
             if (!_list.find(it => it.version === item.version)) {
-              // console.log('病害录入页面返回传入的数据',item.jsondata);
+              console.log('病害录入页面返回传入的数据',item.jsondata);
               // console.log('病害录入页面返回传入的scale',item.jsondata.areatype);
               if (item.jsondata.scale =='4') {
                 item.jsondata.scale = '2'
@@ -480,6 +482,7 @@ export default function DiseaseList({route, navigation}) {
         : 'Collection/Detect/BridgeTest/Member/DiseaseEdit2';
     navigation.navigate(url, {
       title,
+      stairgroupid:data.firstDisTypeData.checktypegroupid,
       type:data.secondDisTypeData,
       thridData:data.thridDisTypeData,
       data: {

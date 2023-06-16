@@ -322,6 +322,15 @@ export function DiseaseA({route, navigation}) {
             setDiseaseName(diseaseName)
           }
 
+          console.log('一级病害id',route.params.stairgroupid);
+          // if (route.params.stairgroupid) {
+            if (diseaseData.stairgroupid == undefined || diseaseData.stairgroupid == '') {
+              console.log('0000.000');
+              diseaseData['stairgroupid'] = route.params.stairgroupid
+              handleFormChenge(route.params.stairgroupid, diseaseData.stairgroupid)
+            }
+          // }
+          
 
           // console.log(diseaseData);
           if (diseaseData.remark == '' || diseaseData.remark == undefined) {
