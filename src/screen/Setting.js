@@ -403,9 +403,10 @@ const User = () => {
             {
               color:'#2b427d',
               // fontWeight: 'bold',
-              // fontSize:18,
+              fontSize:12,
               left:'49%',
-              top: 203
+              top: 203,
+              width:160
             }
           ]
         }>{userInfo?.company?.companyname}</Text>
@@ -415,9 +416,10 @@ const User = () => {
             {
               color:'#2b427d',
               // fontWeight: 'bold',
-              fontSize:13,
+              fontSize:12,
               left:'49%',
-              top: 217
+              top: 200,
+              marginTop:5
             }
           ]
         }>{userInfo?.loginDate}</Text>
