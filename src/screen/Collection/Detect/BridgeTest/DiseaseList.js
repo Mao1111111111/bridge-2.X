@@ -365,8 +365,8 @@ export default function DiseaseList({route, navigation}) {
 
           setTableData(listToPage(_list, 10));
 
-          console.log('DiseaseList route', route);
-          console.log('res[0].jsondata', route.params.list[0].membertype);
+          // console.log('DiseaseList route', route);
+          // console.log('res[0].jsondata', route.params.list[0].membertype);
           // console.log('list',list);
         });
     }, [list, isLoading, dataGroupId]),
