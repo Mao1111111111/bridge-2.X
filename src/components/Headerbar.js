@@ -55,7 +55,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
     // console.log('pid6---',project,projectList);
     // console.log('items.name',items[0].name);
     const windowWidth = Dimensions.get('window').width;
-    console.log('当前屏幕宽度',windowWidth);
+    // console.log('当前屏幕宽度',windowWidth);
     setScreenWidth(windowWidth)
     getProStorage()
     getBriStorage()

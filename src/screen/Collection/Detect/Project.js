@@ -99,7 +99,7 @@ export default function Project({navigation}) {
     let deleteDisImg = require('../../../../src/iconImg/deleteDis.png')
     setdeleteDisImg(deleteDisImg)
     const windowWidth = Dimensions.get('window').width;
-    console.log('当前屏幕宽度',windowWidth);
+    // console.log('当前屏幕宽度',windowWidth);
     setScreenWidth(windowWidth)
   }, [])
 

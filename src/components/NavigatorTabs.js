@@ -91,7 +91,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
 
   React.useEffect(() => {
     const windowWidth = Dimensions.get('window').width;
-    console.log('当前屏幕宽度',windowWidth);
+    // console.log('当前屏幕宽度',windowWidth);
     if (isTabBarShow) {
       Animated.timing(tabHeight, {
         toValue: 1,

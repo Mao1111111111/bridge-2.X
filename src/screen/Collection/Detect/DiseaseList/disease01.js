@@ -49,7 +49,8 @@ export function DiseaseA({route, navigation}) {
     
       const [areaparam, areanode] = hooks.useArea({diseaseData, baseData});
     
-      const infoList = hooks.useInfoComponents({diseaseData, baseData});
+      // const infoList = hooks.useInfoComponents({diseaseData, baseData});
+      const [infoList,setInfoList] = useState([])
     
       const defaultFileName = hooks.useDefaultFileName({diseaseData, baseData});
     
@@ -64,9 +65,9 @@ export function DiseaseA({route, navigation}) {
         setDiseaseData(itemData);
         // console.log('route.params.data.jsondata',route.params.data.jsondata);
         try {
-          console.log('itemData',itemData.standard.scale);
+          // console.log('itemData',itemData.standard.scale);
           // console.log('diseaseData.standard.scale',diseaseData.standard.scale);
-          console.log('areatype',itemData.areatype);
+          // console.log('areatype',itemData.areatype);
           setBiaodu(itemData.standard.scale)
           diseaseData['scale'] = itemData.standard.scale
           // handleFormChenge(itemData.standard.scale, diseaseData.scale)
@@ -201,8 +202,19 @@ export function DiseaseA({route, navigation}) {
       React.useEffect(() => {
         saveData.current = {...diseaseData};
         try {
-          console.log('route',route);
-          console.log('route.params.thridData',route.params.thridData);
+          // console.log('route',route);
+          // console.log('route.params.thridData',route.params.thridData);
+          let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            baseData.membercheckdata.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
           // console.log('编辑时进入页面的路由参数',route.params.type);
           // console.log('route',route);
           // console.log('areanode',scale);
@@ -271,12 +283,14 @@ export function DiseaseA({route, navigation}) {
           // }
           // console.log('12333233');
 
+          // console.log('baseData.membercheckdata',baseData.membercheckdata);
+          console.log('infoList---------------',infoList);
 
-          let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
+          let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
           setLengthText(lengthText)
-          let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
+          let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
           setWidthText(widthText)
-          let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(1)
+          let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(2)
           setHeightText(heightText)
           if (lengthText == 'NaN') {
             let lengthText = '0'
@@ -346,7 +360,7 @@ export function DiseaseA({route, navigation}) {
           }
 
           try {
-            console.log('diseaseData.scale',diseaseData.scale);
+            // console.log('diseaseData.scale',diseaseData.scale);
             if (itemData && route.params.mediaType == 'add') {
               diseaseData['scale'] = rightScaleNum
               handleFormChenge(rightScaleNum, diseaseData.scale)
@@ -371,7 +385,7 @@ export function DiseaseA({route, navigation}) {
       React.useEffect(() => {
         
         try {
-          console.log('scale',scale);
+          // console.log('scale',scale);
           // console.log('baseData', baseData);
           // console.log('标度表格信息baseData.basestandardtable',baseData.basestandardtable)
 
@@ -386,7 +400,7 @@ export function DiseaseA({route, navigation}) {
               // console.log('33330000',item.standardid);
               
               if (route.params.thridData.strandardid == item.standardid) {
-                console.log('当前病害的标度选项',item);
+                // console.log('当前病害的标度选项',item);
                 // setRightScale(item.standardscalestr)
                 oldArr = item.standardscalestr
                 scaleNum = item.standardscale
@@ -395,7 +409,7 @@ export function DiseaseA({route, navigation}) {
             setRightScaleNum(scaleNum)
             // console.log('rightScale',rightScale);
             const arr = oldArr.split(',')
-            console.log('arr',arr);
+            // console.log('arr',arr);
             
             let resetArr = []
             arr.forEach((item, index) => {
@@ -404,7 +418,7 @@ export function DiseaseA({route, navigation}) {
                 value:item
               })
             })
-            console.log('resetArr',resetArr);
+            // console.log('resetArr',resetArr);
             setRightScale(resetArr)
             diseaseData['scaleArr'] = rightScale
             handleFormChenge(rightScale, diseaseData.scaleArr)
@@ -420,7 +434,7 @@ export function DiseaseA({route, navigation}) {
                 oldTable.push(item)
               }
             })
-            console.log('oldTable',oldTable);
+            // console.log('oldTable',oldTable);
             setScaleTabel(oldTable)
             diseaseData['scaleTableArr'] = oldTable
             handleFormChenge(oldTable, diseaseData.scaleTableArr)
@@ -475,7 +489,7 @@ export function DiseaseA({route, navigation}) {
                   ({checktypeid}) => saveData.current.checktypeid == checktypeid,
                 )?.scalegroupid || '';
             }
-            console.log('scalegroupid',scalegroupid);
+            // console.log('scalegroupid',scalegroupid);
             const jsondata = {
               ...saveData.current,
               checktypegroupid: type.checktypegroupid,
@@ -544,7 +558,7 @@ export function DiseaseA({route, navigation}) {
 
       const handleScaleOpen = () => scaleInfoRef.current.open();
       const handleFormChenge = ({name,value}) => {
-        console.log('```````执行了handleFormChenge``````````');
+        // console.log('```````执行了handleFormChenge``````````');
         // const _data = {
         //   ...diseaseData,
         //   [name]: value,
@@ -1100,320 +1114,6 @@ export function DiseaseA({route, navigation}) {
           console.log('error321',error);
         }
       };
-
-      // 填入病害描述内容
-      // const writeDesText = () => {
-      //   try {
-      //     let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-      //                   + widthMM + heightM + heightCM + heightMM + areaFace
-      //                   + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-      //                   + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-      //                   + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-      //                   + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-      //                   + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-      //                   + bottomWidthMM + rightWidthMM + slantM
-      //     setWriteTxt(writeTxt)
-      //     console.log('writeTxt', writeTxt);
-      //     // console.log('remark:', diseaseData.remark);
-      //     // console.log('route:::', route.params.thridData.checkinfoshort);
-          
-      //     // 在remark里面查找这两位内容，取出其位置下标
-      //     if (diseaseData.remark !== undefined) {
-      //       if (writeTxt == '' || writeTxt == undefined) {
-      //         // 当还没有输入的内容时
-      //         // 截取有变化的数据的二、三位内容(第一位为逗号)
-      //         let sliceWrite = writeTxt.slice(1, 3)
-      //         console.log('sliceWrite', sliceWrite);
-      //         let allText = diseaseData.remark
-      //         let binghai = allText.slice(0,allText.indexOf('，'))
-      //         console.log('binghai',binghai);
-      //         let numStart = allText.indexOf(sliceWrite)
-      //         console.log(numStart);
-      //         // 替换下标位置到其后第一个逗号之间的内容
-      //         let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-      //         console.log('allTextEnd', allTextEnd);
-      //         let douhao = ','
-      //         let numEnd = allTextEnd.indexOf(douhao)
-      //         console.log('numEnd', numEnd);
-      //         // 得出内容的末尾下标值
-      //         let lengthAll = numStart + numEnd
-      //         console.log('lengthAll', lengthAll);
-      //         // diseaseData['description'] = writeTxt
-      //         let aaaa = allText.substr(0, numStart-1)
-      //         console.log('aaaa: ', aaaa);
-      //         let bbbb = allText.substr(lengthAll)
-      //         console.log('bbbb', bbbb);
-      //         let cccc = aaaa.concat(bbbb)
-      //         console.log('cccc: ', cccc);
-      //         let ccca = '' + writeTxt
-      //         // let saveDescription = cccc.concat(ccca)
-      //         let saveDescription = binghai.concat(ccca)
-      //         setSaveDescription(saveDescription)
-      //         console.log('saveDescription: ', saveDescription);
-      //         diseaseData['description'] = allTextEnd
-      //         handleFormChenge(allTextEnd, diseaseData.description)
-      //       } else if (writeTxt !== '' || writeTxt !== undefined) {
-      //         // 当有输入的内容时
-      //         console.log('=============================================================================');
-      //         console.log('writeTxt有内容： ',writeTxt);
-      //         let writeArr = []
-      //         // 将输入的内容按逗号分隔开
-      //         // 先找到逗号
-      //         let num = 0
-      //         let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
-      //         console.log('逗号的位置：',commaKey);
-      //         let writeArrNum = []
-      //         // 查找逗号出现的位置，将其下标存入数组
-      //         while (commaKey !== -1) {
-      //           writeArrNum.push(commaKey)
-      //           console.log('commaKey逗号出现的位置:',commaKey);
-      //           num ++
-      //           commaKey = writeTxt.indexOf(',', commaKey + 1)
-      //         }
-      //         console.log('逗号出现的次数:', num);
-      //         console.log('截取节点数组：', writeArrNum);
-      //         // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
-      //         for (let i = 0; i < writeArrNum.length; i++) {
-      //           writeArr.push(
-      //             writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
-      //           )
-      //         }
-      //         console.log('截取后的数组：',writeArr);
-      //         // 对writeArr数组的每一项进行替换
-      //         for (let i = 0; i < writeArr.length; i++) {
-                
-      //             // 截取数组每一项的二、三位内容，与原有数据对比
-      //             let sliceWrite = writeArr[i].slice(1, 3)
-      //             if (diseaseData.description == undefined || diseaseData.description == '') {
-      //               var allText = diseaseData.remark
-      //             } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
-      //               var allText = diseaseData.description
-      //             }
-                  
-      //             // console.log('allText', allText);
-      //             // console.log('sliceWrite:', sliceWrite);
-      //             let numStart = allText.indexOf(sliceWrite)
-      //             // console.log('numStart',numStart);
-      //             // 替换下标位置到其后第一个逗号之间的内容
-      //             let allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-      //             // console.log('allTextEnd', allTextEnd);
-      //             let numEnd = allTextEnd.indexOf(',')
-      //             // console.log('numEnd', numEnd);
-      //             if (numEnd !== -1) {
-      //               console.log('numEnd的值', numEnd);
-      //               // 得出内容的末尾下标值
-      //               let lengthAll = numStart + numEnd
-      //               // console.log('lengthAll', lengthAll);
-      //               let aaaa = allText.substr(0, numStart-1)
-      //               // console.log('aaaa: ', aaaa);
-      //               let bbbb = allText.substr(lengthAll)
-      //               // console.log('bbbb', bbbb);
-      //               let ccca = '' + writeArr[i].concat(bbbb)
-      //               let saveDescription = aaaa.concat(ccca)
-      //               setSaveDescription(saveDescription)
-      //               // console.log('saveDescription: ', saveDescription);
-      //               diseaseData['description'] = saveDescription
-      //               handleFormChenge(saveDescription, diseaseData.description)
-      //             } else {
-      //               console.log('numEnd的值', numEnd);
-      //               // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-      //               // let aaaa = allText.substr(0, numStart-1)
-      //               let aaaa = diseaseData.remark
-      //               console.log('aaaa: ', aaaa);
-      //               let bbbb = ''
-      //               for (let i =0; i < writeArr.length; i++) {
-      //                 bbbb += writeArr[i]
-      //                 let ccca = aaaa.concat(bbbb)
-      //                 console.log('ccca', ccca);
-      //                 let saveDescription = ccca
-      //                 setSaveDescription(saveDescription)
-      //                 // console.log('saveDescription: ', saveDescription);
-      //                 diseaseData['description'] = saveDescription
-      //                 handleFormChenge(saveDescription, diseaseData.description)
-      //               }
-      //             }
-      //         }
-      //       }
-      //     } else {
-      //       let binghai = infoshort
-      //       let allText = binghai.concat(writeTxt)
-      //       // console.log('allText2',allText);
-      //       diseaseData['description'] = allText
-      //       handleFormChenge(allText, diseaseData.description)
-            
-      //     }
-      //     // let writeTxt = ''
-      //     // setWriteTxt(writeTxt)
-      //   } catch (err) {
-      //     console.log(err);
-      //   }
-        
-        
-      // }
-
-      // const writeDesText = () => {
-      //   try {
-      //     let writeTxt = lengthM + lengthCM + lengthMM + widthM + widthCM
-      //                   + widthMM + heightM + heightCM + heightMM + areaFace
-      //                   + areaPer + areaM + areaCM + areaMM + heightDiffCM + heightDiffMM
-      //                   + spacingCM + deformationMM + num + rangeCM + rangeMM + depthCM
-      //                   + depthMM + volumeM + volumeCM + dispCM + dispMM + angle + chu
-      //                   + tiao + rangeFenbuM + rangeLengthM + rangeWidthMM + rangeSpacingCM
-      //                   + leftLengthM + bottomLengthM + rightLengthM + leftWidthMM
-      //                   + bottomWidthMM + rightWidthMM + slantM
-      //     setWriteTxt(writeTxt)
-      //     console.log('writeTxt', writeTxt);
-      //     // console.log('remark:', diseaseData.remark);
-      //     // console.log('route:::', route.params.thridData.checkinfoshort);
-          
-      //     // 在remark里面查找这两位内容，取出其位置下标
-      //     if (diseaseData.remark !== undefined) {
-      //       if (writeTxt == '' || writeTxt == undefined) {
-      //         console.log('writeTxt没有内容~~~~~~');
-      //         // 当还没有输入的内容时
-      //         // 截取有变化的数据的二、三位内容(第一位为逗号)
-      //         // let sliceWrite = writeTxt.slice(1, 3)
-      //         // console.log('sliceWrite', sliceWrite);
-      //         let allText = diseaseData.remark
-      //         console.log('allText',allText);
-
-      //         // 将remark里的中文逗号替换为英文逗号
-      //         // ================================
-      //         let num =allText.indexOf('，')
-      //         console.log('num',num);
-      //         if (num !== -1 && diseaseData.description == undefined || diseaseData.description == '') {
-      //           let qian = allText.slice(0,allText.indexOf('，'))
-      //           // console.log('qian',qian);
-      //           let hou = allText.slice(allText.indexOf('，')+1)
-      //           // console.log('hou',hou);
-      //           let reset = qian + ',' + hou
-      //           // console.log('reset',reset);
-      //           console.log('reset');
-      //           diseaseData['description'] = reset
-      //           handleFormChenge(reset, diseaseData.description)
-      //         } else if (num !== -1 && diseaseData.description !== undefined || diseaseData.description !== '') {
-      //           diseaseData['description'] = diseaseData.description
-      //           // handleFormChenge(allText, diseaseData.description)
-      //         } else if (num == -1) {
-      //           diseaseData['description'] = allText
-      //           handleFormChenge(allText, diseaseData.description)
-      //         }
-      //       } else if (writeTxt !== '' || writeTxt !== undefined) {
-      //         // 当有输入的内容时
-      //         console.log('=============================================================================');
-      //         console.log('writeTxt有内容： ',writeTxt);
-      //         let writeArr = []
-      //         // 将输入的内容按逗号分隔开
-      //         // 先找到逗号
-      //         let num = 0
-      //         let commaKey = writeTxt.indexOf(',') //从第1号位开始查找逗号
-      //         console.log('逗号的位置：',commaKey);
-      //         let writeArrNum = []
-      //         // 查找逗号出现的位置，将其下标存入数组
-      //         while (commaKey !== -1) {
-      //           writeArrNum.push(commaKey)
-      //           console.log('commaKey逗号出现的位置:',commaKey);
-      //           num ++
-      //           commaKey = writeTxt.indexOf(',', commaKey + 1)
-      //         }
-      //         console.log('逗号出现的次数:', num);
-      //         console.log('截取节点数组：', writeArrNum);
-      //         // 根据查找出的逗号下标，对输入的内容进行截取，转存进新的数组
-      //         for (let i = 0; i < writeArrNum.length; i++) {
-      //           writeArr.push(
-      //             writeTxt.slice(writeArrNum[i], writeArrNum[i+1])
-      //           )
-      //         }
-      //         console.log('截取后的数组：',writeArr);
-      //         // 对writeArr数组的每一项进行替换
-      //         for (let i = 0; i < writeArr.length; i++) {
-                
-      //             // 截取数组每一项的二、三位内容，与原有数据对比
-      //             let sliceWrite = writeArr[i].slice(1, 3)
-      //             console.log('sliceWrite',sliceWrite);
-      //             if (diseaseData.description == undefined || diseaseData.description == '') {
-      //               var allText = diseaseData.remark
-      //             } else if (diseaseData.description !== undefined || diseaseData.description !== '') {
-      //               var allText = diseaseData.description
-      //             }
-                  
-      //             console.log('allText', allText);
-      //             // console.log('sliceWrite:', sliceWrite);
-      //             let numStart = allText.indexOf(sliceWrite)
-      //             console.log('numStart',numStart);
-      //             // 替换下标位置到其后第一个逗号之间的内容
-      //             var allTextEnd = allText.slice(numStart)  // 提取allText从numStart到其最后的所有内容
-      //             console.log('allTextEnd', allTextEnd);
-      //             let numEnd = allTextEnd.indexOf(',')
-      //             console.log('numEnd', numEnd);
-      //             if (numEnd !== -1) {
-      //               console.log('numEnd的值1', numEnd);
-      //               // 得出内容的末尾下标值
-      //               let lengthAll = numStart + numEnd
-      //               // console.log('lengthAll', lengthAll);
-      //               let aaaa = allText.substr(0, numStart-1)
-      //               // console.log('aaaa: ', aaaa);
-      //               let bbbb = allText.substr(lengthAll)
-      //               // console.log('bbbb', bbbb);
-      //               let ccca = '' + writeArr[i].concat(bbbb)
-      //               let saveDescription = aaaa.concat(ccca)
-      //               setSaveDescription(saveDescription)
-      //               // console.log('saveDescription: ', saveDescription);
-      //               diseaseData['description'] = saveDescription
-      //               handleFormChenge(saveDescription, diseaseData.description)
-      //             } else {
-      //               console.log('numEnd的值2', numEnd);
-      //               let aaaa = ''
-      //               // 到数组的最后一项时，不再有逗号，numEnd返回-1；改变替换内容的方式
-      //               if (numStart == -1) {
-      //                 console.log('a1');
-      //                 aaaa = allText
-      //               } else if (numStart !== -1) {
-      //                 console.log('a2');
-      //                 aaaa = allText.substr(0, numStart-1)
-      //                 // aaaa = allText.substr(0,allText.indexOf(','))
-      //               }
-
-      //               // if (numStart !== -1) {
-      //               //   console.log('a1');
-      //               //   aaaa = allText.slice(0, numStart-1)
-      //               // } else if (numStart == -1) {
-      //               //   console.log('a2');
-      //               //   // aaaa = allText.substr(0, numStart-1)
-      //               //   aaaa = allText.substr(0,allText.indexOf(','))
-      //               // }
-
-      //               console.log('aaaa: ', aaaa);
-      //               let bbbb = ''
-      //               let ccca = ''
-      //               for (let i =0; i < writeArr.length; i++) {
-      //                 bbbb += writeArr[i]
-                      
-      //               }
-      //               ccca = aaaa.concat(bbbb)
-      //               console.log('ccca', ccca);
-      //               let saveDescription = ccca
-      //               setSaveDescription(saveDescription)
-      //               // console.log('saveDescription: ', saveDescription);
-      //               diseaseData['description'] = saveDescription
-      //               // diseaseData['remark'] = saveDescription
-      //               handleFormChenge(saveDescription, diseaseData.description)
-      //             }
-      //         }
-      //       }
-      //     } else {
-      //       let binghai = infoshort
-      //       let allText = binghai.concat(writeTxt)
-      //       // console.log('allText2',allText);
-      //       diseaseData['description'] = allText
-      //       handleFormChenge(allText, diseaseData.description)
-      //     }
-      //   } catch (err) {
-      //     console.log(err);
-      //   }
-        
-        
-      // }
 
       const [writeDesTextValue, setWriteDesTextValue] = useState('')
       const writeDesText = (name, value) => {
@@ -2341,7 +2041,8 @@ export function DiseaseB({route, navigation}) {
   
     const [areaparam, areanode] = hooks.useArea({diseaseData, baseData});
   
-    const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    // const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    const [infoList,setInfoList] = useState([])
   
     const defaultFileName = hooks.useDefaultFileName({diseaseData, baseData});
   
@@ -2472,6 +2173,19 @@ export function DiseaseB({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            baseData.membercheckdata.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
           diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -2482,11 +2196,11 @@ export function DiseaseB({route, navigation}) {
         console.log('err09', err);
       }
       try {
-        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
+        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
-        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
+        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
         setWidthText(widthText)
-        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(1)
+        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(2)
         setHeightText(heightText)
         if (lengthText == 'NaN') {
           let lengthText = '0'
@@ -4105,7 +3819,8 @@ export function DiseaseC({route, navigation}) {
   
     const [areaparam, areanode] = hooks.useArea({diseaseData, baseData});
   
-    const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    // const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    const [infoList,setInfoList] = useState([])
   
     const defaultFileName = hooks.useDefaultFileName({diseaseData, baseData});
   
@@ -4248,6 +3963,19 @@ export function DiseaseC({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            baseData.membercheckdata.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
           diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -4257,11 +3985,11 @@ export function DiseaseC({route, navigation}) {
         console.log('err09', err);
       }
       try {
-        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
+        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
-        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
+        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
         setWidthText(widthText)
-        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(1)
+        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(2)
         setHeightText(heightText)
         if (lengthText == 'NaN') {
           let lengthText = '0'
@@ -5889,7 +5617,8 @@ export function DiseaseD({route, navigation}) {
   
     const [areaparam, areanode] = hooks.useArea({diseaseData, baseData});
   
-    const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    // const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    const [infoList,setInfoList] = useState([])
   
     const defaultFileName = hooks.useDefaultFileName({diseaseData, baseData});
   
@@ -6026,6 +5755,19 @@ export function DiseaseD({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            baseData.membercheckdata.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
           diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -6058,11 +5800,11 @@ export function DiseaseD({route, navigation}) {
         console.log('err08', err);
       }
       try {
-        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
+        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
-        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
+        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
         setWidthText(widthText)
-        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(1)
+        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(2)
         setHeightText(heightText)
         if (lengthText == 'NaN') {
           let lengthText = '0'
@@ -7528,7 +7270,8 @@ export function DiseaseE({route, navigation}) {
   
     const [areaparam, areanode] = hooks.useArea({diseaseData, baseData});
   
-    const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    // const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    const [infoList,setInfoList] = useState([])
   
     const defaultFileName = hooks.useDefaultFileName({diseaseData, baseData});
   
@@ -7665,6 +7408,19 @@ export function DiseaseE({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            baseData.membercheckdata.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
           diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -7697,11 +7453,11 @@ export function DiseaseE({route, navigation}) {
         console.log('err08', err);
       }
       try {
-        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
+        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
-        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
+        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
         setWidthText(widthText)
-        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(1)
+        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(2)
         setHeightText(heightText)
         if (lengthText == 'NaN') {
           let lengthText = '0'
@@ -9181,7 +8937,8 @@ export function DiseaseK({route, navigation}) {
   
     const [areaparam, areanode] = hooks.useArea({diseaseData, baseData});
   
-    const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    // const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    const [infoList,setInfoList] = useState([])
   
     const defaultFileName = hooks.useDefaultFileName({diseaseData, baseData});
   
@@ -9324,6 +9081,19 @@ export function DiseaseK({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            baseData.membercheckdata.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
           diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -9356,11 +9126,11 @@ export function DiseaseK({route, navigation}) {
         console.log('err08', err);
       }
       try {
-        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
+        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
-        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
+        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
         setWidthText(widthText)
-        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(1)
+        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(2)
         setHeightText(heightText)
         if (lengthText == 'NaN') {
           let lengthText = '0'
@@ -11020,7 +10790,8 @@ export function DiseaseG({route, navigation}) {
   
     const [areaparam, areanode] = hooks.useArea({diseaseData, baseData});
   
-    const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    // const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    const [infoList,setInfoList] = useState([])
   
     const defaultFileName = hooks.useDefaultFileName({diseaseData, baseData});
   
@@ -11163,6 +10934,19 @@ export function DiseaseG({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            baseData.membercheckdata.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
           diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -11195,11 +10979,11 @@ export function DiseaseG({route, navigation}) {
         console.log('err08', err);
       }
       try {
-        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
+        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
-        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
+        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
         setWidthText(widthText)
-        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(1)
+        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(2)
         setHeightText(heightText)
         if (lengthText == 'NaN') {
           let lengthText = '0'
@@ -12848,7 +12632,8 @@ export function DiseaseH({route, navigation}) {
   
     const [areaparam, areanode] = hooks.useArea({diseaseData, baseData});
   
-    const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    // const infoList = hooks.useInfoComponents({diseaseData, baseData});
+    const [infoList,setInfoList] = useState([])
   
     const defaultFileName = hooks.useDefaultFileName({diseaseData, baseData});
   
@@ -12991,6 +12776,19 @@ export function DiseaseH({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
+
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            baseData.membercheckdata.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
           diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -13023,11 +12821,11 @@ export function DiseaseH({route, navigation}) {
         console.log('err08', err);
       }
       try {
-        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(1)
+        let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
-        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(1)
+        let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
         setWidthText(widthText)
-        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(1)
+        let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(2)
         setHeightText(heightText)
         if (lengthText == 'NaN') {
           let lengthText = '0'

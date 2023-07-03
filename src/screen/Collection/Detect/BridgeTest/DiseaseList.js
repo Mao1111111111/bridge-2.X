@@ -34,6 +34,9 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
 
   //一级菜单点击时
   const firstDisTypeListChange = async (item) => {
+    console.log('一级菜单 item',item);
+    console.log('一级菜单 item.list',item.list);
+    console.log('一级菜单 item.list[0].list',item.list[0].list);
     setNowEdit(item)
     //设置二级菜单选中项
     setSecondDisTypeSel(item.list[0])
@@ -50,18 +53,23 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
      setSecondDisTypeSel(item)
      const res = await getBaseData(memberList, item);
      setThridDisTypeList(res.infoComponents)
-    //  console.log('二级菜单点击',item);
+     console.log('二级菜单 item',item);
+     console.log('二级菜单选中的病害是',item.checktypegroupname);
+     console.log('二级菜单点击',res.infoComponents);
    }
 
    //三级菜单列表
    const [thridDisTypeList,setThridDisTypeList] = React.useState([])
    //三级菜单点击时
    const thridDisTypeListChange = (item) => {
+    console.log('三级菜单点击时 item',item);
     let data = {
       firstDisTypeData:nowEdit,
       secondDisTypeData:secondDisTypeSel,
       thridDisTypeData:item
     }
+    console.log('三级菜单的data',data);
+    // console.log('三级菜单 thridDisTypeList',thridDisTypeList);
     close();
     callBack && callBack(data);
    }
@@ -471,10 +479,7 @@ export default function DiseaseList({route, navigation}) {
   }; */
 
   const handleModelCallBack = data => {
-    console.log("data6661",data.secondDisTypeData.paneltype);
-    console.log("data6662",waitingData,routeParams);
     console.log('handleModelCallBack data',data);
-    console.log('route.params.list[0].membertype1',route.params.list[0].membertype);
     const kuaMembertype = route.params.list[0].membertype
     const url =
       data.secondDisTypeData.paneltype === 'p1001'

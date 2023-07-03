@@ -50,6 +50,8 @@ export default function GoodEdit({route, navigation}) {
 
   const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
 
+  const [imgTitle, setImgTitle] = React.useState()
+
   // 进入标记良好界面就将编辑记录存入数据库
   React.useEffect(()=>{
     list.forEach(item =>
@@ -65,6 +67,22 @@ export default function GoodEdit({route, navigation}) {
 
     const windowWidth = Dimensions.get('window').width;
     setScreenWidth(windowWidth)
+
+    // console.log('标记为良好 当前构件为',route.params.title);
+    if (route.params.title == '主梁' || route.params.title == '挂梁') {
+      let imgTitle = '梁'
+      setImgTitle(imgTitle)
+    } else if (route.params.title == '横隔板' || route.params.title == '湿接段' || route.params.title == '湿接缝'
+    || route.params.title == '铰缝' || route.params.title == '支座' || route.params.title == '人行道') {
+      let imgTitle = route.params.title
+      setImgTitle(imgTitle)
+    } else if (route.params.title == '墩台基础') {
+      let imgTitle = '基础'
+      setImgTitle(imgTitle)
+    } else if (route.params.title == '桥面铺装') {
+      let imgTitle = '桥面'
+      setImgTitle(imgTitle)
+    }
   },[])
 
   // 初始化数据 -- 有问题
@@ -174,7 +192,7 @@ export default function GoodEdit({route, navigation}) {
           type="goodParts"
           dataid={list[0].memberid}
           categoryList={[
-            {value: 'good', label: `良好部件:${list[0].membername}`},
+            {value: 'good', label: `${list[0].membername}${imgTitle}状况`},
           ]}
         />
       </View>

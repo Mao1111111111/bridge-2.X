@@ -91,7 +91,7 @@ export default function Main({navigation, route}) {
   // 当部件列表变化时 重新设置部件表格的数据
   React.useEffect(() => {
     const windowWidth = Dimensions.get('window').width;
-    console.log('当前屏幕宽度',windowWidth);
+    // console.log('当前屏幕宽度',windowWidth);
     setScreenWidth(windowWidth)
     if(memberList.length>0){
       setTable1Data(listToPage(memberList, pageRow));

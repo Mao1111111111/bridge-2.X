@@ -243,7 +243,7 @@ export default function CommonView({
     let cloneDisImg = require('../iconImg/cloneDis.png')
     setCloneDisImg(cloneDisImg)
     const windowWidth = Dimensions.get('window').width;
-    console.log('当前屏幕宽度',windowWidth);
+    // console.log('当前屏幕宽度',windowWidth);
     setScreenWidth(windowWidth)
   }, [])
 
