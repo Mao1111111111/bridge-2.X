@@ -203,21 +203,31 @@ export function DiseaseA({route, navigation}) {
         saveData.current = {...diseaseData};
         try {
           // console.log('route',route);
+          // console.log('navigation',navigation);
           // console.log('route.params.thridData',route.params.thridData);
-          let infoList = []
-          route.params.thridData.datastr.forEach((item) => {
-            // console.log('病害列表传入的datastr',item);
-            baseData.membercheckdata.forEach((item1) => {
-              if (item == item1.strid) {
-                // console.log('取出来的item1',item1);
-                infoList.push(item1)
-              }
+          // console.log('baseData.membercheckdata',baseData.membercheckdata);
+          if (baseData.membercheckdata) {
+            console.log('保存baseData数据');
+            setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+          }
+          if (route.params.thridData.datastr && baseData.membercheckdata) {
+            let infoList = []
+            route.params.thridData.datastr.forEach((item) => {
+              // console.log('病害列表传入的datastr',item);
+              baseData.membercheckdata.forEach((item1) => {
+                if (item == item1.strid) {
+                  // console.log('取出来的item1',item1);
+                  infoList.push(item1)
+                }
+              })
             })
-          })
-          setInfoList(infoList)
-          // console.log('编辑时进入页面的路由参数',route.params.type);
-          // console.log('route',route);
-          // console.log('areanode',scale);
+            setInfoList(infoList)
+          } else if (!baseData.membercheckdata) {
+            console.log('读取baseData数据');
+            getBaseDataStorage('baseData')
+          }
+          
+          
           if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
             // console.log('7777');
             diseaseData['diseaseName'] = route.params.thridData.checkinfoshort
@@ -374,6 +384,37 @@ export function DiseaseA({route, navigation}) {
           console.log('err10', err);
         }
       }, [diseaseData]);
+
+      // 保存baseData的数据
+      const setBaseDataStorage = async(value) => {
+        try {
+          await AsyncStorage.setItem('baseData', value)
+        } catch (err) {
+          console.log('存入数据失败!3', err);
+        }
+      }
+      // 读取baseData的数据
+      const getBaseDataStorage = async(name) => {
+        // console.log('读取baseData数据')
+        try {
+          const value = await AsyncStorage.getItem(name)
+          let values = JSON.parse(value)
+          // console.log('value~~~',value);
+          let infoList = []
+            route.params.thridData.datastr.forEach((item) => {
+              // console.log('病害列表传入的datastr',item);
+              values.forEach((item1) => {
+                if (item == item1.strid) {
+                  // console.log('取出来的item1',item1);
+                  infoList.push(item1)
+                }
+              })
+            })
+            setInfoList(infoList)
+        } catch (error) {
+          console.log('读取baseData数据失败',error);
+        }
+      }
 
       // 重新获取数据的标度选项数组
       const [rightScale, setRightScale] = useState([])
@@ -2174,7 +2215,12 @@ export function DiseaseB({route, navigation}) {
       saveData.current = {...diseaseData};
       try {
 
-        let infoList = []
+        if (baseData.membercheckdata) {
+          console.log('保存baseData数据');
+          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+        }
+        if (route.params.thridData.datastr && baseData.membercheckdata) {
+          let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
             baseData.membercheckdata.forEach((item1) => {
@@ -2185,6 +2231,10 @@ export function DiseaseB({route, navigation}) {
             })
           })
           setInfoList(infoList)
+        } else if (!baseData.membercheckdata) {
+          console.log('读取baseData数据');
+          getBaseDataStorage('baseData')
+        }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -2283,6 +2333,37 @@ export function DiseaseB({route, navigation}) {
       } catch {
       }
     }, [diseaseData]);
+
+    // 保存baseData的数据
+    const setBaseDataStorage = async(value) => {
+      try {
+        await AsyncStorage.setItem('baseData', value)
+      } catch (err) {
+        console.log('存入数据失败!3', err);
+      }
+    }
+    // 读取baseData的数据
+    const getBaseDataStorage = async(name) => {
+      // console.log('读取baseData数据')
+      try {
+        const value = await AsyncStorage.getItem(name)
+        let values = JSON.parse(value)
+        // console.log('value~~~',value);
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            values.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+      } catch (error) {
+        console.log('读取baseData数据失败',error);
+      }
+    }
 
     // 重新获取数据的标度选项数组
     const [rightScale, setRightScale] = useState([])
@@ -3964,7 +4045,12 @@ export function DiseaseC({route, navigation}) {
       saveData.current = {...diseaseData};
       try {
 
-        let infoList = []
+        if (baseData.membercheckdata) {
+          console.log('保存baseData数据');
+          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+        }
+        if (route.params.thridData.datastr && baseData.membercheckdata) {
+          let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
             baseData.membercheckdata.forEach((item1) => {
@@ -3975,6 +4061,10 @@ export function DiseaseC({route, navigation}) {
             })
           })
           setInfoList(infoList)
+        } else if (!baseData.membercheckdata) {
+          console.log('读取baseData数据');
+          getBaseDataStorage('baseData')
+        }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -4070,6 +4160,37 @@ export function DiseaseC({route, navigation}) {
       } catch {
       }
     }, [diseaseData]);
+
+    // 保存baseData的数据
+    const setBaseDataStorage = async(value) => {
+      try {
+        await AsyncStorage.setItem('baseData', value)
+      } catch (err) {
+        console.log('存入数据失败!3', err);
+      }
+    }
+    // 读取baseData的数据
+    const getBaseDataStorage = async(name) => {
+      // console.log('读取baseData数据')
+      try {
+        const value = await AsyncStorage.getItem(name)
+        let values = JSON.parse(value)
+        // console.log('value~~~',value);
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            values.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+      } catch (error) {
+        console.log('读取baseData数据失败',error);
+      }
+    }
 
     // 重新获取数据的标度选项数组
     const [rightScale, setRightScale] = useState([])
@@ -5756,7 +5877,12 @@ export function DiseaseD({route, navigation}) {
       saveData.current = {...diseaseData};
       try {
 
-        let infoList = []
+        if (baseData.membercheckdata) {
+          console.log('保存baseData数据');
+          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+        }
+        if (route.params.thridData.datastr && baseData.membercheckdata) {
+          let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
             baseData.membercheckdata.forEach((item1) => {
@@ -5767,6 +5893,10 @@ export function DiseaseD({route, navigation}) {
             })
           })
           setInfoList(infoList)
+        } else if (!baseData.membercheckdata) {
+          console.log('读取baseData数据');
+          getBaseDataStorage('baseData')
+        }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -5886,6 +6016,37 @@ export function DiseaseD({route, navigation}) {
       } catch {
       }
     }, [diseaseData]);
+
+    // 保存baseData的数据
+    const setBaseDataStorage = async(value) => {
+      try {
+        await AsyncStorage.setItem('baseData', value)
+      } catch (err) {
+        console.log('存入数据失败!3', err);
+      }
+    }
+    // 读取baseData的数据
+    const getBaseDataStorage = async(name) => {
+      // console.log('读取baseData数据')
+      try {
+        const value = await AsyncStorage.getItem(name)
+        let values = JSON.parse(value)
+        // console.log('value~~~',value);
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            values.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+      } catch (error) {
+        console.log('读取baseData数据失败',error);
+      }
+    }
 
     // 重新获取数据的标度选项数组
     const [rightScale, setRightScale] = useState([])
@@ -7409,7 +7570,12 @@ export function DiseaseE({route, navigation}) {
       saveData.current = {...diseaseData};
       try {
 
-        let infoList = []
+        if (baseData.membercheckdata) {
+          console.log('保存baseData数据');
+          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+        }
+        if (route.params.thridData.datastr && baseData.membercheckdata) {
+          let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
             baseData.membercheckdata.forEach((item1) => {
@@ -7420,6 +7586,10 @@ export function DiseaseE({route, navigation}) {
             })
           })
           setInfoList(infoList)
+        } else if (!baseData.membercheckdata) {
+          console.log('读取baseData数据');
+          getBaseDataStorage('baseData')
+        }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -7542,6 +7712,37 @@ export function DiseaseE({route, navigation}) {
       } catch {
       }
     }, [diseaseData]);
+
+    // 保存baseData的数据
+    const setBaseDataStorage = async(value) => {
+      try {
+        await AsyncStorage.setItem('baseData', value)
+      } catch (err) {
+        console.log('存入数据失败!3', err);
+      }
+    }
+    // 读取baseData的数据
+    const getBaseDataStorage = async(name) => {
+      // console.log('读取baseData数据')
+      try {
+        const value = await AsyncStorage.getItem(name)
+        let values = JSON.parse(value)
+        // console.log('value~~~',value);
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            values.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+      } catch (error) {
+        console.log('读取baseData数据失败',error);
+      }
+    }
 
     // 重新获取数据的标度选项数组
     const [rightScale, setRightScale] = useState([])
@@ -9082,7 +9283,12 @@ export function DiseaseK({route, navigation}) {
       saveData.current = {...diseaseData};
       try {
 
-        let infoList = []
+        if (baseData.membercheckdata) {
+          console.log('保存baseData数据');
+          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+        }
+        if (route.params.thridData.datastr && baseData.membercheckdata) {
+          let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
             baseData.membercheckdata.forEach((item1) => {
@@ -9093,6 +9299,10 @@ export function DiseaseK({route, navigation}) {
             })
           })
           setInfoList(infoList)
+        } else if (!baseData.membercheckdata) {
+          console.log('读取baseData数据');
+          getBaseDataStorage('baseData')
+        }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -9210,6 +9420,37 @@ export function DiseaseK({route, navigation}) {
       } catch {
       }
     }, [diseaseData]);
+
+    // 保存baseData的数据
+    const setBaseDataStorage = async(value) => {
+      try {
+        await AsyncStorage.setItem('baseData', value)
+      } catch (err) {
+        console.log('存入数据失败!3', err);
+      }
+    }
+    // 读取baseData的数据
+    const getBaseDataStorage = async(name) => {
+      // console.log('读取baseData数据')
+      try {
+        const value = await AsyncStorage.getItem(name)
+        let values = JSON.parse(value)
+        // console.log('value~~~',value);
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            values.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+      } catch (error) {
+        console.log('读取baseData数据失败',error);
+      }
+    }
 
     // 重新获取数据的标度选项数组
     const [rightScale, setRightScale] = useState([])
@@ -10935,7 +11176,12 @@ export function DiseaseG({route, navigation}) {
       saveData.current = {...diseaseData};
       try {
 
-        let infoList = []
+        if (baseData.membercheckdata) {
+          console.log('保存baseData数据');
+          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+        }
+        if (route.params.thridData.datastr && baseData.membercheckdata) {
+          let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
             baseData.membercheckdata.forEach((item1) => {
@@ -10946,6 +11192,10 @@ export function DiseaseG({route, navigation}) {
             })
           })
           setInfoList(infoList)
+        } else if (!baseData.membercheckdata) {
+          console.log('读取baseData数据');
+          getBaseDataStorage('baseData')
+        }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -11063,6 +11313,37 @@ export function DiseaseG({route, navigation}) {
       } catch {
       }
     }, [diseaseData]);
+
+    // 保存baseData的数据
+    const setBaseDataStorage = async(value) => {
+      try {
+        await AsyncStorage.setItem('baseData', value)
+      } catch (err) {
+        console.log('存入数据失败!3', err);
+      }
+    }
+    // 读取baseData的数据
+    const getBaseDataStorage = async(name) => {
+      // console.log('读取baseData数据')
+      try {
+        const value = await AsyncStorage.getItem(name)
+        let values = JSON.parse(value)
+        // console.log('value~~~',value);
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            values.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+      } catch (error) {
+        console.log('读取baseData数据失败',error);
+      }
+    }
 
     // 重新获取数据的标度选项数组
     const [rightScale, setRightScale] = useState([])
@@ -12777,7 +13058,12 @@ export function DiseaseH({route, navigation}) {
       saveData.current = {...diseaseData};
       try {
 
-        let infoList = []
+        if (baseData.membercheckdata) {
+          console.log('保存baseData数据');
+          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+        }
+        if (route.params.thridData.datastr && baseData.membercheckdata) {
+          let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
             baseData.membercheckdata.forEach((item1) => {
@@ -12788,6 +13074,10 @@ export function DiseaseH({route, navigation}) {
             })
           })
           setInfoList(infoList)
+        } else if (!baseData.membercheckdata) {
+          console.log('读取baseData数据');
+          getBaseDataStorage('baseData')
+        }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -12904,6 +13194,37 @@ export function DiseaseH({route, navigation}) {
       } catch {
       }
     }, [diseaseData]);
+
+    // 保存baseData的数据
+    const setBaseDataStorage = async(value) => {
+      try {
+        await AsyncStorage.setItem('baseData', value)
+      } catch (err) {
+        console.log('存入数据失败!3', err);
+      }
+    }
+    // 读取baseData的数据
+    const getBaseDataStorage = async(name) => {
+      // console.log('读取baseData数据')
+      try {
+        const value = await AsyncStorage.getItem(name)
+        let values = JSON.parse(value)
+        // console.log('value~~~',value);
+        let infoList = []
+          route.params.thridData.datastr.forEach((item) => {
+            // console.log('病害列表传入的datastr',item);
+            values.forEach((item1) => {
+              if (item == item1.strid) {
+                // console.log('取出来的item1',item1);
+                infoList.push(item1)
+              }
+            })
+          })
+          setInfoList(infoList)
+      } catch (error) {
+        console.log('读取baseData数据失败',error);
+      }
+    }
 
     // 重新获取数据的标度选项数组
     const [rightScale, setRightScale] = useState([])

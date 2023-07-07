@@ -432,6 +432,8 @@ export default function DiseaseList({route, navigation}) {
     setWaitingData(data);
   };
 
+  const [thridData, setThridData] = React.useState();
+
   const handleEdit = data => {
     console.log('data',data);
     if (!data) {
@@ -449,6 +451,7 @@ export default function DiseaseList({route, navigation}) {
     navigation.navigate(url, {
       title,
       type,
+      thridData,
       data: data,
       memberList: list,
       dataGroupId,
@@ -457,23 +460,6 @@ export default function DiseaseList({route, navigation}) {
       mediaType:'edit'
     });
   };
-
-
- /*  const handleModelCallBack = type => {
-    const url =
-      type.paneltype === 'p1001'
-        ? 'Collection/Detect/BridgeTest/Member/DiseaseEdit'
-        : 'Collection/Detect/BridgeTest/Member/DiseaseEdit2';
-    navigation.navigate(url, {
-      title,
-      type,
-      data: waitingData,
-      memberList: list,
-      dataGroupId,
-      routeParams
-    });
-    setWaitingData({});
-  }; */
 
   const handleModelCallBack = data => {
     console.log('handleModelCallBack data',data);
@@ -497,6 +483,7 @@ export default function DiseaseList({route, navigation}) {
       routeParams,
       mediaType:'add'
     });
+    setThridData(data.thridDisTypeData)
     setWaitingData({});
   };
 
