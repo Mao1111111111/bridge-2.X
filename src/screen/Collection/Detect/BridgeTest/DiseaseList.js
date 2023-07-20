@@ -134,6 +134,7 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
                         tailwind.mY2,
                       ]}
                     />
+                    
                   )}
                   renderItem={({item, index}) => (
                     <TouchableOpacity
