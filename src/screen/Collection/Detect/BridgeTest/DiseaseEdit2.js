@@ -297,7 +297,7 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
                   route.params.routeParams.membertype == 'b200007' ||
                   route.params.data.kuaMembertype == 'b200007' ||
                   route.params.kuaMembertype == 'b200007' ||
-                  // 伸缩缝装置 -
+                  // 伸缩装置 -
                   route.params.routeParams.membertype == 'b300002' ||
                   route.params.data.kuaMembertype == 'b300002' ||
                   route.params.kuaMembertype == 'b300002' ||

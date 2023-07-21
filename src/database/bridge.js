@@ -31,7 +31,7 @@ b200001num	桥台数
 b200002num	桥墩数
 b100001num	梁片数
 b300003num	人行道数
-b300002num	伸缩缝装置数
+b300002num	伸缩装置数
 b100002num	横隔板数
 bridgelightsys	照明系统
 bridgewall	翼墙、耳墙

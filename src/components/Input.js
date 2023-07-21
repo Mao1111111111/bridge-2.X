@@ -378,7 +378,7 @@ export const WriteInputSlide = React.forwardRef(function (
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '伸缩缝装置') {
+        } else if (data[0].name == '伸缩装置') {
           let labelText = data[2].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
@@ -661,14 +661,35 @@ export const KeyboardInput = React.forwardRef(
       },
     }));
 
+    const [keyboardA, setkeyboardA] = useState([])
+    const [keyboardB, setkeyboardB] = useState([])
+
     React.useEffect(() => {
       setTextValue(value + '');
+      // console.log('keyboard',keyboard);
+      let keyboardA = [
+        ["1", "4", "7"],
+        ["2", "5", "8"],
+        ["3", "6", "9"],
+        ["~", "0", "."]
+      ]
+      setkeyboardA(keyboardA)
+
+      let keyboardB = [
+        ["(", "#", "+", "×"],
+        [")", "k", "-", "/"],
+        [, , , "%"]
+      ]
+      setkeyboardB(keyboardB)
     }, [value]);
 
     const getBtnStyle = key => {
       const _style = {
         ...tailwind.flex1,
         ...tailwind.mR6,
+        marginTop:10,
+        height:10,
+        paddingTop:5
       };
       if (isNaN(parseInt(key, 10))) {
         return {
@@ -723,7 +744,7 @@ export const KeyboardInput = React.forwardRef(
               textRef?.current?.blur();
               setVisible(false);
             }}
-            contentContainerStyle={styles.modal}>
+            contentContainerStyle={[styles.modal,{width:'90%'}]}>
             <TouchableWithoutFeedback onPress={() => textRef?.current?.blur()}>
               <View
                 style={[
@@ -733,6 +754,7 @@ export const KeyboardInput = React.forwardRef(
                   tailwind.p2,
                   tailwind.pL8,
                 ]}>
+                  {/* 键盘顶部标题与页码 */}
                 <View
                   style={[
                     tailwind.flexRow,
@@ -745,7 +767,7 @@ export const KeyboardInput = React.forwardRef(
                   </Text>
                   <Pid pid="T1001" />
                 </View>
-
+                  {/* 关闭 输入框 删除 */}
                 <View style={[tailwind.flexRow, tailwind.mB4]}>
                   <Button
                     style={styles.redBtn}
@@ -764,8 +786,9 @@ export const KeyboardInput = React.forwardRef(
                     删除
                   </Button>
                 </View>
-                <View style={[tailwind.flex1]}>
-                  {keyboard.map((row, index) => (
+                <View style={[tailwind.flex1, tailwind.flexRow, tailwind.mB2,]}>
+                  {/* tailwind.flex1, */}
+                  {/* {keyboard.map((row, index) => (
                     <View key={index} style={[tailwind.flexRow, tailwind.mB4]}>
                       {row.map(item => (
                         <Button
@@ -773,6 +796,32 @@ export const KeyboardInput = React.forwardRef(
                           onPress={() => handlePress(item)}
                           labelStyle={tailwind.wFull}
                           style={getBtnStyle(item)}>
+                          {item}
+                        </Button>
+                      ))}
+                    </View>
+                  ))} */}
+                  {keyboardA.map((row, index) => (
+                    <View key={index} style={[tailwind.flex1, tailwind.mB4,]}>
+                      {row.map(item => (
+                        <Button
+                          key={item}
+                          onPress={() => handlePress(item)}
+                          style={getBtnStyle(item)}>
+                          {item}
+                        </Button>
+                      ))}
+                    </View>
+                  ))}
+                  <View style={[{width:'28%'}]}></View>
+                  {keyboardB.map((row, index) => (
+                    <View key={index} style={[tailwind.flex1,tailwind.mB4,]}>
+                      {row.map(item => (
+                        <Button
+                          key={item}
+                          onPress={() => handlePress(item)}
+                          style={[tailwind.bgRed400,
+                          {marginTop:10,marginRight:10,}]}>
                           {item}
                         </Button>
                       ))}

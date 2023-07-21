@@ -151,7 +151,7 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
         b200002num: values.b200002num, // 桥墩数
         b100001num: values.b100001num, // 梁片数
         b300003num: values.b300003num, // 人行道数
-        b300002num: values.b300002num, //	伸缩缝装置数
+        b300002num: values.b300002num, //	伸缩装置数
         b100002num: values.b100002num, //	横隔板数
         zhizuo_total: values.zhizuo_total, //	支座数
         bridgelightsys: values.bridgelightsys, //	照明系统

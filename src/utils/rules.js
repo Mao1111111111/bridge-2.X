@@ -475,7 +475,7 @@ const getDuntai = (name, values, code, kua) => {
   return setInx(_data);
 };
 
-// 伸缩缝
+// 伸缩装置
 const getShensuofeng = (name, values, code, kua) => {
   const len = parseInt(values.b300002num || '0', 10);
   const _data = [];
@@ -484,7 +484,7 @@ const getShensuofeng = (name, values, code, kua) => {
       position: code.pCode,
       membertype: code[name],
       memberid: uuid.v4(),
-      membername: `${inx}#伸缩缝`,
+      membername: `${inx}#伸缩装置`,
       stepno: -1,
     });
   }

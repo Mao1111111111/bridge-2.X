@@ -72,7 +72,7 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
    }
 
   React.useEffect(() => {
-    // console.log("groupList",groupList);
+    console.log("groupList",groupList);
     // console.log('memberList',memberList);
     if (groupList && groupList.length) {
       groupList[0] && setNowEdit(groupList[0]);
@@ -93,6 +93,17 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
         }
       )()
     }
+    try {
+      if (groupList) {
+      if (groupList[0].checktypegroupname == '伸缩缝') {
+        console.log('groupList[0]',groupList[0]);
+        groupList[0].checktypegroupname = '伸缩装置'
+      }
+    }
+    } catch (e) {
+      console.log('Diseaselist 00',e);
+    }
+    
   }, [groupList]);
 
   const close = () => {
@@ -122,7 +133,8 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
         <View style={[styles.modelBody, theme.primaryBgStyle]}>
           {groupList && groupList.length ? (
             <>
-              <View style={[tailwind.flex1]}>
+            {/* 一级菜单列表 */}
+              <View style={[{width:'20%'}]}>
                 <FlatList
                   data={groupList}
                   extraData={groupList}
@@ -167,10 +179,12 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
                   )}
                 />
               </View>
+              {/* 分隔竖线 */}
               <View
                 style={[tailwind.mR1, tailwind.borderR, tailwind.borderGray400]}
               />
-              <View style={tailwind.flex1}>
+              {/* 二级菜单列表 */}
+              <View style={[{width:'60%'}]}>
                 <FlatList
                   data={nowEdit.list}
                   extraData={nowEdit.list}
@@ -213,7 +227,8 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
                   <View
                     style={[tailwind.mR1, tailwind.borderR, tailwind.borderGray400]}
                   />
-                  <View style={tailwind.flex1}>
+                  {/* 三级菜单列表 */}
+                  <View style={[tailwind.flex1]}>
                     <FlatList
                       data={thridDisTypeList}
                       extraData={thridDisTypeList}
@@ -420,7 +435,7 @@ export default function DiseaseList({route, navigation}) {
   };
 
   const handleAdd = data => {
-    console.log('222');
+    // console.log('222');
     if(list[0].membertype=='b100006'){
       let a = groupList.find(({membertype}) => membertype === 'b100001').list
       setGroup(a)
@@ -686,7 +701,7 @@ const styles = StyleSheet.create({
     ...tailwind.border,
   },
   model: {
-    width: 600,
+    width: '90%',
     ...tailwind.selfCenter
   },
   modelBody: {

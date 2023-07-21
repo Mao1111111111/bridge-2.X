@@ -580,6 +580,12 @@ function MemberEdit({onClose}, ref) {
     }else{
       setList([])
     }
+    memberList.forEach((item) => {
+      if (item.title == '伸缩缝装置') {
+        item.title = '伸缩装置'
+      }
+    })
+    console.log('MemberEdit memberList',memberList);
   }, [partsList, nowEdit, memberList]);
 
   // 点击 添加部件 按钮

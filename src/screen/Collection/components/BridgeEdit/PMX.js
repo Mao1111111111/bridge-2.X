@@ -52,9 +52,32 @@ export default function PMX({navigation}) {
       const list = memberInfo[pCode] || [];
       list.forEach(item => (code[item.membertype] = item.membertype));
       setMemberRow(listToPage(list, 2));
+      
       setChecked(values?.pmx || {});
     }, [values, memberInfo]),
   );
+
+  React.useEffect(() => {
+    try {
+      if (!memberRow) {
+        console.log('memberRow',memberRow);
+        memberRow.forEach((item,index) => {
+          item.forEach((items,indexs) => {
+            // console.log('itemsss',items);
+            if (items.membername == '伸缩缝装置') {
+              // console.log('items',items);
+              items.membername = '伸缩装置'
+              // setMemberRow(memberRow)
+            }
+          })
+        })
+        console.log('memberRow1',memberRow);
+      }
+      
+    } catch (error) {
+      console.log('PMX ERROR',error);
+    }
+  },[])
 
   // 页面聚焦时 --- 处理页面配置
   useFocusEffect(
@@ -170,7 +193,7 @@ export default function PMX({navigation}) {
               <BujianRow label="桥台数" value={values.b200001num || 0} />
               <BujianRow label="桥墩数" value={values.b200002num || 0} />
               <BujianRow label="人行道数" value={values.b300003num || 0} />
-              <BujianRow label="伸缩缝装置数" value={values.b300002num || 0} />
+              <BujianRow label="伸缩装置数" value={values.b300002num || 0} />
               <BujianRow label="" value="" />
             </View>
           </View>

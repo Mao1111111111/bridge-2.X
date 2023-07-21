@@ -810,7 +810,7 @@ export default function PartsEdit({navigation}) {
                   <BujianRow label="桥墩数" value={values.b200002num || 0} />
                   <BujianRow label="人行道数" value={values.b300003num || 0} />
                   <BujianRow
-                    label="伸缩缝装置数"
+                    label="伸缩装置数"
                     value={values.b300002num || 0}
                   />
                 </ScrollView>

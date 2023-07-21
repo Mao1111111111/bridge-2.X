@@ -333,10 +333,11 @@ export default function Login() {
             )}
             {/* 登录表单 */}
             <View>
-              {/* 标题   欢迎使用 检立得 */}
-              <View style={tailwind.flexRow}>
-                <Text style={[tailwind.text2xl, tailwind.fontBold, tailwind.mR2]}>
-                  欢迎使用
+              {/* 标题   欢迎使用 检立得 style={tailwind.flexRow} */}
+              <View>
+                <Text style={[tailwind.text2xl, tailwind.fontBold, tailwind.mR2, 
+                  {color:'#2b427d', textAlign:'center', fontSize:16}]}>
+                黑龙江省工程质量道桥检测中心
                 </Text>
                 <Text
                   style={[
@@ -344,10 +345,11 @@ export default function Login() {
                     tailwind.fontBold,
                     // tailwind.textPurple700,
                     {
-                      color:'#2b427d'
+                      color:'#2b427d',
+                      textAlign:'center'
                     }
                   ]}>
-                  简立得
+                    桥梁辅助检测系统
                 </Text>
               </View>
               <View style={tailwind.mY1} />

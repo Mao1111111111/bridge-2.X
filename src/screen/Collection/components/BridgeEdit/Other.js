@@ -128,7 +128,7 @@ export default function Other({navigation}) {
             name="b300002num"
             type="numeric"
             LabelStyle={tailwind.w24}
-            label="伸缩缝装置数:"
+            label="伸缩装置数:"
             value={values.b300002num || ''}
             onChange={handleChange}
           />

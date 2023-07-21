@@ -284,7 +284,14 @@ export default function Member({route, navigation,item}) {
               basememberinfo.find(item => item.membertype === key).membername,
           );
     setNowGroup(_list ? _list[0].stepno : null);
+    // console.log('listttttt',_list);
+    _list.forEach((item) => {
+      if (item.title == '伸缩缝装置') {
+        item.title = '伸缩装置'
+      }
+    })
     setList(_list);
+    
     setParts(_parts);
   }, [partsList, data, basememberinfo]);
 

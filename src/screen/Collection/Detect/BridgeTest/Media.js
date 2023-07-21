@@ -227,6 +227,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
       // console.log('memberList',memberList,route.params.data.title);
       // console.log('-----------------------');
       // console.log('memberList list',memberList[0].list);
+      console.log('route.params.data.title',route.params.data.title);
       let memberArr = [{
         name:route.params.data.title,
         id:1,
@@ -280,7 +281,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
         memberArr[0].list = res
         // console.log(memberArr[0].list[0]);
         setMemberArr(memberArr)
-        // console.log('memberArrmemberArrmemberArr',memberArr);
+        console.log('memberArrmemberArrmemberArr',memberArr);
     } catch (err) {
       // console.log('media ee',err);
     }
@@ -742,13 +743,14 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
               /> */}
               {
                 pid == 'P1501' ? (
-                  <TouchableOpacity onPress={openMadol}>
+                  <TouchableOpacity onPress={openMadol} >
                     <WriteInputSlide
                       ref={e => (form.current.filename = e)}
                       name="filename"
                       label="标题："
                       onChange={handleChenge}
                       dataArr={memberArr}
+                      LabelStyle={[{color:'#2b427d',fontSize:15,borderBottomWidth:1,}]}
                     />
                   </TouchableOpacity>
                 ) : (

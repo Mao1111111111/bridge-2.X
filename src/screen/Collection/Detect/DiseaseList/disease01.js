@@ -239,8 +239,8 @@ export function DiseaseA({route, navigation}) {
         
         try {
           // console.log('选择的构件区域6', areaName)
-          // console.log('构件区域',diseaseData.area);
-          // console.log('构件区域列表2',areaparam);
+          console.log('构件区域',diseaseData.area);
+          console.log('构件区域列表2',baseData.components);
           // console.log('选择的构件类型id:', diseaseData.areatype);
           // console.log('构件区域id',diseaseData.area);
           // console.log('baseData.components[0].areatype',baseData.components[0].areatype);
@@ -248,28 +248,43 @@ export function DiseaseA({route, navigation}) {
 
           // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
           // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
-          for (let i =0; i < areaparam.length; i ++) {
-            if (diseaseData.area == undefined) {
-              diseaseData.area = areaparam[0].value
-              handleFormChenge(areaparam[0].value, diseaseData.area)
-              setAreaName(areaparam[0].label)
-            } else if (diseaseData.area !== undefined) {
-              let sliceArea = diseaseData.area.slice(0,6)
-              // console.log('sliceArea',sliceArea);
-              if (sliceArea !== diseaseData.areatype) {
-                // console.log('构件类型有变化！',diseaseData.areatype, sliceArea);
-                for (let k = 0; k < baseData.components.length; k++) {
-                  if (diseaseData.areatype == baseData.components[k].areatype) {
-                    // console.log('此时的areaname',baseData.components[k].areaname);
-                    // console.log('此时的areatype',baseData.components[k].areatype);
-                    // console.log('baseData.components[k]',baseData.components[k].areaparamjson.areaparamlist[0].areaparamid);
-                    diseaseData['areatype'] = baseData.components[k].areatype
-                    diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
-                  }
-                }
+          // for (let i =0; i < areaparam.length; i ++) {
+          //   if (diseaseData.area == undefined) {
+          //     console.log('areaparam[i]',areaparam[i]);
+          //     diseaseData.area = areaparam[0].value
+          //     handleFormChenge(areaparam[0].value, diseaseData.area)
+          //     setAreaName(areaparam[0].label)
+          //   } else if (diseaseData.area !== undefined) {
+          //     let sliceArea = diseaseData.area.slice(0,6)
+          //     console.log('sliceArea',sliceArea);
+          //     console.log('diseaseData.areatype',diseaseData.areatype);
+          //     if (sliceArea !== diseaseData.areatype) {
+          //       // console.log('构件类型有变化！',diseaseData.areatype, sliceArea);
+          //       for (let k = 0; k < baseData.components.length; k++) {
+          //         if (diseaseData.areatype == baseData.components[k].areatype) {
+          //           console.log('此时的areaname',baseData.components[k].areaname);
+          //           console.log('此时的areatype',baseData.components[k].areatype);
+          //           // console.log('baseData.components[k]',baseData.components[k].areaparamjson.areaparamlist[0].areaparamid);
+          //           diseaseData['areatype'] = baseData.components[k].areatype
+          //           diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
+
+          // 构件类型与构件区域的初始默认值
+          baseData.components.forEach((item,index) => {
+            if (!diseaseData.area) {
+              if (item.areaname == '板梁') {
+                diseaseData['areatype'] = baseData.components[index].areatype
+                diseaseData['area'] = baseData.components[index].areaparamjson.areaparamlist[1].areaparamid
               }
+              
             }
-          }
+          })
+
+
         } catch (err) {
           console.log('err08', err);
         }
@@ -1927,16 +1942,17 @@ export function DiseaseA({route, navigation}) {
         <View style={tailwind.mT2} />
         <View>
           <View style={[tailwind.flexRow]}>
-            <LabelItem label="病害位置(米)" style={tailwind.w18} />
-            <Text>长度{lengthText}米; 宽度{widthText}米; 距顶{heightText}米</Text>
-            <Text>  </Text>
-            <TouchableOpacity style={{width:80,height:20,borderRadius: 5,
+          <TouchableOpacity style={{width:90,height:20,borderRadius: 5,
               backgroundColor: '#2b427d',
               justifyContent: 'center',
               overflow: 'hidden'}}
               onPress={writeNum}>
-              <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>填入基础数据</Text>
+              <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>获取上一次数据</Text>
             </TouchableOpacity>
+            <LabelItem label="病害位置(米)" style={[tailwind.w18,{marginLeft:10}]} />
+            <Text>长度{lengthText}米; 宽度{widthText}米; 距顶{heightText}米</Text>
+            <Text>  </Text>
+            
           </View>
           <View style={tailwind.mT2} />
           <View style={[tailwind.flexRow]}>
@@ -5583,16 +5599,17 @@ export function DiseaseC({route, navigation}) {
       <View style={tailwind.mT2} />
       <View>
         <View style={[tailwind.flexRow]}>
-          <LabelItem label="病害位置(米)" style={tailwind.w18} />
-          <Text>长度{lengthText}米</Text>
-          <Text>  </Text>
-          <TouchableOpacity style={{width:80,height:20,borderRadius: 5,
+          <TouchableOpacity style={{width:90,height:20,borderRadius: 5,
             backgroundColor: '#2b427d',
             justifyContent: 'center',
             overflow: 'hidden'}}
             onPress={writeNum}>
-            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>填入基础数据</Text>
+            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>获取上一次数据</Text>
           </TouchableOpacity>
+          <LabelItem label="病害位置(米)" style={[tailwind.w18,{marginLeft:10}]} />
+          <Text>长度{lengthText}米</Text>
+          <Text>  </Text>
+          
         </View>
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow]}>
@@ -10876,16 +10893,17 @@ export function DiseaseK({route, navigation}) {
       <View style={tailwind.mT2} />
       <View>
         <View style={[tailwind.flexRow]}>
-          <LabelItem label="病害位置(米)" style={tailwind.w18} />
-          <Text>长度{lengthText}米；宽度{widthText}米</Text>
-          <Text>  </Text>
-          <TouchableOpacity style={{width:80,height:20,borderRadius: 5,
+        <TouchableOpacity style={{width:90,height:20,borderRadius: 5,
             backgroundColor: '#2b427d',
             justifyContent: 'center',
             overflow: 'hidden'}}
             onPress={writeNum}>
-            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>填入基础数据</Text>
+            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>获取上一次数据</Text>
           </TouchableOpacity>
+          <LabelItem label="病害位置(米)" style={[tailwind.w18,{marginLeft:10}]} />
+          <Text>长度{lengthText}米；宽度{widthText}米</Text>
+          <Text>  </Text>
+          
         </View>
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow]}>
@@ -12758,16 +12776,17 @@ export function DiseaseG({route, navigation}) {
       <View style={tailwind.mT2} />
       <View>
         <View style={[tailwind.flexRow]}>
-          <LabelItem label="病害位置(米)" style={tailwind.w18} />
-          <Text>距左侧边缘{widthText}米; 距顶部边缘{heightText}米</Text>
-          <Text>  </Text>
-          <TouchableOpacity style={{width:80,height:20,borderRadius: 5,
+        <TouchableOpacity style={{width:90,height:20,borderRadius: 5,
             backgroundColor: '#2b427d',
             justifyContent: 'center',
             overflow: 'hidden'}}
             onPress={writeNum}>
-            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>填入基础数据</Text>
+            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>获取上一次数据</Text>
           </TouchableOpacity>
+          <LabelItem label="病害位置(米)" style={[tailwind.w18,{marginLeft:10}]} />
+          <Text>距左侧边缘{widthText}米; 距顶部边缘{heightText}米</Text>
+          <Text>  </Text>
+          
         </View>
         {/* <View style={tailwind.mT2} /> */}
         {/* <View style={[tailwind.flexRow]}>
@@ -14636,16 +14655,16 @@ export function DiseaseH({route, navigation}) {
       <View style={tailwind.mT2} />
       <View>
         <View style={[tailwind.flexRow]}>
-          <LabelItem label="病害位置(米)" style={tailwind.w18} />
-          <Text>距左侧{lengthText}米; 距顶部{heightText}米</Text>
-          <Text>  </Text>
-          <TouchableOpacity style={{width:80,height:20,borderRadius: 5,
+        <TouchableOpacity style={{width:90,height:20,borderRadius: 5,
             backgroundColor: '#2b427d',
             justifyContent: 'center',
             overflow: 'hidden'}}
             onPress={writeNum}>
-            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>填入基础数据</Text>
+            <Text style={{textAlign: 'center',color:'#fff',fontSize:12}}>获取上一次数据</Text>
           </TouchableOpacity>
+          <LabelItem label="病害位置(米)" style={[tailwind.w18,{marginLeft:10}]} />
+          <Text>距左侧{lengthText}米; 距顶部{heightText}米</Text>
+          <Text>  </Text>
         </View>
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow]}>
