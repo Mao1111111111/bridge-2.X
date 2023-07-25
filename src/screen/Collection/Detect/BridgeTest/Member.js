@@ -244,6 +244,7 @@ export default function Member({route, navigation,item}) {
         })
         .then(res => setEditLogList(res));
     }, [project, bridge]),
+    // console.log('11121212')
   );
 
   React.useEffect(() => {
@@ -252,7 +253,7 @@ export default function Member({route, navigation,item}) {
     if (!partsList || !data || !basememberinfo) {
       return;
     }
-    // console.log('kankan partsList',partsList);
+    // console.log('member route',route);
     const fun = (filterKey, dataKey, titleFun) => {
       const _list = [];
       const _data = {};
@@ -260,6 +261,15 @@ export default function Member({route, navigation,item}) {
         item => item[filterKey] === data[filterKey],
       );
       // console.log('_parts',_parts);
+      _parts.forEach((item) => {
+        if (data.title == '桥台') {
+            // console.log('items',item.membername.slice(0,1));
+            let firstCode = Number(item.membername.slice(0,1))
+            if (firstCode !== 0) {
+              item.stepno = firstCode
+            }
+          }
+      })
       _parts.forEach(item => {
         // console.log('_parts item',item);
         if (_data[item[dataKey]]) {
@@ -267,14 +277,6 @@ export default function Member({route, navigation,item}) {
         } else {
           _data[item[dataKey]] = [item];
         }
-        if (data.title == '桥台') {
-            console.log('items',item.membername.slice(0,1));
-            let firstCode = Number(item.membername.slice(0,1))
-            if (firstCode !== 0) {
-              item.stepno = firstCode
-            }
-        }
-        // console.log('_parts item2',item);
       });
       Object.keys(_data).forEach(key =>
         _list.push({
@@ -305,7 +307,7 @@ export default function Member({route, navigation,item}) {
     setList(_list);
     
     setParts(_parts);
-  }, [partsList, parts,data, basememberinfo]);
+  }, [partsList, data, basememberinfo]);
 
   // 顶部导航
   const getHeaderItems = () => {

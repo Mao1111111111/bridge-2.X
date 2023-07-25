@@ -256,7 +256,7 @@ export default function Main({navigation, route}) {
     if (!nowEdit) {
       return;
     }
-    // console.log('nowEdit',nowEdit);
+    console.log('handleMember nowEdit',nowEdit);
     navigation.navigate('Collection/Detect/BridgeTest/Member', {
       data: nowEdit,
       list: [],
