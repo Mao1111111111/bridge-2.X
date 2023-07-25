@@ -178,6 +178,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
   const [memberArr, setMemberArr] = React.useState()
   const [labelText, setLabelText] = React.useState('')
   const [twoMemberArr, setTwoMemberArr] = React.useState([])
+  const [memberTitle, setMemberTitle] = React.useState('')
 
 
   React.useEffect(() => {
@@ -228,7 +229,8 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
       // console.log('memberList',memberList,route.params.data.title);
       // console.log('-----------------------');
       // console.log('memberList list',memberList[0].list);
-      console.log('route.params.data.title',route.params.data.title);
+      // console.log('route.params.data.title',route.params.data.title);
+      setMemberTitle(route.params.data.title)
       let memberArr = [{
         name:route.params.data.title,
         id:1,
@@ -251,9 +253,6 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
         let secList = []
         let res = []
         for (let i = 0; i < memberArr[0].list.length; i++) {
-          // console.log('memberArr[0].list[i].name',memberArr[0].list[i].name);
-          // console.log('memberArr[0].list[i].list',memberArr[0].list[i].list);
-
           // 写入第二层的list内容
           secList.push(
             {
@@ -277,14 +276,31 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
           res = secList.filter(function(item,index,self){
             return self.findIndex(el => el.id==item.id) === index
           })
-          // console.log('res',res);
         }
         memberArr[0].list = res
         // console.log(memberArr[0].list[0]);
         setMemberArr(memberArr)
         // console.log('memberArrmemberArrmemberArr',memberArr[0].list);
         // 二联格式数据
-        setTwoMemberArr(memberArr[0].list)
+        // 上部结构
+        if (memberTitle == '主梁' || memberTitle == '横隔板' || memberTitle == '湿接段'
+        || memberTitle == '支座' || memberTitle == '铰缝' || memberTitle == '挂梁'
+        || memberTitle == '湿接缝') {
+          setTwoMemberArr(memberArr[0].list)
+        } else {
+          // 下部结构与桥面系
+          let singleList = []
+          memberArr[0].list.forEach((item) => {
+            item.list.forEach((items) => {
+              console.log(items);
+              singleList.push(items)
+            })
+          })
+          setTwoMemberArr(singleList)
+        }
+        
+        
+        
     } catch (err) {
       console.log('media ee',err);
     }
@@ -573,6 +589,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
   // confirm = data => console.info('confirm', data);
   confirm = data => getLabel(data);
   const getLabel = (data) => {
+    console.log('confirm');
     try {
       if (data) {
         if (data[0].name == '主梁') {
@@ -761,6 +778,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
                       label="标题："
                       onChange={handleChenge}
                       dataArr={twoMemberArr}
+                      memberTitle={memberTitle}
                       LabelStyle={[{color:'#2b427d',fontSize:15,borderBottomWidth:1,}]}
                     />
                   </TouchableOpacity>
@@ -838,9 +856,9 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
         </View>
       )}
       {/* 级联列表弹窗 */}
-      <Modal isVisible={pickerVisible} style={[tailwind.flex1,{}]}>
+      {/* <Modal isVisible={pickerVisible} style={[tailwind.flex1,{}]}>
         <CascadePicker 
-          dataSource={twoMemberArr}
+          dataSource={memberArr}
           cancel={this.cancel}
           confirm={this.confirm}
           headOptions={{
@@ -860,7 +878,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
             activeFontColor:'#2b427d'
           }}
         />
-      </Modal>
+      </Modal> */}
       {/* 控制图片左右切换的模块 */}
       <View style={[styles.card, styles.rowCard, theme.primaryBgStyle]}>
         <TouchableOpacity onPress={handlePrev}>

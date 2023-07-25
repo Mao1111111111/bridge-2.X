@@ -217,7 +217,8 @@ export const WriteInputSlide = React.forwardRef(function (
     disabled,
     lines,
     height,
-    dataArr
+    dataArr,
+    memberTitle
   },
   ref,
 ) {
@@ -279,131 +280,126 @@ export const WriteInputSlide = React.forwardRef(function (
   };
   confirm = data => getLabel(data);
   const getLabel = (data) => {
+    console.log('memberTitlememberTitle',memberTitle);
     try {
       if (data) {
-        if (data[0].name == '主梁') {
-          let labelText = data[2].name + '梁状况'
+        if (memberTitle == '主梁') {
+          let labelText = data[1].name + '梁状况'
           //console.log(labelText);
           // setLabelText(labelText)
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '横隔板') {
-          let labelText = data[2].name + '横隔板状况'
+        } else if (memberTitle == '横隔板') {
+          let labelText = data[1].name + '横隔板状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '湿接段') {
-          let labelText = data[2].name + '湿接段状况'
+        } else if (memberTitle == '湿接段') {
+          let labelText = data[1].name + '湿接段状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '支座') {
-          let labelText = data[2].name + '支座状况'
+        } else if (memberTitle == '支座') {
+          let labelText = data[1].name + '支座状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '铰缝') {
-          let labelText = data[2].name + '铰缝状况'
+        } else if (memberTitle == '铰缝') {
+          let labelText = data[1].name + '铰缝状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '挂梁') {
-          let labelText = data[2].name + '挂梁状况'
+        } else if (memberTitle == '挂梁') {
+          let labelText = data[1].name + '挂梁状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '湿接缝') {
-          let labelText = data[2].name + '湿接缝状况'
+        } else if (memberTitle == '湿接缝') {
+          let labelText = data[1].name + '湿接缝状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '桥台') {
-          let labelText = data[2].name + '状况'
+        } else if (memberTitle == '桥台') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '桥墩') {
-          let labelText = data[2].name + '桥墩状况'
+        } else if (memberTitle == '桥墩') {
+          let labelText = data[0].name + '桥墩状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '墩台基础') {
-          let labelText = data[2].name + '基础状况'
+        } else if (memberTitle == '墩台基础') {
+          let labelText = data[0].name + '基础状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '墩台基础') {
-          let labelText = data[2].name + '基础状况'
+        }  else if (memberTitle == '翼墙、耳墙') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '翼墙、耳墙') {
-          let labelText = data[2].name + '状况'
+        } else if (memberTitle == '锥坡、护坡') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '锥坡、护坡') {
-          let labelText = data[2].name + '状况'
+        } else if (memberTitle == '河床') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '河床') {
-          let labelText = data[2].name + '状况'
+        } else if (memberTitle == '调治构造物') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '调治构造物') {
-          let labelText = data[2].name + '状况'
+        } else if (memberTitle == '桥面铺装') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '桥面铺装') {
-          let labelText = data[2].name + '状况'
+        } else if (memberTitle == '伸缩装置') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '伸缩装置') {
-          let labelText = data[2].name + '状况'
+        } else if (memberTitle == '人行道') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '人行道') {
-          let labelText = data[2].name + '状况'
+        } else if (memberTitle == '栏杆、护栏') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '栏杆、护栏') {
-          let labelText = data[2].name + '状况'
+        } else if (memberTitle == '排水系统') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
           setPickerVisible(false)
-        } else if (data[0].name == '排水系统') {
-          let labelText = data[2].name + '状况'
-          //console.log(labelText);
-          setTextValue(labelText)
-          handleChange(labelText)
-          setPickerVisible(false)
-        } else if (data[0].name == '照明、标志') {
-          let labelText = data[2].name + '状况'
+        } else if (memberTitle == '照明、标志') {
+          let labelText = data[0].name + '状况'
           //console.log(labelText);
           setTextValue(labelText)
           handleChange(labelText)
