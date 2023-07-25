@@ -106,7 +106,7 @@ export default function Main({navigation, route}) {
       // 获取检测桥梁的 标记条数
       getMainTotal(bridgereportid).then(res => setMianTotal(res.count));
     }
-    console.log('memberList6',memberList);
+    // console.log('memberList6',memberList);
     // if (table1Data) {
       memberList.forEach((item) => {
         if (item.title == '伸缩缝装置') {

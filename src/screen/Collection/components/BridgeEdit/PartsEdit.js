@@ -597,6 +597,20 @@ export default function PartsEdit({navigation}) {
     });
     // 将构件数据处理为 部件数据 列表
     setList(_list);
+    // console.log('P1206 list',list);
+    // list.forEach((item) => {
+    //   if (item.name == '桥台') {
+    //     console.log('桥台item',item);
+    //     item.data.forEach((items) => {
+    //       console.log('items',items.membername.slice(0,1));
+    //       let firstCode = Number(items.membername.slice(0,1))
+    //       if (firstCode !== 0) {
+    //         items.stepno = firstCode
+    //       }
+    //       console.log('items',items);
+    //     })
+    //   }
+    // })
   }, [state, basememberinfo]);
 
   // 清除右侧的选中 --  当左侧选中变化时，清除右侧的选中

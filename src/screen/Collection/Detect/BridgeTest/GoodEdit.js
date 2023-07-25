@@ -82,6 +82,9 @@ export default function GoodEdit({route, navigation}) {
     } else if (route.params.title == '桥面铺装') {
       let imgTitle = '桥面'
       setImgTitle(imgTitle)
+    } else {
+      let imgTitle = ''
+      setImgTitle(imgTitle)
     }
   },[])
 

@@ -252,18 +252,29 @@ export default function Member({route, navigation,item}) {
     if (!partsList || !data || !basememberinfo) {
       return;
     }
+    // console.log('kankan partsList',partsList);
     const fun = (filterKey, dataKey, titleFun) => {
       const _list = [];
       const _data = {};
       const _parts = partsList.filter(
         item => item[filterKey] === data[filterKey],
       );
+      // console.log('_parts',_parts);
       _parts.forEach(item => {
+        // console.log('_parts item',item);
         if (_data[item[dataKey]]) {
           _data[item[dataKey]].push(item);
         } else {
           _data[item[dataKey]] = [item];
         }
+        if (data.title == '桥台') {
+            console.log('items',item.membername.slice(0,1));
+            let firstCode = Number(item.membername.slice(0,1))
+            if (firstCode !== 0) {
+              item.stepno = firstCode
+            }
+        }
+        // console.log('_parts item2',item);
       });
       Object.keys(_data).forEach(key =>
         _list.push({
@@ -286,6 +297,7 @@ export default function Member({route, navigation,item}) {
     setNowGroup(_list ? _list[0].stepno : null);
     // console.log('listttttt',_list);
     _list.forEach((item) => {
+      // console.log('_list item',item);
       if (item.title == '伸缩缝装置') {
         item.title = '伸缩装置'
       }
@@ -293,7 +305,7 @@ export default function Member({route, navigation,item}) {
     setList(_list);
     
     setParts(_parts);
-  }, [partsList, data, basememberinfo]);
+  }, [partsList, parts,data, basememberinfo]);
 
   // 顶部导航
   const getHeaderItems = () => {

@@ -177,6 +177,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
   const [pickerVisible, setPickerVisible] = React.useState(false);
   const [memberArr, setMemberArr] = React.useState()
   const [labelText, setLabelText] = React.useState('')
+  const [twoMemberArr, setTwoMemberArr] = React.useState([])
 
 
   React.useEffect(() => {
@@ -281,10 +282,13 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
         memberArr[0].list = res
         // console.log(memberArr[0].list[0]);
         setMemberArr(memberArr)
-        console.log('memberArrmemberArrmemberArr',memberArr);
+        // console.log('memberArrmemberArrmemberArr',memberArr[0].list);
+        // 二联格式数据
+        setTwoMemberArr(memberArr[0].list)
     } catch (err) {
-      // console.log('media ee',err);
+      console.log('media ee',err);
     }
+
    
   }, [type, fileList, categoryList, dataid, isInit]);
 
@@ -326,9 +330,12 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
 
   // 图片标题
   const getFileName = () => {
+    console.log('执行getFileName');
+    console.log('defaultFileName...',type);
     let resetName = ''
     // 构件 DiseaseEdit2 传入
     if (defaultFileName && type == 'diseaseParts') {
+      console.log('执行getFileName00');
       if (pileTitle == '主梁' || pileTitle == '挂梁') {
         resetName = pileNum + '梁' + defaultFileName
       } else if (pileTitle == '横隔板' || pileTitle == '湿接段' || pileTitle == '铰缝'
@@ -364,10 +371,14 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
           resetName = pileNum + '桥面' + defaultFileName
         }
       } else {
+        console.log('mediaMemberName + mediaDiseaseName', mediaMemberName,mediaDiseaseName);
         resetName = mediaMemberName + mediaDiseaseName
       }
       // console.log('???',defaultFileName);
       return resetName;
+    }
+    if (type == 'goodParts') {
+      console.log('categoryList[0].label;',categoryList[0]);
     }
     // 部件 Member 传入
     if (defaultFileName && type == 'member' || type == 'parts') {
@@ -749,7 +760,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
                       name="filename"
                       label="标题："
                       onChange={handleChenge}
-                      dataArr={memberArr}
+                      dataArr={twoMemberArr}
                       LabelStyle={[{color:'#2b427d',fontSize:15,borderBottomWidth:1,}]}
                     />
                   </TouchableOpacity>
@@ -827,9 +838,9 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
         </View>
       )}
       {/* 级联列表弹窗 */}
-      <Modal isVisible={pickerVisible}>
+      <Modal isVisible={pickerVisible} style={[tailwind.flex1,{}]}>
         <CascadePicker 
-          dataSource={memberArr}
+          dataSource={twoMemberArr}
           cancel={this.cancel}
           confirm={this.confirm}
           headOptions={{
