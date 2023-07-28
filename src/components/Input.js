@@ -729,7 +729,6 @@ export const KeyboardInput = React.forwardRef(
     };
 
     const getBtnStyles = key => {
-      console.log('key == '%'',key,key == '%');
       const _style = {
         ...tailwind.bgRed400,
         ...tailwind.mR6,
