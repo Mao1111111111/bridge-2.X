@@ -657,6 +657,7 @@ export const Password = React.forwardRef(function (
   );
 });
 
+// 键盘组件
 export const KeyboardInput = React.forwardRef(
   ({label, style, LabelStyle, name, onChange, value}, ref) => {
     const {
