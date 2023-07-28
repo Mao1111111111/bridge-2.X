@@ -17,6 +17,7 @@ import Pid from './Pid';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modals from "react-native-modal"
 import { CascadePicker } from "react-native-slidepicker";
+import { ParallelPicker } from "react-native-slidepicker";
 
 export const TextInput = React.forwardRef(function (
   {
@@ -218,7 +219,8 @@ export const WriteInputSlide = React.forwardRef(function (
     lines,
     height,
     dataArr,
-    memberTitle
+    memberTitle,
+    testArr
   },
   ref,
 ) {
@@ -233,7 +235,6 @@ export const WriteInputSlide = React.forwardRef(function (
       return;
     }
     setTextValue(value);
-    console.log('WriteInputSlide value',value);
   }, [value]);
 
   React.useImperativeHandle(ref, () => ({
@@ -259,7 +260,7 @@ export const WriteInputSlide = React.forwardRef(function (
   }));
 
   const handleChange = val => {
-    console.log('val',val);
+    // console.log('val',val);
     let _val = type === 'numeric' ? val.replace(/[^\d]+/, '') : val;
     setTextValue(_val);
     onChange &&
@@ -280,7 +281,8 @@ export const WriteInputSlide = React.forwardRef(function (
   };
   confirm = data => getLabel(data);
   const getLabel = (data) => {
-    console.log('memberTitlememberTitle',memberTitle);
+    // console.log('memberTitlememberTitle',memberTitle);
+    // console.log('级联菜单的data',data);
     try {
       if (data) {
         if (memberTitle == '主梁') {
@@ -443,7 +445,31 @@ export const WriteInputSlide = React.forwardRef(function (
       />
       {/* 级联列表弹窗 */}
       <Modals isVisible={pickerVisible}>
-        <CascadePicker 
+        {
+          memberTitle == '主梁' ? (
+            <ParallelPicker
+              dataSource={testArr}
+              cancel={this.cancel}
+              confirm={this.confirm}
+              headOptions={{
+                confirmText:'确认',
+                cancelText:'取消',
+                backgroundColor:'#eeeeee',
+                confirmStyle:{
+                  color:'#2b427d',
+                  fontSize:16
+                },
+                cancelStyle:{
+                  color:'#2b427d',
+                  fontSize:16
+                },
+              }}
+              pickerStyle={{
+                activeFontColor:'#2b427d'
+              }}
+            />
+          ) : (
+            <CascadePicker 
           dataSource={dataArr}
           cancel={this.cancel}
           confirm={this.confirm}
@@ -464,6 +490,8 @@ export const WriteInputSlide = React.forwardRef(function (
             activeFontColor:'#2b427d'
           }}
         />
+          )
+        }
       </Modals>
     </LabelItem>
   );
@@ -664,17 +692,16 @@ export const KeyboardInput = React.forwardRef(
       setTextValue(value + '');
       // console.log('keyboard',keyboard);
       let keyboardA = [
-        ["1", "4", "7"],
-        ["2", "5", "8"],
-        ["3", "6", "9"],
-        ["~", "0", "."]
+        ["1", "4", "7","~"],
+        ["2", "5", "8","0"],
+        ["3", "6", "9","."],
       ]
       setkeyboardA(keyboardA)
 
       let keyboardB = [
+        ["%"],
         ["(", "#", "+", "×"],
-        [")", "k", "-", "/"],
-        [, , , "%"]
+        [")", "k", "-", "/"]
       ]
       setkeyboardB(keyboardB)
     }, [value]);
@@ -683,9 +710,9 @@ export const KeyboardInput = React.forwardRef(
       const _style = {
         ...tailwind.flex1,
         ...tailwind.mR6,
-        marginTop:10,
+        marginTop:5,
         height:10,
-        paddingTop:5
+        paddingTop:0
       };
       if (isNaN(parseInt(key, 10))) {
         return {
@@ -697,6 +724,28 @@ export const KeyboardInput = React.forwardRef(
           ..._style,
           ...tailwind.bgGray500,
         };
+      }
+    };
+
+    const getBtnStyles = key => {
+      console.log('key == '%'',key,key == '%');
+      const _style = {
+        ...tailwind.bgRed400,
+        ...tailwind.mR6,
+        marginTop:5,
+        marginRight:10,
+      };
+      if (key !== '%') {
+        return {
+          ..._style
+        }
+      } else {
+        return {
+          ..._style,
+          // display:'none'
+          position:'relative',
+          top:'75%'
+        }
       }
     };
 
@@ -816,8 +865,7 @@ export const KeyboardInput = React.forwardRef(
                         <Button
                           key={item}
                           onPress={() => handlePress(item)}
-                          style={[tailwind.bgRed400,
-                          {marginTop:10,marginRight:10,}]}>
+                          style={getBtnStyles(item)}>
                           {item}
                         </Button>
                       ))}

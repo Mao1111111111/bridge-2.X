@@ -65,12 +65,8 @@ export function DiseaseA({route, navigation}) {
         setDiseaseData(itemData);
         // console.log('route.params.data.jsondata',route.params.data.jsondata);
         try {
-          // console.log('itemData',itemData.standard.scale);
-          // console.log('diseaseData.standard.scale',diseaseData.standard.scale);
-          // console.log('areatype',itemData.areatype);
           setBiaodu(itemData.standard.scale)
           diseaseData['scale'] = itemData.standard.scale
-          // handleFormChenge(itemData.standard.scale, diseaseData.scale)
         } catch (error) {
           console.log('areatype error',error);
         }
@@ -283,8 +279,6 @@ export function DiseaseA({route, navigation}) {
               
             }
           })
-
-
         } catch (err) {
           console.log('err08', err);
         }
@@ -573,13 +567,6 @@ export function DiseaseA({route, navigation}) {
       }, [baseData, saveData, version, route.params, dispatch]);
     
       useEffect(() => {
-        // console.log('disea111',diseaseData);
-        // console.log('diseaseData.standard.scale',diseaseData.standard.scale);
-        // console.log('route',route);
-        // console.log('桥跨：：',route.params.memberList);
-        // console.log('桥梁id::',route.params.memberList[0].bridgeid);
-        // console.log('部件',route.params.routeParams.title);
-        
         let defaultPier = route.params.memberList[0].membername
         // 提取第一个字符进行判断（表示墩台的数据）
         let firstDefaultPier = defaultPier.slice(0,1)
@@ -591,6 +578,16 @@ export function DiseaseA({route, navigation}) {
           let pier = '距' + (firstDefaultPier - 1) + '#墩'
           setPier(pier)
           console.log('dundun:', pier);
+        }
+
+        try {
+          if (diseaseData.checktypeid) {
+            diseaseData['checktypeid'] = route.params.thridData.checktypeid
+            handleFormChenge(route.params.thridData.checktypeid, diseaseData.checktypeid)
+          }
+          console.log('diseaseData.checktypeid...',diseaseData.checktypeid);
+        } catch (error) {
+          console.log('diseaseData.checktypeid error',error);
         }
         
 
@@ -614,7 +611,7 @@ export function DiseaseA({route, navigation}) {
 
       const handleScaleOpen = () => scaleInfoRef.current.open();
       const handleFormChenge = ({name,value}) => {
-        // console.log('```````执行了handleFormChenge``````````');
+        console.log('```````执行了handleFormChenge``````````');
         // const _data = {
         //   ...diseaseData,
         //   [name]: value,
@@ -654,14 +651,18 @@ export function DiseaseA({route, navigation}) {
           //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
           //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
           // console.log('resttttt',rest)
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
 
           const _data = {
             ...diseaseData,
             [name]: value,
           };
           // console.log('diseaseData9',diseaseData);
+          // console.log('route.params.thridData.checktypeid',route.params.thridData.checktypeid);
+          // console.log('route',route.params.type.list);
 
           if (name === 'checktypeid') {
+            // console.log('name === checktypeid');
             const _type = route.params.type.list.find(
               item => value === item.checktypeid,
             );
@@ -2579,6 +2580,8 @@ export function DiseaseB({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
+      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+
       const _data = {
         ...diseaseData,
         [name]: value,
@@ -4406,6 +4409,8 @@ export function DiseaseC({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
+      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+
       const _data = {
         ...diseaseData,
         [name]: value,
@@ -6266,6 +6271,8 @@ export function DiseaseD({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
+      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+
       const _data = {
         ...diseaseData,
         [name]: value,
@@ -7963,6 +7970,8 @@ export function DiseaseE({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
+      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+
       const _data = {
         ...diseaseData,
         [name]: value,
@@ -9669,6 +9678,8 @@ export function DiseaseK({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
+      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+
       const _data = {
         ...diseaseData,
         [name]: value,
@@ -11563,6 +11574,8 @@ export function DiseaseG({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
+      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+
       const _data = {
         ...diseaseData,
         [name]: value,
@@ -13445,6 +13458,8 @@ export function DiseaseH({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
+      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+
       const _data = {
         ...diseaseData,
         [name]: value,

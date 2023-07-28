@@ -179,6 +179,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
   const [labelText, setLabelText] = React.useState('')
   const [twoMemberArr, setTwoMemberArr] = React.useState([])
   const [memberTitle, setMemberTitle] = React.useState('')
+  const [testArr, setTestArr] = React.useState();
 
 
   React.useEffect(() => {
@@ -283,24 +284,78 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
         // console.log('memberArrmemberArrmemberArr',memberArr[0].list);
         // 二联格式数据
         // 上部结构
+        let two = []
+        let twos = []
+        let twoMemberArr = []
         if (memberTitle == '主梁' || memberTitle == '横隔板' || memberTitle == '湿接段'
         || memberTitle == '支座' || memberTitle == '铰缝' || memberTitle == '挂梁'
         || memberTitle == '湿接缝') {
-          setTwoMemberArr(memberArr[0].list)
+          // two.push(memberArr[0].list)
+          // setTwoMemberArr(two)
+          // console.log('twoMemberArr',two);
+          memberArr[0].list.forEach((item,index) => {
+            // console.log('item',item);
+            two.push({
+              name:item.name,
+              id:'1' + (index + 1)
+            })
+            item.list.forEach((items,index) => {
+              // console.log('items',items);
+              twos.push({
+                name:items.name,
+                id:items.id
+              })
+            })
+          })
+          // console.log('two',two);
+          // console.log('twos',twos);
+          twoMemberArr[0] = two
+          twoMemberArr[1] = twos
+          // console.log('twoMemberArr',twoMemberArr);
         } else {
           // 下部结构与桥面系
           let singleList = []
           memberArr[0].list.forEach((item) => {
             item.list.forEach((items) => {
-              console.log(items);
+              // console.log(items);
               singleList.push(items)
             })
           })
           setTwoMemberArr(singleList)
         }
-        
-        
-        
+
+
+        // let testArr = [
+        //   [
+        //     {
+        //       "name": "7月",
+        //       "id": 201
+        //     },
+        //     {
+        //       "name": "8月",
+        //       "id": 202
+        //     }
+        //   ],
+        //   [
+        //     {
+        //       "name": "1日",
+        //       "id": 201
+        //     },
+        //     {
+        //       "name": "2日",
+        //       "id": 202
+        //     },
+        //     {
+        //       "name": "3日",
+        //       "id": 2103
+        //     },
+        //   ]
+        // ]
+        setTestArr(twoMemberArr)
+        // console.log('testArr',testArr);
+
+
+
     } catch (err) {
       console.log('media ee',err);
     }
@@ -779,6 +834,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
                       onChange={handleChenge}
                       dataArr={twoMemberArr}
                       memberTitle={memberTitle}
+                      testArr={testArr}
                       LabelStyle={[{color:'#2b427d',fontSize:15,borderBottomWidth:1,}]}
                     />
                   </TouchableOpacity>
