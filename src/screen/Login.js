@@ -313,6 +313,20 @@ export default function Login() {
       <View>
         {/* 背景图片 */}
         <ImageBackground source={require('../iconImg/loginBg1.jpg')} style={[{width:'100%', height:'100%'}]}>
+          {/* 软件版本 */}
+          <Text
+            style={
+              [
+                {
+                  fontSize:8,
+                  color:'#394f86',
+                  fontWeight: 'bold',
+                  left:8,
+                  top:520
+                }
+              ]
+            }
+          >v2.02</Text>
           <View style={[styles.box]}>
             {/* 判断是否同步，默认不同步 */}
             {/* 这里是登录后，同步数据 */}

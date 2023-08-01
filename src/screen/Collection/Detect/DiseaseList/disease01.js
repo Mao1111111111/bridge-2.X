@@ -5928,29 +5928,7 @@ export function DiseaseD({route, navigation}) {
       } catch (err){
         console.log('err09', err);
       }
-      try {
-        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
-        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
-        for (let i =0; i < areaparam.length; i ++) {
-          if (diseaseData.area == undefined) {
-            diseaseData.area = areaparam[0].value
-            handleFormChenge(areaparam[0].value, diseaseData.area)
-            setAreaName(areaparam[0].label)
-          } else if (diseaseData.area !== undefined) {
-            let sliceArea = diseaseData.area.slice(0,6)
-            if (sliceArea !== diseaseData.areatype) {
-              for (let k = 0; k < baseData.components.length; k++) {
-                if (diseaseData.areatype == baseData.components[k].areatype) {
-                  diseaseData['areatype'] = baseData.components[k].areatype
-                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
-                }
-              }
-            }
-          }
-        }
-      } catch (err) {
-        console.log('err08', err);
-      }
+      
       try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
@@ -6238,6 +6216,30 @@ export function DiseaseD({route, navigation}) {
         } catch {
 
         }
+      }
+
+      try {
+        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
+        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
+        for (let i =0; i < areaparam.length; i ++) {
+          if (diseaseData.area == undefined) {
+            diseaseData.area = areaparam[0].value
+            handleFormChenge(areaparam[0].value, diseaseData.area)
+            setAreaName(areaparam[0].label)
+          } else if (diseaseData.area !== undefined) {
+            let sliceArea = diseaseData.area.slice(0,6)
+            if (sliceArea !== diseaseData.areatype) {
+              for (let k = 0; k < baseData.components.length; k++) {
+                if (diseaseData.areatype == baseData.components[k].areatype) {
+                  diseaseData['areatype'] = baseData.components[k].areatype
+                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('err08', err);
       }
     },[])
 
@@ -9338,29 +9340,7 @@ export function DiseaseK({route, navigation}) {
       } catch (err){
         console.log('err09', err);
       }
-      try {
-        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
-        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
-        for (let i =0; i < areaparam.length; i ++) {
-          if (diseaseData.area == undefined) {
-            diseaseData.area = areaparam[0].value
-            handleFormChenge(areaparam[0].value, diseaseData.area)
-            setAreaName(areaparam[0].label)
-          } else if (diseaseData.area !== undefined) {
-            let sliceArea = diseaseData.area.slice(0,6)
-            if (sliceArea !== diseaseData.areatype) {
-              for (let k = 0; k < baseData.components.length; k++) {
-                if (diseaseData.areatype == baseData.components[k].areatype) {
-                  diseaseData['areatype'] = baseData.components[k].areatype
-                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
-                }
-              }
-            }
-          }
-        }
-      } catch (err) {
-        console.log('err08', err);
-      }
+      
       try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
@@ -9646,6 +9626,30 @@ export function DiseaseK({route, navigation}) {
         } catch {
 
         }
+      }
+
+      try {
+        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
+        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
+        for (let i =0; i < areaparam.length; i ++) {
+          if (diseaseData.area == undefined) {
+            diseaseData.area = areaparam[0].value
+            handleFormChenge(areaparam[0].value, diseaseData.area)
+            setAreaName(areaparam[0].label)
+          } else if (diseaseData.area !== undefined) {
+            let sliceArea = diseaseData.area.slice(0,6)
+            if (sliceArea !== diseaseData.areatype) {
+              for (let k = 0; k < baseData.components.length; k++) {
+                if (diseaseData.areatype == baseData.components[k].areatype) {
+                  diseaseData['areatype'] = baseData.components[k].areatype
+                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('err08', err);
       }
     },[])
 
@@ -11234,29 +11238,7 @@ export function DiseaseG({route, navigation}) {
       } catch (err){
         console.log('err09', err);
       }
-      try {
-        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
-        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
-        for (let i =0; i < areaparam.length; i ++) {
-          if (diseaseData.area == undefined) {
-            diseaseData.area = areaparam[0].value
-            handleFormChenge(areaparam[0].value, diseaseData.area)
-            setAreaName(areaparam[0].label)
-          } else if (diseaseData.area !== undefined) {
-            let sliceArea = diseaseData.area.slice(0,6)
-            if (sliceArea !== diseaseData.areatype) {
-              for (let k = 0; k < baseData.components.length; k++) {
-                if (diseaseData.areatype == baseData.components[k].areatype) {
-                  diseaseData['areatype'] = baseData.components[k].areatype
-                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
-                }
-              }
-            }
-          }
-        }
-      } catch (err) {
-        console.log('err08', err);
-      }
+      
       try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
@@ -11542,6 +11524,30 @@ export function DiseaseG({route, navigation}) {
         } catch {
 
         }
+      }
+
+      try {
+        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
+        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
+        for (let i =0; i < areaparam.length; i ++) {
+          if (diseaseData.area == undefined) {
+            diseaseData.area = areaparam[0].value
+            handleFormChenge(areaparam[0].value, diseaseData.area)
+            setAreaName(areaparam[0].label)
+          } else if (diseaseData.area !== undefined) {
+            let sliceArea = diseaseData.area.slice(0,6)
+            if (sliceArea !== diseaseData.areatype) {
+              for (let k = 0; k < baseData.components.length; k++) {
+                if (diseaseData.areatype == baseData.components[k].areatype) {
+                  diseaseData['areatype'] = baseData.components[k].areatype
+                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('err08', err);
       }
     },[])
 
@@ -13120,29 +13126,6 @@ export function DiseaseH({route, navigation}) {
         console.log('err09', err);
       }
       try {
-        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
-        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
-        for (let i =0; i < areaparam.length; i ++) {
-          if (diseaseData.area == undefined) {
-            diseaseData.area = areaparam[0].value
-            handleFormChenge(areaparam[0].value, diseaseData.area)
-            setAreaName(areaparam[0].label)
-          } else if (diseaseData.area !== undefined) {
-            let sliceArea = diseaseData.area.slice(0,6)
-            if (sliceArea !== diseaseData.areatype) {
-              for (let k = 0; k < baseData.components.length; k++) {
-                if (diseaseData.areatype == baseData.components[k].areatype) {
-                  diseaseData['areatype'] = baseData.components[k].areatype
-                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
-                }
-              }
-            }
-          }
-        }
-      } catch (err) {
-        console.log('err08', err);
-      }
-      try {
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
@@ -13426,6 +13409,31 @@ export function DiseaseH({route, navigation}) {
         } catch {
 
         }
+      }
+
+      try {
+        // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
+        // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
+        console.log('areaparam',areaparam);
+        for (let i =0; i < areaparam.length; i ++) {
+          if (diseaseData.area == undefined) {
+            diseaseData.area = areaparam[0].value
+            handleFormChenge(areaparam[0].value, diseaseData.area)
+            setAreaName(areaparam[0].label)
+          } else if (diseaseData.area !== undefined) {
+            let sliceArea = diseaseData.area.slice(0,6)
+            if (sliceArea !== diseaseData.areatype) {
+              for (let k = 0; k < baseData.components.length; k++) {
+                if (diseaseData.areatype == baseData.components[k].areatype) {
+                  diseaseData['areatype'] = baseData.components[k].areatype
+                  diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('err08', err);
       }
     },[])
 
