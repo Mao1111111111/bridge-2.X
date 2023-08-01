@@ -366,10 +366,16 @@ function Provider({children}) {
                       }).catch(err=>{
                         let errObj = state.promptFontErr
                         let name = data.testData.projectname + '-' + data.bridgename
-                        if(errObj[name]['mediaDataFont']){
-                          errObj[name]['mediaDataFont'].push(err)
+                        if(errObj[name]){
+                          if(errObj[name]['mediaDataFont']){
+                            errObj[name]['mediaDataFont'].push(err)
+                          }else{
+                            errObj[name]['mediaDataFont'] = [err]
+                          }
                         }else{
-                          errObj[name]['mediaDataFont'] = [err]
+                          errObj[name] = {
+                            mediaDataFont:[err]
+                          }
                         }
                         dispatch({
                           type: 'promptFontErr',
@@ -381,10 +387,16 @@ function Provider({children}) {
                     }).catch(err=>{
                         let errObj = state.promptFontErr
                         let name = data.testData.projectname + '-' + data.bridgename
-                        if(errObj[name]['mediaDataFont']){
-                          errObj[name]['mediaDataFont'].push(err)
+                        if(errObj[name]){
+                          if(errObj[name]['mediaDataFont']){
+                            errObj[name]['mediaDataFont'].push(err)
+                          }else{
+                            errObj[name]['mediaDataFont'] = [err]
+                          }
                         }else{
-                          errObj[name]['mediaDataFont'] = [err]
+                          errObj[name] = {
+                            mediaDataFont:[err]
+                          }
                         }
                         dispatch({
                           type: 'promptFontErr',

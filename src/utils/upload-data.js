@@ -480,7 +480,7 @@ new Promise(async (resolve, reject) => {
       data += chunk
     })
     ifstream.onError((err) => {
-      console.log('oops', err)
+      reject(err);
     })
     ifstream.onEnd(() => {
       uploadTestDataToObs(key,data).then(res=>{
