@@ -678,6 +678,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
         <>
           <MediaBar
             disableAlbum={list.length === 1}
+            // 打开文件夹
             albumChange={async e => {
               const mediatype =
                 e.type.search('image') !== -1 ? 'image' : 'video';
@@ -687,9 +688,14 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
                   ? `${fs.dir}/${uuid.v4()}.${filetypes}`
                   : '';
               mediatype === 'image' && (await fs.copyFile(e.uri, copypath));
+              // 将源文件移动
+              const newPath = mediatype === 'image'
+              ? `${fs.dir}/${uuid.v4()}.${filetypes}`
+              : '';
+              mediatype === 'image' && (await fs.copyFile(e.uri, newPath));
               const _file = {
                 mediatype,
-                filepath: e.uri,
+                filepath: newPath,
                 filesize: e.fileSize,
                 copypath,
                 filetypes,
