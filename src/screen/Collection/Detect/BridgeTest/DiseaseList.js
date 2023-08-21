@@ -134,7 +134,7 @@ const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
           {groupList && groupList.length ? (
             <>
             {/* 一级菜单列表 */}
-              <View style={[{width:'20%'}]}>
+              <View style={[{width:'23%'}]}>
                 <FlatList
                   data={groupList}
                   extraData={groupList}
