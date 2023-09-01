@@ -235,48 +235,17 @@ export function DiseaseA({route, navigation}) {
         
         try {
           // console.log('选择的构件区域6', areaName)
-          console.log('构件区域',diseaseData.area);
-          console.log('构件区域列表2',baseData.components);
-          // console.log('选择的构件类型id:', diseaseData.areatype);
-          // console.log('构件区域id',diseaseData.area);
-          // console.log('baseData.components[0].areatype',baseData.components[0].areatype);
-          // console.log('----------------------------------------------------------------');
-
-          // 初始构件类型与选择的构件类型一致时，构件区域取选择的值
-          // 初始构件类型与选择的构件类型不一致时，构件区域默认取第一项
-          // for (let i =0; i < areaparam.length; i ++) {
-          //   if (diseaseData.area == undefined) {
-          //     console.log('areaparam[i]',areaparam[i]);
-          //     diseaseData.area = areaparam[0].value
-          //     handleFormChenge(areaparam[0].value, diseaseData.area)
-          //     setAreaName(areaparam[0].label)
-          //   } else if (diseaseData.area !== undefined) {
-          //     let sliceArea = diseaseData.area.slice(0,6)
-          //     console.log('sliceArea',sliceArea);
-          //     console.log('diseaseData.areatype',diseaseData.areatype);
-          //     if (sliceArea !== diseaseData.areatype) {
-          //       // console.log('构件类型有变化！',diseaseData.areatype, sliceArea);
-          //       for (let k = 0; k < baseData.components.length; k++) {
-          //         if (diseaseData.areatype == baseData.components[k].areatype) {
-          //           console.log('此时的areaname',baseData.components[k].areaname);
-          //           console.log('此时的areatype',baseData.components[k].areatype);
-          //           // console.log('baseData.components[k]',baseData.components[k].areaparamjson.areaparamlist[0].areaparamid);
-          //           diseaseData['areatype'] = baseData.components[k].areatype
-          //           diseaseData['area'] = baseData.components[k].areaparamjson.areaparamlist[0].areaparamid
-          //         }
-          //       }
-          //     }
-          //   }
-          // }
+          // console.log('构件区域',diseaseData.area);
+          // console.log('构件区域列表2',baseData.components);
 
           // 构件类型与构件区域的初始默认值
+          // console.log('构件类型：',diseaseData.areatype);
           baseData.components.forEach((item,index) => {
-            if (!diseaseData.area) {
+            if (!diseaseData.area && diseaseData.area == undefined) {
               if (item.areaname == '板梁') {
                 diseaseData['areatype'] = baseData.components[index].areatype
                 diseaseData['area'] = baseData.components[index].areaparamjson.areaparamlist[1].areaparamid
               }
-              
             }
           })
         } catch (err) {
@@ -11237,6 +11206,19 @@ export function DiseaseG({route, navigation}) {
         }
       } catch (err){
         console.log('err09', err);
+      }
+
+      try {
+        baseData.components.forEach((item,index) => {
+          if (!diseaseData.area && diseaseData.area == undefined) {
+            if (item.areaname == '桥台') {
+              diseaseData['areatype'] = baseData.components[index].areatype
+              diseaseData['area'] = baseData.components[index].areaparamjson.areaparamlist[0].areaparamid
+            }
+          }
+        })
+      } catch (err) {
+        console.log('err081', err);
       }
       
       try {
