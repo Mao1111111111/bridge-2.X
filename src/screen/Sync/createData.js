@@ -766,7 +766,7 @@ export const getData =async (
     }
     //----好构件
     let goodsMember = memberData.filter(
-      ({memberstatus}) => memberstatus === '100',
+      ({memberstatus}) => memberstatus == '100',
     );
     //获取 好构件 的 数据
     let _goodsData = null
@@ -819,7 +819,15 @@ export const getData =async (
       goodMemberMedia.forEach(item=>{
         let index = memberData.findIndex(i=> i.memberid==item.dataid)
         if(index!==-1){
-          memberData[index].goodData[0].media.push(item)
+          if(memberData[index].goodData){
+            if(memberData[index].goodData.length>0){
+              if(memberData[index].goodData[0]){
+                if(memberData[index].goodData[0].media){
+                  memberData[index].goodData[0].media.push(item)
+                }
+              }
+            }
+          }
         }
       })
     }catch(e){
