@@ -323,34 +323,6 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
           })
           setTwoMemberArr(singleList)
         }
-
-
-        // let testArr = [
-        //   [
-        //     {
-        //       "name": "7月",
-        //       "id": 201
-        //     },
-        //     {
-        //       "name": "8月",
-        //       "id": 202
-        //     }
-        //   ],
-        //   [
-        //     {
-        //       "name": "1日",
-        //       "id": 201
-        //     },
-        //     {
-        //       "name": "2日",
-        //       "id": 202
-        //     },
-        //     {
-        //       "name": "3日",
-        //       "id": 2103
-        //     },
-        //   ]
-        // ]
         setTestArr(twoMemberArr)
         // console.log('testArr',testArr);
 
