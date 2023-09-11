@@ -214,16 +214,6 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
       setNowEdit(_list[1]?.mediaid || '');
       setIsInit(false);
     }
-    try {
-      // 进入页面时执行两次向右切换图片，使其达到默认选中第一张图片的目的
-      
-      // setTimeout(() => {
-      //   handleNext2()
-      // }, 1500);
-      // handleNext()
-    } catch (error) {
-      console.log('Media3',error);
-    }
 
     // console.log('图片标题来源defaultFileName',defaultFileName,categoryList[0].label);
     try {
@@ -287,47 +277,124 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
         let two = []
         let twos = []
         let twoMemberArr = []
-        if (memberTitle == '主梁' || memberTitle == '横隔板' || memberTitle == '湿接段'
+        if (memberTitle == '横隔板' || memberTitle == '湿接段'
         || memberTitle == '支座' || memberTitle == '铰缝' || memberTitle == '挂梁'
         || memberTitle == '湿接缝') {
-          // two.push(memberArr[0].list)
-          // setTwoMemberArr(two)
-          // console.log('twoMemberArr',two);
-          memberArr[0].list.forEach((item,index) => {
-            // console.log('item',item);
-            two.push({
-              name:item.name,
-              id:'1' + (index + 1)
-            })
-            item.list.forEach((items,index) => {
-              // console.log('items',items);
-              twos.push({
-                name:items.name,
-                id:items.id
+          // memberArr[0].list.forEach((item,index) => {
+          //   two.push({
+          //     name:item.name,
+          //     id:'1' + (index + 1)
+          //   })
+          //   item.list.forEach((items,index) => {
+          //     twos.push({
+          //       name:items.name,
+          //       id:items.id
+          //     })
+          //   })
+          // })
+          // twoMemberArr[0] = two
+          // twoMemberArr[1] = twos
+          // console.log('twoMemberArrtwoMemberArr99',twoMemberArr);
+          // setTestArr(twoMemberArr)
+
+          let memberArr = []
+            memberList.forEach((index,item) => {
+              memberList[item].list.forEach((index1, item1) => {
+                memberArr.push({
+                
+                    name:index.title,
+                    id:'1'.concat(item + 1),
+                    list:{
+                      name:index1.membername,
+                      id:'1'.concat(item + 1) + ''.concat(item1 + 1)
+                    }
+                })
               })
-            })
-          })
-          // console.log('two',two);
-          // console.log('twos',twos);
-          twoMemberArr[0] = two
-          twoMemberArr[1] = twos
-          // console.log('twoMemberArr',twoMemberArr);
+            });
+              let secList = []
+              let res = []
+              memberArr.forEach((item,index) => {
+                secList.push({
+                  name:item.name,
+                  id:item.id,
+                  list:[]
+                })
+              })
+              memberArr.forEach((item) => {
+                secList.forEach((items) => {
+                  if (items.name == item.name) {
+                    items.list.push({
+                      name:item.list.name,
+                      id:item.list.id
+                    })
+                  }
+                })
+              })
+              res = secList.filter(function(item,index,self){
+                return self.findIndex(el => el.id==item.id) === index
+              })
+              memberArr = res
+              console.log('memberArr',memberArr);
+              setTwoMemberArr(memberArr)
+
+
+
+        } else if (memberTitle == '主梁') {
+            let memberArr = []
+            memberList.forEach((index,item) => {
+              memberList[item].list.forEach((index1, item1) => {
+                memberArr.push({
+                
+                    name:index.title,
+                    id:'1'.concat(item + 1),
+                    list:{
+                      name:index1.membername,
+                      id:'1'.concat(item + 1) + ''.concat(item1 + 1)
+                    }
+                })
+              })
+            });
+              let secList = []
+              let res = []
+              memberArr.forEach((item,index) => {
+                secList.push({
+                  name:item.name,
+                  id:item.id,
+                  list:[]
+                })
+              })
+              memberArr.forEach((item) => {
+                secList.forEach((items) => {
+                  if (items.name == item.name) {
+                    items.list.push({
+                      name:item.list.name,
+                      id:item.list.id
+                    })
+                  }
+                })
+              })
+              res = secList.filter(function(item,index,self){
+                return self.findIndex(el => el.id==item.id) === index
+              })
+              res.forEach((item,index) => {
+                // 部件为主梁时，在第二级列表每一组开头添加当前跨的编号
+                item.list.splice(0,0,{
+                  id:'1'.concat(index + 1) + '0',
+                  name:item.name
+                })
+              })
+              memberArr = res
+              setTestArr(memberArr)
         } else {
           // 下部结构与桥面系
           let singleList = []
           memberArr[0].list.forEach((item) => {
             item.list.forEach((items) => {
-              // console.log(items);
               singleList.push(items)
             })
           })
           setTwoMemberArr(singleList)
         }
-        setTestArr(twoMemberArr)
-        // console.log('testArr',testArr);
-
-
-
     } catch (err) {
       console.log('media ee',err);
     }
@@ -810,9 +877,9 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
                       name="filename"
                       label="标题："
                       onChange={handleChenge}
-                      dataArr={twoMemberArr}
+                      dataArr={twoMemberArr} // 联动
                       memberTitle={memberTitle}
-                      testArr={testArr}
+                      testArr={testArr} // 平级
                       LabelStyle={[{color:'#2b427d',fontSize:15,borderBottomWidth:1,}]}
                     />
                   </TouchableOpacity>
