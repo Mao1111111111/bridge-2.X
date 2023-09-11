@@ -51,6 +51,10 @@ function Provider({children}) {
     testDataUploadEndIds: [],
     //testDataUploadProject: null,
     nowUploadingTestDataInx: -1,
+    // 当前上传的图片总数
+    curUploadImgAllNUm:0,
+    // 当前上传成功的图片数
+    curUploadImgSucNUm:0,
 
     planMeta: [],
     genesisMate: [],
@@ -152,6 +156,14 @@ function Provider({children}) {
     ) {
       return;
     }
+    dispatch({
+      type: 'curUploadImgAllNUm',
+      payload: 0
+    })
+    dispatch({
+      type: 'curUploadImgSucNUm',
+      payload: 0
+    })
     // console.info(
     //   '?',
     //   state.nowUploadingTestDataInx + 1,
@@ -211,6 +223,15 @@ function Provider({children}) {
       } else {
         const upload = async () => {
           try {
+            // 设置当前上传的图片总数
+            dispatch({
+              type: 'curUploadImgAllNUm',
+              payload: 0
+            })
+            dispatch({
+              type: 'curUploadImgSucNUm',
+              payload: 0
+            })
             // 获取数据
             const allData = await createData.getData(
               state.testDataUploadingIds[inx],
@@ -219,11 +240,17 @@ function Provider({children}) {
               state.membercheckdata,
               basememberinfo
             );
+            let successImgNum = 0
             // console.log("allData",JSON.stringify(allData) );
             if(allData.state){
               // 数据整理成功
               const data = allData.data
               const mediaData = allData.mediaData
+              // 设置当前上传的图片总数
+              dispatch({
+                type: 'curUploadImgAllNUm',
+                payload: allData.mediaData.length
+              })
               //---------对检测数据操作
               //---文件夹
               // 文件夹地址，根据 桥id 建立文件夹
@@ -362,7 +389,11 @@ function Provider({children}) {
                       }
                       //---------反馈
                       uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
-                        console.log("res",res);
+                        successImgNum++
+                        dispatch({
+                          type: 'curUploadImgSucNUm',
+                          payload: successImgNum
+                        })
                       }).catch(err=>{
                         let errObj = state.promptFontErr
                         let name = data.testData.projectname + '-' + data.bridgename

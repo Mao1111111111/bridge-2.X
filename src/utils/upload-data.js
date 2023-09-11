@@ -427,7 +427,6 @@ export const syncCreateCheckStatusMediaToObs = (objects, access_token) =>
 export const upload = (file, filename, access_token) =>
   new Promise(async (resolve, reject) => {
     const url = [host, '/api/v1/upload/'];
-    console.info('文件上传');
     RNFetchBlob.fetch(
       'POST',
       url.join(''),
