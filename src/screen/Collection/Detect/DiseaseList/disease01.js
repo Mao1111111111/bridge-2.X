@@ -202,6 +202,9 @@ export function DiseaseA({route, navigation}) {
           // console.log('navigation',navigation);
           // console.log('route.params.thridData',route.params.thridData);
           // console.log('baseData.membercheckdata',baseData.membercheckdata);
+          if (route.params.mediaType == 'edit') {
+            setInfoList(route.params.data.jsondata.infoList)
+          }
           if (baseData.membercheckdata) {
             console.log('保存baseData数据');
             setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
@@ -218,6 +221,10 @@ export function DiseaseA({route, navigation}) {
               })
             })
             setInfoList(infoList)
+            if (!diseaseData.infoList) {
+              diseaseData['infoList'] = infoList
+              handleFormChenge(infoList, diseaseData.infoList)
+            }
           } else if (!baseData.membercheckdata) {
             console.log('读取baseData数据');
             getBaseDataStorage('baseData')
@@ -1597,19 +1604,19 @@ export function DiseaseA({route, navigation}) {
             console.log('diseaseData.area为空');
             // 墩/台描述
             // 长度描述
-            if (lengthText == '0' || lengthText == '0.0') {
+            if (lengthText == '0' || lengthText == '0.00') {
               var lengthNum = ''
               setLengthNum(lengthNum)
-            } else if (lengthText !== '0' || lengthText !== '0.0') {
+            } else if (lengthText !== '0' || lengthText !== '0.00') {
               var lengthNum = lengthText + 'm'
               setLengthNum(lengthNum)
             }
             
             // 宽度描述
-            if (widthText == '0' || widthText == '0.0') {
+            if (widthText == '0' || widthText == '0.00') {
               var widthNum = ''
               setWidthNum(widthNum)
-            } else if (widthText !== '0' || widthText !== '0.0') {
+            } else if (widthText !== '0' || widthText !== '0.00') {
               if (lengthNum == '') {
                 var widthNum = '距左侧' + widthText + 'm'
                 setWidthNum(widthNum)
@@ -1621,10 +1628,10 @@ export function DiseaseA({route, navigation}) {
 
             console.log('diseaseData.lengthNum',lengthNum,widthNum,heightNum);
             // 距顶描述
-            if (heightText == '0' || heightText == '0.0') {
+            if (heightText == '0' || heightText == '0.00') {
               var heightNum = ''
               setHeightNum(heightNum)
-            } else if (heightText !== '0' || heightText !== '0.0') {
+            } else if (heightText !== '0' || heightText !== '0.00') {
               // if (lengthNum == '' || lengthNum == undefined && pier == '' && widthNum == '' || widthNum == undefined) {
               //   var heightNum = '距顶' + heightText + 'm'
               //   setHeightNum(heightNum)
@@ -1700,19 +1707,19 @@ export function DiseaseA({route, navigation}) {
             
             // 墩/台描述
             // 长度描述
-            if (lengthText == '0' || lengthText == '0.0') {
+            if (lengthText == '0' || lengthText == '0.00') {
               var lengthNum = ''
               setLengthNum(lengthNum)
-            } else if (lengthText !== '0' || lengthText !== '0.0') {
+            } else if (lengthText !== '0' || lengthText !== '0.00') {
               var lengthNum = lengthText + 'm'
               setLengthNum(lengthNum)
             }
             
             // 宽度描述
-            if (widthText == '0' || widthText == '0.0') {
+            if (widthText == '0' || widthText == '0.00') {
               var widthNum = ''
               setWidthNum(widthNum)
-            } else if (widthText !== '0' || widthText !== '0.0') {
+            } else if (widthText !== '0' || widthText !== '0.00') {
               if (lengthNum == '') {
                 var widthNum = '距左侧' + widthText + 'm'
                 setWidthNum(widthNum)
@@ -1723,10 +1730,10 @@ export function DiseaseA({route, navigation}) {
             }
 
             // 距顶描述
-            if (heightText == '0' || heightText == '0.0') {
+            if (heightText == '0' || heightText == '0.00') {
               var heightNum = ''
               setHeightNum(heightNum)
-            } else if (heightText !== '0' || heightText !== '0.0') {
+            } else if (heightText !== '0' || heightText !== '0.00') {
               if (lengthNum !== '' || widthNum !== '') {
                 var heightNum = ',距顶部' + heightText + 'm'
                 setHeightNum(heightNum)
@@ -2200,7 +2207,9 @@ export function DiseaseB({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-
+        if (route.params.mediaType == 'edit') {
+          setInfoList(route.params.data.jsondata.infoList)
+        }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
@@ -2217,6 +2226,10 @@ export function DiseaseB({route, navigation}) {
             })
           })
           setInfoList(infoList)
+          if (!diseaseData.infoList) {
+            diseaseData['infoList'] = infoList
+            handleFormChenge(infoList, diseaseData.infoList)
+          }
         } else if (!baseData.membercheckdata) {
           console.log('读取baseData数据');
           getBaseDataStorage('baseData')
@@ -4032,7 +4045,9 @@ export function DiseaseC({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-
+        if (route.params.mediaType == 'edit') {
+          setInfoList(route.params.data.jsondata.infoList)
+        }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
@@ -4049,6 +4064,10 @@ export function DiseaseC({route, navigation}) {
             })
           })
           setInfoList(infoList)
+          if (!diseaseData.infoList) {
+            diseaseData['infoList'] = infoList
+            handleFormChenge(infoList, diseaseData.infoList)
+          }
         } else if (!baseData.membercheckdata) {
           console.log('读取baseData数据');
           getBaseDataStorage('baseData')
@@ -5264,21 +5283,21 @@ export function DiseaseC({route, navigation}) {
           console.log('diseaseData.area为空');
           // 墩/台描述
           // 长度描述
-          if (lengthText == '0' || lengthText == '0.0') {
+          if (lengthText == '0' || lengthText == '0.00') {
             var lengthNum = ''
             setLengthNum(lengthNum)
             // let pier = ''
             // setPier(pier)
-          } else if (lengthText !== '0' || lengthText !== '0.0') {
+          } else if (lengthText !== '0' || lengthText !== '0.00') {
             var lengthNum = lengthText + 'm'
             setLengthNum(lengthNum)
           }
           
           // 宽度描述
-          if (widthText == '0' || widthText == '0.0') {
+          if (widthText == '0' || widthText == '0.00') {
             var widthNum = ''
             setWidthNum(widthNum)
-          } else if (widthText !== '0' || widthText !== '0.0') {
+          } else if (widthText !== '0' || widthText !== '0.00') {
             if (lengthNum == '') {
               var widthNum = '距左侧' + widthText + 'm'
               setWidthNum(widthNum)
@@ -5289,10 +5308,10 @@ export function DiseaseC({route, navigation}) {
           }
 
           // 距顶描述
-          // if (heightText == '0' || heightText == '0.0') {
+          // if (heightText == '0' || heightText == '0.00') {
           //   var heightNum = ''
           //   setHeightNum(heightNum)
-          // } else if (heightText !== '0' || heightText !== '0.0') {
+          // } else if (heightText !== '0' || heightText !== '0.00') {
           //   var heightNum = ',距顶' + heightText + 'm'
           //   setHeightNum(heightNum)
           // }
@@ -5355,19 +5374,19 @@ export function DiseaseC({route, navigation}) {
             
             // 墩/台描述
             // 长度描述
-            if (lengthText == '0' || lengthText == '0.0') {
+            if (lengthText == '0' || lengthText == '0.00') {
               var lengthNum = ''
               setLengthNum(lengthNum)
-            } else if (lengthText !== '0' || lengthText !== '0.0') {
+            } else if (lengthText !== '0' || lengthText !== '0.00') {
               var lengthNum = lengthText + 'm'
               setLengthNum(lengthNum)
             }
             
             // 宽度描述
-            if (widthText == '0' || widthText == '0.0') {
+            if (widthText == '0' || widthText == '0.00') {
               var widthNum = ''
               setWidthNum(widthNum)
-            } else if (widthText !== '0' || widthText !== '0.0') {
+            } else if (widthText !== '0' || widthText !== '0.00') {
               if (lengthNum == '') {
                 var widthNum = '距左侧' + widthText + 'm'
                 setWidthNum(widthNum)
@@ -5378,10 +5397,10 @@ export function DiseaseC({route, navigation}) {
             }
 
             // 距顶描述
-            // if (heightText == '0' || heightText == '0.0') {
+            // if (heightText == '0' || heightText == '0.00') {
             //   var heightNum = ''
             //   setHeightNum(heightNum)
-            // } else if (heightText !== '0' || heightText !== '0.0') {
+            // } else if (heightText !== '0' || heightText !== '0.00') {
             //   var heightNum = ',距顶' + heightText + 'm'
             //   setHeightNum(heightNum)
             // }
@@ -5867,7 +5886,9 @@ export function DiseaseD({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-
+        if (route.params.mediaType == 'edit') {
+          setInfoList(route.params.data.jsondata.infoList)
+        }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
@@ -5884,6 +5905,10 @@ export function DiseaseD({route, navigation}) {
             })
           })
           setInfoList(infoList)
+          if (!diseaseData.infoList) {
+            diseaseData['infoList'] = infoList
+            handleFormChenge(infoList, diseaseData.infoList)
+          }
         } else if (!baseData.membercheckdata) {
           console.log('读取baseData数据');
           getBaseDataStorage('baseData')
@@ -7564,7 +7589,9 @@ export function DiseaseE({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-
+        if (route.params.mediaType == 'edit') {
+          setInfoList(route.params.data.jsondata.infoList)
+        }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
@@ -7581,6 +7608,10 @@ export function DiseaseE({route, navigation}) {
             })
           })
           setInfoList(infoList)
+          if (!diseaseData.infoList) {
+            diseaseData['infoList'] = infoList
+            handleFormChenge(infoList, diseaseData.infoList)
+          }
         } else if (!baseData.membercheckdata) {
           console.log('读取baseData数据');
           getBaseDataStorage('baseData')
@@ -9279,7 +9310,9 @@ export function DiseaseK({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-
+        if (route.params.mediaType == 'edit') {
+          setInfoList(route.params.data.jsondata.infoList)
+        }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
@@ -9296,6 +9329,10 @@ export function DiseaseK({route, navigation}) {
             })
           })
           setInfoList(infoList)
+          if (!diseaseData.infoList) {
+            diseaseData['infoList'] = infoList
+            handleFormChenge(infoList, diseaseData.infoList)
+          }
         } else if (!baseData.membercheckdata) {
           console.log('读取baseData数据');
           getBaseDataStorage('baseData')
@@ -10604,21 +10641,21 @@ export function DiseaseK({route, navigation}) {
             console.log('diseaseData.area为空');
             // 墩/台描述
             // 长度描述
-            if (lengthText == '0' || lengthText == '0.0') {
+            if (lengthText == '0' || lengthText == '0.00') {
               var lengthNum = ''
               setLengthNum(lengthNum)
               // let pier = ''
               // setPier(pier)
-            } else if (lengthText !== '0' || lengthText !== '0.0') {
+            } else if (lengthText !== '0' || lengthText !== '0.00') {
               var lengthNum = lengthText + 'm'
               setLengthNum(lengthNum)
             }
             
             // 宽度描述
-            if (widthText == '0' || widthText == '0.0') {
+            if (widthText == '0' || widthText == '0.00') {
               var widthNum = ''
               setWidthNum(widthNum)
-            } else if (widthText !== '0' || widthText !== '0.0') {
+            } else if (widthText !== '0' || widthText !== '0.00') {
               if (lengthNum == '') {
                 var widthNum = '距左侧' + widthText + 'm'
                 setWidthNum(widthNum)
@@ -10629,10 +10666,10 @@ export function DiseaseK({route, navigation}) {
             }
 
             // 距顶描述
-            // if (heightText == '0' || heightText == '0.0') {
+            // if (heightText == '0' || heightText == '0.00') {
             //   var heightNum = ''
             //   setHeightNum(heightNum)
-            // } else if (heightText !== '0' || heightText !== '0.0') {
+            // } else if (heightText !== '0' || heightText !== '0.00') {
             //   var heightNum = ',距顶' + heightText + 'm'
             //   setHeightNum(heightNum)
             // }
@@ -10695,19 +10732,19 @@ export function DiseaseK({route, navigation}) {
             
             // 墩/台描述
             // 长度描述
-            if (lengthText == '0' || lengthText == '0.0') {
+            if (lengthText == '0' || lengthText == '0.00') {
               var lengthNum = ''
               setLengthNum(lengthNum)
-            } else if (lengthText !== '0' || lengthText !== '0.0') {
+            } else if (lengthText !== '0' || lengthText !== '0.00') {
               var lengthNum = lengthText + 'm'
               setLengthNum(lengthNum)
             }
             
             // 宽度描述
-            if (widthText == '0' || widthText == '0.0') {
+            if (widthText == '0' || widthText == '0.00') {
               var widthNum = ''
               setWidthNum(widthNum)
-            } else if (widthText !== '0' || widthText !== '0.0') {
+            } else if (widthText !== '0' || widthText !== '0.00') {
               if (lengthNum == '') {
                 var widthNum = '距左侧' + widthText + 'm'
                 setWidthNum(widthNum)
@@ -10718,10 +10755,10 @@ export function DiseaseK({route, navigation}) {
             }
 
             // 距顶描述
-            // if (heightText == '0' || heightText == '0.0') {
+            // if (heightText == '0' || heightText == '0.00') {
             //   var heightNum = ''
             //   setHeightNum(heightNum)
-            // } else if (heightText !== '0' || heightText !== '0.0') {
+            // } else if (heightText !== '0' || heightText !== '0.00') {
             //   var heightNum = ',距顶' + heightText + 'm'
             //   setHeightNum(heightNum)
             // }
@@ -11177,7 +11214,9 @@ export function DiseaseG({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-
+        if (route.params.mediaType == 'edit') {
+          setInfoList(route.params.data.jsondata.infoList)
+        }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
@@ -11194,6 +11233,10 @@ export function DiseaseG({route, navigation}) {
             })
           })
           setInfoList(infoList)
+          if (!diseaseData.infoList) {
+            diseaseData['infoList'] = infoList
+            handleFormChenge(infoList, diseaseData.infoList)
+          }
         } else if (!baseData.membercheckdata) {
           console.log('读取baseData数据');
           getBaseDataStorage('baseData')
@@ -12515,19 +12558,19 @@ export function DiseaseG({route, navigation}) {
           console.log('diseaseData.area为空');
 
           // 宽度描述
-          if (widthText == '0' || widthText == '0.0') {
+          if (widthText == '0' || widthText == '0.00') {
             var widthNum = ''
             setWidthNum(widthNum)
-          } else if (widthText !== '0' || widthText !== '0.0') {
+          } else if (widthText !== '0' || widthText !== '0.00') {
             var widthNum = '距左侧' + widthText + 'm'
             setWidthNum(widthNum)
           }
 
           // 距顶描述
-          if (heightText == '0' || heightText == '0.0') {
+          if (heightText == '0' || heightText == '0.00') {
             var heightNum = ''
             setHeightNum(heightNum)
-          } else if (heightText !== '0' || heightText !== '0.0') {
+          } else if (heightText !== '0' || heightText !== '0.00') {
             if (widthNum == '') {
               var heightNum = '距顶部' + heightText + 'm'
               setHeightNum(heightNum)
@@ -12602,19 +12645,19 @@ export function DiseaseG({route, navigation}) {
           // }
           
           // 宽度描述
-          if (widthText == '0' || widthText == '0.0') {
+          if (widthText == '0' || widthText == '0.00') {
             var widthNum = ''
             setWidthNum(widthNum)
-          } else if (widthText !== '0' || widthText !== '0.0') {
+          } else if (widthText !== '0' || widthText !== '0.00') {
             var widthNum = '距左侧' + widthText + 'm'
             setWidthNum(widthNum)
           }
 
           // 距顶描述
-          if (heightText == '0' || heightText == '0.0') {
+          if (heightText == '0' || heightText == '0.00') {
             var heightNum = ''
             setHeightNum(heightNum)
-          } else if (heightText !== '0' || heightText !== '0.0') {
+          } else if (heightText !== '0' || heightText !== '0.00') {
             if (widthNum == '') {
               var heightNum = '距顶部' + heightText + 'm'
               setHeightNum(heightNum)
@@ -13077,7 +13120,9 @@ export function DiseaseH({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-
+        if (route.params.mediaType == 'edit') {
+          setInfoList(route.params.data.jsondata.infoList)
+        }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
@@ -13094,6 +13139,10 @@ export function DiseaseH({route, navigation}) {
             })
           })
           setInfoList(infoList)
+          if (!diseaseData.infoList) {
+            diseaseData['infoList'] = infoList
+            handleFormChenge(infoList, diseaseData.infoList)
+          }
         } else if (!baseData.membercheckdata) {
           console.log('读取baseData数据');
           getBaseDataStorage('baseData')
@@ -14401,19 +14450,19 @@ export function DiseaseH({route, navigation}) {
           console.log('diseaseData.area为空');
 
           // 左侧描述
-          if (lengthText == '0' || lengthText == '0.0') {
+          if (lengthText == '0' || lengthText == '0.00') {
             var lengthNum = ''
             setLengthNum(lengthNum)
-          } else if (lengthText !== '0' || lengthText !== '0.0') {
+          } else if (lengthText !== '0' || lengthText !== '0.00') {
             var lengthNum = '距左侧' + lengthText + 'm'
             setLengthNum(lengthNum)
           }
 
           // 距顶描述
-          if (heightText == '0' || heightText == '0.0') {
+          if (heightText == '0' || heightText == '0.00') {
             var heightNum = ''
             setHeightNum(heightNum)
-          } else if (heightText !== '0' || heightText !== '0.0') {
+          } else if (heightText !== '0' || heightText !== '0.00') {
             if (lengthNum == '') {
               var heightNum = '距顶部' + heightText + 'm'
               setHeightNum(heightNum)
@@ -14477,12 +14526,12 @@ export function DiseaseH({route, navigation}) {
           
           // 墩/台描述
           // 长度描述
-          if (lengthText == '0' || lengthText == '0.0') {
+          if (lengthText == '0' || lengthText == '0.00') {
             var lengthNum = ''
             setLengthNum(lengthNum)
             // let pier = ''
             // setPier(pier)
-          } else if (lengthText !== '0' || lengthText !== '0.0') {
+          } else if (lengthText !== '0' || lengthText !== '0.00') {
             var lengthNum = '距左侧' + lengthText + 'm'
             setLengthNum(lengthNum)
           }
@@ -14497,10 +14546,10 @@ export function DiseaseH({route, navigation}) {
           // }
 
           // 距顶描述
-          if (heightText == '0' || heightText == '0.0') {
+          if (heightText == '0' || heightText == '0.00') {
             var heightNum = ''
             setHeightNum(heightNum)
-          } else if (heightText !== '0' || heightText !== '0.0') {
+          } else if (heightText !== '0' || heightText !== '0.00') {
             if (lengthNum == '') {
               var heightNum = '距顶部' + heightText + 'm'
               setHeightNum(heightNum)

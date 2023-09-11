@@ -447,7 +447,7 @@ export const WriteInputSlide = React.forwardRef(function (
       <Modals isVisible={pickerVisible}>
         {
           memberTitle == '主梁' ? (
-            <ParallelPicker
+            <CascadePicker
               dataSource={testArr}
               cancel={this.cancel}
               confirm={this.confirm}
@@ -470,26 +470,26 @@ export const WriteInputSlide = React.forwardRef(function (
             />
           ) : (
             <CascadePicker 
-          dataSource={dataArr}
-          cancel={this.cancel}
-          confirm={this.confirm}
-          headOptions={{
-            confirmText:'确认',
-            cancelText:'取消',
-            backgroundColor:'#eeeeee',
-            confirmStyle:{
-              color:'#2b427d',
-              fontSize:16
-            },
-            cancelStyle:{
-              color:'#2b427d',
-              fontSize:16
-            },
-          }}
-          pickerStyle={{
-            activeFontColor:'#2b427d'
-          }}
-        />
+              dataSource={dataArr}
+              cancel={this.cancel}
+              confirm={this.confirm}
+              headOptions={{
+                confirmText:'确认',
+                cancelText:'取消',
+                backgroundColor:'#eeeeee',
+                confirmStyle:{
+                  color:'#2b427d',
+                  fontSize:16
+                },
+                cancelStyle:{
+                  color:'#2b427d',
+                  fontSize:16
+                },
+              }}
+              pickerStyle={{
+                activeFontColor:'#2b427d'
+              }}
+            />
           )
         }
       </Modals>
