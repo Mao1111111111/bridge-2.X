@@ -280,23 +280,6 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
         if (memberTitle == '横隔板' || memberTitle == '湿接段'
         || memberTitle == '支座' || memberTitle == '铰缝' || memberTitle == '挂梁'
         || memberTitle == '湿接缝') {
-          // memberArr[0].list.forEach((item,index) => {
-          //   two.push({
-          //     name:item.name,
-          //     id:'1' + (index + 1)
-          //   })
-          //   item.list.forEach((items,index) => {
-          //     twos.push({
-          //       name:items.name,
-          //       id:items.id
-          //     })
-          //   })
-          // })
-          // twoMemberArr[0] = two
-          // twoMemberArr[1] = twos
-          // console.log('twoMemberArrtwoMemberArr99',twoMemberArr);
-          // setTestArr(twoMemberArr)
-
           let memberArr = []
             memberList.forEach((index,item) => {
               memberList[item].list.forEach((index1, item1) => {
@@ -334,7 +317,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
                 return self.findIndex(el => el.id==item.id) === index
               })
               memberArr = res
-              console.log('memberArr',memberArr);
+              // console.log('memberArr',memberArr);
               setTwoMemberArr(memberArr)
 
 
