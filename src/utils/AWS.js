@@ -4,9 +4,9 @@
 //AWS配置
 import { BaseAWSConfig } from '../assets/AWSConfig'
 //引入亚马逊的sdk，用于调用紫光云的api
-var AWS = require('aws-sdk/dist/aws-sdk-react-native')
+// var AWS = require('aws-sdk/dist/aws-sdk-react-native')
+import AWS from 'aws-sdk';
 
-//s3对象
 const s3 = new AWS.S3({
     accessKeyId: BaseAWSConfig.accessKeyId ,
     secretAccessKey: BaseAWSConfig.secretAccessKey ,
@@ -23,7 +23,7 @@ export const S3Upload = (bucketParams) => {
                 if(err){
                     reject(err)
                 }else{
-                    resolve(result);
+                    resolve(data);
                 }
             })
         })
@@ -32,24 +32,16 @@ export const S3Upload = (bucketParams) => {
     }
 }
 
-//获取桶中图片数量
+// 获取桶中图片数量
 export const S3GetNumofBucket = (params) => {
     try{
         return new Promise((resolve, reject) => {
             //var params = {Bucket: 'luxian2022'};
             s3.listObjects(params,function(err,data){
                 if(err){
-                    let res = {
-                        state:false,
-                        err:err
-                    }
-                    resolve(res)
+                    reject(err)
                 }else{
-                    let res = {
-                        state:true,
-                        num:data.Contents.length
-                    }
-                    resolve(res)
+                    resolve(result);
                 }
             })
         })

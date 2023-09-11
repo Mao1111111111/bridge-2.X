@@ -553,7 +553,7 @@ new Promise(async (resolve, reject) => {
   //上传到云后，反馈到后端
   export const syncUploadToAWSAfterFeedback = (params) =>
   new Promise((resolve, reject) => {
-      fetch('http://server1.api.jianlide.cn:5002/api/obs/object-upload-notify', {
+      fetch('http://106.3.97.61:15002/api/obs/object-upload-notify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
