@@ -16,6 +16,8 @@ export default function Camera({onChange, type, disabled}) {
       const res = await launchCamera({
         mediaType: type,
         videoQuality: 'high',
+        maxWidth:2080,
+        maxHeight:1560
       });
       if (!res.assets[0]) {
         return;
