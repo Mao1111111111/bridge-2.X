@@ -11,7 +11,12 @@ import {Context as GlobalContext} from '../../providers/GlobalProvider';
 import {alert} from '../../utils/alert';
 import storage from '../../utils/storage';
 import * as createData from './createData';
-import { BucketName_storeTestData } from '../../assets/OBSConfig';
+import { BucketName_storeTestData } from '../../assets/uploadConfig/OBSConfig';
+//AWS配置
+import { AWSBucket } from '../../assets/uploadConfig/AWSConfig'
+// 上传配置
+import { UploadObjectStorageName } from '../../assets/uploadConfig/UploadConfig';
+
 import fs from '../../utils/fs'
 import RNFS from 'react-native-fs';
 import DeviceInfo from 'react-native-device-info';
@@ -280,7 +285,7 @@ function Provider({children}) {
               date.getMinutes() + ':' + 
               date.getSeconds()
               
-              //---------存储到华为云的键值
+              //---------键值
               // 企业编号/用户编号/桥梁编号/桥梁检测编号/对象文件编号
               let ObsReportDataKey = userInfo.company.companyid + '/'
                           + data.testData.userid + '/'
@@ -316,12 +321,34 @@ function Provider({children}) {
               let testDataUploadSuccess = true
               // 媒体数据上传成功 标志位
               let mediaDataUploadSuccess = true
-              //---------上传检测数据到云
-              await uploadData.syncUploadTestDataToObs(ObsReportDataKey,JSON.stringify(data)).then(async res=>{
-                let newFeedbackParams = feedbackParams
-                newFeedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
-                //---------反馈
-                await uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+
+              // 判断是上传到华为云 还是 上传到紫光云
+              if(UploadObjectStorageName=='OBS'){
+                // 上传到华为云
+                feedbackParams.bucketname = BucketName_storeTestData
+                // 上传检测数据到云
+                await uploadData.syncUploadTestDataToObs(ObsReportDataKey,JSON.stringify(data)).then(async res=>{
+                  let newFeedbackParams = feedbackParams
+                  newFeedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
+                  //---------反馈
+                  await uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+                  }).catch(err=>{
+                    let errObj = state.promptFontErr
+                    let name = data.testData.projectname + '-' + data.bridgename
+                    if(errObj[name]){
+                      errObj[name]['testDataFont'] = err
+                    }else{
+                      errObj[name] = {
+                        testDataFont:err
+                      }
+                    }
+                    dispatch({
+                      type: 'promptFontErr',
+                      payload: errObj
+                    })
+                    // 测试数据上传成功 标志位
+                    testDataUploadSuccess = false
+                  })
                 }).catch(err=>{
                   let errObj = state.promptFontErr
                   let name = data.testData.projectname + '-' + data.bridgename
@@ -339,105 +366,135 @@ function Provider({children}) {
                   // 测试数据上传成功 标志位
                   testDataUploadSuccess = false
                 })
-              }).catch(err=>{
-                let errObj = state.promptFontErr
-                let name = data.testData.projectname + '-' + data.bridgename
-                if(errObj[name]){
-                  errObj[name]['testDataFont'] = err
-                }else{
-                  errObj[name] = {
-                    testDataFont:err
-                  }
-                }
-                dispatch({
-                  type: 'promptFontErr',
-                  payload: errObj
-                })
-                // 测试数据上传成功 标志位
-                testDataUploadSuccess = false
-              })
-
-              //---------上传媒体数据到云
-              await Promise.all(
-                mediaData
-                  .filter(({filepath}) => filepath)
-                  .map(async item => {
-                    //将文件地址分割获取文件名
-                    let arr = item.appliedPath.split('/')
-                    //拼接key
-                    let key = userInfo.company.companyid + '/'
-                      + data.testData.userid + '/'
-                      + data.bridgeid + '/'
-                      + data.testData.bridgereportid + '/'
-                      + arr[arr.length-1].replace("jpg","jpeg")
-                    return await uploadData.uploadImageToObs(key,item.appliedPath).then(res=>{
-                      //设置反馈参数
-                      let newFeedbackParams = {
-                        ...feedbackParams,
-                        objectkey:key,
-                        objecttype:'img',
-                        objectsize:item.filesize,
-                        objectinfo:{
-                          ...feedbackParams.objectinfo,
-                          filenameuser:item.filename + '.' + item.filetypes.replace("jpg","jpeg"),
-                          filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
-                          filesize:Math.floor(item.filesize/1024*100)/100,
-                          filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
-                          filemd5:(res.InterfaceResult.ETag.replace("\"","")).replace("\"",""),
-                          createtime:item.u_date
+                // 上传媒体数据到云
+                await Promise.all(
+                  mediaData
+                    .filter(({filepath}) => filepath)
+                    .map(async item => {
+                      //将文件地址分割获取文件名
+                      let arr = item.appliedPath.split('/')
+                      //拼接key
+                      let key = userInfo.company.companyid + '/'
+                        + data.testData.userid + '/'
+                        + data.bridgeid + '/'
+                        + data.testData.bridgereportid + '/'
+                        + arr[arr.length-1].replace("jpg","jpeg")
+                      return await uploadData.uploadImageToObs(key,item.appliedPath).then(res=>{
+                        //设置反馈参数
+                        let newFeedbackParams = {
+                          ...feedbackParams,
+                          objectkey:key,
+                          objecttype:'img',
+                          objectsize:item.filesize,
+                          objectinfo:{
+                            ...feedbackParams.objectinfo,
+                            filenameuser:item.filename + '.' + item.filetypes.replace("jpg","jpeg"),
+                            filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
+                            filesize:Math.floor(item.filesize/1024*100)/100,
+                            filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
+                            filemd5:(res.InterfaceResult.ETag.replace("\"","")).replace("\"",""),
+                            createtime:item.u_date
+                          }
                         }
-                      }
-                      //---------反馈
-                      uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
-                        successImgNum++
-                        dispatch({
-                          type: 'curUploadImgSucNUm',
-                          payload: successImgNum
+                        //---------反馈
+                        uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+                          successImgNum++
+                          dispatch({
+                            type: 'curUploadImgSucNUm',
+                            payload: successImgNum
+                          })
+                        }).catch(err=>{
+                          let errObj = state.promptFontErr
+                          let name = data.testData.projectname + '-' + data.bridgename
+                          if(errObj[name]){
+                            if(errObj[name]['mediaDataFont']){
+                              errObj[name]['mediaDataFont'].push(err)
+                            }else{
+                              errObj[name]['mediaDataFont'] = [err]
+                            }
+                          }else{
+                            errObj[name] = {
+                              mediaDataFont:[err]
+                            }
+                          }
+                          dispatch({
+                            type: 'promptFontErr',
+                            payload: errObj
+                          })
+                          // 媒体数据上传成功 标志位
+                          mediaDataUploadSuccess = false
                         })
                       }).catch(err=>{
-                        let errObj = state.promptFontErr
-                        let name = data.testData.projectname + '-' + data.bridgename
-                        if(errObj[name]){
-                          if(errObj[name]['mediaDataFont']){
-                            errObj[name]['mediaDataFont'].push(err)
+                          let errObj = state.promptFontErr
+                          let name = data.testData.projectname + '-' + data.bridgename
+                          if(errObj[name]){
+                            if(errObj[name]['mediaDataFont']){
+                              errObj[name]['mediaDataFont'].push(err)
+                            }else{
+                              errObj[name]['mediaDataFont'] = [err]
+                            }
                           }else{
-                            errObj[name]['mediaDataFont'] = [err]
+                            errObj[name] = {
+                              mediaDataFont:[err]
+                            }
                           }
-                        }else{
-                          errObj[name] = {
-                            mediaDataFont:[err]
-                          }
-                        }
-                        dispatch({
-                          type: 'promptFontErr',
-                          payload: errObj
-                        })
-                        // 媒体数据上传成功 标志位
-                        mediaDataUploadSuccess = false
+                          dispatch({
+                            type: 'promptFontErr',
+                            payload: errObj
+                          })
+                          // 媒体数据上传成功 标志位
+                          mediaDataUploadSuccess = false
                       })
-                    }).catch(err=>{
-                        let errObj = state.promptFontErr
-                        let name = data.testData.projectname + '-' + data.bridgename
-                        if(errObj[name]){
-                          if(errObj[name]['mediaDataFont']){
-                            errObj[name]['mediaDataFont'].push(err)
-                          }else{
-                            errObj[name]['mediaDataFont'] = [err]
-                          }
-                        }else{
-                          errObj[name] = {
-                            mediaDataFont:[err]
-                          }
-                        }
-                        dispatch({
-                          type: 'promptFontErr',
-                          payload: errObj
-                        })
-                        // 媒体数据上传成功 标志位
-                        mediaDataUploadSuccess = false
+                    }),
+                );
+              }else{
+                // 上传到紫光云
+                feedbackParams.bucketname = AWSBucket.defaultBucket
+                // 上传检测数据到云
+                await uploadData.syncUploadTestDataToAWS(ObsReportDataKey,JSON.stringify(data)).then(async res=>{
+                  let newFeedbackParams = feedbackParams
+                  newFeedbackParams.objectinfo.filemd5 = (res.ETag.replace("\"","")).replace("\"","")
+                  //---------反馈
+                  await uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(res=>{
+                  }).catch(err=>{
+                    let errObj = state.promptFontErr
+                    let name = data.testData.projectname + '-' + data.bridgename
+                    if(errObj[name]){
+                      errObj[name]['testDataFont'] = err
+                    }else{
+                      errObj[name] = {
+                        testDataFont:err
+                      }
+                    }
+                    dispatch({
+                      type: 'promptFontErr',
+                      payload: errObj
                     })
-                  }),
-              );
+                    // 测试数据上传成功 标志位
+                    testDataUploadSuccess = false
+                  })
+                }).catch(err=>{
+                  console.log("err",err);
+                  let errObj = state.promptFontErr
+                  let name = data.testData.projectname + '-' + data.bridgename
+                  if(errObj[name]){
+                    errObj[name]['testDataFont'] = err
+                  }else{
+                    errObj[name] = {
+                      testDataFont:err
+                    }
+                  }
+                  dispatch({
+                    type: 'promptFontErr',
+                    payload: errObj
+                  })
+                  // 测试数据上传成功 标志位
+                  testDataUploadSuccess = false
+                })
+                // 上传媒体数据到云
+                await uploadImgSingle(0,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch)
+              }
+             
               // 判断是否上传成功
               if(testDataUploadSuccess&&mediaDataUploadSuccess){
                 // 上传状态
@@ -484,6 +541,10 @@ function Provider({children}) {
               type: 'testDataUploadEndIds',
               payload: state.testDataUploadingIds?.slice(0, inx + 1),
             });
+
+
+
+
             //---------将数据标记为已上传
             // 上传状态记录表
            /*  await uploadStateRecord.update({
@@ -625,6 +686,93 @@ function Provider({children}) {
   return (
     <Context.Provider value={{state, dispatch}}>{children}</Context.Provider>
   );
+}
+
+// 递归上传
+const uploadImgSingle =async (index,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch) => {
+  //将文件地址分割获取文件名
+  let arr = mediaData[index].appliedPath.split('/')
+  //拼接key
+  let key = userInfo.company.companyid + '/'
+    + data.testData.userid + '/'
+    + data.bridgeid + '/'
+    + data.testData.bridgereportid + '/'
+    + arr[arr.length-1].replace("jpg","jpeg")
+  await uploadData.uploadImageToAWS(key,mediaData[index].appliedPath).then(async res=>{
+    successImgNum++
+    dispatch({
+      type: 'curUploadImgSucNUm',
+      payload: successImgNum
+    })
+    //设置反馈参数
+    let newFeedbackParams = {
+      ...feedbackParams,
+      objectkey:key,
+      objecttype:'img',
+      objectsize:mediaData[index].filesize,
+      objectinfo:{
+        ...feedbackParams.objectinfo,
+        filenameuser:mediaData[index].filename + '.' + mediaData[index].filetypes.replace("jpg","jpeg"),
+        filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
+        filesize:Math.floor(mediaData[index].filesize/1024*100)/100,
+        filetypes:'.' + mediaData[index].filetypes.replace("jpg","jpeg"),
+        filemd5:(res.ETag.replace("\"","")).replace("\"",""),
+        createtime:mediaData[index].u_date
+      }
+    }
+    //---------反馈
+    await uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(async res=>{
+      if((index+1)<mediaData.length){
+        await uploadImgSingle(index+1,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch)
+      }
+    }).catch(async err=>{
+      if((index+1)<mediaData.length){
+        await uploadImgSingle(index+1,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch)
+      }
+      let errObj = state.promptFontErr
+      let name = data.testData.projectname + '-' + data.bridgename
+      if(errObj[name]){
+        if(errObj[name]['mediaDataFont']){
+          errObj[name]['mediaDataFont'].push(err)
+        }else{
+          errObj[name]['mediaDataFont'] = [err]
+        }
+      }else{
+        errObj[name] = {
+          mediaDataFont:[err]
+        }
+      }
+      dispatch({
+        type: 'promptFontErr',
+        payload: errObj
+      })
+      // 媒体数据上传成功 标志位
+      mediaDataUploadSuccess = false
+    })
+  }).catch(async err=>{
+    if(index+1<mediaData.length){
+      await uploadImgSingle(index+1,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch)
+    }
+      let errObj = state.promptFontErr
+      let name = data.testData.projectname + '-' + data.bridgename
+      if(errObj[name]){
+        if(errObj[name]['mediaDataFont']){
+          errObj[name]['mediaDataFont'].push(err)
+        }else{
+          errObj[name]['mediaDataFont'] = [err]
+        }
+      }else{
+        errObj[name] = {
+          mediaDataFont:[err]
+        }
+      }
+      dispatch({
+        type: 'promptFontErr',
+        payload: errObj
+      })
+      // 媒体数据上传成功 标志位
+      mediaDataUploadSuccess = false
+  })
 }
 
 export {Context, Consumer, Provider};

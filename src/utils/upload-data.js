@@ -1,6 +1,9 @@
 import axios from 'axios';
 import RNFetchBlob from 'rn-fetch-blob';
 import { uploadTestDataToObs } from './OBS';
+import { S3Upload } from './AWS';
+//AWS配置
+import { AWSBucket } from '../assets/uploadConfig/AWSConfig'
 
 const host = 'http://testdata.api.jianlide.cn:1088';
 const feedbackHost = 'http://114.116.196.47:10807'; 
@@ -457,6 +460,7 @@ export const upload = (file, filename, access_token) =>
 //console.log(await upload(fs.createReadStream("package.mp4")));
 
 
+// ------ 华为云
   //上传检测数据到云
   export const syncUploadTestDataToObs = (key,objects) =>
   new Promise((resolve, reject) => {
@@ -494,6 +498,62 @@ new Promise(async (resolve, reject) => {
   export const syncUploadToObsAfterFeedback = (params) =>
   new Promise((resolve, reject) => {
       fetch('http://server1.api.jianlide.cn:5002/api/obs/object-upload-notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body:JSON.stringify(params)
+      })
+        .then(res => res.json())
+        .then(resolve)
+        .catch(err => reject(err));
+  });
+
+
+// ------- 紫光云
+  //上传检测数据到云
+  export const syncUploadTestDataToAWS = (key,objects) => {
+    return new Promise((resolve, reject) => {
+      //参数
+      var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: objects};
+      S3Upload(bucketParams).then(res=>{
+        resolve(res);
+      }).catch(err=>{
+        reject(err);
+      })
+    });
+  }
+  
+  //上传媒体数据到云
+export const uploadImageToAWS = (key,filePath) =>
+new Promise(async (resolve, reject) => {
+  console.info('文件上传');
+  let data = ''
+  RNFetchBlob.fs.readStream(filePath,'base64',4095).then((ifstream)=>{
+    ifstream.open()
+    ifstream.onData((chunk) => {
+      // when encoding is `ascii`, chunk will be an array contains numbers
+      // otherwise it will be a string
+      data += chunk
+    })
+    ifstream.onError((err) => {
+      reject(err);
+    })
+    ifstream.onEnd(() => {
+      //参数
+      var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: data};
+      S3Upload(bucketParams).then(res=>{
+        resolve(res);
+      }).catch(err=>{
+        reject(err);
+      })
+    })
+  })
+});
+  //上传到云后，反馈到后端
+  export const syncUploadToAWSAfterFeedback = (params) =>
+  new Promise((resolve, reject) => {
+      fetch('http://106.3.97.61:15002/api/obs/object-upload-notify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
