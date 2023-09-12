@@ -1821,6 +1821,8 @@ export function DiseaseA({route, navigation}) {
             value={diseaseData?.areatype}
             onChange={handleFormChenge}
             values={baseData.components}
+            // 下拉框高度增加
+            inputStyle={{height:40}}
           /> 
           </View>
           <Text>           </Text>
@@ -1834,6 +1836,7 @@ export function DiseaseA({route, navigation}) {
                   onChange={handleFormChenge}
                   lines={1}
                   height={25}
+                  inputStyle={{height:40}}
                 />
               ) : (
                 <Select
@@ -1842,6 +1845,7 @@ export function DiseaseA({route, navigation}) {
                   value={diseaseData?.area}
                   values={areaparam}
                   onChange={handleFormChenge}
+                  inputStyle={{height:40}}
                 />
               )}
             </View>
@@ -1985,8 +1989,8 @@ export function DiseaseA({route, navigation}) {
               label="病害描述"
               value={diseaseData?.description}
               onChange={handleFormChenge}
-              lines={3}
-              height={70}
+              lines={2}
+              // height={70}
               // disabled={true}
             />
           </View>
@@ -2002,8 +2006,8 @@ export function DiseaseA({route, navigation}) {
               label="位置描述"
               value={diseaseData?.writePositionTxt}
               onChange={handleFormChenge}
-              lines={3}
-              height={70}
+              lines={2}
+              // height={70}
             />
           </View>
           {/* <TouchableOpacity style={styles.sideButton} onPress={writePositionText}>
@@ -3703,6 +3707,7 @@ export function DiseaseB({route, navigation}) {
           value={diseaseData?.areatype}
           onChange={handleFormChenge}
           values={baseData.components}
+          inputStyle={{height:40}}
         />
         </View>
         <View style={{width:230}}>
@@ -3715,6 +3720,7 @@ export function DiseaseB({route, navigation}) {
                 onChange={handleFormChenge}
                 lines={1}
                 height={25}
+                inputStyle={{height:40}}
               />
             ) : (
               <Select
@@ -3723,6 +3729,7 @@ export function DiseaseB({route, navigation}) {
                 value={diseaseData?.area}
                 values={areaparam}
                 onChange={handleFormChenge}
+                inputStyle={{height:40}}
               />
             )}
           </View>
@@ -3811,8 +3818,8 @@ export function DiseaseB({route, navigation}) {
             label="病害描述"
             value={diseaseData?.description}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
             // disabled={true}
           />
         </View>
@@ -3828,8 +3835,8 @@ export function DiseaseB({route, navigation}) {
             label="位置描述"
             value={diseaseData?.writePositionTxt}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
           />
         </View>
         {/* <TouchableOpacity style={styles.sideButton} onPress={writePositionText}>
@@ -5541,6 +5548,7 @@ export function DiseaseC({route, navigation}) {
           value={diseaseData?.areatype}
           onChange={handleFormChenge}
           values={baseData.components}
+          inputStyle={{height:40}}
         />
         </View>
         <View style={{width:230}}>
@@ -5553,6 +5561,7 @@ export function DiseaseC({route, navigation}) {
                 onChange={handleFormChenge}
                 lines={1}
                 height={25}
+                inputStyle={{height:40}}
               />
             ) : (
               <Select
@@ -5561,6 +5570,7 @@ export function DiseaseC({route, navigation}) {
                 value={diseaseData?.area}
                 values={areaparam}
                 onChange={handleFormChenge}
+                inputStyle={{height:40}}
               />
             )}
           </View>
@@ -5658,8 +5668,8 @@ export function DiseaseC({route, navigation}) {
             label="病害描述"
             value={diseaseData?.description}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
             // disabled={true}
           />
         </View>
@@ -5675,8 +5685,8 @@ export function DiseaseC({route, navigation}) {
             label="位置描述"
             value={diseaseData?.writePositionTxt}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
           />
         </View>
         {/* <TouchableOpacity style={styles.sideButton} onPress={writePositionText}>
@@ -7229,6 +7239,7 @@ export function DiseaseD({route, navigation}) {
           value={diseaseData?.areatype}
           onChange={handleFormChenge}
           values={baseData.components}
+          inputStyle={{height:40}}
         /> 
         </View>
         <View style={{width:230}}>
@@ -7241,6 +7252,7 @@ export function DiseaseD({route, navigation}) {
                 onChange={handleFormChenge}
                 lines={1}
                 height={25}
+                inputStyle={{height:40}}
               />
             ) : (
               <Select
@@ -7249,6 +7261,7 @@ export function DiseaseD({route, navigation}) {
                 value={diseaseData?.area}
                 values={areaparam}
                 onChange={handleFormChenge}
+                inputStyle={{height:40}}
               />
             )}
           </View>
@@ -7361,8 +7374,8 @@ export function DiseaseD({route, navigation}) {
             label="病害描述"
             value={diseaseData?.description}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
             // disabled={true}
           />
         </View>
@@ -7378,8 +7391,8 @@ export function DiseaseD({route, navigation}) {
             label="位置描述"
             value={diseaseData?.writePositionTxt}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
           />
         </View>
         {/* <TouchableOpacity style={styles.sideButton} onPress={writePositionText}>
@@ -8944,6 +8957,7 @@ export function DiseaseE({route, navigation}) {
           value={diseaseData?.areatype}
           onChange={handleFormChenge}
           values={baseData.components}
+          inputStyle={{height:40}}
         /> 
         </View>
         <View style={{width:230}}>
@@ -8956,6 +8970,7 @@ export function DiseaseE({route, navigation}) {
                 onChange={handleFormChenge}
                 lines={1}
                 height={25}
+                inputStyle={{height:40}}
               />
             ) : (
               <Select
@@ -8964,6 +8979,7 @@ export function DiseaseE({route, navigation}) {
                 value={diseaseData?.area}
                 values={areaparam}
                 onChange={handleFormChenge}
+                inputStyle={{height:40}}
               />
             )}
           </View>
@@ -9076,8 +9092,8 @@ export function DiseaseE({route, navigation}) {
             label="病害描述"
             value={diseaseData?.description}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
             // disabled={true}
           />
         </View>
@@ -9093,8 +9109,8 @@ export function DiseaseE({route, navigation}) {
             label="位置描述"
             value={diseaseData?.writePositionTxt}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
           />
         </View>
         {/* <TouchableOpacity style={styles.sideButton} onPress={writePositionText}>
@@ -10839,6 +10855,7 @@ export function DiseaseK({route, navigation}) {
           value={diseaseData?.areatype}
           onChange={handleFormChenge}
           values={baseData.components}
+          inputStyle={{height:40}}
         /> 
         </View>
         <View style={{width:230}}>
@@ -10851,6 +10868,7 @@ export function DiseaseK({route, navigation}) {
                 onChange={handleFormChenge}
                 lines={1}
                 height={25}
+                inputStyle={{height:40}}
               />
             ) : (
               <Select
@@ -10859,6 +10877,7 @@ export function DiseaseK({route, navigation}) {
                 value={diseaseData?.area}
                 values={areaparam}
                 onChange={handleFormChenge}
+                inputStyle={{height:40}}
               />
             )}
           </View>
@@ -10980,8 +10999,8 @@ export function DiseaseK({route, navigation}) {
             label="病害描述"
             value={diseaseData?.description}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
             // disabled={true}
           />
         </View>
@@ -10997,8 +11016,8 @@ export function DiseaseK({route, navigation}) {
             label="位置描述"
             value={diseaseData?.writePositionTxt}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
           />
         </View>
         {/* <TouchableOpacity style={styles.sideButton} onPress={writePositionText}>
@@ -12745,6 +12764,7 @@ export function DiseaseG({route, navigation}) {
           value={diseaseData?.areatype}
           onChange={handleFormChenge}
           values={baseData.components}
+          inputStyle={{height:40}}
         /> 
         </View>
         <View style={{width:230}}>
@@ -12757,6 +12777,7 @@ export function DiseaseG({route, navigation}) {
                 onChange={handleFormChenge}
                 lines={1}
                 height={25}
+                inputStyle={{height:40}}
               />
             ) : (
               <Select
@@ -12765,6 +12786,7 @@ export function DiseaseG({route, navigation}) {
                 value={diseaseData?.area}
                 values={areaparam}
                 onChange={handleFormChenge}
+                inputStyle={{height:40}}
               />
             )}
           </View>
@@ -12886,8 +12908,8 @@ export function DiseaseG({route, navigation}) {
             label="病害描述"
             value={diseaseData?.description}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
             // disabled={true}
           />
         </View>
@@ -12903,8 +12925,8 @@ export function DiseaseG({route, navigation}) {
             label="位置描述"
             value={diseaseData?.writePositionTxt}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
           />
         </View>
         {/* <TouchableOpacity style={styles.sideButton} onPress={writePositionText}>
@@ -14634,6 +14656,7 @@ export function DiseaseH({route, navigation}) {
           value={diseaseData?.areatype}
           onChange={handleFormChenge}
           values={baseData.components}
+          inputStyle={{height:40}}
         /> 
         </View>
         <View style={{width:230}}>
@@ -14646,6 +14669,7 @@ export function DiseaseH({route, navigation}) {
                 onChange={handleFormChenge}
                 lines={1}
                 height={25}
+                inputStyle={{height:40}}
               />
             ) : (
               <Select
@@ -14654,6 +14678,7 @@ export function DiseaseH({route, navigation}) {
                 value={diseaseData?.area}
                 values={areaparam}
                 onChange={handleFormChenge}
+                inputStyle={{height:40}}
               />
             )}
           </View>
@@ -14774,8 +14799,8 @@ export function DiseaseH({route, navigation}) {
             label="病害描述"
             value={diseaseData?.description}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
             // disabled={true}
           />
         </View>
@@ -14791,8 +14816,8 @@ export function DiseaseH({route, navigation}) {
             label="位置描述"
             value={diseaseData?.writePositionTxt}
             onChange={handleFormChenge}
-            lines={3}
-            height={70}
+            lines={2}
+            // height={70}
           />
         </View>
         {/* <TouchableOpacity style={styles.sideButton} onPress={writePositionText}>

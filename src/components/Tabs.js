@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     ...tailwind.roundedSm,
   },
   btn: {
-    ...tailwind.pX4,
+    ...tailwind.pX6,
     ...tailwind.pY1,
   },
   btn2: {

@@ -213,7 +213,8 @@ const styles = StyleSheet.create({
     ...tailwind.rounded,
     ...tailwind.border,
     ...tailwind.borderGray400,
-    ...tailwind.w5,
+    // ...tailwind.w5,
+    ...tailwind.w12, // 表格分页按钮加宽
     ...tailwind.h5,
     ...tailwind.justifyCenter,
     ...tailwind.itemsCenter,

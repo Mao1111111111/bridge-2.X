@@ -369,20 +369,20 @@ export default function Main({navigation, route}) {
               onPress: handleMember,
               disabled: !nowEdit,
             },
-            {
-              // 病害成因
-              // name: 'stethoscope',
-              img:'disList',
-              onPress: () => handlePlanOrGenesis('GenesisEdit'),
-              disabled: !nowEdit,
-            },
-            {
-              // 养护区
-              // name: 'book-plus',
-              img: 'maintainPlan',
-              onPress: () => handlePlanOrGenesis('PlanEdit'),
-              disabled: !nowEdit,
-            },
+            // {
+            //   // 病害成因
+            //   // name: 'stethoscope',
+            //   img:'disList',
+            //   onPress: () => handlePlanOrGenesis('GenesisEdit'),
+            //   disabled: !nowEdit,
+            // },
+            // {
+            //   // 养护计划
+            //   // name: 'book-plus',
+            //   img: 'maintainPlan',
+            //   onPress: () => handlePlanOrGenesis('PlanEdit'),
+            //   disabled: !nowEdit,
+            // },
           ]}>
           {/* <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
             </View> */}
@@ -457,12 +457,12 @@ export default function Main({navigation, route}) {
                         {/* 操作按钮 */}
                         <View
                           style={[tailwind.flexRow, tailwind.justifyBetween]}>
-                          <Button onPress={handleEdit} style={[{backgroundColor:'#2b427d'}]}>编辑部件</Button>
                           <Table.Pagination
                             pageNo={table1PageNo}
                             onPageChange={setTable1PageNo}
                             numberOfPages={table1Data.length}
                           />
+                          <Button onPress={handleEdit} style={[{backgroundColor:'#2b427d'}]}>编辑部件</Button>
                         </View>
                       </>
                     ),
@@ -517,12 +517,12 @@ export default function Main({navigation, route}) {
                         </View>
                         <View
                           style={[tailwind.flexRow, tailwind.justifyBetween]}>
-                          <Button onPress={handleEdit} style={[{backgroundColor:'#2b427d'}]}>编辑部件</Button>
                           <Table.Pagination
                             pageNo={table2PageNo} // 页码数字的背景色
                             onPageChange={setTable2PageNo}
                             numberOfPages={table2Data.length}
                           />
+                          <Button onPress={handleEdit} style={[{backgroundColor:'#2b427d'}]}>编辑部件</Button>
                         </View>
                       </>
                     ),

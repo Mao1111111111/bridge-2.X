@@ -71,10 +71,11 @@ export default function MediaBar({
         onChange={albumChange}
         disabled={disableAlbum}
       />
-      <View style={tailwind.mY1} />
+      {/* <View style={tailwind.mY1} /> */}
+      <View style={tailwind.mY8} />
       {/* 拍照 */}
       <Camera type="photo" disabled={disableCamera} onChange={cameraChange} />
-      <View style={tailwind.mY1} />
+      {/* <View style={tailwind.mY1} /> */}
       {/* <CircleButton
         name="camera-outline"
         disabled={disableExternal}
@@ -82,7 +83,7 @@ export default function MediaBar({
       /> */}
       {/* { height: 45, width: 45, alignItems: 'center' } */}
       {/* 生成一张虚拟照片 */}
-      <Pressable disabled={disableExternal} onPress={externalChange}
+      {/* <Pressable disabled={disableExternal} onPress={externalChange}
       onPressIn={addPhotoPulldown} onPressOut={addPhotoPullup}>
         <Image style={
           screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
@@ -90,14 +91,14 @@ export default function MediaBar({
         }
           source={disableExternal ? addPhotoDisImg : addPhotoImg}
         />
-      </Pressable>
-      <View style={tailwind.mY1} />
+      </Pressable> */}
+      <View style={tailwind.mY8} />
       {/* 录音 */}
       <RecordingModal disabled={disableRecording} onChange={recordingChange} />
-      <View style={tailwind.mY1} />
+      {/* <View style={tailwind.mY1} /> */}
       {/* 录像 */}
-      <Camera type="video" disabled={disableCamera} onChange={videoChange} />
-      <View style={tailwind.mY1} />
+      {/* <Camera type="video" disabled={disableCamera} onChange={videoChange} /> */}
+      {/* <View style={tailwind.mY1} /> */}
       {/*
       {disableText ? (
         <></>
