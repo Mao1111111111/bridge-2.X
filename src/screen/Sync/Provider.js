@@ -319,53 +319,51 @@ function Provider({children}) {
               let testDataUploadSuccess = true
               // 媒体数据上传成功 标志位
               let mediaDataUploadSuccess = true
-              // 
-              //---------上传检测数据到云 -- 紫光云
-              await uploadData.syncUploadTestDataToAWS(ObsReportDataKey,JSON.stringify(data)).then(async res=>{
-                let newFeedbackParams = feedbackParams
-                newFeedbackParams.objectinfo.filemd5 = (res.ETag.replace("\"","")).replace("\"","")
-                //---------反馈
-                await uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(res=>{
-                }).catch(err=>{
-                  let errObj = state.promptFontErr
-                  let name = data.testData.projectname + '-' + data.bridgename
-                  if(errObj[name]){
-                    errObj[name]['testDataFont'] = err
-                  }else{
-                    errObj[name] = {
-                      testDataFont:err
-                    }
-                  }
-                  dispatch({
-                    type: 'promptFontErr',
-                    payload: errObj
-                  })
-                  // 测试数据上传成功 标志位
-                  testDataUploadSuccess = false
-                })
-              }).catch(err=>{
-                console.log("err",err);
-                let errObj = state.promptFontErr
-                let name = data.testData.projectname + '-' + data.bridgename
-                if(errObj[name]){
-                  errObj[name]['testDataFont'] = err
-                }else{
-                  errObj[name] = {
-                    testDataFont:err
-                  }
-                }
-                dispatch({
-                  type: 'promptFontErr',
-                  payload: errObj
-                })
-                // 测试数据上传成功 标志位
-                testDataUploadSuccess = false
-              })
+              
+              // ====== 注：上传到华为云 和 上传到紫光云 二选一
 
-              //---------上传媒体数据到云
-              await uploadImgSingle(0,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch)
-
-
+              // ======= 上传到华为云 start =========
+              // 上传检测数据到云
+              // await uploadData.syncUploadTestDataToObs(ObsReportDataKey,JSON.stringify(data)).then(async res=>{
+              //   let newFeedbackParams = feedbackParams
+              //   newFeedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
+              //   //---------反馈
+              //   await uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+              //   }).catch(err=>{
+              //     let errObj = state.promptFontErr
+              //     let name = data.testData.projectname + '-' + data.bridgename
+              //     if(errObj[name]){
+              //       errObj[name]['testDataFont'] = err
+              //     }else{
+              //       errObj[name] = {
+              //         testDataFont:err
+              //       }
+              //     }
+              //     dispatch({
+              //       type: 'promptFontErr',
+              //       payload: errObj
+              //     })
+              //     // 测试数据上传成功 标志位
+              //     testDataUploadSuccess = false
+              //   })
+              // }).catch(err=>{
+              //   let errObj = state.promptFontErr
+              //   let name = data.testData.projectname + '-' + data.bridgename
+              //   if(errObj[name]){
+              //     errObj[name]['testDataFont'] = err
+              //   }else{
+              //     errObj[name] = {
+              //       testDataFont:err
+              //     }
+              //   }
+              //   dispatch({
+              //     type: 'promptFontErr',
+              //     payload: errObj
+              //   })
+              //   // 测试数据上传成功 标志位
+              //   testDataUploadSuccess = false
+              // })
+              // // 上传媒体数据到云
               // await Promise.all(
               //   mediaData
               //     .filter(({filepath}) => filepath)
@@ -378,13 +376,7 @@ function Provider({children}) {
               //         + data.bridgeid + '/'
               //         + data.testData.bridgereportid + '/'
               //         + arr[arr.length-1].replace("jpg","jpeg")
-              //       return await uploadData.uploadImageToAWS(key,item.appliedPath).then(res=>{
-              //         successImgNum++
-              //         console.log("successImgNum",successImgNum);
-              //         dispatch({
-              //           type: 'curUploadImgSucNUm',
-              //           payload: successImgNum
-              //         })
+              //       return await uploadData.uploadImageToObs(key,item.appliedPath).then(res=>{
               //         //设置反馈参数
               //         let newFeedbackParams = {
               //           ...feedbackParams,
@@ -397,12 +389,17 @@ function Provider({children}) {
               //             filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
               //             filesize:Math.floor(item.filesize/1024*100)/100,
               //             filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
-              //             filemd5:(res.ETag.replace("\"","")).replace("\"",""),
+              //             filemd5:(res.InterfaceResult.ETag.replace("\"","")).replace("\"",""),
               //             createtime:item.u_date
               //           }
               //         }
               //         //---------反馈
-              //         uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(res=>{
+              //         uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+              //           successImgNum++
+              //           dispatch({
+              //             type: 'curUploadImgSucNUm',
+              //             payload: successImgNum
+              //           })
               //         }).catch(err=>{
               //           let errObj = state.promptFontErr
               //           let name = data.testData.projectname + '-' + data.bridgename
@@ -447,6 +444,54 @@ function Provider({children}) {
               //       })
               //     }),
               // );
+              // ======= 上传到华为云 start =========
+
+              // ======= 上传到紫光云 start =========
+              // 上传检测数据到云
+              await uploadData.syncUploadTestDataToAWS(ObsReportDataKey,JSON.stringify(data)).then(async res=>{
+                let newFeedbackParams = feedbackParams
+                newFeedbackParams.objectinfo.filemd5 = (res.ETag.replace("\"","")).replace("\"","")
+                //---------反馈
+                await uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(res=>{
+                }).catch(err=>{
+                  let errObj = state.promptFontErr
+                  let name = data.testData.projectname + '-' + data.bridgename
+                  if(errObj[name]){
+                    errObj[name]['testDataFont'] = err
+                  }else{
+                    errObj[name] = {
+                      testDataFont:err
+                    }
+                  }
+                  dispatch({
+                    type: 'promptFontErr',
+                    payload: errObj
+                  })
+                  // 测试数据上传成功 标志位
+                  testDataUploadSuccess = false
+                })
+              }).catch(err=>{
+                console.log("err",err);
+                let errObj = state.promptFontErr
+                let name = data.testData.projectname + '-' + data.bridgename
+                if(errObj[name]){
+                  errObj[name]['testDataFont'] = err
+                }else{
+                  errObj[name] = {
+                    testDataFont:err
+                  }
+                }
+                dispatch({
+                  type: 'promptFontErr',
+                  payload: errObj
+                })
+                // 测试数据上传成功 标志位
+                testDataUploadSuccess = false
+              })
+              // 上传媒体数据到云
+              await uploadImgSingle(0,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch)
+              // ======= 上传到紫光云 end =========
+             
               // 判断是否上传成功
               if(testDataUploadSuccess&&mediaDataUploadSuccess){
                 // 上传状态
@@ -493,6 +538,10 @@ function Provider({children}) {
               type: 'testDataUploadEndIds',
               payload: state.testDataUploadingIds?.slice(0, inx + 1),
             });
+
+
+
+
             //---------将数据标记为已上传
             // 上传状态记录表
            /*  await uploadStateRecord.update({
@@ -648,7 +697,6 @@ const uploadImgSingle =async (index,successImgNum,userInfo,data,feedbackParams,m
     + arr[arr.length-1].replace("jpg","jpeg")
   await uploadData.uploadImageToAWS(key,mediaData[index].appliedPath).then(async res=>{
     successImgNum++
-    console.log("successImgNum",successImgNum);
     dispatch({
       type: 'curUploadImgSucNUm',
       payload: successImgNum
