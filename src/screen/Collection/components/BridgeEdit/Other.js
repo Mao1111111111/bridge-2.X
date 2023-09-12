@@ -120,7 +120,7 @@ export default function Other({navigation}) {
             type="numeric"
             label="人行道数:"
             LabelStyle={tailwind.w16}
-            value={values.b300003num || ''}
+            value={values.b300003num || '2'}
             onChange={handleChange}
           />
           <KeyboardInput
@@ -129,7 +129,7 @@ export default function Other({navigation}) {
             type="numeric"
             LabelStyle={tailwind.w24}
             label="伸缩装置数:"
-            value={values.b300002num || ''}
+            value={values.b300002num || '2'}
             onChange={handleChange}
           />
           <KeyboardInput
@@ -182,7 +182,7 @@ export default function Other({navigation}) {
             type="numeric"
             label="支座数:"
             LabelStyle={tailwind.w16}
-            value={values.zhizuo_total || ''}
+            value={values.zhizuo_total || '2'}
             onChange={handleChange}
           />
           <Text style={[tailwind.mL4, tailwind.flex1]}>

@@ -102,13 +102,15 @@ const Provider = ({values, project, children}) => {
             // 支座编号
             bridgepadno: bridgepadno[0].paramid,
             // 桥台形式
-            bridgeabutment: bridgeabutment[0].paramid,
+            // bridgeabutment: bridgeabutment[0].paramid,
+            bridgeabutment: bridgeabutment[2].paramid, // 轻型
             // 桥墩形式
             bridgepier: bridgepier[0].paramid,
             // 照明系统
             bridgelightsys: bridgelightsys[0].paramid,
             // 翼墙、耳墙
-            bridgewall: bridgewall[0].paramid,
+            // bridgewall: bridgewall[0].paramid,
+            bridgewall: bridgewall[1].paramid, // 耳墙
             // 桥台数
             b200001num: '2',
             // 桥台柱数
@@ -162,6 +164,7 @@ const Provider = ({values, project, children}) => {
       type: 'memberInfo',
       payload: listToGroup(basememberinfo, 'positionid'),
     });
+    console.log('桥台形式',bridgeabutment);
   }, [values, globalState]);
 
   // 当部件列表变化时，重置部件

@@ -713,17 +713,26 @@ export const KeyboardInput = React.forwardRef(
         ...tailwind.mR6,
         marginTop:5,
         height:10,
-        paddingTop:0
+        paddingTop:0,
       };
       if (isNaN(parseInt(key, 10))) {
         return {
-          ..._style,
+          // ..._style,
+          ...tailwind.mR6,
+          marginTop:5,
+          height:40,
           ...tailwind.bgRed400,
+          justifyContent: 'center',
         };
       } else {
         return {
-          ..._style,
+          // ..._style,
+          // ...tailwind.flex1,
+        ...tailwind.mR6,
+        marginTop:5,
           ...tailwind.bgGray500,
+          height:40,
+          justifyContent: 'center',
         };
       }
     };
@@ -737,14 +746,18 @@ export const KeyboardInput = React.forwardRef(
       };
       if (key !== '%') {
         return {
-          ..._style
+          ..._style,
+          height:40,
+          justifyContent: 'center',
         }
       } else {
         return {
           ..._style,
           // display:'none'
           position:'relative',
-          top:'75%'
+          top:'227%',
+          height:40,
+          justifyContent: 'center',
         }
       }
     };
@@ -798,6 +811,7 @@ export const KeyboardInput = React.forwardRef(
                   tailwind.rounded,
                   tailwind.p2,
                   tailwind.pL8,
+                  {height:400} //键盘高度调高
                 ]}>
                   {/* 键盘顶部标题与页码 */}
                 <View
@@ -847,7 +861,7 @@ export const KeyboardInput = React.forwardRef(
                     </View>
                   ))} */}
                   {keyboardA.map((row, index) => (
-                    <View key={index} style={[tailwind.flex1, tailwind.mB4,]}>
+                    <View key={index} style={[tailwind.flex1, tailwind.mB4]}>
                       {row.map(item => (
                         <Button
                           key={item}
@@ -872,6 +886,7 @@ export const KeyboardInput = React.forwardRef(
                     </View>
                   ))}
                 </View>
+                <View style={tailwind.mY16} />
                 <View style={[tailwind.flex1, tailwind.flexRow, tailwind.mB2]}>
                   <View style={[styles.flex16, tailwind.mR6]} />
                   <Button
@@ -906,7 +921,8 @@ const styles = StyleSheet.create({
     ...tailwind.textSm,
     ...tailwind.pY1,
     ...tailwind.pX2,
-    height: 25,
+    // height: 25,
+    height: 40,
   },
   writeInput: {
     textAlignVertical: 'center',
@@ -950,7 +966,9 @@ const styles = StyleSheet.create({
     ...tailwind.textSm,
     ...tailwind.pX2,
     paddingBottom: 1,
-    height: 25,
+    // height: 25,
+    // 长宽高 输入框调高
+    height: 40,
     // ...tailwind.pX2,
   },
   modal: {
@@ -972,11 +990,15 @@ const styles = StyleSheet.create({
     ...tailwind.flex1,
     ...tailwind.mR6,
     ...tailwind.bgYellow600,
+    height:40,
+    justifyContent: 'center',
   },
   redBtn: {
     ...tailwind.flex1,
     ...tailwind.mR6,
     ...tailwind.bgRed600,
+    height:40,
+    justifyContent: 'center',
   },
 
   password: {
