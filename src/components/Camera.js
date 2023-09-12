@@ -8,6 +8,7 @@ import uuid from 'react-native-uuid';
 import {CircleButton} from './Button';
 import {launchCamera} from 'react-native-image-picker';
 import fs from '../utils/fs';
+import { UploadObjectStorageName } from '../assets/UploadConfig';
 
 export default function Camera({onChange, type, disabled}) {
   // 打开相机
@@ -16,8 +17,8 @@ export default function Camera({onChange, type, disabled}) {
       const res = await launchCamera({
         mediaType: type,
         videoQuality: 'high',
-        maxWidth:2080,
-        maxHeight:1560
+        maxWidth:UploadObjectStorageName=='OBS'?2080:1560,
+        maxHeight:UploadObjectStorageName=='OBS'?1560:1170
       });
       if (!res.assets[0]) {
         return;
