@@ -3,7 +3,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import { uploadTestDataToObs } from './OBS';
 import { S3Upload } from './AWS';
 //AWS配置
-import { AWSBucket } from '../assets/AWSConfig'
+import { AWSBucket } from '../assets/uploadConfig/AWSConfig'
 
 const host = 'http://testdata.api.jianlide.cn:1088';
 const feedbackHost = 'http://114.116.196.47:10807'; 

@@ -2,7 +2,7 @@
     云操作
  */
 //AWS配置
-import { BaseAWSConfig } from '../assets/AWSConfig'
+import { BaseAWSConfig } from '../assets/uploadConfig/AWSConfig'
 //引入亚马逊的sdk，用于调用紫光云的api
 // var AWS = require('aws-sdk/dist/aws-sdk-react-native')
 import AWS from 'aws-sdk';

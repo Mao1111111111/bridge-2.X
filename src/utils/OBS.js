@@ -2,7 +2,7 @@
     华为云服务
  */
 //配置信息
-import * as ObsConfig from '../assets/OBSConfig'
+import * as ObsConfig from '../assets/uploadConfig/OBSConfig'
 import ObsClient from 'esdk-obs-browserjs/src/obs'
 
 // ObsClient实例
