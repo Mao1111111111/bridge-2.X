@@ -119,7 +119,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
     const isFocused = state.index === index;
     if (!isFocused && !event.defaultPrevented) {
       // console.log('执行了路由跳转',route.name);
-      navigation.navigate('Setting');
+      navigation.navigate(route.name);
     }
   };
 
@@ -156,17 +156,20 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
     setVisible(false)
   };
 
-  const type = ['用户设置','退出登录']
+  // const type = ['用户设置','退出登录']
+  const type = ['退出登录']
   // 左上角的一级菜单选项
   const typeL = ['采集平台','数据同步','数据统计','用户设置']
   
   // 分类选择
   _selectType = (indexA, value) => {
-    console.log('---', indexA, value)
-      {state.routes.map((route, index) =>(
-        indexA == '0' && indexA == index ? handlePress(route, index, value) : <></>
-      ))}
-      indexA == '1' ? asklogOut() : <></>
+    console.log('---1', indexA, value)
+      // {state.routes.map((route, index) =>(
+      //   indexA == '0' && indexA == index ? handlePress(route, index, value) : <></>
+      // ))}
+      // indexA == '1' ? asklogOut() : <></>
+
+      indexA == '0' ? asklogOut() : <></>
   }
   // 分类选择 左上角
   _selectTypeL = (indexA, value) => {
@@ -342,7 +345,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
         adjustFrame={this._adjustType}
         options={type} // 选项内容
         dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-        dropdownStyle={[{width:100,height:75,alignItems:'center'}]}
+        dropdownStyle={[{width:100,height:40,alignItems:'center'}]}
         dropdownTextStyle={[{width:80,textAlign:'center'}]}
         onSelect={this._selectType} // 点击选项时，执行的方法
         defaultValue={'用户设置'}
