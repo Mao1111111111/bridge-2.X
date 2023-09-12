@@ -82,7 +82,7 @@ export default function TestData({navigation}) {
 
   const {
     dispatch,
-    state: {testDataUploadingIds, testDataFefreshFlg, testDataUploadEndIds},
+    state: {testDataUploadingIds, testDataFefreshFlg, testDataUploadEndIds, curUploadImgSucNUm, curUploadImgAllNUm},
   } = React.useContext(Context);
 
   const [active, setActive] = React.useState('未上传');
@@ -266,8 +266,8 @@ export default function TestData({navigation}) {
           {testDataUploadingIds.length ? (
             <View style={[styles.progressBar]}>
               <Text style={tailwind.mR2}>
-                上传中({testDataUploadEndIds.length}/
-                {testDataUploadingIds.length})
+                上传中：[ 图：{curUploadImgSucNUm}/{curUploadImgAllNUm} ，项目：{testDataUploadEndIds.length}/
+                {testDataUploadingIds.length} ]
               </Text>
               <ProgressBar
                 progress={
