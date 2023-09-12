@@ -48,3 +48,12 @@ yarn android
 |react-native-uuid|uuid 生成|
 |react-native-sqlite-storage|嵌入式数据库|
 |react-native-vector-icons|图标库|
+
+
+## git分支说明
+- master：主分支，主要使用，上传使用华为云
+- bridgeCreatesCaton：（未）解决创建桥梁时，新增大量构件时卡顿的问题，解决了一半，未合并到主分支
+- JXR：成员分支
+- newFormat：成员分支
+- newNavigator： 成员分支
+- main: 无用分支
