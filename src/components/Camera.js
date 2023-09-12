@@ -8,7 +8,7 @@ import uuid from 'react-native-uuid';
 import {CircleButton} from './Button';
 import {launchCamera} from 'react-native-image-picker';
 import fs from '../utils/fs';
-import { UploadObjectStorageName } from '../assets/UploadConfig';
+import { UploadObjectStorageName } from '../assets/uploadConfig/UploadConfig';
 
 export default function Camera({onChange, type, disabled}) {
   // 打开相机
