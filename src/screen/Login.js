@@ -326,7 +326,7 @@ export default function Login() {
                 }
               ]
             }
-          >v2.06</Text>
+          >v2.08</Text>
           <View style={[styles.box]}>
             {/* 判断是否同步，默认不同步 */}
             {/* 这里是登录后，同步数据 */}

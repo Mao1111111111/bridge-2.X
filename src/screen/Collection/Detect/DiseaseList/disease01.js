@@ -2027,13 +2027,15 @@ export function DiseaseA({route, navigation}) {
           {itemData?.diseaseName}
         </Text>
       </View>
-      <View style={tailwind.mT2} />
+      <View style={[tailwind.mT2]} />
       {infoList.length ? (
           infoList.map(({strvalue, strinfo}, index) => (
             <React.Fragment key={index}>
                 <View style={[tailwind.mB2]}>
-                  <LabelItem label={strinfo} />
-                  <View style={{width:'70%',height:25}}>
+                  <LabelItem label={strinfo}
+                  LabelStyle={{fontSize:12}}
+                  />
+                  <View style={{width:'70%',height:36}}>
                     <KeyboardInput
                       name={strvalue}
                       value={diseaseData[strvalue]}

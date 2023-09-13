@@ -144,7 +144,8 @@ export const SliderInput = React.forwardRef(
         <View style={[tailwind.flexRow]}>
           {/* <LabelItem label="长" style={tailwind.w18} /> */}
           <Slider
-            style={{width: 230, height: 20}}
+            // style={{width: 230, height: 20}}
+            style={{width: 230, height: 40}} //滑块高度调高
             minimumValue={0}
             // value={diseaseData.disLength}
             value={strToNum(textValue)}
@@ -159,7 +160,8 @@ export const SliderInput = React.forwardRef(
             // onSlidingComplete={(value) => {handleOk(value)}}
           />
         </View>
-        <Text style={[tailwind.textBlack]}>比例(%)</Text>
+        {/* <Text style={[tailwind.textBlack]}>比例(%)</Text> */}
+        <LabelItem label="比例%" />
         <KeyboardInput
           name={name}
           value={value}
@@ -352,7 +354,8 @@ const styles = StyleSheet.create({
   },
   button: {
     width: 40,
-    height: 20,
+    // height: 20,
+    height: 40, //按钮高度调高
     borderRadius: 5,
     backgroundColor: '#2b427d',
     justifyContent: 'center',
