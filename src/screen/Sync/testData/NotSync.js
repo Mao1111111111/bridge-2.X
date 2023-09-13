@@ -41,6 +41,9 @@ export default function NotSync({list, onUpload}) {
 
   React.useEffect(() => {
     setNowEdit(new Set());
+    list.sort(function(a, b) {
+      return new Date(b.c_date) - new Date(a.c_date);
+    })
     setTableData(listToPage(list, 10));
     const windowWidth = Dimensions.get('window').width;
     setScreenWidth(windowWidth)
