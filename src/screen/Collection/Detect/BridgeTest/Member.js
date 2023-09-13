@@ -118,6 +118,160 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
   // 选中的构件变化时
   const handleChange = _checked => {
     const _data = {};
+    console.log('选中的data',data);
+    data
+      .map(({list}) => list)
+      .flat()
+      .forEach(item => (_data[item.id] = _checked.has(item.id)));
+    //执行父组件的函数,并将选择的构件数据传入 
+    onChange && onChange(_data);
+  };
+
+  return (
+    <View style={[tailwind.flex1, tailwind.flexRow]}>
+      {/* 左侧 */}
+      <View style={[tailwind.flexCol, tailwind.p2]}>
+        <View style={[tailwind.mB1]}>
+          <Text style={[styles.memberListTitle, {color:'#2b427d'}]}>
+            {/* 这里的title是部件名称 或者 跨名称 */}
+            {title}
+          </Text>
+        </View>
+        <FlatList
+          data={data || []}
+          extraData={data}
+          style={[tailwind.borderB, tailwind.borderGray400]}
+          ItemSeparatorComponent={() => <View style={tailwind.mY1} />}
+          renderItem={({item, index}) => (
+            <TouchableOpacity
+              onPress={() => {
+                // 执行父组件的函数
+                onGroupChange && onGroupChange(item);
+                // 清空选中的构件
+                setChecked(new Set());
+                // 设置当前选中的 部件 或 跨
+                setNowEdit(item);
+              }}>
+              <View key={index} style={[styles.memberListItem]}>
+                <View
+                  style={[
+                    {
+                      backgroundColor:
+                        nowEdit.title === item.title
+                          ? theme.primaryColor
+                          : colors.gray400,
+                    },
+                    tailwind.w2,
+                  ]}
+                />
+                <View style={[styles.memberListItemTitle]}>
+                  <Text>{item.title}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+      {/* 右侧 */}
+      <View style={[styles.memberItem]}>
+        <View style={[tailwind.mB1, tailwind.flexRow, tailwind.justifyBetween]}>
+          <Text style={[styles.memberListTitle, {color:'#2b427d'}]}>
+            {nowEdit?.title}
+          </Text>
+          <Button onPress={handleCheckAll} style={[{backgroundColor:'#2b427d'}]}>全选</Button>
+        </View>
+        <ScrollView>
+          <View style={[tailwind.flexRow, tailwind.flex1, tailwind.flexWrap]}>
+            {nowEdit?.list?.map((item, index) => (
+              <Item
+                key={index}
+                color={handleColor(item)}
+                title={item.membername}
+                checked={checked.has(item.id)}
+                onPress={() => handleCheck(item.id)}
+              />
+            ))}
+          </View>
+        </ScrollView>
+      </View>
+    </View>
+  );
+};
+
+// 当部件不是上部结构时，该部件里的所有跨信息显示在一起
+const AllData = ({title, data, onChange, onGroupChange}) => {
+  // title-部件名称
+  //data-部件进来时，data是跨列表;跨进来时，data是部件列表
+  // 全局样式
+  const {
+    state: {theme},
+  } = React.useContext(ThemeContext);
+
+  // 当前选中的构件列表 
+  const [checked, setChecked] = React.useState(new Set());
+
+  // 当前编辑的 部件 或 是跨
+  const [nowEdit, setNowEdit] = React.useState({});
+
+  // 初始化数据
+  React.useEffect(() => {
+    // 初始化当前选中的 组
+    if (data.length) {
+      console.log('data',data[0]);
+
+      setNowEdit(data[0]);
+      // console.log('nowEdit',nowEdit);
+    } else {
+      setNowEdit({});
+    }
+  }, [data,nowEdit]);
+
+  // 设置构件颜色
+  const handleColor = ({memberstatus}) => {
+    switch (memberstatus) {
+      case '0':
+        return colors.gray400;
+      case '100':
+        return colors.green600;
+      case '200':
+        return colors.red600;
+      default:
+        return colors.gray400;
+    }
+  };
+
+  // 点击构件时
+  const handleCheck = id => {
+    const _checked = new Set(checked);
+    if (_checked.has(id)) {
+      _checked.delete(id);
+    } else {
+      _checked.add(id);
+    }
+    // 设置当前选中的构件列表
+    setChecked(_checked);
+    // 触发构件变化函数
+    handleChange(_checked);
+  };
+
+  // 全选
+  const handleCheckAll = () => {
+    if (checked.size === nowEdit.list.length) {
+      // 当已经全选时,设置全不选
+      setChecked(new Set());
+      // 触发 构件选中变化 的 函数
+      handleChange(new Set());
+    } else {
+      // 选中全部
+      setChecked(new Set(nowEdit.list.map(({id}) => id)));
+      // 触发 构件选中变化 的 函数
+      handleChange(new Set(nowEdit.list.map(({id}) => id)));
+    }
+  };
+
+  // 选中的构件变化时
+  const handleChange = _checked => {
+    const _data = {};
     data
       .map(({list}) => list)
       .flat()
@@ -220,6 +374,8 @@ export default function Member({route, navigation,item}) {
   // 组列表 ,部件 或 跨 列表
   const [list, setList] = React.useState([]);
 
+  const [allList, setAllList] = React.useState([])
+
   const [parts, setParts] = React.useState([]);
 
   const [editLogList, setEditLogList] = React.useState([]);
@@ -304,7 +460,26 @@ export default function Member({route, navigation,item}) {
         item.title = '伸缩装置'
       }
     })
+    console.log('_list',_list);
     setList(_list);
+
+    let _allList = [
+      {
+        title:'全部跨径',
+        stepno:'1',
+        list:[]
+      }
+    ]
+    _list.forEach((item) => {
+      // console.log('item',item);
+      item.list.forEach((items,index) => {
+        _allList[0].list.push(item.list[index])
+      })
+      
+    })
+    console.log('_allList',_allList);
+    setAllList(_allList)
+
     
     setParts(_parts);
   }, [partsList, data, basememberinfo]);
@@ -517,7 +692,7 @@ export default function Member({route, navigation,item}) {
             }>
               {/* 左侧构件列表 */}
               <View style={[styles.listBox]}>
-                <BigData
+                {/* <BigData
                   title={data.title}
                   // 组列表 ,部件 或 跨 列表
                   data={list}
@@ -534,7 +709,55 @@ export default function Member({route, navigation,item}) {
                   }}
                   // 选中的构件改变时
                   onChange={handleCheckedChange}
-                />
+                /> */}
+
+                {
+                  data.title !== '主梁' && data.title !== '湿接段'
+                  && data.title !== '湿接缝' && data.title !== '铰缝'
+                  && data.title !== '横隔板' && data.title !== '支座' ? (
+                    <AllData
+                      title={data.title}
+                      // 组列表 ,部件 或 跨 列表
+                      data={allList}
+                      // 组改变时，即点击左侧列表时
+                      onGroupChange={item => {
+                        // 如果跨编号存在
+                        if (item.stepno) {
+                          console.info('???');
+                          // 设置当前选中的跨编号
+                          setNowGroup(item.stepno);
+                        }
+                        // 重置选中的构件列表
+                        setCheckedList(new Set());
+                      }}
+                      // 选中的构件改变时
+                      onChange={handleCheckedChange}
+                    />
+                  ) : (
+                    <BigData
+                      title={data.title}
+                      // 组列表 ,部件 或 跨 列表
+                      data={list}
+                      // 组改变时，即点击左侧列表时
+                      onGroupChange={item => {
+                        // 如果跨编号存在
+                        if (item.stepno) {
+                          console.info('???');
+                          // 设置当前选中的跨编号
+                          setNowGroup(item.stepno);
+                        }
+                        // 重置选中的构件列表
+                        setCheckedList(new Set());
+                      }}
+                      // 选中的构件改变时
+                      onChange={handleCheckedChange}
+                    />
+                  )
+                    
+                }
+
+
+
               </View>
               {/* 右侧 操作历史 */}
               <LogList list={editLogList} />

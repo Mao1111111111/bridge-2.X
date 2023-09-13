@@ -1,4 +1,4 @@
-// 未上传表格
+// 未上传 表格
 import React from 'react';
 import {tailwind} from 'react-native-tailwindcss';
 import {View, FlatList, StyleSheet} from 'react-native';
