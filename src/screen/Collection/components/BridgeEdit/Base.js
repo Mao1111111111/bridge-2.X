@@ -143,18 +143,21 @@ export default function Base({navigation}) {
               values={bridgetype}
               value={values.bridgetype}
               onChange={handleChange}
+              inputStyle={{height:25}}
             />
             <KeyboardInput
               name="bridgestation"
               value={values.bridgestation || ''}
               label="桥梁桩号:"
               onChange={handleChange}
+              inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25,marginTop:10}]}
             />
             <TextInput
               name="bridgename"
               value={values.bridgename || ''}
               label="桥梁名称:"
               onChange={handleChange}
+              inputStyle={[{height:25,marginTop:10}]}
             />
             <Select
               name="bridgeside"
@@ -164,6 +167,7 @@ export default function Base({navigation}) {
               values={bridgeside}
               value={values.bridgeside}
               onChange={handleChange}
+              inputStyle={[{height:25,marginTop:10}]}
             />
             <Select
               name="areacode"
@@ -173,6 +177,7 @@ export default function Base({navigation}) {
               values={areaList2}
               value={values.areacode}
               onChange={handleChange}
+              inputStyle={[{height:25,marginTop:10}]}
             />
             <Select
               name="routecode"
@@ -182,6 +187,7 @@ export default function Base({navigation}) {
               values={routeList2}
               value={values.routecode}
               onChange={handleChange}
+              inputStyle={[{height:25,marginTop:10}]}
             />
             <Select
               name="bridgefunc"
@@ -191,6 +197,7 @@ export default function Base({navigation}) {
               values={bridgefunc}
               value={values.bridgefunc}
               onChange={handleChange}
+              inputStyle={[{height:25,marginTop:10}]}
             />
             <Select
               name="bridgestruct"
@@ -202,12 +209,13 @@ export default function Base({navigation}) {
               }
               value={values.bridgestruct}
               onChange={handleChange}
+              inputStyle={[{height:25,marginTop:10}]}
             />
           </View>
           {/* 中部 -- 其他属性按钮 */}
-          <View style={[tailwind.itemsEnd, tailwind.mT2]}>
+          <View style={[tailwind.itemsEnd, tailwind.mT2,{top:20}]}>
             <Button
-            style={[{backgroundColor:'#2b427d'}]} 
+            style={[{backgroundColor:'#2b427d',height:40}]} 
               onPress={() => navigation.navigate('Collection/Bridge/Other')}>
               其他属性
             </Button>

@@ -181,9 +181,9 @@ export function DiseaseA({route, navigation}) {
       const [widthNum, setWidthNum] = useState('')
       const [heightNum, setHeightNum] = useState('')
 
-      const [memberLength, setMemberLength] = useState('')
-      const [memberWidth, setMemberWidth] = useState('')
-      const [memberHeight, setMemberHeight] = useState('')
+      const [memberLength, setMemberLength] = useState(0)
+      const [memberWidth, setMemberWidth] = useState(0)
+      const [memberHeight, setMemberHeight] = useState(0)
 
       const [diseaseName, setDiseaseName] = useState('')
       const [memberName, setMemberName] = useState('')
@@ -627,7 +627,13 @@ export function DiseaseA({route, navigation}) {
           //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
           //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
           // console.log('resttttt',rest)
-          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          // console.log('route.params.thridData.checktypeid',route.params);
+          if (route.params.mediaType == 'edit') {
+            diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          } else {
+            diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          }
+          
 
           const _data = {
             ...diseaseData,
@@ -1983,7 +1989,7 @@ export function DiseaseA({route, navigation}) {
         </View>
         {/* <View style={tailwind.mT2} /> */}
         <View style={[tailwind.flexRow]}>
-          <View style={{width:500}}>
+          <View style={{width:500,maxHeight:40}}>
             <WriteInput
               name="description"
               label="病害描述"
@@ -2000,7 +2006,7 @@ export function DiseaseA({route, navigation}) {
         </View>
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow]}>
-          <View style={{width:500}}>
+          <View style={{width:500,maxHeight:40}}>
             <WriteInput
               name="writePositionTxt"
               label="位置描述"
@@ -2568,7 +2574,11 @@ export function DiseaseB({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -3814,7 +3824,7 @@ export function DiseaseB({route, navigation}) {
       </View> */}
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -3831,7 +3841,7 @@ export function DiseaseB({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -3864,7 +3874,7 @@ export function DiseaseB({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:70,height:25}}>
+                <View style={{width:70,height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -4406,7 +4416,11 @@ export function DiseaseC({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -5664,7 +5678,7 @@ export function DiseaseC({route, navigation}) {
       </View>
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -5681,7 +5695,7 @@ export function DiseaseC({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -5714,7 +5728,7 @@ export function DiseaseC({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:70,height:25}}>
+                <View style={{width:70,height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -6279,7 +6293,11 @@ export function DiseaseD({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -7370,7 +7388,7 @@ export function DiseaseD({route, navigation}) {
       </View> */}
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -7387,7 +7405,7 @@ export function DiseaseD({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -7420,7 +7438,7 @@ export function DiseaseD({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:'70%',height:25}}>
+                <View style={{width:'70%',height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -7987,7 +8005,11 @@ export function DiseaseE({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -9088,7 +9110,7 @@ export function DiseaseE({route, navigation}) {
       </View> */}
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -9105,7 +9127,7 @@ export function DiseaseE({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -9138,7 +9160,7 @@ export function DiseaseE({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:70,height:25}}>
+                <View style={{width:70,height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -9706,7 +9728,11 @@ export function DiseaseK({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -10995,7 +11021,7 @@ export function DiseaseK({route, navigation}) {
       </View>
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -11012,7 +11038,7 @@ export function DiseaseK({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -11045,7 +11071,7 @@ export function DiseaseK({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:'70%',height:25}}>
+                <View style={{width:'70%',height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -11626,7 +11652,11 @@ export function DiseaseG({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -12904,7 +12934,7 @@ export function DiseaseG({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -12921,7 +12951,7 @@ export function DiseaseG({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -12954,7 +12984,7 @@ export function DiseaseG({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:'70%',height:25}}>
+                <View style={{width:'70%',height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -13521,7 +13551,11 @@ export function DiseaseH({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -14795,7 +14829,7 @@ export function DiseaseH({route, navigation}) {
       </View>
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -14812,7 +14846,7 @@ export function DiseaseH({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -14845,7 +14879,7 @@ export function DiseaseH({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:'70%',height:25}}>
+                <View style={{width:'70%',height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}

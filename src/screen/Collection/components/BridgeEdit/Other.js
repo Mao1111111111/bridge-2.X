@@ -27,6 +27,24 @@ export default function Other({navigation}) {
   // 桥梁全局参数 -- 表单值
   const {values} = state;
 
+  React.useEffect(() => {
+    if (!values.zhizuo_total) {
+      // 支座
+      values['zhizuo_total'] = '2'
+      handleChange('zhizuo_total','2')
+    } else if (!values.b300003num) {
+      // 人行道
+      values['b300003num'] = '2'
+      handleChange('b300003num','2')
+    } else if (!values.b300002num) {
+      // 伸缩缝
+      values['b300002num'] = '2'
+      handleChange('b300002num','2')
+    }
+    
+    console.log('values',values);
+  },[])
+
   // 全局参数 -- 支座编号、桥台形式、翼墙耳墙、桥墩形式、照明系统
   const {bridgepadno, bridgeabutment, bridgewall, bridgepier, bridgelightsys} =
     globalState;
