@@ -672,6 +672,9 @@ export default function ProjectDetail({route, navigation}) {
         page,
       })
       .then(res => {
+        res.list.sort(function(a, b) {
+          return new Date(b.c_date) - new Date(a.c_date);
+        })
         setList(res.list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);

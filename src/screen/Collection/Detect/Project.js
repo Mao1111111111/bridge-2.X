@@ -142,6 +142,9 @@ export default function Project({navigation}) {
         page,
       })
       .then(res => {
+        res.list.sort(function(a, b) {
+          return new Date(b.c_date) - new Date(a.c_date);
+        })
         // 设置数据列表
         setList(res.list);
         // console.log('项目列表的数据',list);
