@@ -181,9 +181,9 @@ export function DiseaseA({route, navigation}) {
       const [widthNum, setWidthNum] = useState('')
       const [heightNum, setHeightNum] = useState('')
 
-      const [memberLength, setMemberLength] = useState('')
-      const [memberWidth, setMemberWidth] = useState('')
-      const [memberHeight, setMemberHeight] = useState('')
+      const [memberLength, setMemberLength] = useState(0)
+      const [memberWidth, setMemberWidth] = useState(0)
+      const [memberHeight, setMemberHeight] = useState(0)
 
       const [diseaseName, setDiseaseName] = useState('')
       const [memberName, setMemberName] = useState('')
@@ -202,14 +202,20 @@ export function DiseaseA({route, navigation}) {
           // console.log('navigation',navigation);
           // console.log('route.params.thridData',route.params.thridData);
           // console.log('baseData.membercheckdata',baseData.membercheckdata);
-          if (route.params.mediaType == 'edit') {
+          if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
             setInfoList(route.params.data.jsondata.infoList)
+            diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+            handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+          } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+            diseaseData['checktypeid'] = route.params.thridData.checktypeid
+            handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
           }
           if (baseData.membercheckdata) {
-            console.log('保存baseData数据');
-            setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+            // console.log('保存baseData数据');
+            // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
           }
-          if (route.params.thridData.datastr && baseData.membercheckdata) {
+          if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
+            console.log('执行了999');
             let infoList = []
             route.params.thridData.datastr.forEach((item) => {
               // console.log('病害列表传入的datastr',item);
@@ -222,12 +228,13 @@ export function DiseaseA({route, navigation}) {
             })
             setInfoList(infoList)
             if (!diseaseData.infoList) {
+              console.log('执行了321122');
               diseaseData['infoList'] = infoList
               handleFormChenge(infoList, diseaseData.infoList)
             }
           } else if (!baseData.membercheckdata) {
-            console.log('读取baseData数据');
-            getBaseDataStorage('baseData')
+            // console.log('读取baseData数据');
+            // getBaseDataStorage('baseData')
           }
           
           
@@ -279,7 +286,11 @@ export function DiseaseA({route, navigation}) {
           // console.log('12333233');
 
           // console.log('baseData.membercheckdata',baseData.membercheckdata);
-          console.log('infoList---------------',infoList);
+          // console.log('infoList---------------',infoList);
+          if (!diseaseData.infoList) {
+            // diseaseData['infoList'] = infoList
+            // handleFormChenge(infoList, diseaseData.infoList)
+          }
 
           let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
           setLengthText(lengthText)
@@ -308,7 +319,7 @@ export function DiseaseA({route, navigation}) {
           
           if (diseaseData.areatype == 'at0000' && sliceArea == 'at000') {
             console.log(sliceArea);
-            console.log('xu~~~~~');
+            console.log('xu~~~~~ 选择其他');
             diseaseData['area'] = '/'
           }
 
@@ -381,21 +392,24 @@ export function DiseaseA({route, navigation}) {
       // 读取baseData的数据
       const getBaseDataStorage = async(name) => {
         // console.log('读取baseData数据')
+        
         try {
+          console.log('infoList0000',diseaseData.infoList);
           const value = await AsyncStorage.getItem(name)
           let values = JSON.parse(value)
           // console.log('value~~~',value);
-          let infoList = []
+          let infoList1 = []
             route.params.thridData.datastr.forEach((item) => {
-              // console.log('病害列表传入的datastr',item);
+              console.log('病害列表传入的datastr',item);
               values.forEach((item1) => {
                 if (item == item1.strid) {
                   // console.log('取出来的item1',item1);
-                  infoList.push(item1)
+                  infoList1.push(item1)
                 }
               })
             })
-            setInfoList(infoList)
+            console.log('infoListaa1111',infoList1);
+            setInfoList(infoList1)
         } catch (error) {
           console.log('读取baseData数据失败',error);
         }
@@ -597,6 +611,16 @@ export function DiseaseA({route, navigation}) {
         // console.log(resetDiseaseData);
 
         try {
+          if (value) {
+            // console.log('调用了writeDes', name, value);
+            if (name == 'areatype') {
+              // console.log('valueaaa',value + 'r1001');
+              diseaseData.area = value + 'r1001'
+            }
+            // console.log('lengthM',lengthM);
+            // 向病害描述函数里传入
+            writeDesText(name, value)
+          }
           // const _data = {
           //   ...diseaseData,
           //   [name]: value,
@@ -627,7 +651,13 @@ export function DiseaseA({route, navigation}) {
           //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
           //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
           // console.log('resttttt',rest)
-          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          // console.log('route.params.thridData.checktypeid',route.params);
+          if (route.params.mediaType == 'edit') {
+            diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          } else if (route.params.mediaType == 'add') {
+            diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          }
+          
 
           const _data = {
             ...diseaseData,
@@ -638,7 +668,7 @@ export function DiseaseA({route, navigation}) {
           // console.log('route',route.params.type.list);
 
           if (name === 'checktypeid') {
-            // console.log('name === checktypeid');
+            console.log('name === checktypeid');
             const _type = route.params.type.list.find(
               item => value === item.checktypeid,
             );
@@ -679,12 +709,7 @@ export function DiseaseA({route, navigation}) {
 
           // console.log('_data',_data);
 
-          if (value) {
-            // console.log('调用了writeDes', name,value);
-            // console.log('lengthM',lengthM);
-            // 向病害描述函数里传入
-            writeDesText(name, value)
-          }
+          
         
           if (true) {
             if (name == 'scale') {
@@ -1151,8 +1176,8 @@ export function DiseaseA({route, navigation}) {
       const [writeDesTextValue, setWriteDesTextValue] = useState('')
       const writeDesText = (name, value) => {
         // let writeTxt = []
-        console.log('长度lengthM',diseaseData);
-        console.log('writeDesText', name, value);
+        // console.log('长度lengthM',diseaseData);
+        // console.log('writeDesText', name, value);
         setWriteDesTextValue(value)
 
         if (name == 'memberLength') {
@@ -1167,8 +1192,8 @@ export function DiseaseA({route, navigation}) {
         }
 
 
-        console.log('diseaseData.memberLength1',diseaseData.memberLength, diseaseData.memberWidth, diseaseData.memberHeight);
-        console.log('name value1', name, value);
+        // console.log('diseaseData.memberLength1',diseaseData.memberLength, diseaseData.memberWidth, diseaseData.memberHeight);
+        // console.log('name value1', name, value);
 
         // 当数据是长宽高的时候，进行数据存储
         if (name == 'memberLength' || name == 'memberWidth' || name == 'memberHeight') {
@@ -1690,7 +1715,7 @@ export function DiseaseA({route, navigation}) {
               handleFormChenge(areaName, diseaseData.area)
               console.log('not empty~~~~',areaName);
             }
-            if (areaparam !== []) {
+            if (true) {
               let areaArr = areaparam
               let inputArea = diseaseData.area
               console.log('inputArea',inputArea);
@@ -1983,7 +2008,7 @@ export function DiseaseA({route, navigation}) {
         </View>
         {/* <View style={tailwind.mT2} /> */}
         <View style={[tailwind.flexRow]}>
-          <View style={{width:500}}>
+          <View style={{width:500,maxHeight:40}}>
             <WriteInput
               name="description"
               label="病害描述"
@@ -2000,7 +2025,7 @@ export function DiseaseA({route, navigation}) {
         </View>
         <View style={tailwind.mT2} />
         <View style={[tailwind.flexRow]}>
-          <View style={{width:500}}>
+          <View style={{width:500,maxHeight:40}}>
             <WriteInput
               name="writePositionTxt"
               label="位置描述"
@@ -2213,14 +2238,19 @@ export function DiseaseB({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -2545,6 +2575,23 @@ export function DiseaseB({route, navigation}) {
       //   ...diseaseData,
       //   [name]: value,
       // };
+
+      try {
+        if (value) {
+          // console.log('调用了writeDes', name, value);
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // console.log('lengthM',lengthM);
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
+
       let unitt = JSON.stringify(diseaseData, [
                                   'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
                                 'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -2568,7 +2615,11 @@ export function DiseaseB({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // if (route.params.mediaType == 'edit') {
+      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      // } else {
+      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // }
 
       const _data = {
         ...diseaseData,
@@ -2608,11 +2659,6 @@ export function DiseaseB({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -3814,7 +3860,7 @@ export function DiseaseB({route, navigation}) {
       </View> */}
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -3831,7 +3877,7 @@ export function DiseaseB({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -3864,7 +3910,7 @@ export function DiseaseB({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:70,height:25}}>
+                <View style={{width:70,height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -4054,14 +4100,19 @@ export function DiseaseC({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -4383,6 +4434,20 @@ export function DiseaseC({route, navigation}) {
       //   ...diseaseData,
       //   [name]: value,
       // };
+
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -4406,7 +4471,11 @@ export function DiseaseC({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // if (route.params.mediaType == 'edit') {
+      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      // } else {
+      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // }
 
       const _data = {
         ...diseaseData,
@@ -4445,12 +4514,6 @@ export function DiseaseC({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -5366,7 +5429,7 @@ export function DiseaseC({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -5664,7 +5727,7 @@ export function DiseaseC({route, navigation}) {
       </View>
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -5681,7 +5744,7 @@ export function DiseaseC({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -5714,7 +5777,7 @@ export function DiseaseC({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:70,height:25}}>
+                <View style={{width:70,height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -5898,14 +5961,19 @@ export function DiseaseD({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -6256,6 +6324,19 @@ export function DiseaseD({route, navigation}) {
       //   [name]: value,
       // };
 
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -6279,7 +6360,6 @@ export function DiseaseD({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
 
       const _data = {
         ...diseaseData,
@@ -6319,12 +6399,6 @@ export function DiseaseD({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -7169,7 +7243,7 @@ export function DiseaseD({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -7370,7 +7444,7 @@ export function DiseaseD({route, navigation}) {
       </View> */}
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -7387,7 +7461,7 @@ export function DiseaseD({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -7420,7 +7494,7 @@ export function DiseaseD({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:'70%',height:25}}>
+                <View style={{width:'70%',height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -7604,14 +7678,19 @@ export function DiseaseE({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -7964,6 +8043,19 @@ export function DiseaseE({route, navigation}) {
       //   [name]: value,
       // };
 
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -7987,7 +8079,11 @@ export function DiseaseE({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // if (route.params.mediaType == 'edit') {
+      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      // } else {
+      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // }
 
       const _data = {
         ...diseaseData,
@@ -8026,13 +8122,6 @@ export function DiseaseE({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-      // console.log('构件类型22：：', itemData.areatype);
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -8876,7 +8965,7 @@ export function DiseaseE({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -9088,7 +9177,7 @@ export function DiseaseE({route, navigation}) {
       </View> */}
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -9105,7 +9194,7 @@ export function DiseaseE({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -9138,7 +9227,7 @@ export function DiseaseE({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:70,height:25}}>
+                <View style={{width:70,height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -9328,14 +9417,19 @@ export function DiseaseK({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -9683,6 +9777,20 @@ export function DiseaseK({route, navigation}) {
       //   ...diseaseData,
       //   [name]: value,
       // };
+
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -9706,7 +9814,11 @@ export function DiseaseK({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -9747,11 +9859,6 @@ export function DiseaseK({route, navigation}) {
         _data.scale = _data.scale || '';
       }
 
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
-      }
 
       if (name == 'scale') {
         // 标度
@@ -10733,7 +10840,7 @@ export function DiseaseK({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -10995,7 +11102,7 @@ export function DiseaseK({route, navigation}) {
       </View>
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -11012,7 +11119,7 @@ export function DiseaseK({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -11045,7 +11152,7 @@ export function DiseaseK({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:'70%',height:25}}>
+                <View style={{width:'70%',height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -11235,14 +11342,19 @@ export function DiseaseG({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -11603,6 +11715,20 @@ export function DiseaseG({route, navigation}) {
       //   ...diseaseData,
       //   [name]: value,
       // };
+
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -11626,7 +11752,11 @@ export function DiseaseG({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // if (route.params.mediaType == 'edit') {
+      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      // } else {
+      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // }
 
       const _data = {
         ...diseaseData,
@@ -11665,12 +11795,6 @@ export function DiseaseG({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -12639,7 +12763,7 @@ export function DiseaseG({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -12904,7 +13028,7 @@ export function DiseaseG({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -12921,7 +13045,7 @@ export function DiseaseG({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -12954,7 +13078,7 @@ export function DiseaseG({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:'70%',height:25}}>
+                <View style={{width:'70%',height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -13144,14 +13268,19 @@ export function DiseaseH({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -13498,6 +13627,18 @@ export function DiseaseH({route, navigation}) {
       //   ...diseaseData,
       //   [name]: value,
       // };
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -13521,7 +13662,11 @@ export function DiseaseH({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // if (route.params.mediaType == 'edit') {
+      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      // } else {
+      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // }
 
       const _data = {
         ...diseaseData,
@@ -13560,12 +13705,6 @@ export function DiseaseH({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -14534,7 +14673,7 @@ export function DiseaseH({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -14795,7 +14934,7 @@ export function DiseaseH({route, navigation}) {
       </View>
       {/* <View style={tailwind.mT2} /> */}
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="description"
             label="病害描述"
@@ -14812,7 +14951,7 @@ export function DiseaseH({route, navigation}) {
       </View>
       <View style={tailwind.mT2} />
       <View style={[tailwind.flexRow]}>
-        <View style={{width:500}}>
+        <View style={{width:500,maxHeight:40}}>
           <WriteInput
             name="writePositionTxt"
             label="位置描述"
@@ -14845,7 +14984,7 @@ export function DiseaseH({route, navigation}) {
           <React.Fragment key={index}>
               <View style={[tailwind.mB2]}>
                 <LabelItem label={strinfo} />
-                <View style={{width:'70%',height:25}}>
+                <View style={{width:'70%',height:36}}>
                   <KeyboardInput
                     name={strvalue}
                     value={diseaseData[strvalue]}
@@ -14926,8 +15065,8 @@ const styles = StyleSheet.create({
     },
     bottomButton: {
       backgroundColor:'#2b427d',
-      height:70,
-      width:70,
+      height:65,
+      width:65,
       ...tailwind.justifyCenter,
       ...tailwind.itemsCenter,
       ...tailwind.rounded,

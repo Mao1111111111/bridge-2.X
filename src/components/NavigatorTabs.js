@@ -239,7 +239,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
             }
           ]
         }
-      >v2.08</Text>
+      >v3.00</Text>
       {/* 检测公司名称 */}
       {/* <Text
         style={

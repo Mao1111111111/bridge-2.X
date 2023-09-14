@@ -92,7 +92,8 @@ const styles = StyleSheet.create({
   },
   content: {
     ...tailwind.p0,
-    height: 25,
+    // height: 25,
+    height: 40,
   },
   circleButton: {
     ...tailwind.itemsCenter,

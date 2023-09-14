@@ -342,7 +342,7 @@ export default function DiseaseList({route, navigation}) {
           const _list = [];
           res.forEach((item, index) => {
             if (!_list.find(it => it.version === item.version)) {
-              console.log('病害录入页面返回传入的数据',item.jsondata);
+              // console.log('病害录入页面返回传入的数据',item.jsondata);
               // console.log('病害录入页面返回传入的scale',item.jsondata.areatype);
               // if (item.jsondata.scale =='4') {
               //   item.jsondata.scale = '2'

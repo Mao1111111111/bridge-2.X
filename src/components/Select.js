@@ -144,7 +144,8 @@ const styles = StyleSheet.create({
     ...tailwind.h8,
     ...tailwind.justifyCenter,
     ...tailwind.relative,
-    height: 25,
+    // height: 25,
+    height: 40,
   },
   select: {
     paddingHorizontal: 0,

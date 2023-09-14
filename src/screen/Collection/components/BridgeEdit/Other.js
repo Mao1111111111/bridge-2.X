@@ -27,6 +27,26 @@ export default function Other({navigation}) {
   // 桥梁全局参数 -- 表单值
   const {values} = state;
 
+  React.useEffect(() => {
+    if (!values.zhizuo_total) {
+      // 支座
+      values['zhizuo_total'] = '2'
+      handleChange('zhizuo_total','2')
+    } 
+    if (!values.b300003num) {
+      // 人行道
+      values['b300003num'] = '2'
+      handleChange('b300003num','2')
+    } 
+    if (!values.b300002num) {
+      // 伸缩缝
+      values['b300002num'] = '2'
+      handleChange('b300002num','2')
+    }
+    
+    console.log('values',values);
+  },[])
+
   // 全局参数 -- 支座编号、桥台形式、翼墙耳墙、桥墩形式、照明系统
   const {bridgepadno, bridgeabutment, bridgewall, bridgepier, bridgelightsys} =
     globalState;
@@ -92,6 +112,7 @@ export default function Other({navigation}) {
             value={values.b200001num || '2'}
             label="桥台数:"
             onChange={handleChange}
+            inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
           />
           <KeyboardInput
             style={[tailwind.mR2, tailwind.flex1]}
@@ -100,6 +121,7 @@ export default function Other({navigation}) {
             LabelStyle={tailwind.w24}
             value={values.b200002num || ''}
             onChange={handleChange}
+            inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
           />
           <KeyboardInput
             style={[tailwind.flex1]}
@@ -108,6 +130,7 @@ export default function Other({navigation}) {
             LabelStyle={tailwind.w16}
             value={values.b100001num || ''}
             onChange={handleChange}
+            inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
           />
           <Text style={[tailwind.mL4, styles.flex2]}>
             *单跨片数，用于构件编号规则中，梁的编号
@@ -122,6 +145,7 @@ export default function Other({navigation}) {
             LabelStyle={tailwind.w16}
             value={values.b300003num || '2'}
             onChange={handleChange}
+            inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
           />
           <KeyboardInput
             style={[tailwind.mR2, tailwind.flex1]}
@@ -131,6 +155,7 @@ export default function Other({navigation}) {
             label="伸缩装置数:"
             value={values.b300002num || '2'}
             onChange={handleChange}
+            inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
           />
           <KeyboardInput
             style={[tailwind.flex1]}
@@ -140,6 +165,7 @@ export default function Other({navigation}) {
             LabelStyle={tailwind.w16}
             value={values.b100002num || ''}
             onChange={handleChange}
+            inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
           />
           <Text style={[tailwind.mL4, styles.flex2]}>*梁间横隔板数</Text>
         </View>
@@ -153,6 +179,7 @@ export default function Other({navigation}) {
             name="bridgelightsys"
             value={values.bridgelightsys || ''}
             label="照明系统:"
+            inputStyle={[{height:25}]}
           />
           <Select
             style={[tailwind.mR2, tailwind.flex1]}
@@ -163,6 +190,7 @@ export default function Other({navigation}) {
             name="bridgewall"
             value={values.bridgewall || ''}
             label="翼墙、耳墙:"
+            inputStyle={[{height:25}]}
           />
           <Select
             style={[styles.flex2]}
@@ -173,6 +201,7 @@ export default function Other({navigation}) {
             name="bridgepadno"
             value={values.bridgepadno || ''}
             label="支座编号:"
+            inputStyle={[{height:25}]}
           />
         </View>
         <View style={[tailwind.flexRow, tailwind.mY2, tailwind.itemsCenter]}>
@@ -184,6 +213,7 @@ export default function Other({navigation}) {
             LabelStyle={tailwind.w16}
             value={values.zhizuo_total || '2'}
             onChange={handleChange}
+            inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
           />
           <Text style={[tailwind.mL4, tailwind.flex1]}>
             *单片梁在每个墩或台上的支座数
@@ -197,6 +227,7 @@ export default function Other({navigation}) {
             LabelStyle={tailwind.w16}
             value={values.bridgepadstr || ''}
             onChange={handleChange}
+            inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
           />
           <Text style={[tailwind.mL4, tailwind.flex1]}>
             *请填写2+4+6格式，连续梁时使用规则
@@ -213,6 +244,7 @@ export default function Other({navigation}) {
             LabelStyle={tailwind.w16}
             value={values.bridgeabutment || ''}
             onChange={handleChange}
+            inputStyle={[{height:25}]}
           />
           <Text style={[tailwind.mL4, tailwind.flex1]}>
             *例如：重力式桥台，构件由 台身、台帽 构成
@@ -229,6 +261,7 @@ export default function Other({navigation}) {
             LabelStyle={tailwind.w16}
             value={values.bridgepier || ''}
             onChange={handleChange}
+            inputStyle={[{height:25}]}
           />
           <Text style={[tailwind.mL4, tailwind.flex1]}>
             *例如：柱式桥，构件由 墩柱、盖梁 构成
@@ -243,6 +276,7 @@ export default function Other({navigation}) {
               LabelStyle={tailwind.w16}
               value={values.qiaotaizhushu || ''}
               onChange={handleChange}
+              inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
             />
             <Text style={[tailwind.mL4, tailwind.flex1]} />
           </View>
@@ -256,6 +290,7 @@ export default function Other({navigation}) {
               LabelStyle={tailwind.w16}
               value={values.qiaodunzhushu || ''}
               onChange={handleChange}
+              inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
             />
             <Text style={[tailwind.mL4, tailwind.flex1]} />
           </View>
@@ -270,6 +305,7 @@ export default function Other({navigation}) {
               LabelStyle={tailwind.w16}
               value={values.leibanshu || ''}
               onChange={handleChange}
+              inputStyle={[tailwind.border,tailwind.borderGray400,tailwind.roundedSm,tailwind.pX2,tailwind.flex1,{height:25}]}
             />
             <Text style={[tailwind.mL4, tailwind.flex1]} />
           </View>

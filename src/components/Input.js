@@ -659,7 +659,7 @@ export const Password = React.forwardRef(function (
 
 // 键盘组件
 export const KeyboardInput = React.forwardRef(
-  ({label, style, LabelStyle, name, onChange, value}, ref) => {
+  ({label, style, LabelStyle, inputStyle, name, onChange, value}, ref) => {
     const {
       state: {theme},
     } = React.useContext(ThemeContext);
@@ -791,7 +791,7 @@ export const KeyboardInput = React.forwardRef(
     return (
       <LabelItem style={style} LabelStyle={LabelStyle} label={label}>
         <TouchableWithoutFeedback onPress={handlModalShow}>
-          <View style={[styles.keyboardInput]}>
+          <View style={inputStyle ? inputStyle : [styles.keyboardInput]}>
             <Text style={[tailwind.textBlack]}>{value}</Text>
           </View>
         </TouchableWithoutFeedback>
