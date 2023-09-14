@@ -140,70 +140,74 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
 
   // 保存按钮点击
   const handleSave = () => {
-    // 完善数据
-    const _values = {
-      ...values,
-      top: JSON.stringify(values.top || {}),
-      bottom: JSON.stringify(values.bottom || {}),
-      pmx: JSON.stringify(values.pmx || {}),
-      bridgeconfig: JSON.stringify({
-        b200001num: values.b200001num, // 桥台数
-        b200002num: values.b200002num, // 桥墩数
-        b100001num: values.b100001num, // 梁片数
-        b300003num: values.b300003num, // 人行道数
-        b300002num: values.b300002num, //	伸缩装置数
-        b100002num: values.b100002num, //	横隔板数
-        zhizuo_total: values.zhizuo_total, //	支座数
-        bridgelightsys: values.bridgelightsys, //	照明系统
-        bridgewall: values.bridgewall, //	翼墙、耳墙
-        bridgepadno: values.bridgepadno, //	支座编号
-        bridgeabutment: values.bridgeabutment, // 桥台形式
-        bridgepier: values.bridgepier, //	桥墩形式
-        bridgepadstr: values.bridgepadstr, //	桥连组合
-        qiaotaizhushu: values.qiaotaizhushu,
-        qiaodunzhushu: values.qiaodunzhushu,
-        leibanshu: values.leibanshu,
-      }),
-    };
-    // 按钮loading
-    setLoading(true);
-    // parts 存放当前桥梁所有构件的信息
-    const parts = [];
-    Object.keys(topPartsData).forEach(key =>
-      parts.push(
-        ...topPartsData[key].map(it => {
-          it.membertype = key;
-          return it;
+    if(values.b200002num&&values.b100001num){
+      // 完善数据
+      const _values = {
+        ...values,
+        top: JSON.stringify(values.top || {}),
+        bottom: JSON.stringify(values.bottom || {}),
+        pmx: JSON.stringify(values.pmx || {}),
+        bridgeconfig: JSON.stringify({
+          b200001num: values.b200001num, // 桥台数
+          b200002num: values.b200002num, // 桥墩数
+          b100001num: values.b100001num, // 梁片数
+          b300003num: values.b300003num, // 人行道数
+          b300002num: values.b300002num, //	伸缩装置数
+          b100002num: values.b100002num, //	横隔板数
+          zhizuo_total: values.zhizuo_total, //	支座数
+          bridgelightsys: values.bridgelightsys, //	照明系统
+          bridgewall: values.bridgewall, //	翼墙、耳墙
+          bridgepadno: values.bridgepadno, //	支座编号
+          bridgeabutment: values.bridgeabutment, // 桥台形式
+          bridgepier: values.bridgepier, //	桥墩形式
+          bridgepadstr: values.bridgepadstr, //	桥连组合
+          qiaotaizhushu: values.qiaotaizhushu,
+          qiaodunzhushu: values.qiaodunzhushu,
+          leibanshu: values.leibanshu,
         }),
-      ),
-    );
-    Object.keys(bottomPartsData).forEach(key =>
-      parts.push(
-        ...bottomPartsData[key].map(it => {
-          it.membertype = key;
-          return it;
-        }),
-      ),
-    );
-    Object.keys(pmxData).forEach(key =>
-      parts.push(
-        ...pmxData[key].map(it => {
-          it.membertype = key;
-          return it;
-        }),
-      ),
-    );
-    // 判断是 克隆 、编辑、新增
-    if (isClone) {
-      clone(_values, parts);
-      return;
-    }
-    if (isUpdate) {
-      console.info('update');
-      update(_values, parts);
-    } else {
-      console.info('add');
-      add(_values, parts);
+      };
+      // 按钮loading
+      setLoading(true);
+      // parts 存放当前桥梁所有构件的信息
+      const parts = [];
+      Object.keys(topPartsData).forEach(key =>
+        parts.push(
+          ...topPartsData[key].map(it => {
+            it.membertype = key;
+            return it;
+          }),
+        ),
+      );
+      Object.keys(bottomPartsData).forEach(key =>
+        parts.push(
+          ...bottomPartsData[key].map(it => {
+            it.membertype = key;
+            return it;
+          }),
+        ),
+      );
+      Object.keys(pmxData).forEach(key =>
+        parts.push(
+          ...pmxData[key].map(it => {
+            it.membertype = key;
+            return it;
+          }),
+        ),
+      );
+      // 判断是 克隆 、编辑、新增
+      if (isClone) {
+        clone(_values, parts);
+        return;
+      }
+      if (isUpdate) {
+        console.info('update');
+        update(_values, parts);
+      } else {
+        console.info('add');
+        add(_values, parts);
+      }
+    }else{
+      Alert.alert('消息', '请填写其他属性中的“桥墩数”和“梁片数”');
     }
   };
 
