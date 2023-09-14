@@ -286,7 +286,7 @@ export function DiseaseA({route, navigation}) {
           // console.log('12333233');
 
           // console.log('baseData.membercheckdata',baseData.membercheckdata);
-          console.log('infoList---------------',infoList);
+          // console.log('infoList---------------',infoList);
           if (!diseaseData.infoList) {
             // diseaseData['infoList'] = infoList
             // handleFormChenge(infoList, diseaseData.infoList)
@@ -319,7 +319,7 @@ export function DiseaseA({route, navigation}) {
           
           if (diseaseData.areatype == 'at0000' && sliceArea == 'at000') {
             console.log(sliceArea);
-            console.log('xu~~~~~');
+            console.log('xu~~~~~ 选择其他');
             diseaseData['area'] = '/'
           }
 
@@ -611,6 +611,16 @@ export function DiseaseA({route, navigation}) {
         // console.log(resetDiseaseData);
 
         try {
+          if (value) {
+            // console.log('调用了writeDes', name, value);
+            if (name == 'areatype') {
+              // console.log('valueaaa',value + 'r1001');
+              diseaseData.area = value + 'r1001'
+            }
+            // console.log('lengthM',lengthM);
+            // 向病害描述函数里传入
+            writeDesText(name, value)
+          }
           // const _data = {
           //   ...diseaseData,
           //   [name]: value,
@@ -699,12 +709,7 @@ export function DiseaseA({route, navigation}) {
 
           // console.log('_data',_data);
 
-          if (value) {
-            console.log('调用了writeDes', infoList);
-            // console.log('lengthM',lengthM);
-            // 向病害描述函数里传入
-            writeDesText(name, value)
-          }
+          
         
           if (true) {
             if (name == 'scale') {
@@ -1172,7 +1177,7 @@ export function DiseaseA({route, navigation}) {
       const writeDesText = (name, value) => {
         // let writeTxt = []
         // console.log('长度lengthM',diseaseData);
-        console.log('writeDesText', name, value);
+        // console.log('writeDesText', name, value);
         setWriteDesTextValue(value)
 
         if (name == 'memberLength') {
@@ -1188,7 +1193,7 @@ export function DiseaseA({route, navigation}) {
 
 
         // console.log('diseaseData.memberLength1',diseaseData.memberLength, diseaseData.memberWidth, diseaseData.memberHeight);
-        console.log('name value1', name, value);
+        // console.log('name value1', name, value);
 
         // 当数据是长宽高的时候，进行数据存储
         if (name == 'memberLength' || name == 'memberWidth' || name == 'memberHeight') {
@@ -1710,7 +1715,7 @@ export function DiseaseA({route, navigation}) {
               handleFormChenge(areaName, diseaseData.area)
               console.log('not empty~~~~',areaName);
             }
-            if (areaparam !== []) {
+            if (true) {
               let areaArr = areaparam
               let inputArea = diseaseData.area
               console.log('inputArea',inputArea);
@@ -2570,6 +2575,23 @@ export function DiseaseB({route, navigation}) {
       //   ...diseaseData,
       //   [name]: value,
       // };
+
+      try {
+        if (value) {
+          // console.log('调用了writeDes', name, value);
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // console.log('lengthM',lengthM);
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
+
       let unitt = JSON.stringify(diseaseData, [
                                   'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
                                 'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -2637,11 +2659,6 @@ export function DiseaseB({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -4417,6 +4434,20 @@ export function DiseaseC({route, navigation}) {
       //   ...diseaseData,
       //   [name]: value,
       // };
+
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -4483,12 +4514,6 @@ export function DiseaseC({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -5404,7 +5429,7 @@ export function DiseaseC({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -6299,6 +6324,19 @@ export function DiseaseD({route, navigation}) {
       //   [name]: value,
       // };
 
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -6361,12 +6399,6 @@ export function DiseaseD({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -7211,7 +7243,7 @@ export function DiseaseD({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -8011,6 +8043,19 @@ export function DiseaseE({route, navigation}) {
       //   [name]: value,
       // };
 
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -8077,13 +8122,6 @@ export function DiseaseE({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-      // console.log('构件类型22：：', itemData.areatype);
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -8927,7 +8965,7 @@ export function DiseaseE({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -9739,6 +9777,20 @@ export function DiseaseK({route, navigation}) {
       //   ...diseaseData,
       //   [name]: value,
       // };
+
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -9807,11 +9859,6 @@ export function DiseaseK({route, navigation}) {
         _data.scale = _data.scale || '';
       }
 
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
-      }
 
       if (name == 'scale') {
         // 标度
@@ -10793,7 +10840,7 @@ export function DiseaseK({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -11668,6 +11715,20 @@ export function DiseaseG({route, navigation}) {
       //   ...diseaseData,
       //   [name]: value,
       // };
+
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
+
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -11734,12 +11795,6 @@ export function DiseaseG({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -12708,7 +12763,7 @@ export function DiseaseG({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
@@ -13572,6 +13627,18 @@ export function DiseaseH({route, navigation}) {
       //   ...diseaseData,
       //   [name]: value,
       // };
+      try {
+        if (value) {
+          if (name == 'areatype') {
+            // console.log('valueaaa',value + 'r1001');
+            diseaseData.area = value + 'r1001'
+          }
+          // 向病害描述函数里传入
+          writeDesText(name, value)
+        }
+      } catch (error) {
+        console.log('erro',error);
+      }
       let unitt = JSON.stringify(diseaseData, [
           'areatype','area','scale','lengthText','widthText','heightText','memberLength','memberWidth',
         'memberHeight','disLength','disWidth','disHeight','hzbrmc_length_m','hzbrmc_length_cm','hzbrmc_length_mm','hzbrmc_width_m',
@@ -13638,12 +13705,6 @@ export function DiseaseH({route, navigation}) {
           }
         }
         _data.scale = _data.scale || '';
-      }
-
-
-      if (value) {
-        // 向病害描述函数里传入
-        writeDesText(name, value)
       }
 
       if (name == 'scale') {
@@ -14612,7 +14673,7 @@ export function DiseaseH({route, navigation}) {
             diseaseData['area'] = areaName
             handleFormChenge(areaName, diseaseData.area)
           }
-          if (areaparam !== []) {
+          if (true) {
             let areaArr = areaparam
             let inputArea = diseaseData.area
             console.log('inputArea',inputArea);
