@@ -202,14 +202,20 @@ export function DiseaseA({route, navigation}) {
           // console.log('navigation',navigation);
           // console.log('route.params.thridData',route.params.thridData);
           // console.log('baseData.membercheckdata',baseData.membercheckdata);
-          if (route.params.mediaType == 'edit') {
+          if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
             setInfoList(route.params.data.jsondata.infoList)
+            diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+            handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+          } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+            diseaseData['checktypeid'] = route.params.thridData.checktypeid
+            handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
           }
           if (baseData.membercheckdata) {
-            console.log('保存baseData数据');
-            setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+            // console.log('保存baseData数据');
+            // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
           }
-          if (route.params.thridData.datastr && baseData.membercheckdata) {
+          if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
+            console.log('执行了999');
             let infoList = []
             route.params.thridData.datastr.forEach((item) => {
               // console.log('病害列表传入的datastr',item);
@@ -222,12 +228,13 @@ export function DiseaseA({route, navigation}) {
             })
             setInfoList(infoList)
             if (!diseaseData.infoList) {
+              console.log('执行了321122');
               diseaseData['infoList'] = infoList
               handleFormChenge(infoList, diseaseData.infoList)
             }
           } else if (!baseData.membercheckdata) {
-            console.log('读取baseData数据');
-            getBaseDataStorage('baseData')
+            // console.log('读取baseData数据');
+            // getBaseDataStorage('baseData')
           }
           
           
@@ -280,6 +287,10 @@ export function DiseaseA({route, navigation}) {
 
           // console.log('baseData.membercheckdata',baseData.membercheckdata);
           console.log('infoList---------------',infoList);
+          if (!diseaseData.infoList) {
+            // diseaseData['infoList'] = infoList
+            // handleFormChenge(infoList, diseaseData.infoList)
+          }
 
           let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
           setLengthText(lengthText)
@@ -381,21 +392,24 @@ export function DiseaseA({route, navigation}) {
       // 读取baseData的数据
       const getBaseDataStorage = async(name) => {
         // console.log('读取baseData数据')
+        
         try {
+          console.log('infoList0000',diseaseData.infoList);
           const value = await AsyncStorage.getItem(name)
           let values = JSON.parse(value)
           // console.log('value~~~',value);
-          let infoList = []
+          let infoList1 = []
             route.params.thridData.datastr.forEach((item) => {
-              // console.log('病害列表传入的datastr',item);
+              console.log('病害列表传入的datastr',item);
               values.forEach((item1) => {
                 if (item == item1.strid) {
                   // console.log('取出来的item1',item1);
-                  infoList.push(item1)
+                  infoList1.push(item1)
                 }
               })
             })
-            setInfoList(infoList)
+            console.log('infoListaa1111',infoList1);
+            setInfoList(infoList1)
         } catch (error) {
           console.log('读取baseData数据失败',error);
         }
@@ -630,7 +644,7 @@ export function DiseaseA({route, navigation}) {
           // console.log('route.params.thridData.checktypeid',route.params);
           if (route.params.mediaType == 'edit') {
             diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-          } else {
+          } else if (route.params.mediaType == 'add') {
             diseaseData['checktypeid'] = route.params.thridData.checktypeid
           }
           
@@ -644,7 +658,7 @@ export function DiseaseA({route, navigation}) {
           // console.log('route',route.params.type.list);
 
           if (name === 'checktypeid') {
-            // console.log('name === checktypeid');
+            console.log('name === checktypeid');
             const _type = route.params.type.list.find(
               item => value === item.checktypeid,
             );
@@ -686,7 +700,7 @@ export function DiseaseA({route, navigation}) {
           // console.log('_data',_data);
 
           if (value) {
-            // console.log('调用了writeDes', name,value);
+            console.log('调用了writeDes', infoList);
             // console.log('lengthM',lengthM);
             // 向病害描述函数里传入
             writeDesText(name, value)
@@ -1157,7 +1171,7 @@ export function DiseaseA({route, navigation}) {
       const [writeDesTextValue, setWriteDesTextValue] = useState('')
       const writeDesText = (name, value) => {
         // let writeTxt = []
-        console.log('长度lengthM',diseaseData);
+        // console.log('长度lengthM',diseaseData);
         console.log('writeDesText', name, value);
         setWriteDesTextValue(value)
 
@@ -1173,7 +1187,7 @@ export function DiseaseA({route, navigation}) {
         }
 
 
-        console.log('diseaseData.memberLength1',diseaseData.memberLength, diseaseData.memberWidth, diseaseData.memberHeight);
+        // console.log('diseaseData.memberLength1',diseaseData.memberLength, diseaseData.memberWidth, diseaseData.memberHeight);
         console.log('name value1', name, value);
 
         // 当数据是长宽高的时候，进行数据存储
@@ -2219,14 +2233,19 @@ export function DiseaseB({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -2574,11 +2593,11 @@ export function DiseaseB({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      if (route.params.mediaType == 'edit') {
-        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      } else {
-        diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      }
+      // if (route.params.mediaType == 'edit') {
+      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      // } else {
+      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // }
 
       const _data = {
         ...diseaseData,
@@ -4064,14 +4083,19 @@ export function DiseaseC({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -4416,11 +4440,11 @@ export function DiseaseC({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      if (route.params.mediaType == 'edit') {
-        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      } else {
-        diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      }
+      // if (route.params.mediaType == 'edit') {
+      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      // } else {
+      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // }
 
       const _data = {
         ...diseaseData,
@@ -5912,14 +5936,19 @@ export function DiseaseD({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -6293,11 +6322,6 @@ export function DiseaseD({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      if (route.params.mediaType == 'edit') {
-        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      } else {
-        diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      }
 
       const _data = {
         ...diseaseData,
@@ -7622,14 +7646,19 @@ export function DiseaseE({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -8005,11 +8034,11 @@ export function DiseaseE({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      if (route.params.mediaType == 'edit') {
-        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      } else {
-        diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      }
+      // if (route.params.mediaType == 'edit') {
+      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      // } else {
+      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // }
 
       const _data = {
         ...diseaseData,
@@ -9350,14 +9379,19 @@ export function DiseaseK({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -11261,14 +11295,19 @@ export function DiseaseG({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -11652,11 +11691,11 @@ export function DiseaseG({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      if (route.params.mediaType == 'edit') {
-        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      } else {
-        diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      }
+      // if (route.params.mediaType == 'edit') {
+      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      // } else {
+      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // }
 
       const _data = {
         ...diseaseData,
@@ -13174,14 +13213,19 @@ export function DiseaseH({route, navigation}) {
     React.useEffect(() => {
       saveData.current = {...diseaseData};
       try {
-        if (route.params.mediaType == 'edit') {
+        if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
           setInfoList(route.params.data.jsondata.infoList)
+          diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+          handleFormChenge(route.params.data.jsondata.checktypeid,diseaseData.checktypeid)
+        } else if (route.params.mediaType == 'add' && !diseaseData.checktypeid) {
+          diseaseData['checktypeid'] = route.params.thridData.checktypeid
+          handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
           console.log('保存baseData数据');
           setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata) {
+        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
           route.params.thridData.datastr.forEach((item) => {
             // console.log('病害列表传入的datastr',item);
@@ -13551,11 +13595,11 @@ export function DiseaseH({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      if (route.params.mediaType == 'edit') {
-        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      } else {
-        diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      }
+      // if (route.params.mediaType == 'edit') {
+      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      // } else {
+      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      // }
 
       const _data = {
         ...diseaseData,
@@ -14960,8 +15004,8 @@ const styles = StyleSheet.create({
     },
     bottomButton: {
       backgroundColor:'#2b427d',
-      height:70,
-      width:70,
+      height:65,
+      width:65,
       ...tailwind.justifyCenter,
       ...tailwind.itemsCenter,
       ...tailwind.rounded,

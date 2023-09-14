@@ -460,7 +460,7 @@ export default function Member({route, navigation,item}) {
         item.title = '伸缩装置'
       }
     })
-    console.log('_list',_list);
+    // console.log('_list',_list);
     setList(_list);
 
     let _allList = [
@@ -477,7 +477,7 @@ export default function Member({route, navigation,item}) {
       })
       
     })
-    console.log('_allList',_allList);
+    // console.log('_allList',_allList);
     setAllList(_allList)
 
     
