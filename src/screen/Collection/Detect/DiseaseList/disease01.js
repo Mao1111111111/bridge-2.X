@@ -2247,8 +2247,8 @@ export function DiseaseB({route, navigation}) {
           handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
-          console.log('保存baseData数据');
-          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+          // console.log('保存baseData数据');
+          // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
         if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
@@ -2267,8 +2267,8 @@ export function DiseaseB({route, navigation}) {
             handleFormChenge(infoList, diseaseData.infoList)
           }
         } else if (!baseData.membercheckdata) {
-          console.log('读取baseData数据');
-          getBaseDataStorage('baseData')
+          // console.log('读取baseData数据');
+          // getBaseDataStorage('baseData')
         }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
@@ -2615,11 +2615,11 @@ export function DiseaseB({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      // if (route.params.mediaType == 'edit') {
-      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      // } else {
-      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      // }
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else if (route.params.mediaType == 'add') {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -4109,8 +4109,8 @@ export function DiseaseC({route, navigation}) {
           handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
-          console.log('保存baseData数据');
-          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+          // console.log('保存baseData数据');
+          // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
         if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
@@ -4129,8 +4129,8 @@ export function DiseaseC({route, navigation}) {
             handleFormChenge(infoList, diseaseData.infoList)
           }
         } else if (!baseData.membercheckdata) {
-          console.log('读取baseData数据');
-          getBaseDataStorage('baseData')
+          // console.log('读取baseData数据');
+          // getBaseDataStorage('baseData')
         }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
@@ -4471,11 +4471,11 @@ export function DiseaseC({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      // if (route.params.mediaType == 'edit') {
-      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      // } else {
-      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      // }
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else if (route.params.mediaType == 'add') {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -5970,8 +5970,8 @@ export function DiseaseD({route, navigation}) {
           handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
-          console.log('保存baseData数据');
-          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+          // console.log('保存baseData数据');
+          // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
         if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
@@ -5990,8 +5990,8 @@ export function DiseaseD({route, navigation}) {
             handleFormChenge(infoList, diseaseData.infoList)
           }
         } else if (!baseData.membercheckdata) {
-          console.log('读取baseData数据');
-          getBaseDataStorage('baseData')
+          // console.log('读取baseData数据');
+          // getBaseDataStorage('baseData')
         }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
@@ -6360,6 +6360,12 @@ export function DiseaseD({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
+
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else if (route.params.mediaType == 'add') {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -7687,8 +7693,8 @@ export function DiseaseE({route, navigation}) {
           handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
-          console.log('保存baseData数据');
-          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+          // console.log('保存baseData数据');
+          // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
         if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
@@ -7707,8 +7713,8 @@ export function DiseaseE({route, navigation}) {
             handleFormChenge(infoList, diseaseData.infoList)
           }
         } else if (!baseData.membercheckdata) {
-          console.log('读取baseData数据');
-          getBaseDataStorage('baseData')
+          // console.log('读取baseData数据');
+          // getBaseDataStorage('baseData')
         }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
@@ -8079,11 +8085,11 @@ export function DiseaseE({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      // if (route.params.mediaType == 'edit') {
-      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      // } else {
-      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      // }
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else if (route.params.mediaType == 'add') {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -9426,8 +9432,8 @@ export function DiseaseK({route, navigation}) {
           handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
-          console.log('保存baseData数据');
-          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+          // console.log('保存baseData数据');
+          // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
         if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
@@ -9446,8 +9452,8 @@ export function DiseaseK({route, navigation}) {
             handleFormChenge(infoList, diseaseData.infoList)
           }
         } else if (!baseData.membercheckdata) {
-          console.log('读取baseData数据');
-          getBaseDataStorage('baseData')
+          // console.log('读取baseData数据');
+          // getBaseDataStorage('baseData')
         }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
@@ -9816,7 +9822,7 @@ export function DiseaseK({route, navigation}) {
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
       if (route.params.mediaType == 'edit') {
         diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      } else {
+      } else if (route.params.mediaType == 'add') {
         diseaseData['checktypeid'] = route.params.thridData.checktypeid
       }
 
@@ -11351,8 +11357,8 @@ export function DiseaseG({route, navigation}) {
           handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
-          console.log('保存baseData数据');
-          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+          // console.log('保存baseData数据');
+          // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
         if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
@@ -11371,8 +11377,8 @@ export function DiseaseG({route, navigation}) {
             handleFormChenge(infoList, diseaseData.infoList)
           }
         } else if (!baseData.membercheckdata) {
-          console.log('读取baseData数据');
-          getBaseDataStorage('baseData')
+          // console.log('读取baseData数据');
+          // getBaseDataStorage('baseData')
         }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
@@ -11752,11 +11758,11 @@ export function DiseaseG({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      // if (route.params.mediaType == 'edit') {
-      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      // } else {
-      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      // }
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else if (route.params.mediaType == 'add') {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
@@ -13277,8 +13283,8 @@ export function DiseaseH({route, navigation}) {
           handleFormChenge(route.params.thridData.checktypeid,diseaseData.checktypeid)
         }
         if (baseData.membercheckdata) {
-          console.log('保存baseData数据');
-          setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
+          // console.log('保存baseData数据');
+          // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
         if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
           let infoList = []
@@ -13297,8 +13303,8 @@ export function DiseaseH({route, navigation}) {
             handleFormChenge(infoList, diseaseData.infoList)
           }
         } else if (!baseData.membercheckdata) {
-          console.log('读取baseData数据');
-          getBaseDataStorage('baseData')
+          // console.log('读取baseData数据');
+          // getBaseDataStorage('baseData')
         }
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
@@ -13662,11 +13668,11 @@ export function DiseaseH({route, navigation}) {
       //   hzbrmc_lb_bottom_length_m,hzbrmc_lb_right_length_m,hzbrmc_lb_left_width_mm,hzbrmc_lb_bottom_width_mm,
       //   hzbrmc_lb_right_width_mm,hzbrmc_slant_m,lengthText,widthText,heightText,memberLength,memberWidth,
       //   memberHeight,disLength,disWidth,disHeight,...rest} = diseaseData
-      // if (route.params.mediaType == 'edit') {
-      //   diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
-      // } else {
-      //   diseaseData['checktypeid'] = route.params.thridData.checktypeid
-      // }
+      if (route.params.mediaType == 'edit') {
+        diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
+      } else if (route.params.mediaType == 'add') {
+        diseaseData['checktypeid'] = route.params.thridData.checktypeid
+      }
 
       const _data = {
         ...diseaseData,
