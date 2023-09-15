@@ -198,7 +198,6 @@ export default function Login() {
         islogin: 1,
         pin: password,
       };
-      console.log("userData",userData);
       // 将用户信息存入数据库中
       //如果数据库中有这个用户,那么更新数据;如果没有这个用户,那么插入这个用户信息到数据库
       await user.login(userData);

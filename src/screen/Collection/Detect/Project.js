@@ -128,6 +128,7 @@ export default function Project({navigation}) {
     }
     // 设置表格loading
     setLoading(true);
+    setList([])
 
     let proNameList = []
 

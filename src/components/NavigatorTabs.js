@@ -149,6 +149,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
     setVisible(true)
   }
   const handleLogout = async () => {
+    navigation.navigate('Collection/Detect/Project',{ replace: true })
     await AsyncStorage.removeItem('userInfo');
     await logout();
     dispatch({type: 'userInfo', payload: null});
