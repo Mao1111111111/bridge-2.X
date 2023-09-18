@@ -537,7 +537,142 @@ function Provider({children}) {
                 }
                 if(mediaData.length>0){
                   // 上传媒体数据到云
-                  await uploadImgSingle(0,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch)
+                  //await uploadImgSingle(0,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch)
+
+                  const uploadImg = async  (mediaData) => {
+                    
+
+                
+
+                    const promises = mediaData
+                    .filter(({filepath}) => filepath)
+                    .map(async item => {
+                      await new Promise((resolve) => setTimeout(resolve, 1000))
+                      //将文件地址分割获取文件名
+                      let arr = item.appliedPath.split('/')
+                      //拼接key
+                      let key = userInfo.company.companyid + '/'
+                        + data.testData.userid + '/'
+                        + data.bridgeid + '/'
+                        + data.testData.bridgereportid + '/'
+                        + arr[arr.length-1].replace("jpg","jpeg")
+                      return await uploadData.uploadImageToAWS(key,item.appliedPath).then(res=>{
+                        console.log("key",key);
+                        //设置反馈参数
+                        let newFeedbackParams = {
+                          ...feedbackParams,
+                          objectkey:key,
+                          objecttype:'img',
+                          objectsize:item.filesize,
+                          objectinfo:{
+                            ...feedbackParams.objectinfo,
+                            filenameuser:item.filename + '.' + item.filetypes.replace("jpg","jpeg"),
+                            filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
+                            filesize:Math.floor(item.filesize/1024*100)/100,
+                            filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
+                            filemd5:(res.ETag.replace("\"","")).replace("\"",""),
+                            createtime:item.u_date
+                          }
+                        }
+                        //---------反馈
+                        uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(res=>{
+                          successImgNum++
+                          dispatch({
+                            type: 'curUploadImgSucNUm',
+                            payload: successImgNum
+                          })
+                        }).catch(err=>{
+                          let errObj = state.promptFontErr
+                          let name = data.testData.projectname + '-' + data.bridgename
+                          if(errObj[name]){
+                            if(errObj[name]['mediaDataFont']){
+                              errObj[name]['mediaDataFont'].push(err)
+                            }else{
+                              errObj[name]['mediaDataFont'] = [err]
+                            }
+                          }else{
+                            errObj[name] = {
+                              mediaDataFont:[err]
+                            }
+                          }
+                          dispatch({
+                            type: 'promptFontErr',
+                            payload: errObj
+                          })
+                          // 媒体数据上传成功 标志位
+                          mediaDataUploadSuccess = false
+                        })
+                      }).catch(err=>{
+                          let errObj = state.promptFontErr
+                          let name = data.testData.projectname + '-' + data.bridgename
+                          if(errObj[name]){
+                            if(errObj[name]['mediaDataFont']){
+                              errObj[name]['mediaDataFont'].push(err)
+                            }else{
+                              errObj[name]['mediaDataFont'] = [err]
+                            }
+                          }else{
+                            errObj[name] = {
+                              mediaDataFont:[err]
+                            }
+                          }
+                          dispatch({
+                            type: 'promptFontErr',
+                            payload: errObj
+                          })
+                          // 媒体数据上传成功 标志位
+                          mediaDataUploadSuccess = false
+                      })
+                    })
+                    const results = [];
+                    const concurrency = 3;
+                    let index = 0;
+                    console.log("promises.length",promises.length);
+                    while (index < promises.length) {
+                      const slice = promises.slice(index, index + concurrency);
+                      const sliceResults = await Promise.all(slice);
+
+                      results.push(...sliceResults);
+                      index += concurrency;
+                      console.log("2222");
+                    }
+
+                    return results;
+                  }
+
+                  function createLimitedQueue(concurrencyLimit) {
+                    let count = 0;
+                    const queue = [];
+                  
+                    function executeNext() {
+                      if (queue.length > 0 && count < concurrencyLimit) {
+                        const nextPromise = queue.shift();
+                        nextPromise();
+                      }
+                    }
+                  
+                    function addToQueue() {
+                      return new Promise((resolve) => {
+                        queue.push(resolve);
+                        executeNext();
+                      });
+                    }
+                  
+                    addToQueue.resolve = () => {
+                      count--;
+                      executeNext();
+                    };
+                  
+                    return addToQueue;
+                  }
+
+                  await uploadImg(mediaData)
+                  .then((results) => {
+                    console.log('上传成功！', results);
+                  })
+                  .catch((error) => {
+                    console.error('上传失败：', error);
+                  });
                 }
               }
              
