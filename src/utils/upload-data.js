@@ -516,11 +516,16 @@ new Promise(async (resolve, reject) => {
     return new Promise((resolve, reject) => {
       //参数
       var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: objects};
-      S3Upload(bucketParams).then(res=>{
-        resolve(res);
-      }).catch(err=>{
-        reject(err);
-      })
+      try{
+        S3Upload(bucketParams).then(res=>{
+          resolve(res);
+        }).catch(err=>{
+          reject(err);
+        })
+      }catch(e){
+        reject(e);
+      }
+      
     });
   }
   

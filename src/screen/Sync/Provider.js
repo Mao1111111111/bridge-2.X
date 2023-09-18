@@ -169,14 +169,9 @@ function Provider({children}) {
       type: 'curUploadImgSucNUm',
       payload: 0
     })
-    // console.info(
-    //   '?',
-    //   state.nowUploadingTestDataInx + 1,
-    //   state.testDataUploadingIds.length,
-    // );
+
     if (state.testDataUploadingIds.length) {
       const inx = state.nowUploadingTestDataInx + 1;
-
       if (inx === state.testDataUploadingIds.length) {
         dispatch({
           type: 'nowUploadingTestDataInx',
@@ -238,84 +233,130 @@ function Provider({children}) {
               payload: 0
             })
             // 获取数据
-            const allData = await createData.getData(
-              state.testDataUploadingIds[inx],
-              state.planMeta,
-              state.genesisMate,
-              state.membercheckdata,
-              basememberinfo
-            );
+            let allData = null
+            try{
+              allData = await createData.getData(
+                state.testDataUploadingIds[inx],
+                state.planMeta,
+                state.genesisMate,
+                state.membercheckdata,
+                basememberinfo
+              );
+            }catch(e){
+              return await errorDeal(e,'上传时整理数据错误',inx,state,dispatch)
+            }
             let successImgNum = 0
-            // console.log("allData",JSON.stringify(allData) );
             if(allData.state){
               // 数据整理成功
-              const data = allData.data
-              const mediaData = allData.mediaData
+              let data = null
+              let mediaData = []
+              try{
+                data = allData.data
+                mediaData = allData.mediaData
+              }catch(e){
+                return await errorDeal(e,'上传数据分配出错',inx,state,dispatch)
+              }
               // 设置当前上传的图片总数
-              dispatch({
-                type: 'curUploadImgAllNUm',
-                payload: allData.mediaData.length
-              })
+              try{
+                dispatch({
+                  type: 'curUploadImgAllNUm',
+                  payload: mediaData.length
+                })
+              }catch(e){
+                return await errorDeal(e,'设置当前上传的图片总数出错',inx,state,dispatch)
+              }
               //---------对检测数据操作
               //---文件夹
               // 文件夹地址，根据 桥id 建立文件夹
-              let dirPath = RNFS.DocumentDirectoryPath + '/testData/' + data.bridgeid
+              let dirPath = ''
+              try{
+                dirPath = RNFS.DocumentDirectoryPath + '/testData/' + data.bridgeid
+              }catch(e){
+                return await errorDeal(e,'根据桥id建立文件夹路径拼接出错',inx,state,dispatch)
+              }
               // 创建文件夹
-              await fs.mkdir(dirPath)
+              try{
+                await fs.mkdir(dirPath)
+              }catch(e){
+                return await errorDeal(e,'创建文件夹出错',inx,state,dispatch)
+              }
               //---写入本地
               // 文件地址 = 桥梁文件夹 + 检测id
-              let dataPath = dirPath + '/' + data.testData.bridgereportid + '.txt'
-              // 将数据存入本地
-              await fs.write(dataPath,JSON.stringify(data),'utf8')
+              let dataPath = ''
+              try{
+                dataPath = dirPath + '/' + data.testData.bridgereportid + '.txt'
+                // 将数据存入本地
+                await fs.write(dataPath,JSON.stringify(data),'utf8')
+              }catch(e){
+                return await errorDeal(e,'将数据存入本地出错',inx,state,dispatch)
+              }
               //---获取文件信息
               //文件大小
               let fileSize = 0
               //文件创建时间
               let fileCTime = ''
-              await fs.getFileInfo(dataPath).then(res=>{
-                fileSize = res.size
-                fileCTime = res.ctime
-              })
+              try{
+                await fs.getFileInfo(dataPath).then(res=>{
+                  fileSize = res.size
+                  fileCTime = res.ctime
+                })
+              }catch(e){
+                return await errorDeal(e,'获取文件信息出错',inx,state,dispatch)
+              }
               //--将GMT时间 转换为 yyyy-mm-dd
-              let date = new Date(fileCTime)
-              fileCTime = date.getFullYear() + '-' +
-              (date.getMonth() + 1) + '-' + 
-              date.getDate() + ' ' + 
-              date.getHours() + ':' + 
-              date.getMinutes() + ':' + 
-              date.getSeconds()
-              
+              let date = ''
+              try{
+                date = new Date(fileCTime)
+                fileCTime = date.getFullYear() + '-' +
+                (date.getMonth() + 1) + '-' + 
+                date.getDate() + ' ' + 
+                date.getHours() + ':' + 
+                date.getMinutes() + ':' + 
+                date.getSeconds()
+              }catch(e){
+                return await errorDeal(e,'将GMT时间转换为 yyyy-mm-dd出错',inx,state,dispatch)
+              }
               //---------键值
               // 企业编号/用户编号/桥梁编号/桥梁检测编号/对象文件编号
-              let ObsReportDataKey = userInfo.company.companyid + '/'
+              let ObsReportDataKey = ''
+              try{
+                ObsReportDataKey = userInfo.company.companyid + '/'
                           + data.testData.userid + '/'
                           + data.bridgeid + '/'
                           + data.testData.bridgereportid + '/'
                           + 'reportData.json'
+              }catch(e){
+                return await errorDeal(e,'键值出错',inx,state,dispatch)
+              }
               //---------上传反馈数据
-              let feedbackParams = {
-                bucketname:BucketName_storeTestData,
-                objectkey:ObsReportDataKey,
-                obsstorage:1,
-                objecttype:'txt',
-                objectsize:fileSize,
-                downserver:'00000000-0000-0000-0000-0242ac130006',
-                projectkey:data.testData.projectid,
-                objectinfo:{
-                  companyid:userInfo.company.companyid,
-                  userid:data.testData.userid,
-                  filenameuser:data.testData.bridgereportid,
-                  filenamesys:data.testData.bridgereportid,
-                  filesize:Math.floor(fileSize/1024*100)/100,
-                  filetypes:'.json',
-                  dirpath:ObsReportDataKey.replace("reportData.json",""),
-                  fileinfo:'',
-                  filemd5:'',//obs反馈的etag
+              let feedbackParams = null
+              try{
+                feedbackParams = {
+                  bucketname:BucketName_storeTestData,
+                  objectkey:ObsReportDataKey,
+                  obsstorage:1,
+                  objecttype:'txt',
+                  objectsize:fileSize,
+                  downserver:'00000000-0000-0000-0000-0242ac130006',
                   projectkey:data.testData.projectid,
-                  createtime:fileCTime+"",
-                  checkbridgeid:data.testData.bridgereportid,
-                  bridgename:data.bridgename
+                  objectinfo:{
+                    companyid:userInfo.company.companyid,
+                    userid:data.testData.userid,
+                    filenameuser:data.testData.bridgereportid,
+                    filenamesys:data.testData.bridgereportid,
+                    filesize:Math.floor(fileSize/1024*100)/100,
+                    filetypes:'.json',
+                    dirpath:ObsReportDataKey.replace("reportData.json",""),
+                    fileinfo:'',
+                    filemd5:'',//obs反馈的etag
+                    projectkey:data.testData.projectid,
+                    createtime:fileCTime+"",
+                    checkbridgeid:data.testData.bridgereportid,
+                    bridgename:data.bridgename
+                  }
                 }
+              }catch(e){
+                return await errorDeal(e,'反馈参数出错',inx,state,dispatch)
               }
               // 测试数据上传成功 标志位
               let testDataUploadSuccess = true
@@ -451,11 +492,29 @@ function Provider({children}) {
                 // 上传到紫光云
                 feedbackParams.bucketname = AWSBucket.defaultBucket
                 // 上传检测数据到云
-                await uploadData.syncUploadTestDataToAWS(ObsReportDataKey,JSON.stringify(data)).then(async res=>{
-                  let newFeedbackParams = feedbackParams
-                  newFeedbackParams.objectinfo.filemd5 = (res.ETag.replace("\"","")).replace("\"","")
-                  //---------反馈
-                  await uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(res=>{
+                try{
+                  await uploadData.syncUploadTestDataToAWS(ObsReportDataKey,JSON.stringify(data)).then(async res=>{
+                    let newFeedbackParams = feedbackParams
+                    newFeedbackParams.objectinfo.filemd5 = (res.ETag.replace("\"","")).replace("\"","")
+                    //---------反馈
+                    await uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(res=>{
+                    }).catch(err=>{
+                      let errObj = state.promptFontErr
+                      let name = data.testData.projectname + '-' + data.bridgename
+                      if(errObj[name]){
+                        errObj[name]['testDataFont'] = err
+                      }else{
+                        errObj[name] = {
+                          testDataFont:err
+                        }
+                      }
+                      dispatch({
+                        type: 'promptFontErr',
+                        payload: errObj
+                      })
+                      // 测试数据上传成功 标志位
+                      testDataUploadSuccess = false
+                    })
                   }).catch(err=>{
                     let errObj = state.promptFontErr
                     let name = data.testData.projectname + '-' + data.bridgename
@@ -473,26 +532,13 @@ function Provider({children}) {
                     // 测试数据上传成功 标志位
                     testDataUploadSuccess = false
                   })
-                }).catch(err=>{
-                  console.log("err",err);
-                  let errObj = state.promptFontErr
-                  let name = data.testData.projectname + '-' + data.bridgename
-                  if(errObj[name]){
-                    errObj[name]['testDataFont'] = err
-                  }else{
-                    errObj[name] = {
-                      testDataFont:err
-                    }
-                  }
-                  dispatch({
-                    type: 'promptFontErr',
-                    payload: errObj
-                  })
-                  // 测试数据上传成功 标志位
-                  testDataUploadSuccess = false
-                })
-                // 上传媒体数据到云
-                await uploadImgSingle(0,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch)
+                }catch(e){
+                  return await errorDeal(e,'上传检测数据的函数出错',inx,state,dispatch)
+                }
+                if(mediaData.length>0){
+                  // 上传媒体数据到云
+                  await uploadImgSingle(0,successImgNum,userInfo,data,feedbackParams,mediaDataUploadSuccess,mediaData,state,dispatch)
+                }
               }
              
               // 判断是否上传成功
@@ -519,7 +565,6 @@ function Provider({children}) {
               // 数据整理失败
               let errObj = state.promptFontErr
               let name = allData.data.projectname + '-' + (allData.data.bridgename?allData.data.bridgename:'')
-              console.log("name",name);
               if(errObj[name]){
                 errObj[name]['collateDataErr'] = '数据整理错误，错误原因：' + allData.err
               }else{
@@ -640,29 +685,7 @@ function Provider({children}) {
               );
             } */
           } catch (err) {
-            // ----- 记录上传原因
-            let errObj = state.promptFontErr
-            const bindData = await bridgeProjectBind.getById(state.testDataUploadingIds[inx]);
-            const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
-            const projectData = await project.getByProjectid(bindData.projectid)
-            let name = projectData.projectname + '-' + bridgeData.bridgename
-            if(errObj[name]){
-              errObj[name]['otherErr'] = err
-            }else{
-              errObj[name] = {
-                testDataFont:err
-              }
-            }
-            dispatch({
-              type: 'promptFontErr',
-              payload: errObj
-            })
-            // ----数据库记录上传状态
-            await uploadStateRecord.update({
-              state:2,
-              bridgereportid:bindData.bridgereportid
-            });
-            console.info('errr',err);
+            return await errorDeal(err,'',inx,state,dispatch)
           } finally {
             console.info('>???', inx);
             dispatch({
@@ -686,6 +709,32 @@ function Provider({children}) {
   return (
     <Context.Provider value={{state, dispatch}}>{children}</Context.Provider>
   );
+}
+
+const errorDeal = async (err,errDescribe,inx,state,dispatch) => {
+  // ----- 记录上传原因
+  let errObj = state.promptFontErr
+  const bindData = await bridgeProjectBind.getById(state.testDataUploadingIds[inx]);
+  const bridgeData = await bridge.getByBridgeid(bindData.bridgeid);
+  const projectData = await project.getByProjectid(bindData.projectid)
+  let name = projectData.projectname + '-' + bridgeData.bridgename
+  if(errObj[name]){
+    errObj[name]['otherErr'] = errDescribe?(errDescribe+':'+err):err
+  }else{
+    errObj[name] = {
+      otherErr:errDescribe?(errDescribe+':'+err):err
+    }
+  }
+  dispatch({
+    type: 'promptFontErr',
+    payload: errObj
+  })
+  // ----数据库记录上传状态
+  await uploadStateRecord.update({
+    state:2,
+    bridgereportid:bindData.bridgereportid
+  });
+  return
 }
 
 // 递归上传
