@@ -4,6 +4,7 @@ import { uploadTestDataToObs } from './OBS';
 import { S3Upload } from './AWS';
 //AWS配置
 import { AWSBucket } from '../assets/uploadConfig/AWSConfig'
+import {Buffer} from 'buffer';
 
 const host = 'http://testdata.api.jianlide.cn:1088';
 const feedbackHost = 'http://114.116.196.47:10807'; 
@@ -525,35 +526,60 @@ new Promise(async (resolve, reject) => {
       }catch(e){
         reject(e);
       }
-      
     });
   }
   
   //上传媒体数据到云
 export const uploadImageToAWS = (key,filePath) =>
 new Promise(async (resolve, reject) => {
-  console.info('文件上传');
-  let data = ''
-  RNFetchBlob.fs.readStream(filePath,'base64',4095).then((ifstream)=>{
-    ifstream.open()
-    ifstream.onData((chunk) => {
-      // when encoding is `ascii`, chunk will be an array contains numbers
-      // otherwise it will be a string
-      data += chunk
+  console.info('文件上传',filePath);
+  try{
+    let data = ''
+    RNFetchBlob.fs.readStream(filePath,'base64',32768).then((ifstream)=>{
+      try{
+        console.log("11");
+        ifstream.open()
+        ifstream.onData((chunk) => {
+          // when encoding is `ascii`, chunk will be an array contains numbers
+          // otherwise it will be a string
+          try{
+            data += chunk
+          }catch(e){
+            reject('图片读取4-'+e)
+          }
+        })
+        console.log("22");
+        ifstream.onError((err) => {
+          reject('图片读取5-'+err);
+        })
+        console.log("33");
+        ifstream.onEnd(() => {
+          //参数
+          try{
+            console.log("44");
+            console.log('文件读取',filePath);
+            var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: data};
+            setTimeout(()=>{
+                S3Upload(bucketParams).then(res=>{
+                console.log("res",res);
+                resolve(res);
+              }).catch(err=>{
+                reject(err);
+              })
+            },50)
+          }catch(e){
+            reject('图片读取6-'+e);
+          }
+        })
+      }catch(e){
+        reject('图片读取3-'+e)
+      }
+    }).catch(e=>{
+      reject('图片读取2-'+e)
     })
-    ifstream.onError((err) => {
-      reject(err);
-    })
-    ifstream.onEnd(() => {
-      //参数
-      var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: data};
-      S3Upload(bucketParams).then(res=>{
-        resolve(res);
-      }).catch(err=>{
-        reject(err);
-      })
-    })
-  })
+  }catch(e){
+    reject('图片读取-'+e)
+  }
 });
   //上传到云后，反馈到后端
   export const syncUploadToAWSAfterFeedback = (params) =>

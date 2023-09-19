@@ -10,22 +10,24 @@ import AWS from 'aws-sdk';
 const s3 = new AWS.S3({
     accessKeyId: BaseAWSConfig.accessKeyId ,
     secretAccessKey: BaseAWSConfig.secretAccessKey ,
-    endpoint: BaseAWSConfig.endpoint ,
-    s3ForcePathStyle: true,
-    signatureVersion: 'v4'
+    endpoint: BaseAWSConfig.endpoint
 })
 
 //上传数据
 export const S3Upload = (bucketParams) => {
     try{
         return new Promise((resolve, reject) => {
-            s3.putObject(bucketParams,function(err, data){
-                if(err){
-                    reject(err)
-                }else{
-                    resolve(data);
-                }
-            })
+            console.log("55");
+            setTimeout(()=>{
+                s3.upload(bucketParams,function(err, data){
+                    if(err){
+                        reject(err)
+                    }else{
+                        console.log("data",data);
+                        resolve(data);
+                    }
+                })
+            },50)
         })
     }catch(e){
       console.log('上传数据-S3Upload',e);
