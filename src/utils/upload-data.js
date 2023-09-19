@@ -537,7 +537,6 @@ new Promise(async (resolve, reject) => {
     let data = ''
     RNFetchBlob.fs.readStream(filePath,'base64',32768).then((ifstream)=>{
       try{
-        console.log("11");
         ifstream.open()
         ifstream.onData((chunk) => {
           // when encoding is `ascii`, chunk will be an array contains numbers
@@ -548,25 +547,20 @@ new Promise(async (resolve, reject) => {
             reject('图片读取4-'+e)
           }
         })
-        console.log("22");
         ifstream.onError((err) => {
           reject('图片读取5-'+err);
         })
-        console.log("33");
         ifstream.onEnd(() => {
           //参数
           try{
-            console.log("44");
             console.log('文件读取',filePath);
             var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: data};
-            setTimeout(()=>{
-                S3Upload(bucketParams).then(res=>{
-                console.log("res",res);
-                resolve(res);
-              }).catch(err=>{
-                reject(err);
-              })
-            },50)
+            S3Upload(bucketParams).then(res=>{
+              console.log("res",res);
+              resolve(res);
+            }).catch(err=>{
+              reject(err);
+            })
           }catch(e){
             reject('图片读取6-'+e);
           }

@@ -17,17 +17,13 @@ const s3 = new AWS.S3({
 export const S3Upload = (bucketParams) => {
     try{
         return new Promise((resolve, reject) => {
-            console.log("55");
-            setTimeout(()=>{
-                s3.upload(bucketParams,function(err, data){
-                    if(err){
-                        reject(err)
-                    }else{
-                        console.log("data",data);
-                        resolve(data);
-                    }
-                })
-            },50)
+            s3.upload(bucketParams,function(err, data){
+                if(err){
+                    reject(err)
+                }else{
+                    resolve(data);
+                }
+            })
         })
     }catch(e){
       console.log('上传数据-S3Upload',e);

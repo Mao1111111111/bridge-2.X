@@ -539,191 +539,286 @@ function Provider({children}) {
                   // 上传媒体数据到云
                   try{
                     // 递归上传
-                    const uploadImgSingle =async (index,successImgNum,userInfo,data,feedbackParams,mediaData,inx,state,dispatch) => {
-                      //将文件地址分割获取文件名
-                      let arr = []
-                      try{
-                        arr = mediaData[index].appliedPath.split('/')
-                      }catch(e){
-                        mediaDataUploadSuccess = false
-                        return await errorDeal(e,'上传图片-分割文件名出错',inx,state,dispatch)
-                      }
-                      //拼接key
-                      let key = ''
-                      try{
-                        key = userInfo.company.companyid + '/'
-                          + data.testData.userid + '/'
-                          + data.bridgeid + '/'
-                          + data.testData.bridgereportid + '/'
-                          + arr[arr.length-1].replace("jpg","jpeg")
-                      }catch(e){
-                        mediaDataUploadSuccess = false
-                        return await errorDeal(e,'上传图片-拼接key出错',inx,state,dispatch)
-                      }
-                      try{
-                        await uploadData.uploadImageToAWS(key,mediaData[index].appliedPath).then(async res=>{
-                          successImgNum++
-                          dispatch({
-                            type: 'curUploadImgSucNUm',
-                            payload: successImgNum
-                          })
-                          //设置反馈参数
-                          let newFeedbackParams = {
-                            ...feedbackParams,
-                            objectkey:key,
-                            objecttype:'img',
-                            objectsize:mediaData[index].filesize,
-                            objectinfo:{
-                              ...feedbackParams.objectinfo,
-                              filenameuser:mediaData[index].filename + '.' + mediaData[index].filetypes.replace("jpg","jpeg"),
-                              filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
-                              filesize:Math.floor(mediaData[index].filesize/1024*100)/100,
-                              filetypes:'.' + mediaData[index].filetypes.replace("jpg","jpeg"),
-                              filemd5:(res.ETag.replace("\"","")).replace("\"",""),
-                              createtime:mediaData[index].u_date
-                            }
-                          }
-                          //---------反馈
-                          await uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(async res=>{
-                            if((index+1)<mediaData.length){
-                              await uploadImgSingle(index+1,successImgNum,userInfo,data,feedbackParams,mediaData,inx,state,dispatch)
-                            }
-                          }).catch(async err=>{
-                            if((index+1)<mediaData.length){
-                              await uploadImgSingle(index+1,successImgNum,userInfo,data,feedbackParams,mediaData,inx,state,dispatch)
-                            }
-                            let errObj = state.promptFontErr
-                            let name = data.testData.projectname + '-' + data.bridgename
-                            if(errObj[name]){
-                              if(errObj[name]['mediaDataFont']){
-                                errObj[name]['mediaDataFont'].push(err)
-                              }else{
-                                errObj[name]['mediaDataFont'] = [err]
-                              }
-                            }else{
-                              errObj[name] = {
-                                mediaDataFont:[err]
-                              }
-                            }
-                            dispatch({
-                              type: 'promptFontErr',
-                              payload: errObj
-                            })
-                            // 媒体数据上传成功 标志位
-                            mediaDataUploadSuccess = false
-                          })
-                        }).catch(async err=>{
-                          if(index+1<mediaData.length){
-                            await uploadImgSingle(index+1,successImgNum,userInfo,data,feedbackParams,mediaData,inx,state,dispatch)
-                          }
-                            let errObj = state.promptFontErr
-                            let name = data.testData.projectname + '-' + data.bridgename
-                            if(errObj[name]){
-                              if(errObj[name]['mediaDataFont']){
-                                errObj[name]['mediaDataFont'].push(err)
-                              }else{
-                                errObj[name]['mediaDataFont'] = [err]
-                              }
-                            }else{
-                              errObj[name] = {
-                                mediaDataFont:[err]
-                              }
-                            }
-                            dispatch({
-                              type: 'promptFontErr',
-                              payload: errObj
-                            })
-                            // 媒体数据上传成功 标志位
-                            mediaDataUploadSuccess = false
-                        })
-                      }catch(e){
-                        mediaDataUploadSuccess = false
-                        return await errorDeal(e,'上传图片-上传到云整体出错',inx,state,dispatch)
+                    // const uploadImgSingle =async (index,successImgNum,userInfo,data,feedbackParams,mediaData,inx,state,dispatch) => {
+                    //   //将文件地址分割获取文件名
+                    //   let arr = []
+                    //   try{
+                    //     arr = mediaData[index].appliedPath.split('/')
+                    //   }catch(e){
+                    //     mediaDataUploadSuccess = false
+                    //     return await errorDeal(e,'上传图片-分割文件名出错',inx,state,dispatch)
+                    //   }
+                    //   //拼接key
+                    //   let key = ''
+                    //   try{
+                    //     key = userInfo.company.companyid + '/'
+                    //       + data.testData.userid + '/'
+                    //       + data.bridgeid + '/'
+                    //       + data.testData.bridgereportid + '/'
+                    //       + arr[arr.length-1].replace("jpg","jpeg")
+                    //   }catch(e){
+                    //     mediaDataUploadSuccess = false
+                    //     return await errorDeal(e,'上传图片-拼接key出错',inx,state,dispatch)
+                    //   }
+                    //   try{
+                    //     await uploadData.uploadImageToAWS(key,mediaData[index].appliedPath).then(async res=>{
+                    //       successImgNum++
+                    //       dispatch({
+                    //         type: 'curUploadImgSucNUm',
+                    //         payload: successImgNum
+                    //       })
+                    //       //设置反馈参数
+                    //       let newFeedbackParams = {
+                    //         ...feedbackParams,
+                    //         objectkey:key,
+                    //         objecttype:'img',
+                    //         objectsize:mediaData[index].filesize,
+                    //         objectinfo:{
+                    //           ...feedbackParams.objectinfo,
+                    //           filenameuser:mediaData[index].filename + '.' + mediaData[index].filetypes.replace("jpg","jpeg"),
+                    //           filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
+                    //           filesize:Math.floor(mediaData[index].filesize/1024*100)/100,
+                    //           filetypes:'.' + mediaData[index].filetypes.replace("jpg","jpeg"),
+                    //           filemd5:(res.ETag.replace("\"","")).replace("\"",""),
+                    //           createtime:mediaData[index].u_date
+                    //         }
+                    //       }
+                    //       //---------反馈
+                    //       await uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(async res=>{
+                    //         if((index+1)<mediaData.length){
+                    //           await uploadImgSingle(index+1,successImgNum,userInfo,data,feedbackParams,mediaData,inx,state,dispatch)
+                    //         }
+                    //       }).catch(async err=>{
+                    //         if((index+1)<mediaData.length){
+                    //           await uploadImgSingle(index+1,successImgNum,userInfo,data,feedbackParams,mediaData,inx,state,dispatch)
+                    //         }
+                    //         let errObj = state.promptFontErr
+                    //         let name = data.testData.projectname + '-' + data.bridgename
+                    //         if(errObj[name]){
+                    //           if(errObj[name]['mediaDataFont']){
+                    //             errObj[name]['mediaDataFont'].push(err)
+                    //           }else{
+                    //             errObj[name]['mediaDataFont'] = [err]
+                    //           }
+                    //         }else{
+                    //           errObj[name] = {
+                    //             mediaDataFont:[err]
+                    //           }
+                    //         }
+                    //         dispatch({
+                    //           type: 'promptFontErr',
+                    //           payload: errObj
+                    //         })
+                    //         // 媒体数据上传成功 标志位
+                    //         mediaDataUploadSuccess = false
+                    //       })
+                    //     }).catch(async err=>{
+                    //       if(index+1<mediaData.length){
+                    //         await uploadImgSingle(index+1,successImgNum,userInfo,data,feedbackParams,mediaData,inx,state,dispatch)
+                    //       }
+                    //         let errObj = state.promptFontErr
+                    //         let name = data.testData.projectname + '-' + data.bridgename
+                    //         if(errObj[name]){
+                    //           if(errObj[name]['mediaDataFont']){
+                    //             errObj[name]['mediaDataFont'].push(err)
+                    //           }else{
+                    //             errObj[name]['mediaDataFont'] = [err]
+                    //           }
+                    //         }else{
+                    //           errObj[name] = {
+                    //             mediaDataFont:[err]
+                    //           }
+                    //         }
+                    //         dispatch({
+                    //           type: 'promptFontErr',
+                    //           payload: errObj
+                    //         })
+                    //         // 媒体数据上传成功 标志位
+                    //         mediaDataUploadSuccess = false
+                    //     })
+                    //   }catch(e){
+                    //     mediaDataUploadSuccess = false
+                    //     return await errorDeal(e,'上传图片-上传到云整体出错',inx,state,dispatch)
+                    //   }
+                    // }
+                   // await uploadImgSingle(0,successImgNum,userInfo,data,feedbackParams,mediaData,inx,state,dispatch)
+                    //  await Promise.all(
+                    //   mediaData
+                    //     .filter(({filepath}) => filepath)
+                    //     .map(async item => {
+                    //       //将文件地址分割获取文件名
+                    //       let arr = item.appliedPath.split('/')
+                    //       //拼接key
+                    //       let key = userInfo.company.companyid + '/'
+                    //         + data.testData.userid + '/'
+                    //         + data.bridgeid + '/'
+                    //         + data.testData.bridgereportid + '/'
+                    //         + arr[arr.length-1].replace("jpg","jpeg")
+                          
+                    //       return uploadData.uploadImageToAWS(key,item.appliedPath).then(res=>{
+                    //         //设置反馈参数
+                    //         let newFeedbackParams = {
+                    //           ...feedbackParams,
+                    //           objectkey:key,
+                    //           objecttype:'img',
+                    //           objectsize:item.filesize,
+                    //           objectinfo:{
+                    //             ...feedbackParams.objectinfo,
+                    //             filenameuser:item.filename + '.' + item.filetypes.replace("jpg","jpeg"),
+                    //             filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
+                    //             filesize:Math.floor(item.filesize/1024*100)/100,
+                    //             filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
+                    //             filemd5:(res.ETag.replace("\"","")).replace("\"",""),
+                    //             createtime:item.u_date
+                    //           }
+                    //         }
+                    //         //---------反馈
+                    //         uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(res=>{
+                    //           successImgNum++
+                    //           dispatch({
+                    //             type: 'curUploadImgSucNUm',
+                    //             payload: successImgNum
+                    //           })
+                    //         }).catch(err=>{
+                    //           let errObj = state.promptFontErr
+                    //           let name = data.testData.projectname + '-' + data.bridgename
+                    //           if(errObj[name]){
+                    //             if(errObj[name]['mediaDataFont']){
+                    //               errObj[name]['mediaDataFont'].push(err)
+                    //             }else{
+                    //               errObj[name]['mediaDataFont'] = [err]
+                    //             }
+                    //           }else{
+                    //             errObj[name] = {
+                    //               mediaDataFont:[err]
+                    //             }
+                    //           }
+                    //           dispatch({
+                    //             type: 'promptFontErr',
+                    //             payload: errObj
+                    //           })
+                    //           // 媒体数据上传成功 标志位
+                    //           mediaDataUploadSuccess = false
+                    //         })
+                    //       }).catch(err=>{
+                    //           let errObj = state.promptFontErr
+                    //           let name = data.testData.projectname + '-' + data.bridgename
+                    //           if(errObj[name]){
+                    //             if(errObj[name]['mediaDataFont']){
+                    //               errObj[name]['mediaDataFont'].push(err)
+                    //             }else{
+                    //               errObj[name]['mediaDataFont'] = [err]
+                    //             }
+                    //           }else{
+                    //             errObj[name] = {
+                    //               mediaDataFont:[err]
+                    //             }
+                    //           }
+                    //           dispatch({
+                    //             type: 'promptFontErr',
+                    //             payload: errObj
+                    //           })
+                    //           // 媒体数据上传成功 标志位
+                    //           mediaDataUploadSuccess = false
+                    //       })
+                          
+                    //     }),
+                    // );
+                    // 对mediaData分组
+                    let newMediaData = []
+                    for(let i=0;i<mediaData.length;i++){
+                      if(i%3==0){
+                        newMediaData.push([mediaData[i]])
+                      }else{
+                        newMediaData[newMediaData.length-1].push(mediaData[i])
                       }
                     }
-                   // await uploadImgSingle(0,successImgNum,userInfo,data,feedbackParams,mediaData,inx,state,dispatch)
-                   await Promise.all(
-                    mediaData
-                      .filter(({filepath}) => filepath)
-                      .map(async item => {
-                        //将文件地址分割获取文件名
-                        let arr = item.appliedPath.split('/')
-                        //拼接key
-                        let key = userInfo.company.companyid + '/'
-                          + data.testData.userid + '/'
-                          + data.bridgeid + '/'
-                          + data.testData.bridgereportid + '/'
-                          + arr[arr.length-1].replace("jpg","jpeg")
-                         
-                        return  await uploadData.uploadImageToAWS(key,item.appliedPath).then(res=>{
-                          //设置反馈参数
-                          let newFeedbackParams = {
-                            ...feedbackParams,
-                            objectkey:key,
-                            objecttype:'img',
-                            objectsize:item.filesize,
-                            objectinfo:{
-                              ...feedbackParams.objectinfo,
-                              filenameuser:item.filename + '.' + item.filetypes.replace("jpg","jpeg"),
-                              filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
-                              filesize:Math.floor(item.filesize/1024*100)/100,
-                              filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
-                              filemd5:(res.ETag.replace("\"","")).replace("\"",""),
-                              createtime:item.u_date
+                    for(let i=0;i<newMediaData.length;i++){
+                      await Promise.all(
+                        newMediaData[i]
+                          .filter(({filepath}) => filepath)
+                          .map(async item => {
+                            if(item.appliedPath){
+                                //将文件地址分割获取文件名
+                              let arr = item.appliedPath.split('/')
+                              //拼接key
+                              let key = userInfo.company.companyid + '/'
+                                + data.testData.userid + '/'
+                                + data.bridgeid + '/'
+                                + data.testData.bridgereportid + '/'
+                                + arr[arr.length-1].replace("jpg","jpeg")
+                              
+                              return uploadData.uploadImageToAWS(key,item.appliedPath).then(res=>{
+                                //设置反馈参数
+                                let newFeedbackParams = {
+                                  ...feedbackParams,
+                                  objectkey:key,
+                                  objecttype:'img',
+                                  objectsize:item.filesize,
+                                  objectinfo:{
+                                    ...feedbackParams.objectinfo,
+                                    filenameuser:item.filename + '.' + item.filetypes.replace("jpg","jpeg"),
+                                    filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
+                                    filesize:Math.floor(item.filesize/1024*100)/100,
+                                    filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
+                                    filemd5:(res.ETag.replace("\"","")).replace("\"",""),
+                                    createtime:item.u_date
+                                  }
+                                }
+                                //---------反馈
+                                uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(res=>{
+                                  successImgNum++
+                                  dispatch({
+                                    type: 'curUploadImgSucNUm',
+                                    payload: successImgNum
+                                  })
+                                }).catch(err=>{
+                                  let errObj = state.promptFontErr
+                                  let name = data.testData.projectname + '-' + data.bridgename
+                                  if(errObj[name]){
+                                    if(errObj[name]['mediaDataFont']){
+                                      errObj[name]['mediaDataFont'].push(err)
+                                    }else{
+                                      errObj[name]['mediaDataFont'] = [err]
+                                    }
+                                  }else{
+                                    errObj[name] = {
+                                      mediaDataFont:[err]
+                                    }
+                                  }
+                                  dispatch({
+                                    type: 'promptFontErr',
+                                    payload: errObj
+                                  })
+                                  // 媒体数据上传成功 标志位
+                                  mediaDataUploadSuccess = false
+                                })
+                              }).catch(err=>{
+                                  let errObj = state.promptFontErr
+                                  let name = data.testData.projectname + '-' + data.bridgename
+                                  if(errObj[name]){
+                                    if(errObj[name]['mediaDataFont']){
+                                      errObj[name]['mediaDataFont'].push(err)
+                                    }else{
+                                      errObj[name]['mediaDataFont'] = [err]
+                                    }
+                                  }else{
+                                    errObj[name] = {
+                                      mediaDataFont:[err]
+                                    }
+                                  }
+                                  dispatch({
+                                    type: 'promptFontErr',
+                                    payload: errObj
+                                  })
+                                  // 媒体数据上传成功 标志位
+                                  mediaDataUploadSuccess = false
+                              })
                             }
-                          }
-                          //---------反馈
-                          uploadData.syncUploadToAWSAfterFeedback(newFeedbackParams).then(res=>{
-                            successImgNum++
-                            dispatch({
-                              type: 'curUploadImgSucNUm',
-                              payload: successImgNum
-                            })
-                          }).catch(err=>{
-                            let errObj = state.promptFontErr
-                            let name = data.testData.projectname + '-' + data.bridgename
-                            if(errObj[name]){
-                              if(errObj[name]['mediaDataFont']){
-                                errObj[name]['mediaDataFont'].push(err)
-                              }else{
-                                errObj[name]['mediaDataFont'] = [err]
-                              }
-                            }else{
-                              errObj[name] = {
-                                mediaDataFont:[err]
-                              }
-                            }
-                            dispatch({
-                              type: 'promptFontErr',
-                              payload: errObj
-                            })
-                            // 媒体数据上传成功 标志位
-                            mediaDataUploadSuccess = false
-                          })
-                        }).catch(err=>{
-                            let errObj = state.promptFontErr
-                            let name = data.testData.projectname + '-' + data.bridgename
-                            if(errObj[name]){
-                              if(errObj[name]['mediaDataFont']){
-                                errObj[name]['mediaDataFont'].push(err)
-                              }else{
-                                errObj[name]['mediaDataFont'] = [err]
-                              }
-                            }else{
-                              errObj[name] = {
-                                mediaDataFont:[err]
-                              }
-                            }
-                            dispatch({
-                              type: 'promptFontErr',
-                              payload: errObj
-                            })
-                            // 媒体数据上传成功 标志位
-                            mediaDataUploadSuccess = false
-                        })
-                        
-                      }),
-                  );
+                          }),
+                      );
+                    }
+
                   }catch(e){
                     return await errorDeal(e,'上传媒体数据到云出错',inx,state,dispatch)
                   }
