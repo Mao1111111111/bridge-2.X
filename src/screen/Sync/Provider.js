@@ -731,7 +731,7 @@ function Provider({children}) {
                     let newMediaData = []
                     try{
                       for(let i=0;i<mediaData.length;i++){
-                        if(i%3==0){
+                        if(i%2==0){
                           newMediaData.push([mediaData[i]])
                         }else{
                           newMediaData[newMediaData.length-1].push(mediaData[i])
