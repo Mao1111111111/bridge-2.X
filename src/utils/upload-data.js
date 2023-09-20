@@ -553,10 +553,8 @@ new Promise(async (resolve, reject) => {
         ifstream.onEnd(() => {
           //参数
           try{
-            console.log('文件读取',filePath);
             var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: data};
             S3Upload(bucketParams).then(res=>{
-              console.log("res",res);
               resolve(res);
             }).catch(err=>{
               reject(err);
@@ -578,14 +576,19 @@ new Promise(async (resolve, reject) => {
   //上传到云后，反馈到后端
   export const syncUploadToAWSAfterFeedback = (params) =>
   new Promise((resolve, reject) => {
+    try{
       fetch('http://106.3.97.61:15002/api/obs/object-upload-notify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body:JSON.stringify(params)
-      })
-        .then(res => res.json())
-        .then(resolve)
-        .catch(err => reject(err));
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body:JSON.stringify(params)
+        })
+          .then(res => res.json())
+          .then(resolve)
+          .catch(err => reject(err));
+    }catch(e){
+      reject('反馈失败-'+e)
+    }
+      
   });

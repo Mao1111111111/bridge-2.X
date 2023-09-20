@@ -17,8 +17,8 @@ export default function Camera({onChange, type, disabled}) {
       const res = await launchCamera({
         mediaType: type,
         videoQuality: 'high',
-        // maxWidth:UploadObjectStorageName=='OBS'?2080:1560,
-        // maxHeight:UploadObjectStorageName=='OBS'?1560:1170
+        maxWidth:UploadObjectStorageName=='OBS'?2080:1560,
+        maxHeight:UploadObjectStorageName=='OBS'?1560:1170
       });
       if (!res.assets[0]) {
         return;
