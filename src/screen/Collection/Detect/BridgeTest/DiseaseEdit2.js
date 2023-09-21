@@ -72,6 +72,7 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
   const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
 
   React.useEffect(() => {
+    // console.log('edit2 defaultFileName',itemData);
     setDiseaseData(itemData);
     // console.log('diseaseEdit2 kuaMembertype',scale);
     const windowWidth = Dimensions.get('window').width;

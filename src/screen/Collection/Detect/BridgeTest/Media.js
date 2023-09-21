@@ -424,7 +424,7 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
   // 图片标题
   const getFileName = () => {
     console.log('执行getFileName');
-    console.log('defaultFileName...',type);
+    // console.log('defaultFileName...',defaultFileName);
     let resetName = ''
     // 构件 DiseaseEdit2 传入
     if (defaultFileName && type == 'diseaseParts') {

@@ -243,13 +243,21 @@ export const useP1002Init = ({route, navigation}) => {
         // );
         const ver = data?.version ? data.version : uuid.v4();
         const res = await getBaseData(memberList, type);
+        // console.log('hookp1002 route',route);
+        // console.log('ressss',res.infoComponents);
         if (res.infoComponents.length && res.components.length && data) {
           const _data = {...(data.jsondata || {})};
           if (!_data.areatype) {
             _data.areatype = res.components[0]?.areatype;
           }
           if (!_data.checktypeid) {
-            _data.checktypeid = res.infoComponents[0]?.checktypeid;
+            // console.log('这里获取typeid');
+            // _data.checktypeid = res.infoComponents[0]?.checktypeid;
+            res.infoComponents.forEach(item => {
+              if (route.params.thridData.checktypeid == item.checktypeid) {
+                _data.checktypeid = item.checktypeid
+              }
+            });
           }
           if (!_data.standard) {
             const defaultScale = res.basestandardtable.find(
@@ -442,12 +450,20 @@ export const useDefaultFileName = ({diseaseData, baseData}) => {
   const [name, setName] = React.useState('');
 
   React.useEffect(() => {
+    try {
+      // console.log('diseaseData.checktypeid',diseaseData);
+      console.log('baseDatabaseData',baseData.infoComponents);
+    } catch (error) {
+      
+    }
     if (diseaseData?.checktypeid && baseData?.infoComponents) {
       const checkinfoshort =
         baseData.infoComponents.find(
           ({checktypeid}) => checktypeid === diseaseData.checktypeid,
         )?.checkinfoshort || '';
+        console.log('hooks checkinfoshort',checkinfoshort);
       setName(checkinfoshort);
+      console.log('name',name)
     }
   }, [diseaseData, baseData]);
 
