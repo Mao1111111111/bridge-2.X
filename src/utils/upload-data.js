@@ -4,6 +4,7 @@ import { uploadTestDataToObs } from './OBS';
 import { S3Upload } from './AWS';
 //AWS配置
 import { AWSBucket } from '../assets/uploadConfig/AWSConfig'
+import {Buffer} from 'buffer';
 
 const host = 'http://testdata.api.jianlide.cn:1088';
 const feedbackHost = 'http://114.116.196.47:10807'; 
@@ -516,51 +517,78 @@ new Promise(async (resolve, reject) => {
     return new Promise((resolve, reject) => {
       //参数
       var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: objects};
-      S3Upload(bucketParams).then(res=>{
-        resolve(res);
-      }).catch(err=>{
-        reject(err);
-      })
+      try{
+        S3Upload(bucketParams).then(res=>{
+          resolve(res);
+        }).catch(err=>{
+          reject(err);
+        })
+      }catch(e){
+        reject(e);
+      }
     });
   }
   
   //上传媒体数据到云
 export const uploadImageToAWS = (key,filePath) =>
 new Promise(async (resolve, reject) => {
-  console.info('文件上传');
-  let data = ''
-  RNFetchBlob.fs.readStream(filePath,'base64',4095).then((ifstream)=>{
-    ifstream.open()
-    ifstream.onData((chunk) => {
-      // when encoding is `ascii`, chunk will be an array contains numbers
-      // otherwise it will be a string
-      data += chunk
+  console.info('文件上传',filePath);
+  try{
+    let data = ''
+    RNFetchBlob.fs.readStream(filePath,'base64',32768).then((ifstream)=>{
+      try{
+        ifstream.open()
+        ifstream.onData((chunk) => {
+          // when encoding is `ascii`, chunk will be an array contains numbers
+          // otherwise it will be a string
+          try{
+            data += chunk
+          }catch(e){
+            reject('图片读取4-'+e)
+          }
+        })
+        ifstream.onError((err) => {
+          reject('图片读取5-'+err);
+        })
+        ifstream.onEnd(() => {
+          //参数
+          try{
+            var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: data};
+            S3Upload(bucketParams).then(res=>{
+              resolve(res);
+            }).catch(err=>{
+              reject(err);
+            })
+          }catch(e){
+            reject('图片读取6-'+e);
+          }
+        })
+      }catch(e){
+        reject('图片读取3-'+e)
+      }
+    }).catch(e=>{
+      reject('图片读取2-'+e)
     })
-    ifstream.onError((err) => {
-      reject(err);
-    })
-    ifstream.onEnd(() => {
-      //参数
-      var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: data};
-      S3Upload(bucketParams).then(res=>{
-        resolve(res);
-      }).catch(err=>{
-        reject(err);
-      })
-    })
-  })
+  }catch(e){
+    reject('图片读取-'+e)
+  }
 });
   //上传到云后，反馈到后端
   export const syncUploadToAWSAfterFeedback = (params) =>
   new Promise((resolve, reject) => {
+    try{
       fetch('http://106.3.97.61:15002/api/obs/object-upload-notify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body:JSON.stringify(params)
-      })
-        .then(res => res.json())
-        .then(resolve)
-        .catch(err => reject(err));
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body:JSON.stringify(params)
+        })
+          .then(res => res.json())
+          .then(resolve)
+          .catch(err => reject(err));
+    }catch(e){
+      reject('反馈失败-'+e)
+    }
+      
   });
