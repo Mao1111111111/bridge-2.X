@@ -535,7 +535,7 @@ new Promise(async (resolve, reject) => {
   console.info('文件上传',filePath);
   try{
     let data = ''
-    RNFetchBlob.fs.readStream(filePath,'base64',32768).then((ifstream)=>{
+    RNFetchBlob.fs.readStream(filePath,'base64',4095).then((ifstream)=>{
       try{
         ifstream.open()
         ifstream.onData((chunk) => {
