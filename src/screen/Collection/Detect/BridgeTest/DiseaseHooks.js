@@ -452,7 +452,7 @@ export const useDefaultFileName = ({diseaseData, baseData}) => {
   React.useEffect(() => {
     try {
       // console.log('diseaseData.checktypeid',diseaseData);
-      console.log('baseDatabaseData',baseData.infoComponents);
+      // console.log('baseDatabaseData',baseData.infoComponents);
     } catch (error) {
       
     }
