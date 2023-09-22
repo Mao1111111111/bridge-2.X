@@ -47,6 +47,8 @@ export function Content({
   const [allUploadImg, setAllUploadImg] = useState() // 全部上传
   const [lookImg, setLookImg] = useState() // 查看
   const [lookDisImg, setLookDisImg] = useState() //查看 禁用
+  const [bridgeInfoImg, setBridgeInfoImg] = useState() // 桥梁信息
+  const [bridgeInfoDisImg, setBridgeInfoDisImg] = useState() // 桥梁信息 禁用
   const [diseaseListImg, setDiseaseListImg] = useState() //病害列表
   const [diseaseListDisImg, setDiseaseListDisImg] = useState() //病害列表 禁用
   const [maintainPlanImg, setMaintainPlanImg] = useState() //养护计划
@@ -69,6 +71,10 @@ export function Content({
     setLookImg(lookImg)
     let lookDisImg = require('../iconImg/lookDis.png')
     setLookDisImg(lookDisImg)
+    let bridgeInfoImg = require('../iconImg/bridgeInfo.png')
+    setBridgeInfoImg(bridgeInfoImg)
+    let bridgeInfoDisImg = require('../iconImg/bridgeInfo.png')
+    setBridgeInfoImg(bridgeInfoDisImg)
     let diseaseListImg = require('../iconImg/disList.png')
     setDiseaseListImg(diseaseListImg)
     let diseaseListDisImg = require('../iconImg/disListDis.png')
@@ -101,6 +107,9 @@ export function Content({
     } else if (res == 'look') {
       let lookImg = require('../iconImg/lookPull.png')
       setLookImg(lookImg)
+    } else if (res == 'bridgeInfo') {
+      let bridgeInfoImg = require('../iconImg/bridgeInfoPull.png')
+      setBridgeInfoImg(bridgeInfoImg)
     } else if (res == 'disList') {
       let diseaseListImg = require('../iconImg/disListPull.png')
       setDiseaseListImg(diseaseListImg)
@@ -120,6 +129,9 @@ export function Content({
     } else if (res == 'look') {
       let lookImg = require('../iconImg/look.png')
       setLookImg(lookImg)
+    } else if (res == 'bridgeInfo') {
+      let bridgeInfoImg = require('../iconImg/bridgeInfo.png')
+      setBridgeInfoImg(bridgeInfoImg)
     } else if (res == 'disList') {
       let diseaseListImg = require('../iconImg/disList.png')
       setDiseaseListImg(diseaseListImg)
@@ -168,7 +180,10 @@ export function Content({
                     {/* Pressable 按钮点击效果 */}
                     <Pressable {...operation} onPressIn={() => imgPulldown(operation.img)} onPressOut={() => imgPullup(operation.img)}>
                       <Image style={
-                        screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+                        // screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+                        // [{ height: 35, width: 35, alignItems: 'center',left:8 }]
+                        screenWidth > 830 && operation.img !== 'look' ? [{ height: 45, width: 45, left:15, alignItems: 'center' }] :
+                        screenWidth > 830 && operation.img == 'look' ? [{height: 60, width: 60, left:15, alignItems: 'center'}] :
                         [{ height: 35, width: 35, alignItems: 'center',left:8 }]
                       }
                       source={
@@ -180,12 +195,14 @@ export function Content({
                         (operation.img == 'look' && !operation.disabled ? lookImg :
                         (operation.img == 'disList' && !operation.disabled ? diseaseListImg :
                         (operation.img == 'maintainPlan' && !operation.disabled ? maintainPlanImg :
+                        (operation.img == 'bridgeInfo' ? bridgeInfoImg :
                         (operation.img == 'singleGood' ? singleGoodImg :
-                        (operation.img == 'allGood' ? allGoodImg : {})))))))))
+                        (operation.img == 'allGood' ? allGoodImg : {}))))))))))
                       }
                       />
                     </Pressable>
                   </View>
+                  <View style={tailwind.mY6} />
               </React.Fragment>
             ))
           ) : (

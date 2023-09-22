@@ -360,30 +360,36 @@ export default function Main({navigation, route}) {
         <Content
         onBack={goBack}
         onAhead={nowEdit && handleMember}
-          //右侧按钮 
-          operations={[
-            {
-              // 进入构件管理
-              // name: 'eye',
-              img:'look',
-              onPress: handleMember,
-              disabled: !nowEdit,
-            },
-            // {
-            //   // 病害成因
-            //   // name: 'stethoscope',
-            //   img:'disList',
-            //   onPress: () => handlePlanOrGenesis('GenesisEdit'),
-            //   disabled: !nowEdit,
-            // },
-            // {
-            //   // 养护计划
-            //   // name: 'book-plus',
-            //   img: 'maintainPlan',
-            //   onPress: () => handlePlanOrGenesis('PlanEdit'),
-            //   disabled: !nowEdit,
-            // },
-          ]}>
+        //右侧按钮 
+        operations={[
+          {
+            // 进入构件管理
+            // name: 'eye',
+            img:'look',
+            onPress: handleMember,
+            disabled: !nowEdit,
+          },
+          {
+            // 进入构件管理
+            // name: 'eye',
+            img:'bridgeInfo',
+            onPress: () => console.log('按下了桥梁信息按钮'),
+          },
+          // {
+          //   // 病害成因
+          //   // name: 'stethoscope',
+          //   img:'disList',
+          //   onPress: () => handlePlanOrGenesis('GenesisEdit'),
+          //   disabled: !nowEdit,
+          // },
+          // {
+          //   // 养护计划
+          //   // name: 'book-plus',
+          //   img: 'maintainPlan',
+          //   onPress: () => handlePlanOrGenesis('PlanEdit'),
+          //   disabled: !nowEdit,
+          // },
+        ]}>
           {/* <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
             </View> */}
           <View style={
