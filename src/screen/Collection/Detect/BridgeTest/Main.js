@@ -106,15 +106,12 @@ export default function Main({navigation, route}) {
       // 获取检测桥梁的 标记条数
       getMainTotal(bridgereportid).then(res => setMianTotal(res.count));
     }
-    // console.log('memberList6',memberList);
-    // if (table1Data) {
       memberList.forEach((item) => {
         if (item.title == '伸缩缝装置') {
           item.title = '伸缩装置'
         }
       })
-    // }
-    // console.log('table1data',table1Data);
+    
   }, [memberList]);
 
   // 当跨列表数据变化时, 重新设置跨表格的数据
@@ -419,7 +416,7 @@ export default function Main({navigation, route}) {
                             <Table.Title title="部件" flex={2} />
                             <Table.Title title="检测进度" flex={3} />
                             <Table.Title title="数量" flex={2} />
-                            <Table.Title title="编辑时间" flex={3} />
+                            <Table.Title title="编辑时间1" flex={3} />
                           </Table.Header>
                           <FlatList
                             scrollEnabled={true}
