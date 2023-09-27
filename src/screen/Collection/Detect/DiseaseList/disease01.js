@@ -215,7 +215,7 @@ export function DiseaseA({route, navigation}) {
             // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
           }
           if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
-            console.log('执行了999');
+            // console.log('执行了999');
             let infoList = []
             route.params.thridData.datastr.forEach((item) => {
               // console.log('病害列表传入的datastr',item);
@@ -228,7 +228,7 @@ export function DiseaseA({route, navigation}) {
             })
             setInfoList(infoList)
             if (!diseaseData.infoList) {
-              console.log('执行了321122');
+              // console.log('执行了321122');
               diseaseData['infoList'] = infoList
               handleFormChenge(infoList, diseaseData.infoList)
             }
@@ -318,8 +318,8 @@ export function DiseaseA({route, navigation}) {
           }
           
           if (diseaseData.areatype == 'at0000' && sliceArea == 'at000') {
-            console.log(sliceArea);
-            console.log('xu~~~~~ 选择其他');
+            // console.log(sliceArea);
+            // console.log('xu~~~~~ 选择其他');
             diseaseData['area'] = '/'
           }
 
@@ -335,8 +335,8 @@ export function DiseaseA({route, navigation}) {
           if (diseaseData.diseaseName == '' || diseaseData.diseaseName == undefined) {
             let diseaseName = route.params.thridData.checkinfoshort
             // setDiseaseName(diseaseName)
-            console.log('0000000');
-            console.log('~~~~~~~diseaseName~~~~~',diseaseName);
+            // console.log('0000000');
+            // console.log('~~~~~~~diseaseName~~~~~',diseaseName);
             diseaseData['diseaseName'] = diseaseName
             handleFormChenge(diseaseName, diseaseData.diseaseName)
             setDiseaseName(diseaseName)
@@ -394,13 +394,13 @@ export function DiseaseA({route, navigation}) {
         // console.log('读取baseData数据')
         
         try {
-          console.log('infoList0000',diseaseData.infoList);
+          // console.log('infoList0000',diseaseData.infoList);
           const value = await AsyncStorage.getItem(name)
           let values = JSON.parse(value)
           // console.log('value~~~',value);
           let infoList1 = []
             route.params.thridData.datastr.forEach((item) => {
-              console.log('病害列表传入的datastr',item);
+              // console.log('病害列表传入的datastr',item);
               values.forEach((item1) => {
                 if (item == item1.strid) {
                   // console.log('取出来的item1',item1);
@@ -408,7 +408,7 @@ export function DiseaseA({route, navigation}) {
                 }
               })
             })
-            console.log('infoListaa1111',infoList1);
+            // console.log('infoListaa1111',infoList1);
             setInfoList(infoList1)
         } catch (error) {
           console.log('读取baseData数据失败',error);
@@ -558,8 +558,9 @@ export function DiseaseA({route, navigation}) {
     
       useEffect(() => {
         let defaultPier = route.params.memberList[0].membername
+        console.log('横杠',defaultPier.indexOf('-'));
         // 提取第一个字符进行判断（表示墩台的数据）
-        let firstDefaultPier = defaultPier.slice(0,1)
+        let firstDefaultPier = defaultPier.slice(0,defaultPier.indexOf('-'))
         if (firstDefaultPier == 1) {
           let pier = '距' + (firstDefaultPier - 1) + '#台'
           setPier(pier)
@@ -2540,7 +2541,7 @@ export function DiseaseB({route, navigation}) {
       // console.log('桥跨：：',route.params.memberList);
       let defaultPier = route.params.memberList[0].membername
       // 提取第一个字符进行判断（表示墩台的数据）
-      let firstDefaultPier = defaultPier.slice(0,1)
+      let firstDefaultPier = defaultPier.slice(0,defaultPier.indexOf('-'))
       if (firstDefaultPier == 1) {
         let pier = '距' + (firstDefaultPier - 1) + '#台'
         setPier(pier)
@@ -4399,7 +4400,7 @@ export function DiseaseC({route, navigation}) {
       // console.log('桥跨：：',route.params.memberList);
       let defaultPier = route.params.memberList[0].membername
       // 提取第一个字符进行判断（表示墩台的数据）
-      let firstDefaultPier = defaultPier.slice(0,1)
+      let firstDefaultPier = defaultPier.slice(0,defaultPier.indexOf('-'))
       if (firstDefaultPier == 1) {
         let pier = '距' + (firstDefaultPier - 1) + '#台'
         setPier(pier)
@@ -6262,7 +6263,7 @@ export function DiseaseD({route, navigation}) {
       // console.log('桥跨：：',route.params.memberList);
       let defaultPier = route.params.memberList[0].membername
       // 提取第一个字符进行判断（表示墩台的数据）
-      let firstDefaultPier = defaultPier.slice(0,1)
+      let firstDefaultPier = defaultPier.slice(0,defaultPier.indexOf('-'))
       if (firstDefaultPier == 1) {
         let pier = '距' + (firstDefaultPier - 1) + '#台'
         setPier(pier)
@@ -8010,7 +8011,7 @@ export function DiseaseE({route, navigation}) {
       // console.log('桥跨：：',route.params.memberList);
       let defaultPier = route.params.memberList[0].membername
       // 提取第一个字符进行判断（表示墩台的数据）
-      let firstDefaultPier = defaultPier.slice(0,1)
+      let firstDefaultPier = defaultPier.slice(0,defaultPier.indexOf('-'))
       if (firstDefaultPier == 1) {
         let pier = '距' + (firstDefaultPier - 1) + '#台'
         setPier(pier)
@@ -9722,7 +9723,7 @@ export function DiseaseK({route, navigation}) {
       // console.log('桥跨：：',route.params.memberList);
       let defaultPier = route.params.memberList[0].membername
       // 提取第一个字符进行判断（表示墩台的数据）
-      let firstDefaultPier = defaultPier.slice(0,1)
+      let firstDefaultPier = defaultPier.slice(0,defaultPier.indexOf('-'))
       if (firstDefaultPier == 1) {
         let pier = '距' + (firstDefaultPier - 1) + '#台'
         setPier(pier)
@@ -11660,7 +11661,7 @@ export function DiseaseG({route, navigation}) {
       // console.log('桥跨：：',route.params.memberList);
       let defaultPier = route.params.memberList[0].membername
       // 提取第一个字符进行判断（表示墩台的数据）
-      let firstDefaultPier = defaultPier.slice(0,1)
+      let firstDefaultPier = defaultPier.slice(0,defaultPier.indexOf('-'))
       if (firstDefaultPier == 1) {
         let pier = '距' + (firstDefaultPier - 1) + '#台'
         setPier(pier)
@@ -13571,7 +13572,7 @@ export function DiseaseH({route, navigation}) {
       // console.log('桥跨：：',route.params.memberList);
       let defaultPier = route.params.memberList[0].membername
       // 提取第一个字符进行判断（表示墩台的数据）
-      let firstDefaultPier = defaultPier.slice(0,1)
+      let firstDefaultPier = defaultPier.slice(0,defaultPier.indexOf('-'))
       if (firstDefaultPier == 1) {
         let pier = '距' + (firstDefaultPier - 1) + '#台'
         setPier(pier)
