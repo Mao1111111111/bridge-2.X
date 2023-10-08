@@ -659,7 +659,6 @@ export default function ProjectDetail({route, navigation}) {
     // 表格loading
     setLoading(true);
 
-    // console.log('bridge navigation', navigation);
     let bridgeList = []
 
     // 查询数据
@@ -675,12 +674,11 @@ export default function ProjectDetail({route, navigation}) {
         res.list.sort(function(a, b) {
           return new Date(b.c_date) - new Date(a.c_date);
         })
+        console.log("res",res);
         setList(res.list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
-        // console.log('bridge res', res.list);
-        // 桥梁名称 bridgename 桥梁桩号 bridgestation 桥梁id bridgeid
-        // console.log('bridge res', res.list[0].bridgename); 
+        setLoading(false);
         res.list.forEach((item)=> {
           bridgeList.push({
             project,
@@ -694,7 +692,7 @@ export default function ProjectDetail({route, navigation}) {
         setBriStorage(bridgeList)
         // console.log('bridgeList',bridgeList);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {});
   }, [search, page, project]);
 
   // 当选中的养护区变化时，重置选中的路线
