@@ -264,14 +264,23 @@ export default function Media({categoryList, type, dataid, pid, defaultFileName,
             }
           }
           // 去重
-          res = secList.filter(function(item,index,self){
-            return self.findIndex(el => el.id==item.id) === index
-          })
+          // res = secList.filter(function(item,index,self){
+          //   return self.findIndex(el => el.id==item.id) === index
+          // })
+          let newObj = {}
+          secList.forEach((item,index)=>{
+            // 若重复则删除该项
+            if(newObj.hasOwnProperty(item.id)){
+              secList.splice(index,1);
+            // 不重复则存入obj
+            }else{
+              newObj[item.id]=item.name;
+            }
+          });
+          res = secList
         }
         memberArr[0].list = res
-        // console.log(memberArr[0].list[0]);
         setMemberArr(memberArr)
-        // console.log('memberArrmemberArrmemberArr',memberArr[0].list);
         // 二联格式数据
         // 上部结构
         let two = []
