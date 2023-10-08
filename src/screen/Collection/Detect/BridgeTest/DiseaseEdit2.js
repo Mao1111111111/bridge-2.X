@@ -206,7 +206,7 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
   }
 
   return (
-    <Box headerItems={headerItems} navigation={navigation} pid="P1604" labelname={route.params.title} membername={route.params.memberList[0].membername} projectList={project} project={project.projectname} bridge={bridge.bridgename}>
+    <Box headerItems={headerItems} navigation={navigation} pid="P1604" labelname={route.params.title} membername={route.params.memberList[0].membername} projectList={project} project={project.projectname} bridge={bridge}>
       <HeaderTabs
         onChangeTab={setPageType}
         disabled={route.params.memberList.length > 1}

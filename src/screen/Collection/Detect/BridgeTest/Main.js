@@ -1,9 +1,9 @@
-import React from 'react';
-import {ProgressBar} from 'react-native-paper';
+import React, { useState } from 'react';
+import {ProgressBar, Portal, Modal as PaperModal} from 'react-native-paper';
 import {tailwind} from 'react-native-tailwindcss';
 import {useFocusEffect} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {View, Text, Image, FlatList, StyleSheet,Dimensions} from 'react-native';
+import {View, Text, Image, FlatList, StyleSheet,Dimensions, TouchableOpacity} from 'react-native';
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
 import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
@@ -11,6 +11,7 @@ import Tabs from '../../../../components/Tabs';
 import Table from '../../../../components/Table';
 import Checkbox from '../../../../components/Checkbox';
 import {Box, Content} from '../../../../components/CommonView';
+import {TextInput, KeyboardInput, WriteInput, Textarea} from '../../../../components/Input';
 import {
   getDiseaseDataTotal,
   getMainTotal,
@@ -20,6 +21,7 @@ import Button from '../../../../components/Button';
 import HeaderTabs from './HeaderTabs';
 import MemberEdit from './MemberEdit';
 import Media from './Media';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Main({navigation, route}) {
   // 全局样式
@@ -310,9 +312,59 @@ export default function Main({navigation, route}) {
     console.log('点击了goAhead');
   }
 
+  React.useEffect(() => {
+    console.log('main bridge',bridge);
+    // 桥梁id bridge.bridgeid
+  },[])
+
+  const [infoWrite, setInfoWrite] = React.useState(false)
+  const bridgeInfo = () => {
+    setInfoWrite(true)
+    console.log('按下了桥梁备注按钮',infoWrite)
+    let name = bridge.bridgeid + '_' + 'bridgeInfoText'
+    getBridgeInfoStorage(name)
+  }
+  const closeBridgeInfoWindow = () => {
+    setInfoWrite(false)
+  }
+
+  const [bridgeInfoWriteText, setBridgeInfoWriteText] = React.useState('')
+
+  const bridgeInfoWrite = (e) => {
+    setBridgeInfoWriteText(e.value)
+    // console.log('桥梁备注输入内容',bridgeInfoWriteText);
+  }
+  const confirmText = () => {
+    console.log('确认并提交桥梁备注', bridgeInfoWriteText);
+    setBridgeInfoStorage('bridgeInfoText', bridgeInfoWriteText)
+  }
+
+  // 存入桥梁备注数据
+  const setBridgeInfoStorage = async(name, value) => {
+    console.log('存入桥梁备注数据的函数~~', name, value);
+    const REname = bridge.bridgeid + '_' + name
+    try {
+      await AsyncStorage.setItem(REname, value)
+      console.log('存入成功');
+    } catch (err) {
+      console.log('存入数据失败!', err);
+    }
+  }
+  // 读取桥梁备注数据
+  const getBridgeInfoStorage = async(name) => {
+    console.log('读取桥梁备注数据~',name);
+    try {
+      const value = await AsyncStorage.getItem(name)
+      console.log('读取的value~~~',value);
+      setBridgeInfoWriteText(value)
+    } catch (error) {
+      console.log('读取桥梁备注数据失败main', error);
+    }
+  }
+
   return (
     // 外部盒子 = 样式 + 顶部导航 + 导航左侧标签
-    <Box headerItems={getHeaderItems()} pid="P1301" navigation={navigation} route={route} projectList={project} project={project.projectname} bridge={bridge.bridgename}>
+    <Box headerItems={getHeaderItems()} pid="P1301" navigation={navigation} route={route} projectList={project} project={project.projectname} bridge={bridge}>
       {/* 年份tab + 数据/影音tab，onChangeTab 为点击数据/影音tab时 */}
       <HeaderTabs onChangeTab={setPageType} />
       {pageType !== '数据' ? (
@@ -370,7 +422,7 @@ export default function Main({navigation, route}) {
             // 进入构件管理
             // name: 'eye',
             img:'bridgeInfo',
-            onPress: () => console.log('按下了桥梁信息按钮'),
+            onPress: () => bridgeInfo(),
           },
           // {
           //   // 病害成因
@@ -416,7 +468,7 @@ export default function Main({navigation, route}) {
                             <Table.Title title="部件" flex={2} />
                             <Table.Title title="检测进度" flex={3} />
                             <Table.Title title="数量" flex={2} />
-                            <Table.Title title="编辑时间1" flex={3} />
+                            <Table.Title title="编辑时间" flex={3} />
                           </Table.Header>
                           <FlatList
                             scrollEnabled={true}
@@ -693,6 +745,56 @@ export default function Main({navigation, route}) {
       )}
       {/* 部件编辑组件 */}
       <MemberEdit ref={memberEditRef} onClose={handleEditClose} />
+
+      {
+        infoWrite ?
+        <Portal>
+          <PaperModal
+          visible={infoWrite}
+          onDismiss={closeBridgeInfoWindow}
+          onClose={closeBridgeInfoWindow}
+          contentContainerStyle={[styles.partsAddModalContent]}>
+            <View style={[theme.primaryBgStyle, tailwind.flex1, tailwind.rounded]}>
+              {/* 顶部 = 标题 + 关闭按钮 */}
+              <View style={[styles.partsEditModalHand]}>
+                <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
+                  <Text
+                    style={[tailwind.textBase, tailwind.fontBold, tailwind.mR2]}>
+                    桥梁备注
+                  </Text>
+                </View>
+                <TouchableOpacity onPress={closeBridgeInfoWindow}>
+                  <Icon name="close" size={24} />
+                </TouchableOpacity>
+              </View>
+              <View
+              style={[tailwind.justifyBetween, tailwind.mT1, tailwind.flexRow]}>
+                <View style={[tailwind.flex1,{height:300,width:600,padding:10}]}>
+                  <View style={[tailwind.mT3,{width:'100%',height:200}]}>
+                    <WriteInput
+                      name="bridgeInfoText"
+                      label=""
+                      lines={3}
+                      value={bridgeInfoWriteText}
+                      onChange={(e) => bridgeInfoWrite(e)}
+                      // onChange={handleFormChenge}
+                    />
+                  </View>
+                </View>
+                <View style={[styles.partsEditModalFoot,{width:'40%'}]}>
+                  <Button style={[{backgroundColor: '#808285',marginRight:20}]} onPress={closeBridgeInfoWindow}>
+                    取消
+                  </Button>
+                  <Button style={[{backgroundColor: '#2b427d'}]} onPress={confirmText}>确定</Button>
+                </View>
+              </View>
+                
+            </View>
+          </PaperModal>
+        </Portal>
+        : <></>
+      }
+
     </Box>
   );
 }
@@ -733,5 +835,31 @@ const styles = StyleSheet.create({
     ...tailwind.flex1,
     ...tailwind.rounded,
     ...tailwind.shadow2xl,
+  },
+  partsAddModalContent: {
+    ...tailwind.w2_4,
+    ...tailwind.absolute,
+    ...tailwind.selfCenter,
+  },
+  partsEditModalHand: {
+    ...tailwind.pY2,
+    ...tailwind.pX2,
+    ...tailwind.flexRow,
+    ...tailwind.justifyBetween,
+    ...tailwind.borderB,
+    ...tailwind.borderGray300,
+  },
+  partsEditModalFoot: {
+    ...tailwind.mT4,
+    ...tailwind.pY2,
+    ...tailwind.pX6,
+    ...tailwind.justifyBetween,
+    ...tailwind.itemsCenter,
+    ...tailwind.flexRow,
+    // ...tailwind.borderT,
+    ...tailwind.borderGray300,
+    position:'absolute',
+    bottom:10,
+    right:10,
   },
 });

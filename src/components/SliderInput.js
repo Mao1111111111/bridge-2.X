@@ -123,13 +123,45 @@ export const SliderInput = React.forwardRef(
 
     const [count, setCount] = useState(0)
     const countChange = (e) => {
-      if (count <= 99) {
+      if (value > 0 && value < 100) {
+        console.log('执行a');
         let count = Math.round(Number(value)) + e
         setCount(count)
         handleOk(count)
-      } else {
-        console.log('溢出');
+      } 
+      if (value == 0) {
+        if (e ==1) {
+          let count = Math.round(Number(value)) + e
+          setCount(count)
+          handleOk(count)
+        }
       }
+      if (value == 100) {
+        console.log('执行b');
+        if (e == -1) {
+          let count = Math.round(Number(value)) + e
+          setCount(count)
+          handleOk(count)
+        } else if (e == 1) {
+
+        }
+      }
+      if (value == undefined) {
+        if (e == 1) {
+          let count = Math.round(Number(0)) + e
+          setCount(count)
+          handleOk(count)
+        }
+      }
+      // if (count <= 99) {
+      //   let count = Math.round(Number(value)) + e
+      //   setCount(count)
+      //   handleOk(count)
+      // } else if (count == NaN) {
+      //   console.log('count == NaN',count);
+      // } else {
+      //   console.log('溢出');
+      // }
     }
 
 

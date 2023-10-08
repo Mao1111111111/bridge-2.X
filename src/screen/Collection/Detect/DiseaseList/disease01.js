@@ -558,7 +558,7 @@ export function DiseaseA({route, navigation}) {
     
       useEffect(() => {
         let defaultPier = route.params.memberList[0].membername
-        console.log('横杠',defaultPier.indexOf('-'));
+        // console.log('横杠',defaultPier.indexOf('-'));
         // 提取第一个字符进行判断（表示墩台的数据）
         let firstDefaultPier = defaultPier.slice(0,defaultPier.indexOf('-'))
         if (firstDefaultPier == 1) {
@@ -1615,12 +1615,32 @@ export function DiseaseA({route, navigation}) {
         }
       }
 
+      useEffect(() => {
+        console.log('getBridgeInfoStorage');
+        if (diseaseData) {
+          diseaseData['bridgeInfoText'] = ''
+          let name = bridgeId + '_' + 'bridgeInfoText'
+          getBridgeInfoStorage(name)
+        }
+      },[])
+      // 读取桥梁备注数据
+      const getBridgeInfoStorage = async(name) => {
+        try {
+          const value = await AsyncStorage.getItem(name)
+          // console.log('读取桥梁备注数据的value~~~',value);
+          diseaseData.bridgeInfoText = value
+          handleFormChenge(value, diseaseData.bridgeInfoText)
+        } catch (error) {
+          console.log('读取桥梁备注数据失败main', error);
+        }
+      }
+
 
       // 填入位置描述内容
       const writePositionText = () => {
         try {
           // console.log('diseaseData.area', diseaseData.area);
-          console.log('diseaseData.lengthText',lengthText,widthText,heightText);
+          // console.log('diseaseData.lengthText',lengthText,widthText,heightText);
           
           if (diseaseData.area == undefined) {
             console.log('area未定义 areaparam',areaparam);
@@ -3116,6 +3136,27 @@ export function DiseaseB({route, navigation}) {
       }
       setDiseaseData(_data);
     };
+
+    useEffect(() => {
+      console.log('getBridgeInfoStorage');
+      if (diseaseData) {
+        diseaseData['bridgeInfoText'] = ''
+        let name = bridgeId + '_' + 'bridgeInfoText'
+        getBridgeInfoStorage(name)
+      }
+    },[])
+    // 读取桥梁备注数据
+    const getBridgeInfoStorage = async(name) => {
+      try {
+        const value = await AsyncStorage.getItem(name)
+        // console.log('读取桥梁备注数据的value~~~',value);
+        diseaseData.bridgeInfoText = value
+        handleFormChenge(value, diseaseData.bridgeInfoText)
+      } catch (error) {
+        console.log('读取桥梁备注数据失败main', error);
+      }
+    }
+
 
     // 填入病害描述内容
     // const writeDesText = () => {
@@ -4971,6 +5012,26 @@ export function DiseaseC({route, navigation}) {
       }
       setDiseaseData(_data);
     };
+
+    useEffect(() => {
+      console.log('getBridgeInfoStorage');
+      if (diseaseData) {
+        diseaseData['bridgeInfoText'] = ''
+        let name = bridgeId + '_' + 'bridgeInfoText'
+        getBridgeInfoStorage(name)
+      }
+    },[])
+    // 读取桥梁备注数据
+    const getBridgeInfoStorage = async(name) => {
+      try {
+        const value = await AsyncStorage.getItem(name)
+        // console.log('读取桥梁备注数据的value~~~',value);
+        diseaseData.bridgeInfoText = value
+        handleFormChenge(value, diseaseData.bridgeInfoText)
+      } catch (error) {
+        console.log('读取桥梁备注数据失败main', error);
+      }
+    }
 
     const [writeDesTextValue, setWriteDesTextValue] = useState('')
 
@@ -6863,6 +6924,26 @@ export function DiseaseD({route, navigation}) {
       setDiseaseData(_data);
     };
 
+    useEffect(() => {
+      console.log('getBridgeInfoStorage');
+      if (diseaseData) {
+        diseaseData['bridgeInfoText'] = ''
+        let name = bridgeId + '_' + 'bridgeInfoText'
+        getBridgeInfoStorage(name)
+      }
+    },[])
+    // 读取桥梁备注数据
+    const getBridgeInfoStorage = async(name) => {
+      try {
+        const value = await AsyncStorage.getItem(name)
+        // console.log('读取桥梁备注数据的value~~~',value);
+        diseaseData.bridgeInfoText = value
+        handleFormChenge(value, diseaseData.bridgeInfoText)
+      } catch (error) {
+        console.log('读取桥梁备注数据失败main', error);
+      }
+    }
+
     const [writeDesTextValue, setWriteDesTextValue] = useState('')
 
     // 填入病害描述内容
@@ -8585,6 +8666,26 @@ export function DiseaseE({route, navigation}) {
       }
       setDiseaseData(_data);
     };
+
+    useEffect(() => {
+      console.log('getBridgeInfoStorage');
+      if (diseaseData) {
+        diseaseData['bridgeInfoText'] = ''
+        let name = bridgeId + '_' + 'bridgeInfoText'
+        getBridgeInfoStorage(name)
+      }
+    },[])
+    // 读取桥梁备注数据
+    const getBridgeInfoStorage = async(name) => {
+      try {
+        const value = await AsyncStorage.getItem(name)
+        // console.log('读取桥梁备注数据的value~~~',value);
+        diseaseData.bridgeInfoText = value
+        handleFormChenge(value, diseaseData.bridgeInfoText)
+      } catch (error) {
+        console.log('读取桥梁备注数据失败main', error);
+      }
+    }
 
     const [writeDesTextValue, setWriteDesTextValue] = useState('')
 
@@ -10321,6 +10422,26 @@ export function DiseaseK({route, navigation}) {
       }
       setDiseaseData(_data);
     };
+
+    useEffect(() => {
+      console.log('getBridgeInfoStorage');
+      if (diseaseData) {
+        diseaseData['bridgeInfoText'] = ''
+        let name = bridgeId + '_' + 'bridgeInfoText'
+        getBridgeInfoStorage(name)
+      }
+    },[])
+    // 读取桥梁备注数据
+    const getBridgeInfoStorage = async(name) => {
+      try {
+        const value = await AsyncStorage.getItem(name)
+        // console.log('读取桥梁备注数据的value~~~',value);
+        diseaseData.bridgeInfoText = value
+        handleFormChenge(value, diseaseData.bridgeInfoText)
+      } catch (error) {
+        console.log('读取桥梁备注数据失败main', error);
+      }
+    }
 
     const [writeDesTextValue, setWriteDesTextValue] = useState('')
 
@@ -12259,6 +12380,26 @@ export function DiseaseG({route, navigation}) {
       setDiseaseData(_data);
     };
 
+    useEffect(() => {
+      console.log('getBridgeInfoStorage');
+      if (diseaseData) {
+        diseaseData['bridgeInfoText'] = ''
+        let name = bridgeId + '_' + 'bridgeInfoText'
+        getBridgeInfoStorage(name)
+      }
+    },[])
+    // 读取桥梁备注数据
+    const getBridgeInfoStorage = async(name) => {
+      try {
+        const value = await AsyncStorage.getItem(name)
+        // console.log('读取桥梁备注数据的value~~~',value);
+        diseaseData.bridgeInfoText = value
+        handleFormChenge(value, diseaseData.bridgeInfoText)
+      } catch (error) {
+        console.log('读取桥梁备注数据失败main', error);
+      }
+    }
+
     const [writeDesTextValue, setWriteDesTextValue] = useState('')
 
     // 填入病害描述内容
@@ -14168,6 +14309,26 @@ export function DiseaseH({route, navigation}) {
       }
       setDiseaseData(_data);
     };
+
+    useEffect(() => {
+      console.log('getBridgeInfoStorage');
+      if (diseaseData) {
+        diseaseData['bridgeInfoText'] = ''
+        let name = bridgeId + '_' + 'bridgeInfoText'
+        getBridgeInfoStorage(name)
+      }
+    },[])
+    // 读取桥梁备注数据
+    const getBridgeInfoStorage = async(name) => {
+      try {
+        const value = await AsyncStorage.getItem(name)
+        // console.log('读取桥梁备注数据的value~~~',value);
+        diseaseData.bridgeInfoText = value
+        handleFormChenge(value, diseaseData.bridgeInfoText)
+      } catch (error) {
+        console.log('读取桥梁备注数据失败main', error);
+      }
+    }
 
     const [writeDesTextValue, setWriteDesTextValue] = useState('')
 

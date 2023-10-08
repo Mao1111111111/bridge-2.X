@@ -642,7 +642,7 @@ export default function Member({route, navigation,item}) {
   }
 
   return (
-    <Box pid="P1501" navigation={navigation} route={route} headerItems={getHeaderItems()} labelname={data.title} projectList={project} project={project.projectname} bridge={bridge.bridgename}>
+    <Box pid="P1501" navigation={navigation} route={route} headerItems={getHeaderItems()} labelname={data.title} projectList={project} project={project.projectname} bridge={bridge}>
       {/* 年份 + 数据影音 tab，当选中构件时，数据影音tab禁用 */}
       <HeaderTabs onChangeTab={setPageType} disabled={checkedList.size} />
       {/* <View style={tailwind.mY2} /> */}
