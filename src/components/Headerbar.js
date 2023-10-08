@@ -51,7 +51,11 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
 
   const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
 
+  // 桥幅属性
+  const [bridgeSideText, setBridgeSideText] = React.useState()
+
   React.useEffect(()=> {
+    // console.log('Headerbar',bridge);
     // console.log('pid6---',project,projectList);
     // console.log('items.name',items[0].name);
     const windowWidth = Dimensions.get('window').width;
@@ -59,7 +63,34 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
     setScreenWidth(windowWidth)
     getProStorage()
     getBriStorage()
-  },[])
+
+    if (bridge) {
+      if (bridge.bridgeside == 'side111') {
+        let bridgeSideText = '（单幅）'
+        setBridgeSideText(bridgeSideText)
+      } else if (bridge.bridgeside == 'side100') {
+        let bridgeSideText = '（左幅）'
+        setBridgeSideText(bridgeSideText)
+      } else if (bridge.bridgeside == 'side001') {
+        let bridgeSideText = '（右幅）'
+        setBridgeSideText(bridgeSideText)
+      } else if (bridge.bridgeside == 'side010') {
+        let bridgeSideText = '（中幅）'
+        setBridgeSideText(bridgeSideText)
+      } else if (bridge.bridgeside == 'side200') {
+        let bridgeSideText = '（上行）'
+        setBridgeSideText(bridgeSideText)
+      } else if (bridge.bridgeside == 'side002') {
+        let bridgeSideText = '（下行）'
+        setBridgeSideText(bridgeSideText)
+      } else if (bridge.bridgeside == 'side999') {
+        let bridgeSideText = '（其他）'
+        setBridgeSideText(bridgeSideText)
+      }
+    }
+    
+
+  },[bridge])
 
   // 读取存储的项目数据
   const getProStorage = async(item) => {
@@ -340,7 +371,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
                       <Text>    \   </Text>
                       <TouchableOpacity onPress={() => topage('桥梁')}>
                         <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:14}]}>
-                          桥梁：{bridge}
+                          桥梁：{bridge.bridgename} {bridgeSideText}
                         </Text>
                       </TouchableOpacity>
                       

@@ -410,7 +410,7 @@ export default function DiseaseEdit({route, navigation}) {
   const handleScaleOpen = () => scaleInfoRef.current.open();
 
   return (
-    <Box headerItems={headerItems} pid="P1603">
+    <Box headerItems={headerItems} pid="P1603" bridge={bridge}>
       <HeaderTabs
         onChangeTab={setPageType}
         disabled={route.params.memberList.length > 1}
