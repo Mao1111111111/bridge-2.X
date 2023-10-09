@@ -103,7 +103,7 @@ export default {
 
     const getItem = () => {
       const list = [];
-      const len = numberOfPages > 4 ? 4 : numberOfPages;
+      const len = numberOfPages > 2 ? 2 : numberOfPages;
       for (let inx = 1; inx <= len; inx++) {
         list.push(
           <React.Fragment key={inx}>
@@ -149,7 +149,7 @@ export default {
         </TouchableOpacity>
         <View style={tailwind.mX1} />
         {hideItem ? <></> : getItem()}
-        {numberOfPages > 4 ? (
+        {numberOfPages > 2 ? (
           <>
             <React.Fragment>
               <TouchableOpacity
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     ...tailwind.border,
     ...tailwind.borderGray400,
     // ...tailwind.w5,
-    ...tailwind.w12, // 表格页码加宽
+    ...tailwind.w10, // 表格页码加宽
     // ...tailwind.h5,
     ...tailwind.h7, // 表格页码加高
     ...tailwind.justifyCenter,
