@@ -176,7 +176,7 @@ const BaseData = ({onLoading, isLoading}) => {
           onPressIn={updatePull} onPressOut={updateOut} loading={isLoading} onPress={handleUpdate}
         >
           <Image style={
-            screenWidth > 830 ? [{ width: 45, height: 45, alignItems: 'center' }]
+            screenWidth > 830 ? [{ height: 60, width: 60, right: 8, alignItems: 'center' }]
             : [{ width: 35, height: 35, alignItems: 'center',right:23 }]
           }
             source={updateData}

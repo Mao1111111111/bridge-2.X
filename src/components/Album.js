@@ -62,7 +62,7 @@ export default function Album({onChange, type, disabled}) {
     // <CircleButton disabled={disabled} name="folder-open" onPress={openCamera} />
     <Pressable disabled={disabled} onPress={openCamera} onPressIn={albumPulldown} onPressOut={albumPullup}>
       <Image style={
-          screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+          screenWidth > 830 ? [{ height: 60, width: 60, left: 15, alignItems: 'center' }] :
           [{ height: 35, width: 35, alignItems: 'center',left:8 }]
         }
         source={disabled ? fileDisImg : fileImg}

@@ -47,8 +47,8 @@ export default function HeaderTabs({onChangeTab, style, disabled}) {
         style={[tailwind.mB1, tailwind.mR1, {position:'absolute',right:80}]}
         // 点击tab时
         onChangeTab={onChangeTab}
-        // 数据与影音切换按钮加宽
-        btnStyle={tailwind.pX12}
+        // 数据与影音切换按钮加宽加高
+        btnStyle={[tailwind.pX6,{height:35,display:'flex',justifyContent:'center',alignItems:'center'}]}
       />
       <View style={[tailwind.mY4]}></View>
     </View>

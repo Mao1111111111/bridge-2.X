@@ -40,7 +40,7 @@ export default function Tabs({
           style={[
             styles.btnBox,
             disabled ? tailwind.opacity50 : tailwind.opacity100,
-            {borderColor: theme.primaryColor},
+            {borderColor: theme.primaryColor,height:35,display:'flex',justifyContent:'center',alignItems:'center',marginTop:3},
           ]}>
           {tabs.map(item => (
             <TouchableOpacity

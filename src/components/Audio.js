@@ -181,7 +181,7 @@ export function RecordingModal({onChange, disabled}) {
       <Pressable disabled={disabled} onPress={() => setVisible(true)}
       onPressIn={audioPulldown} onPressOut={audioPullup}>
         <Image style={
-          screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+          screenWidth > 830 ? [{ height: 60, width: 60, left: 15, alignItems: 'center' }] :
           [{ height: 35, width: 35, alignItems: 'center',left:8}]
         }
           source={disabled ? audioDisImg : audioImg}

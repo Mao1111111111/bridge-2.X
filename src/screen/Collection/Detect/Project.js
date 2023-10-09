@@ -362,7 +362,7 @@ export default function Project({navigation}) {
       {/* <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}> */}
       {/* <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:29,width:715,top:1,borderRadius:5}]}> */}
       <View style={
-        screenWidth > 830 ? [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}] 
+        screenWidth > 830 ? [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:27,width:715,top:1,borderRadius:5}] 
         :
         [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
       }>

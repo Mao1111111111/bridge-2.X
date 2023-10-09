@@ -318,7 +318,7 @@ export default function GenesisEdit({navigation, route}) {
         <Content onBack={goBack}>
           {/* [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5,padding:10}] */}
           <View style={
-            screenWidth > 830 ? [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5,padding:10}] :
+            screenWidth > 830 ? [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:27,width:715,top:1,borderRadius:5,padding:10}] :
             [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5,padding:10}]
           }>
             <View style={[tailwind.flex1, tailwind.flexRow]}>

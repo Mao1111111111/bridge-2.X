@@ -180,11 +180,11 @@ export function Content({
                     {/* Pressable 按钮点击效果 */}
                     <Pressable {...operation} onPressIn={() => imgPulldown(operation.img)} onPressOut={() => imgPullup(operation.img)}>
                       <Image style={
-                        // screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
-                        // [{ height: 35, width: 35, alignItems: 'center',left:8 }]
-                        screenWidth > 830 && operation.img !== 'look' ? [{ height: 45, width: 45, left:15, alignItems: 'center' }] :
-                        screenWidth > 830 && operation.img == 'look' ? [{height: 60, width: 60, left:15, alignItems: 'center'}] :
+                        screenWidth > 830 ? [{ height: 60, width: 60,left: 15, alignItems: 'center' }] :
                         [{ height: 35, width: 35, alignItems: 'center',left:8 }]
+                        // screenWidth > 830 && operation.img !== 'look' ? [{ height: 45, width: 45, left:15, alignItems: 'center' }] :
+                        // screenWidth > 830 && operation.img == 'look' ? [{height: 60, width: 60, left:15, alignItems: 'center'}] :
+                        // [{ height: 35, width: 35, alignItems: 'center',left:8 }]
                       }
                       source={
                         operation.img == 'singleUpload' ? singleUploadImg : 
@@ -374,9 +374,8 @@ export default function CommonView({
                   <View>
                     <Pressable {...operation} onPressIn={() => donePulldown(operation.img)} onPressOut={() => donePullup(operation.img)}>
                       <Image style={
-                      screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] :
+                      screenWidth > 830 ? [{ height: 60, width: 60,left: 15, alignItems: 'center' }] :
                       { height: 35, width: 35, alignItems: 'center'}
-                        
                     }
                       // source={operation.disabled ? doneDisImg : doneImg}
                       source={

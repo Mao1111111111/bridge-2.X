@@ -613,7 +613,7 @@ export default function DiseaseList({route, navigation}) {
           onAhead={nowEdit && (() => handleEdit(nowEdit))}>
             {/* [styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}] */}
           <View style={
-            screenWidth > 830 ? [styles.card, {backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]
+            screenWidth > 830 ? [styles.card, {backgroundColor:'rgba(255,255,255,1)',right:27,width:715,top:1,borderRadius:5}]
             :
             [styles.card, {backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
           }>

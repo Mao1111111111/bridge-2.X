@@ -88,8 +88,6 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
         setBridgeSideText(bridgeSideText)
       }
     }
-    
-
   },[bridge])
 
   // 读取存储的项目数据
@@ -229,9 +227,22 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
           <></>
         )
       )} */}
-      {pid ? (
+      {pid && pid !== 'P1001' && pid !== 'P1101' ? (
         <View style={
           screenWidth > 830 ? [styles.pid] :
+          [styles.pidSmall]
+        }>
+          <Pid pid={pid} size={
+            screenWidth > 830 ? 'medium' :'small'
+          } />
+        </View>
+      ) : (
+        <></>
+      )}
+
+      {pid && pid == 'P1001' || pid == 'P1101' ? (
+        <View style={
+          screenWidth > 830 ? [styles.pid001] :
           [styles.pidSmall]
         }>
           <Pid pid={pid} size={
@@ -302,38 +313,46 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
             // {/* </TouchableOpacity> */}
             // </ModalDropdown>
             pid == 'P1001' ? (
-              <ModalDropdown
-                adjustFrame={this._adjustType}
-                options={proList} // 选项内容
-                dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-                dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
-                dropdownTextStyle={[{width:130,textAlign:'center'}]}
-                onSelect={this._selectProType} // 点击选项时，执行的方法
-                defaultValue={proList[0]}
-                onDropdownWillShow={()=>getProStorage()}
-              >
-                <Text style={[tailwind.textSm, tailwind.fontBold]}>
-                  {item.name.slice(0, 12)}
-                  {item.name.length > 12 ? '...' : ''}
-                </Text>
-              </ModalDropdown>
+              // <ModalDropdown
+              //   adjustFrame={this._adjustType}
+              //   options={proList} // 选项内容
+              //   dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
+              //   dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
+              //   dropdownTextStyle={[{width:130,textAlign:'center'}]}
+              //   onSelect={this._selectProType} // 点击选项时，执行的方法
+              //   defaultValue={proList[0]}
+              //   onDropdownWillShow={()=>getProStorage()}
+              // >
+              //   <Text style={[tailwind.textSm, tailwind.fontBold]}>
+              //     {item.name.slice(0, 20)}
+              //     {item.name.length > 20 ? '...' : ''}
+              //   </Text>
+              // </ModalDropdown>
+              <Text style={[tailwind.textSm, tailwind.fontBold]}>
+                {item.name.slice(0, 20)}
+                {item.name.length > 20 ? '...' : ''}
+              </Text>
             ) : (
               pid == 'P1101' ? (
-                <ModalDropdown
-                  adjustFrame={this._adjustType}
-                  options={briList} // 选项内容
-                  dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-                  dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
-                  dropdownTextStyle={[{width:130,textAlign:'center'}]}
-                  onSelect={this._selectBriType} // 点击选项时，执行的方法
-                  defaultValue={briList[0]}
-                  onDropdownWillShow={()=>getBriStorage()}
-                >
-                  <Text style={[tailwind.textSm, tailwind.fontBold]}>
-                    {item.name.slice(0, 12)}
-                    {item.name.length > 12 ? '...' : ''}
-                  </Text>
-                </ModalDropdown>
+                // <ModalDropdown
+                //   adjustFrame={this._adjustType}
+                //   options={briList} // 选项内容
+                //   dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
+                //   dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
+                //   dropdownTextStyle={[{width:130,textAlign:'center'}]}
+                //   onSelect={this._selectBriType} // 点击选项时，执行的方法
+                //   defaultValue={briList[0]}
+                //   onDropdownWillShow={()=>getBriStorage()}
+                // >
+                //   <Text style={[tailwind.textSm, tailwind.fontBold]}>
+                //     {item.name.slice(0, 12)}
+                //     {item.name.length > 12 ? '...' : ''}
+                //   </Text>
+                // </ModalDropdown>
+                <Text style={[tailwind.textSm, tailwind.fontBold]}>
+                  {item.name.slice(0, 20)}
+                  {item.name.length > 20 ? '...' : ''}
+                </Text>
               ) : (
                 <></>
               )
@@ -434,7 +453,17 @@ const styles = StyleSheet.create({
     ...tailwind.justifyCenter,
     position:'absolute',
     top:495,
-    left:645,
+    left:650,
+    // width:60
+  },
+  // P1001 与 P1101页面的pid样式
+  pid001: {
+    ...tailwind.mL2,
+    ...tailwind.mB1,
+    ...tailwind.justifyCenter,
+    position:'absolute',
+    top:495,
+    left:625,
     // width:60
   },
   pidSmall: {

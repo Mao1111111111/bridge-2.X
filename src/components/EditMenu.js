@@ -151,8 +151,14 @@ export default function EditMenu({
             { height: 45, width: 45, alignItems: 'center' }}
             source={onAdd ? addImg : addDisImg}
           /> */}
-          <Image style={
+          {/* <Image style={
             screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] : 
+            [{ height: 35, width: 35, alignItems: 'center',right:8 }]
+          }
+            source={onAdd ? addImg : addDisImg}
+          /> */}
+          <Image style={
+            screenWidth > 830 ? [{ height: 60, width: 60,right: 15, alignItems: 'center' }] : 
             [{ height: 35, width: 35, alignItems: 'center',right:8 }]
           }
             source={onAdd ? addImg : addDisImg}
@@ -174,7 +180,7 @@ export default function EditMenu({
       <View>
         <Pressable onPressIn={editPulldown} onPressOut={editPullup} onPress={onEdit} disabled={!onEdit}>
           <Image style={
-            screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] : 
+            screenWidth > 830 ? [{ height: 60, width: 60,right: 15, alignItems: 'center' }] : 
             [{ height: 35, width: 35, alignItems: 'center',right:8 }]
           }
             source={onEdit ? editImg : editDisImg}
@@ -189,7 +195,7 @@ export default function EditMenu({
       <View>
         <Pressable onPressIn={deletePulldown} onPressOut={deletePullup} onPress={onDelete} disabled={!onDelete}>
           <Image style={
-            screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] : 
+            screenWidth > 830 ? [{ height: 60, width: 60,right: 15, alignItems: 'center' }] : 
             [{ height: 35, width: 35, alignItems: 'center',right:8 }]
           }
             source={onDelete ? deleteImg : deleteDisImg}
@@ -201,7 +207,7 @@ export default function EditMenu({
       <View>
         <Pressable onPressIn={goBackPulldown} onPressOut={goBackPullup} onPress={onBack} disabled={!onBack}>
           <Image style={
-            screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] : 
+            screenWidth > 830 ? [{ height: 60, width: 60,right: 15, alignItems: 'center' }] : 
             [{ height: 35, width: 35, alignItems: 'center',right:8 }]
           }
             source={onBack ? goBackImg : goBackDisImg}
@@ -213,7 +219,7 @@ export default function EditMenu({
       <View>
         <Pressable onPressIn={goAheadPulldown} onPressOut={goAheadPullup} onPress={onAhead} disabled={!onAhead}>
           <Image style={
-            screenWidth > 830 ? [{ height: 45, width: 45, alignItems: 'center' }] : 
+            screenWidth > 830 ? [{ height: 60, width: 60,right: 15, alignItems: 'center' }] : 
             [{ height: 35, width: 35, alignItems: 'center',right:8 }]
           }
             source={onAhead ? goAheadImg : goAheadDisImg}
