@@ -44,12 +44,50 @@ export default function Other({navigation}) {
       handleChange('b300002num','2')
     }
     
-    console.log('values',values);
+    // console.log('values',values);
   },[])
 
   // 全局参数 -- 支座编号、桥台形式、翼墙耳墙、桥墩形式、照明系统
   const {bridgepadno, bridgeabutment, bridgewall, bridgepier, bridgelightsys} =
     globalState;
+
+  // 锥坡类型
+  const[bridgeSlope, setBridgeSlope] = React.useState([])
+  React.useEffect(() => {
+    if (bridgewall) {
+      let bridgeSlope = []
+      bridgewall.forEach((item,index) => {
+        bridgeSlope.push({
+          'c_date':item.c_date,
+          'category':'bridgeSlope',
+          'id':90 + index,
+          'isDefault':item.isDefault,
+          'order':item.order,
+          'paramid':item.paramid,
+          'paramname':item.paramname
+        })
+      });
+      // 将bridgeSlope增加至三项
+      bridgeSlope.push({
+        'c_date':'',
+        'category':'bridgeSlope',
+        'id':92,
+        'isDefault':0,
+        'order':3,
+        'paramid':'right',
+        'paramname':'右幅'
+      })
+      // 对bridgeSlope各项内容进行修改
+      bridgeSlope[0].paramid = 'slopeDouble'
+      bridgeSlope[0].paramname = '双幅'
+      bridgeSlope[1].paramid = 'slopeLeft'
+      bridgeSlope[1].paramname = '左幅'
+      bridgeSlope[2].paramid = 'slopeRight'
+      bridgeSlope[2].paramname = '右幅'
+      // console.log('bridgeSlope1',bridgeSlope);
+      setBridgeSlope(bridgeSlope)
+    }
+  },[])
 
   // 页面聚焦时
   useFocusEffect(
@@ -205,6 +243,17 @@ export default function Other({navigation}) {
           />
         </View>
         <View style={[tailwind.flexRow, tailwind.mY2, tailwind.itemsCenter]}>
+          <Select
+            style={[tailwind.mR2, tailwind.flex1]}
+            labelName="paramname"
+            valueName="paramid"
+            values={bridgeSlope}
+            onChange={handleChange}
+            name="bridgeSlope"
+            value={values.bridgeSlope || ''}
+            label="锥坡类型:"
+            inputStyle={[{height:25}]}
+          />
           <KeyboardInput
             style={[tailwind.flex1]}
             name="zhizuo_total"
