@@ -99,12 +99,18 @@ export default {
     hideItem,
     pageShow,
   }) => {
+
+    const {
+      state: {theme},
+    } = React.useContext(Context);
     // 第${pageNo + 1}页 共${numberOfPages}页 ${total}条数据
 
     const getItem = () => {
+      console.log('numberOfPages',numberOfPages);
       const list = [];
       const len = numberOfPages > 2 ? 2 : numberOfPages;
       for (let inx = 1; inx <= len; inx++) {
+        console.log('inx',inx);
         list.push(
           <React.Fragment key={inx}>
             <TouchableOpacity
@@ -144,12 +150,12 @@ export default {
     return (
       <View
         style={[tailwind.flexRow, tailwind.justifyEnd, tailwind.mT2, style]}>
-        <TouchableOpacity onPress={prev} style={styles.paginationBtn}>
+        <TouchableOpacity onPress={prev} style={[styles.paginationBtn,{width:60}]}>
           <Icon name="chevron-left" size={15} />
         </TouchableOpacity>
         <View style={tailwind.mX1} />
-        {hideItem ? <></> : getItem()}
-        {numberOfPages > 2 ? (
+        {/* {hideItem ? <></> : getItem()} */}
+        {/* {numberOfPages > 2 ? (
           <>
             <React.Fragment>
               <TouchableOpacity
@@ -162,10 +168,26 @@ export default {
           </>
         ) : (
           <></>
-        )}
-        <TouchableOpacity onPress={next} style={styles.paginationBtn}>
+        )} */}
+        <View style={[styles.paginationBtn]}>
+          <Text
+          style={[{display:'flex',justifyContent:'center',alignItems:'center'}]}>
+            { pageNo }
+          </Text>
+        </View>
+        
+        {/* <View style={[styles.paginationBtn, tailwind.itemsCenter]}>
+          <Text>{ pageNo }</Text>
+        </View> */}
+        <View style={tailwind.mX1} />
+        <TouchableOpacity onPress={next} style={[styles.paginationBtn,{width:60}]}>
           <Icon name="chevron-right" size={15} />
         </TouchableOpacity>
+        <View style={tailwind.mX1} />
+        <View style={[styles.paginationBtn,{width:50}]}>
+          <Text>共{ numberOfPages }页</Text>
+        </View>
+        
       </View>
     );
   },
