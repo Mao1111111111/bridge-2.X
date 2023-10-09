@@ -400,7 +400,7 @@ export default function Project({navigation}) {
         )}
         {/* 检索按钮 */}
         <ImageBackground
-          source={require('../../../iconImg/search.png')} style={[{width:38, height:28}]}
+          source={require('../../../iconImg/search.png')} style={[{width:40, height:40}]}
         >
           {/* <Pressable OnPressIn={handleSearch}></Pressable> */}
           <Text onPress={handleSearch}>{'         '}</Text>

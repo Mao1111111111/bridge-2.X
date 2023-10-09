@@ -872,7 +872,7 @@ export default function ProjectDetail({route, navigation}) {
             {/* <Button onPress={handleSearch} style={[{backgroundColor: '#2b427d'}]}>检索</Button> */}
             {/* 检索按钮 */}
             <ImageBackground
-              source={require('../../../iconImg/search.png')} style={[{width:38, height:28}]}
+              source={require('../../../iconImg/search.png')} style={[{width:40, height:40}]}
             >
               {/* <Pressable OnPressIn={handleSearch}></Pressable> */}
               <Text onPress={handleSearch}>{'         '}</Text>
