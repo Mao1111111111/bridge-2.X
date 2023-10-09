@@ -663,7 +663,7 @@ export default function ProjectDetail({route, navigation}) {
 
     // 查询数据
     bridge
-      .search({
+      .new_search({
         param: {
           ...search,
           projectid: project.projectid,
@@ -671,10 +671,6 @@ export default function ProjectDetail({route, navigation}) {
         page,
       })
       .then(res => {
-        res.list.sort(function(a, b) {
-          return new Date(b.c_date) - new Date(a.c_date);
-        })
-        console.log("res",res);
         setList(res.list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
@@ -902,8 +898,8 @@ export default function ProjectDetail({route, navigation}) {
                   <Table.Title title="桩号" flex={2} />
                   <Table.Title title="桥梁名称" flex={3} />
                   <Table.Title title="桥幅" />
-                  <Table.Title title="病害构件" />
-                  <Table.Title title="媒体文件" />
+                  {/* <Table.Title title="病害构件" />
+                  <Table.Title title="媒体文件" /> */}
                   <Table.Title title="检测日期" flex={2} />
                   <Table.Title title="存储" />
                   <Table.Title title="选择" flex={1} />
@@ -936,8 +932,8 @@ export default function ProjectDetail({route, navigation}) {
                           .paramname
                       }
                     </Table.Cell>
-                    <Table.Cell>{item.member}</Table.Cell>
-                    <Table.Cell>{item.file}</Table.Cell>
+                    {/* <Table.Cell>{item.member}</Table.Cell>
+                    <Table.Cell>{item.file}</Table.Cell> */}
                     <Table.Cell flex={2}>
                       {(item.date || '').split(' ')[0] || '未检测'}
                     </Table.Cell>

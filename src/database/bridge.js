@@ -165,6 +165,22 @@ export const update = async data => {
   ]);
 };
 
+export const new_search = async ({param, page}) => {
+  const sql = `
+    select * from bridge where 1=1 
+    ${
+      param.projectid
+        ? `and bridgeid in (select bridgeid from bridge_project_bind where projectid = '${param.projectid}') `
+        : ''
+    }
+    ${param.bridgename ? ` and bridgename like '%${param.bridgename}%' ` : ''}
+    ${param.areacode ? ` and areacode = '${param.areacode}' ` : ''}
+    ${param.routecode ? ` and routecode = '${param.routecode}' ` : ''}
+    ORDER BY c_date DESC`;
+    return await pageQuery(sql, [], page);
+};
+
+
 export const search = async ({param, page}) => {
   const sql = `
     select *, 
