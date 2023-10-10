@@ -225,10 +225,77 @@ const AllData = ({title, data, onChange, onGroupChange}) => {
   React.useEffect(() => {
     // 初始化当前选中的 组
     if (data.length) {
-      console.log('data',data[0]);
-
+      try {
+        let list = []
+        data[0].list.forEach((item, index) => {
+          list.push(item.membertype)
+        })
+        list = Array.from(new Set(list))
+        let memberList = []
+        list.forEach((item) => {
+          memberList.push({
+            title:item,
+            list:[]
+          })
+        })
+        memberList.forEach((item) => {
+          data[0].list.forEach((items) => {
+            if (item.title == items.membertype) {
+              item.list.push(items)
+            }
+          })
+        })
+        memberList.forEach((item) => {
+          if (item.title == 'b100001') {
+            item.title = '主梁'
+          } else if (item.title == 'b100002') {
+            item.title = '横隔板'
+          } else if (item.title == 'b100003') {
+            item.title = '湿接段'
+          } else if (item.title == 'b100004') {
+            item.title = '支座'
+          } else if (item.title == 'b100005') {
+            item.title = '铰缝'
+          } else if (item.title == 'b100006') {
+            item.title = '挂梁'
+          } else if (item.title == 'b100007') {
+            item.title = '湿接缝'
+          } else if (item.title == 'b200001') {
+            item.title = '桥台'
+          } else if (item.title == 'b200002') {
+            item.title = '桥墩'
+          } else if (item.title == 'b200003') {
+            item.title = '墩台基础'
+          } else if (item.title == 'b200004') {
+            item.title = '翼墙、耳墙'
+          } else if (item.title == 'b200005') {
+            item.title = '锥坡、护坡'
+          } else if (item.title == 'b200006') {
+            item.title = '河床'
+          } else if (item.title == 'b200007') {
+            item.title = '调治构造物'
+          } else if (item.title == 'b300001') {
+            item.title = '桥面铺装'
+          } else if (item.title == 'b300002') {
+            item.title = '伸缩缝装置'
+          } else if (item.title == 'b300003') {
+            item.title = '人行道'
+          } else if (item.title == 'b300004') {
+            item.title = '栏杆、护栏'
+          } else if (item.title == 'b300005') {
+            item.title = '排水系统'
+          } else if (item.title == 'b300006') {
+            item.title = '照明、标志'
+          }
+        })
+        // console.log('memberList',memberList[0]);
+        data[0].memberList = memberList
+      } catch (error) {
+        console.log('error302',error);
+      }
+      
       setNowEdit(data[0]);
-      // console.log('nowEdit',nowEdit);
+      console.log('nowEdit',nowEdit.memberList);
     } else {
       setNowEdit({});
     }
@@ -276,6 +343,11 @@ const AllData = ({title, data, onChange, onGroupChange}) => {
       handleChange(new Set(nowEdit.list.map(({id}) => id)));
     }
   };
+
+  // 取消选择
+  const cancelSelect = () => {
+    setChecked(new Set());
+  }
 
   // 选中的构件变化时
   const handleChange = _checked => {
@@ -339,10 +411,13 @@ const AllData = ({title, data, onChange, onGroupChange}) => {
           <Text style={[styles.memberListTitle, {color:'#2b427d'}]}>
             {nowEdit?.title}
           </Text>
-          <Button onPress={handleCheckAll} style={[{backgroundColor:'#2b427d'}]}>全选</Button>
+          <View style={[tailwind.flexRow]}>
+            <Button onPress={handleCheckAll} style={[{backgroundColor:'#2b427d'}]}>全选</Button>
+            <Button onPress={cancelSelect} style={[{backgroundColor:'#566a8b',marginLeft:10}]}>取消选择</Button> 
+          </View>
         </View>
         <ScrollView>
-          <View style={[tailwind.flexRow, tailwind.flex1, tailwind.flexWrap]}>
+          {/* <View style={[tailwind.flexRow, tailwind.flex1, tailwind.flexWrap]}>
             {nowEdit?.list?.map((item, index) => (
               <Item
                 key={index}
@@ -352,6 +427,28 @@ const AllData = ({title, data, onChange, onGroupChange}) => {
                 onPress={() => handleCheck(item.id)}
               />
             ))}
+          </View> */}
+          <View style={[tailwind.flexRow, tailwind.flex1, tailwind.flexWrap]}>
+            {nowEdit?.memberList?.map((item, index) => (
+              <View key={index}>
+                <View style={{fontColor:'red'}}>
+                  <Text style={[styles.memberListTitle1, {color:'#2b427d'}]}>{item.title}</Text>
+                </View>
+                
+                <View style={[tailwind.flexRow, tailwind.flex1, tailwind.flexWrap]}>
+                  {item.list.map((item, index) => (
+                    <Item
+                      key={index}
+                      color={handleColor(item)}
+                      title={item.membername}
+                      checked={checked.has(item.id)}
+                      onPress={() => handleCheck(item.id)}
+                    />
+                  ))}
+                </View>
+              </View>
+            ))}
+            
           </View>
         </ScrollView>
       </View>
@@ -823,6 +920,9 @@ const styles = StyleSheet.create({
   },
   memberListTitle: {
     ...tailwind.textBase,
+    ...tailwind.fontBold,
+  },
+  memberListTitle1: {
     ...tailwind.fontBold,
   },
   memberListItem: {
