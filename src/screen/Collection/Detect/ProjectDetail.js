@@ -15,6 +15,7 @@ import Modal from '../../../components/Modal';
 import Checkbox from '../../../components/Checkbox';
 import * as bridge from '../../../database/bridge';
 import * as bridgeProjectBind from '../../../database/bridge_project_bind';
+import * as bridgeReportMember from '../../../database/bridge_report_member';
 import {alert, confirm} from '../../../utils/alert';
 import CommonView from '../../../components/CommonView';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -670,8 +671,22 @@ export default function ProjectDetail({route, navigation}) {
         },
         page,
       })
-      .then(res => {
-        setList(res.list);
+      .then(async res => {
+        let _list = res.list
+        for(let i=0;i<_list.length;i++){
+          let bindDataParams = {
+            bridgeid:_list[i].bridgeid,
+            projectid: project.projectid,
+          }
+          await bridgeProjectBind.get(bindDataParams).then(async res1=>{
+            await bridgeReportMember.searchUpDate(res1.bridgereportid).then(res2=>{
+              if(res2){
+                _list[i].date = res2.u_date
+              }
+            })
+          })
+        }
+        setList(_list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
         setLoading(false);
