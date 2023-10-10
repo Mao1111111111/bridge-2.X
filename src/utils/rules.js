@@ -1,3 +1,4 @@
+// 桥梁创建 - 构件编号生成规则
 import uuid from 'react-native-uuid';
 
 const setInx = data => {
@@ -204,6 +205,7 @@ const getYiQiang = (name, values, code, kua, bridgewallName) => {
 
 // 锥坡/护坡
 const getZhuipoAndHupo = (name, values, code, kua) => {
+  // console.log('规则',name, values.bridgeSlope,);
   const qiaotai = parseInt(values.b200001num || 0, 10);
   const _data = [];
   const getItem = (membername, _qiaotai) => ({
@@ -213,13 +215,52 @@ const getZhuipoAndHupo = (name, values, code, kua) => {
     membername: membername,
     stepno: _qiaotai,
   });
-  _data.push(getItem('0#台护坡', 1));
-  _data.push(getItem('0#台左锥坡', 1));
-  _data.push(getItem('0#台右锥坡', 1));
-  if (qiaotai > 0) {
-    _data.push(getItem(`${kua}#台护坡`, kua));
-    _data.push(getItem(`${kua}#台左锥坡`, kua));
-    _data.push(getItem(`${kua}#台右锥坡`, kua));
+  // 默认值
+  // _data.push(getItem('0#台护坡', 1));
+  // _data.push(getItem('0#台左锥坡', 1));
+  // _data.push(getItem('0#台右锥坡', 1));
+
+  // if (qiaotai > 0) {
+  //   _data.push(getItem(`${kua}#台护坡`, kua));
+  //   _data.push(getItem(`${kua}#台左锥坡`, kua));
+  //   _data.push(getItem(`${kua}#台右锥坡`, kua));
+  // }
+
+  if (values) {
+    // 锥坡为双幅
+    if (values.bridgeSlope == 'slopeDouble') {
+      // 默认值
+      _data.push(getItem('0#台护坡', 1));
+      _data.push(getItem('0#台左锥坡', 1));
+      _data.push(getItem('0#台右锥坡', 1));
+      if (qiaotai > 0) {
+        _data.push(getItem(`${kua}#台护坡`, kua));
+        _data.push(getItem(`${kua}#台左锥坡`, kua));
+        _data.push(getItem(`${kua}#台右锥坡`, kua));
+      }
+    }
+
+    // 锥坡为左幅
+    if (values.bridgeSlope == 'slopeLeft') {
+      // 默认值
+      _data.push(getItem('0#台护坡', 1));
+      _data.push(getItem('0#台左锥坡', 1));
+      if (qiaotai > 0) {
+        _data.push(getItem(`${kua}#台护坡`, kua));
+        _data.push(getItem(`${kua}#台左锥坡`, kua));
+      }
+    }
+
+    // 锥坡为右幅
+    if (values.bridgeSlope == 'slopeRight') {
+      // 默认值
+      _data.push(getItem('0#台护坡', 1));
+      _data.push(getItem('0#台右锥坡', 1));
+      if (qiaotai > 0) {
+        _data.push(getItem(`${kua}#台护坡`, kua));
+        _data.push(getItem(`${kua}#台右锥坡`, kua));
+      }
+    }
   }
   return setInx(_data);
 };

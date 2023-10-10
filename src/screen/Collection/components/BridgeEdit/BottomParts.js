@@ -53,8 +53,13 @@ export default function BottomParts({navigation}) {
       list.forEach(item => (code[item.membertype] = item.membertype));
       setMemberRow(listToPage(list, 2));
       setChecked(values?.bottom || {});
+      console.log('下部结构memberInfo1',bottomPartsData);
     }, [values, memberInfo]),
   );
+
+  React.useEffect(() => {
+    // console.log('下部结构values',values);
+  },[])
 
   // 页面聚焦时 -- 处理页面配置
   useFocusEffect(

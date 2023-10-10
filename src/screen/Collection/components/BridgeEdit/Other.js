@@ -43,7 +43,11 @@ export default function Other({navigation}) {
       values['b300002num'] = '2'
       handleChange('b300002num','2')
     }
-    
+    // 锥坡默认双幅
+    if (!values.bridgeSlope) {
+      values['bridgeSlope'] = 'slopeDouble'
+      handleChange('bridgeSlope','slopeDouble')
+    }
     // console.log('values',values);
   },[])
 
