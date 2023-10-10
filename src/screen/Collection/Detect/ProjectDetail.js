@@ -672,6 +672,7 @@ export default function ProjectDetail({route, navigation}) {
         page,
       })
       .then(async res => {
+        setLoading(false);
         let _list = res.list
         for(let i=0;i<_list.length;i++){
           let bindDataParams = {
@@ -689,7 +690,6 @@ export default function ProjectDetail({route, navigation}) {
         setList(_list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
-        setLoading(false);
         res.list.forEach((item)=> {
           bridgeList.push({
             project,
