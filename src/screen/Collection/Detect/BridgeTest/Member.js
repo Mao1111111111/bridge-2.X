@@ -115,10 +115,15 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
     }
   };
 
+  // 取消选择
+  const cancelSelect = () => {
+    setChecked(new Set());
+  }
+
   // 选中的构件变化时
   const handleChange = _checked => {
     const _data = {};
-    console.log('选中的data',data);
+    // console.log('选中的data',data);
     data
       .map(({list}) => list)
       .flat()
@@ -178,7 +183,10 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
           <Text style={[styles.memberListTitle, {color:'#2b427d'}]}>
             {nowEdit?.title}
           </Text>
-          <Button onPress={handleCheckAll} style={[{backgroundColor:'#2b427d'}]}>全选</Button>
+          <View style={[tailwind.flexRow]}>
+            <Button onPress={handleCheckAll} style={[{backgroundColor:'#2b427d'}]}>全选</Button>
+            <Button onPress={cancelSelect} style={[{backgroundColor:'#566a8b',marginLeft:10}]}>取消选择</Button> 
+          </View>
         </View>
         <ScrollView>
           <View style={[tailwind.flexRow, tailwind.flex1, tailwind.flexWrap]}>
