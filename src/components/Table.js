@@ -17,6 +17,7 @@ export default {
     children,
     header,
     style,
+    showPageJump
   }) => {
     const {
       state: {theme},
@@ -30,13 +31,16 @@ export default {
       let list = []
       for(let i=1;i<numberOfPages+1;i++){
         list.push({
-          name:i,
-          value:i
+          name:i+'',
+          value:i+''
         })
       }
       setPageList(list)
     },[numberOfPages])
 
+    const handleChange = ({value}) => {
+      onPageChange(parseInt(value)-1)
+    }
 
     return (
       <Grid style={style ? [styles.box, style] : [styles.box]}>
@@ -58,18 +62,20 @@ export default {
         {numberOfPages ? (
           <Row size={10} style={[styles.foot, theme.infoBgStyle]}>
             {/* {foot ? foot : <></>} */}
-            {/* <View>
-              <Text style={{fontSize:12}}>跳至
-              <Select
-                labelName="name"
-                valueName="value"
-                values={pageList}
-                value={pageNo + 1}
-                onChange={handleChange}
-                inputStyle={{height:15}}
-              />
-              页</Text>
-            </View> */}
+            {
+              showPageJump&&
+              <View style={{width:100}}>
+                <Select
+                  label='跳转'
+                  labelName="name"
+                  valueName="value"
+                  values={pageList}
+                  value={pageNo+1+''}
+                  onChange={handleChange}
+                  inputStyle={{height:25,width:20}}
+                  />
+              </View>
+            }
             {numberOfPages ? (
               <DataTable.Pagination
                 page={pageNo}

@@ -901,6 +901,7 @@ export default function ProjectDetail({route, navigation}) {
               numberOfPages={pageTotal}
               total={total}
               pageNo={page?.pageNo || 0}
+              showPageJump={true}
               onPageChange={e =>
                 setPage({
                   pageSize: 10,
@@ -925,7 +926,7 @@ export default function ProjectDetail({route, navigation}) {
                 extraData={list}
                 renderItem={({item, index}) => (
                   <Table.Row key={index}>
-                    <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                    <Table.Cell flex={1}>{index + page.pageNo*10 +1}</Table.Cell>
                     <Table.Cell flex={2} notText={true}>
                       {/* 跳转到桥梁检测 */}
                       <TouchableOpacity
