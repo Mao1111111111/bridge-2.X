@@ -119,3 +119,8 @@ export const updateStatus = data => {
   ];
   return db().executeSql(sql, param);
 };
+
+export const searchUpDate = async bridgereportid => {
+  const sql = 'select u_date from bridge_report_member where bridgereportid = ? ORDER BY u_date DESC limit 1';
+  return getResult(await db().executeSql(sql, [bridgereportid]), 'object');
+};
