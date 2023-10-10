@@ -671,21 +671,22 @@ export default function ProjectDetail({route, navigation}) {
         },
         page,
       })
-      .then(res => {
-        res.list.forEach(item=>{
+      .then(async res => {
+        let _list = res.list
+        for(let i=0;i<_list.length;i++){
           let bindDataParams = {
-            bridgeid:item.bridgeid,
+            bridgeid:_list[i].bridgeid,
             projectid: project.projectid,
           }
-          bridgeProjectBind.get(bindDataParams).then(res=>{
-            bridgeReportMember.searchUpDate(res.bridgereportid).then(res=>{
-              if(res){
-                item.date = res.u_date
+          await bridgeProjectBind.get(bindDataParams).then(async res1=>{
+            await bridgeReportMember.searchUpDate(res1.bridgereportid).then(res2=>{
+              if(res2){
+                _list[i].date = res2.u_date
               }
             })
           })
-        })
-        setList(res.list);
+        }
+        setList(_list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
         setLoading(false);
