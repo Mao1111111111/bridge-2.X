@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import {DataTable, ActivityIndicator} from 'react-native-paper';
 import {tailwind, colors} from 'react-native-tailwindcss';
 import {Col, Row, Grid} from 'react-native-easy-grid';
 import {Context} from '../providers/ThemeProvider';
+import Select from './Select';
 
 export default {
   Box: ({
@@ -20,6 +21,23 @@ export default {
     const {
       state: {theme},
     } = React.useContext(Context);
+
+    // ---跳转页码
+    // 页码列表
+    const [pageList,setPageList] = useState([])
+    // 处理页码列表
+    useEffect(()=>{
+      let list = []
+      for(let i=1;i<numberOfPages+1;i++){
+        list.push({
+          name:i,
+          value:i
+        })
+      }
+      setPageList(list)
+    },[numberOfPages])
+
+
     return (
       <Grid style={style ? [styles.box, style] : [styles.box]}>
         {loading ? (
@@ -40,6 +58,18 @@ export default {
         {numberOfPages ? (
           <Row size={10} style={[styles.foot, theme.infoBgStyle]}>
             {/* {foot ? foot : <></>} */}
+            {/* <View>
+              <Text style={{fontSize:12}}>跳至
+              <Select
+                labelName="name"
+                valueName="value"
+                values={pageList}
+                value={pageNo + 1}
+                onChange={handleChange}
+                inputStyle={{height:15}}
+              />
+              页</Text>
+            </View> */}
             {numberOfPages ? (
               <DataTable.Pagination
                 page={pageNo}
