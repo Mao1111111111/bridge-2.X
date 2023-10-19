@@ -167,9 +167,9 @@ const Provider = ({bridge, project, children}) => {
     }
 
     const getLastDate = plist => {
-      return plist
-        .map(({u_date}) => u_date)
-        .sort((a, b) => b.localeCompare(a))[0];
+        return plist.sort(function(a,b) {
+            return new Date(b.u_date) - new Date(a.u_date);
+        })[0].u_date
     };
 
     // 获取跨列表 、 部件列表
