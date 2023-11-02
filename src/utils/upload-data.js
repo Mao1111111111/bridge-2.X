@@ -1,7 +1,7 @@
 import axios from 'axios';
 import RNFetchBlob from 'rn-fetch-blob';
 import { uploadTestDataToObs } from './OBS';
-import { S3Upload } from './AWS';
+import { S3Upload,S3PutObject } from './AWS';
 //AWS配置
 import { AWSBucket } from '../assets/uploadConfig/AWSConfig'
 import {Buffer} from 'buffer';
@@ -530,7 +530,7 @@ new Promise(async (resolve, reject) => {
   }
   
   //上传媒体数据到云
-export const uploadImageToAWS = (key,filePath) =>
+export const uploadImageToAWS = (key,filePath,filesize) =>
 new Promise(async (resolve, reject) => {
   console.info('文件上传',filePath);
   try{
@@ -554,11 +554,19 @@ new Promise(async (resolve, reject) => {
           //参数
           try{
             var bucketParams = {Bucket: AWSBucket.defaultBucket, Key: key, Body: data};
-            S3Upload(bucketParams).then(res=>{
-              resolve(res);
-            }).catch(err=>{
-              reject(err);
-            })
+            if(filesize>4000000){
+              S3PutObject(bucketParams).then(res=>{
+                resolve(res);
+              }).catch(err=>{
+                reject(err);
+              })
+            }else{
+              S3Upload(bucketParams).then(res=>{
+                resolve(res);
+              }).catch(err=>{
+                reject(err);
+              })
+            }
           }catch(e){
             reject('图片读取6-'+e);
           }

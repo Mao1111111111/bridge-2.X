@@ -779,7 +779,7 @@ function Provider({children}) {
                                     return await errorDeal(e,'组内上传拼接key出错',inx,state,dispatch)
                                   }
                                   try{
-                                    return uploadData.uploadImageToAWS(key,item.appliedPath).then(res=>{
+                                    return uploadData.uploadImageToAWS(key,item.appliedPath,item.filesize).then(res=>{
                                       //设置反馈参数
                                       let newFeedbackParams = {
                                         ...feedbackParams,

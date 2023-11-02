@@ -30,6 +30,23 @@ export const S3Upload = (bucketParams) => {
     }
 }
 
+//上传数据
+export const S3PutObject = (bucketParams) => {
+    try{
+        return new Promise((resolve, reject) => {
+            s3.putObject(bucketParams,function(err, data){
+                if(err){
+                    reject(err)
+                }else{
+                    resolve(data);
+                }
+            })
+        })
+    }catch(e){
+      console.log('上传数据-S3Upload',e);
+    }
+}
+
 // 获取桶中图片数量
 export const S3GetNumofBucket = (params) => {
     try{
