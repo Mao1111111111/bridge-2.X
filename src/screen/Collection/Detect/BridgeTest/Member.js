@@ -117,7 +117,10 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
 
   // 取消选择
   const cancelSelect = () => {
+    // 当已经全选时,设置全不选
     setChecked(new Set());
+    // 触发 构件选中变化 的 函数
+    handleChange(new Set());
   }
 
   // 选中的构件变化时
@@ -346,7 +349,10 @@ const AllData = ({title, data, onChange, onGroupChange}) => {
 
   // 取消选择
   const cancelSelect = () => {
+    // 当已经全选时,设置全不选
     setChecked(new Set());
+    // 触发 构件选中变化 的 函数
+    handleChange(new Set());
   }
 
   // 选中的构件变化时

@@ -228,7 +228,7 @@ export const useP1002Init = ({route, navigation}) => {
       if (version) {
         return;
       }
-      const {memberList, data, type} = route.params;
+      const {memberList, data, type, thridData} = route.params;
       (async () => {
         dispatch({type: 'isLoading', payload: true});
         // memberList.forEach(item =>
@@ -253,11 +253,12 @@ export const useP1002Init = ({route, navigation}) => {
           if (!_data.checktypeid) {
             // console.log('这里获取typeid');
             // _data.checktypeid = res.infoComponents[0]?.checktypeid;
-            res.infoComponents.forEach(item => {
-              if (route.params.thridData.checktypeid == item.checktypeid) {
-                _data.checktypeid = item.checktypeid
-              }
-            });
+            _data.checktypeid = thridData.checktypeid
+            // res.infoComponents.forEach(item => {
+            //   if (route.params.thridData.checktypeid == item.checktypeid) {
+            //     _data.checktypeid = item.checktypeid
+            //   }
+            // });
           }
           if (!_data.standard) {
             const defaultScale = res.basestandardtable.find(
