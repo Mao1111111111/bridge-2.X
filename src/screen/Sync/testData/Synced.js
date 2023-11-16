@@ -63,6 +63,12 @@ export default function Synced({list, onUpload}) {
     <Content
       operations={[
         {
+          // name: 'cloud-upload',
+          img:'singleUpload',
+          disabled: testDataUploadingIds.length,
+          onPress: handleUpload,
+        },
+        {
           name: 'cloud-upload',
           disabled: testDataUploadingIds.length,
           onPress: handleUpload,
