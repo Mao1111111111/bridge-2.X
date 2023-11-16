@@ -21,6 +21,7 @@ import {Context as themeContext} from '../providers/ThemeProvider';
 import {syncCommonData} from '../utils/fetch-data';
 import {alert} from '../utils/alert';
 import * as user from '../database/user';
+import {version} from '../assets/versionNum'
 
 export default function Login() {
   // 引用 存输入框的值 用户名username、密码password、pin
@@ -325,7 +326,7 @@ export default function Login() {
                 }
               ]
             }
-          >v3.09</Text>
+          >{version}</Text>
           <View style={[styles.box]}>
             {/* 判断是否同步，默认不同步 */}
             {/* 这里是登录后，同步数据 */}

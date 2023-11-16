@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {logout} from '../database/user'
 import Modal from '../components/Modal';
 import Button from '../components/Button';
+import {version} from '../assets/versionNum'
 
 const Tab = createBottomTabNavigator();
 
@@ -240,7 +241,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
             }
           ]
         }
-      >v3.09</Text>
+      >{version}</Text>
       {/* 检测公司名称 */}
       {/* <Text
         style={
