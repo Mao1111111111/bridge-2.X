@@ -9,6 +9,7 @@ import {CircleButton} from './Button';
 import {launchCamera} from 'react-native-image-picker';
 import fs from '../utils/fs';
 import { UploadObjectStorageName } from '../assets/uploadConfig/UploadConfig';
+import { rotateImage } from '../utils/imageDeal';
 
 export default function Camera({onChange, type, disabled}) {
   // 打开相机
@@ -27,15 +28,21 @@ export default function Camera({onChange, type, disabled}) {
       const documentDir = RNFS.DocumentDirectoryPath;
       // 文件名为随机数
       const UUID = uuid.v4();
+      // 文件地址
+      let path = file.uri
+      // 判断是否旋转
+      if(res.assets[0].height>res.assets[0].width){
+        path =await rotateImage(res.assets[0].uri)
+      }
       // 将图片复制到本地文件夹
       await fs.copyFile(
-        file.uri,
-        `file://${documentDir}/${UUID}.${file.uri.split('.').pop()}`,
+        path,
+        `file://${documentDir}/${UUID}.${path.split('.').pop()}`,
       );
       // 执行父组件的函数
       onChange &&
         onChange({
-          uri: `${documentDir}/${UUID}.${file.uri.split('.').pop()}`,
+          uri: `${documentDir}/${UUID}.${path.split('.').pop()}`,
           type: file.type,
           fileSize: file.fileSize,
         });
