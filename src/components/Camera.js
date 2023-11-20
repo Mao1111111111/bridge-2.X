@@ -31,8 +31,8 @@ export default function Camera({onChange, type, disabled}) {
       // 文件地址
       let path = file.uri
       // 判断是否旋转
-      if(res.assets[0].height>res.assets[0].width){
-        path =await rotateImage(res.assets[0].uri)
+      if(file.height>file.width){
+        path =await rotateImage(file.uri)
       }
       // 将图片复制到本地文件夹
       await fs.copyFile(

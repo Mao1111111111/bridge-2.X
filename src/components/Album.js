@@ -3,6 +3,7 @@ import React,{useState, useEffect} from 'react';
 import {View, Pressable, Image, ImageBackground,Dimensions} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {CircleButton} from './Button';
+import { rotateImage } from '../utils/imageDeal';
 
 export default function Album({onChange, type, disabled}) {
   // 打开本地文件夹
@@ -18,10 +19,14 @@ export default function Album({onChange, type, disabled}) {
         return;
       }
       const file = res.assets[0];
+      let path = file.uri
+      if(file.height>file.width){
+        path =await rotateImage(file.uri)
+      }
       // 执行父组件的函数,并将 文件地址、类型、文件大小传回
       onChange &&
         onChange({
-          uri: file.uri.replace('file://', ''),
+          uri: path.replace('file://', ''),
           type: file.type,
           fileSize: file.fileSize,
         });
