@@ -381,7 +381,7 @@ const User = () => {
       <View>
         
       </View>
-      <View>
+      <View style={{height:'100%'}}>
         {/* 用户名 */}
         <Text style={
           [
@@ -390,39 +390,46 @@ const User = () => {
               fontWeight: 'bold',
               textAlign:'center',
               fontSize:18,
-              right:'0.5%',
-              top: 160
+              position:'relative',
+              // right:'0.5%',
+              top: '35%'
             }
           ]
         }>
           {userInfo?.nickname}
         </Text>
         {/* 所属公司 */}
-        <Text style={
-          [
-            {
-              color:'#2b427d',
-              // fontWeight: 'bold',
-              fontSize:12,
-              left:'49%',
-              top: 203,
-              width:160
-            }
-          ]
-        }>{userInfo?.company?.companyname}</Text>
-        {/* 登陆日期 */}
-        <Text style={
-          [
-            {
-              color:'#2b427d',
-              // fontWeight: 'bold',
-              fontSize:12,
-              left:'49%',
-              top: 200,
-              marginTop:5
-            }
-          ]
-        }>{userInfo?.loginDate}</Text>
+          <Text style={
+            [
+              {
+                color:'#2b427d',
+                // fontWeight: 'bold',
+                fontSize:12,
+                position:'relative',
+                textAlign:'left',
+                left:'49%',
+                top: '47%',
+                width:160
+              }
+            ]
+          }>{userInfo?.company?.companyname}</Text>
+          {/* 登陆日期 */}
+          <Text style={
+            [
+              {
+                color:'#2b427d',
+                // fontWeight: 'bold',
+                textAlign:'left',
+                fontSize:12,
+                position:'relative',
+                left:'49%',
+                top: '50%',
+                width:160
+                // marginTop:5
+              }
+            ]
+          }>{userInfo?.loginDate}</Text>
+        
       </View>
     </View>
   );
