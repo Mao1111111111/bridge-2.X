@@ -351,8 +351,12 @@ export default function Login() {
               <View>
                 <Text style={[tailwind.text2xl, tailwind.fontBold, tailwind.mR2, 
                   {color:'#2b427d', textAlign:'center', fontSize:16}]}>
-                黑龙江省工程质量道桥检测中心
+                欢迎使用 简立得®
                 </Text>
+                {/* <Text style={[tailwind.text2xl, tailwind.fontBold, tailwind.mR2, 
+                  {color:'#2b427d', textAlign:'center', fontSize:16}]}>
+                黑龙江省工程质量道桥检测中心
+                </Text> */}
                 <Text
                   style={[
                     tailwind.text2xl,
