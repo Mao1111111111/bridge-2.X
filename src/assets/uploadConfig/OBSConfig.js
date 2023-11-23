@@ -2,17 +2,17 @@
     华为云配置
  */
 
-/* 
-//-----个人测试的 华为云OBS  
-//ak
-export const ak = 'HIIUVAQURPR6DVKSNMLB'
-//sk
-export const sk = 'ZgOc2cZwn24eScjPOUL7achNETDcAHhlqNAeF7pD'
-//endPoint
-export const endPoint = 'https://obs.cn-east-3.myhuaweicloud.com'
 
-//存储 检测数据的桶
-export const BucketName_storeTestData = 'roadtestapp-obstest' */
+// //-----个人测试的 华为云OBS  
+// //ak
+// export const ak = 'HIIUVAQURPR6DVKSNMLB'
+// //sk
+// export const sk = 'ZgOc2cZwn24eScjPOUL7achNETDcAHhlqNAeF7pD'
+// //endPoint
+// export const endPoint = 'https://obs.cn-east-3.myhuaweicloud.com'
+
+// //存储 检测数据的桶
+// export const BucketName_storeTestData = 'roadtestapp-obstest'
 
 
 //-----公司的 华为云OBS  
