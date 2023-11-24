@@ -15,7 +15,7 @@ import { BucketName_storeTestData } from '../../assets/uploadConfig/OBSConfig';
 //AWS配置
 import { AWSBucket } from '../../assets/uploadConfig/AWSConfig'
 // 上传配置
-import { UploadObjectStorageName } from '../../assets/editionType';
+import { editionType,editionList } from '../../assets/editionType';
 
 import fs from '../../utils/fs'
 import RNFS from 'react-native-fs';
@@ -367,7 +367,7 @@ function Provider({children}) {
               let mediaDataUploadSuccess = true
 
               // 判断是上传到华为云 还是 上传到紫光云
-              if(UploadObjectStorageName=='OBS'){
+              if(editionList[editionType].UploadObjectStorageName=='OBS'){
                 // 上传到华为云
                 feedbackParams.bucketname = BucketName_storeTestData
                 // 上传检测数据到云

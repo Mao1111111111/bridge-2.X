@@ -8,7 +8,7 @@ import uuid from 'react-native-uuid';
 import {CircleButton} from './Button';
 import {launchCamera} from 'react-native-image-picker';
 import fs from '../utils/fs';
-import { UploadObjectStorageName } from '../assets/editionType';
+import { editionType,editionList } from '../assets/editionType';
 import { rotateImage } from '../utils/imageDeal';
 
 export default function Camera({onChange, type, disabled}) {
@@ -18,8 +18,8 @@ export default function Camera({onChange, type, disabled}) {
       const res = await launchCamera({
         mediaType: type,
         videoQuality: 'high',
-        maxWidth:UploadObjectStorageName=='OBS'?2080:1560,
-        maxHeight:UploadObjectStorageName=='OBS'?1560:1170
+        maxWidth:editionList[editionType].UploadObjectStorageName=='OBS'?2080:1560,
+        maxHeight:editionList[editionType].UploadObjectStorageName=='OBS'?1560:1170
       });
       if (!res.assets[0]) {
         return;
