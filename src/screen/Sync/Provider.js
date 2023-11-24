@@ -15,7 +15,7 @@ import { BucketName_storeTestData } from '../../assets/uploadConfig/OBSConfig';
 //AWS配置
 import { AWSBucket } from '../../assets/uploadConfig/AWSConfig'
 // 上传配置
-import { UploadObjectStorageName } from '../../assets/uploadConfig/UploadConfig';
+import { UploadObjectStorageName } from '../../assets/editionType';
 
 import fs from '../../utils/fs'
 import RNFS from 'react-native-fs';
