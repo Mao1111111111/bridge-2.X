@@ -9,6 +9,9 @@ import {Context as ThemeContext} from '../../../providers/ThemeProvider';
 import {Context as GlobalContext} from '../../../providers/GlobalProvider';
 import {Context} from '../Provider';
 import {listToPage} from '../../../utils/common';
+import Modal from '../../../components/Modal';
+import Button from '../../../components/Button';
+import Select from '../../../components/Select';
 
 export default function NotSync({list, onUpload}) {
   const {
@@ -39,6 +42,16 @@ export default function NotSync({list, onUpload}) {
 
   const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
 
+  // 模态框
+  // 是否显示
+  const [modalVisible,setModalVisible] = React.useState(false)
+  // 模态框类型-- select-选择批量上传方式、project-项目上传
+  const [uploadType,setUploadType] = React.useState('select')
+  // 项目分组数据
+  const [projectGruop,setProjectGruop] = React.useState([])
+  // 当前选中的项目
+  const [curProject,setCurProject] = React.useState([])
+
   React.useEffect(() => {
     setNowEdit(new Set());
     list.sort(function(a, b) {
@@ -47,6 +60,8 @@ export default function NotSync({list, onUpload}) {
     setTableData(listToPage(list, 10));
     const windowWidth = Dimensions.get('window').width;
     setScreenWidth(windowWidth)
+    // 按项目处理数据
+    projectDeal()
   }, [list]);
 
   const handleEdit = item => {
@@ -63,10 +78,70 @@ export default function NotSync({list, onUpload}) {
     onUpload && onUpload(nowEdit);
   };
 
+  // 点击批量上传按钮
   const handleAll = () => {
+    // 设置模态框类型
+    setUploadType('select')
+    // 打开批量上传的模态框
+    setModalVisible(true)
+  };
+
+  // 点击全部上传
+  const allUploadBtn = () => {
+    // 关闭模态框
+    setModalVisible(false)
+    // 全部上传
     onUpload && onUpload(list.map(({id}) => id));
     setNowEdit(new Set());
-  };
+  }
+
+  // 点击项目上传
+  const projectUploadBtn = () => {
+    // 设置模态框类型
+    setUploadType('project')
+  }
+
+  // 项目数据分组
+  const projectDeal = () => {
+    // 以项目分组
+    let projectList = []
+    list.forEach(item=>{
+      // 项目列表中是否存在这个项目
+      let existIndex = projectList.findIndex(i=>i.projectname==item.projectname)
+      if(existIndex==-1){
+        // 不存在
+        projectList.push({
+          projectname:item.projectname,
+          list:[item]
+        })
+      }else{
+        // 存在
+        projectList[existIndex].list.push(item)
+      }
+    })
+    // 设置项目组数据
+    setProjectGruop(projectList)
+  }
+
+  // 项目变化时
+  const projectChange = ({value}) => {
+    // 设置当前选中
+    setCurProject(value)
+  }
+
+  // 确定按项目上传
+  const projectUploadOk = () => {
+    // 关闭模态框
+    setModalVisible(false)
+    // 按项目上传
+    onUpload && onUpload(curProject.map(({id}) => id));
+    setNowEdit(new Set());
+  }
+
+  // 模态框点击关闭
+  const modalClose = () => {
+    setModalVisible(false)
+  }
 
   return (
     <Content
@@ -132,6 +207,39 @@ export default function NotSync({list, onUpload}) {
           numberOfPages={tableData.length}
         />
       </View>
+      <Modal
+        visible={modalVisible}
+        title='批量上传'
+        showHead={true}
+        width={400}
+        height={220}
+        onClose={modalClose}>
+        {
+          uploadType=='select'&&
+          <View style={[styles.modalView]}>
+            <Text>请选择批量上传模式：</Text>
+            <Button style={[styles.modalSelectBtn]} onPress={allUploadBtn}>全部上传</Button>
+            <Button style={[styles.modalSelectBtn]} onPress={projectUploadBtn}>项目上传</Button>
+          </View>
+        }
+        {
+          uploadType=='project'&&
+          <View style={[styles.modalView]}>
+            <Text>请选择要上传的项目：</Text>
+            <Select
+              label='项目'
+              labelName="projectname"
+              valueName="list"
+              values={projectGruop}
+              value={curProject}
+              onChange={projectChange}
+              style={[styles.modalSelect]}
+              inputStyle={{height:35,width:20}}
+              />
+              <Button style={[styles.modalSelectBtn,styles.modalProjectOkBtn]} onPress={projectUploadOk}>确定上传</Button>
+          </View>
+        }
+      </Modal>
     </Content>
   );
 }
@@ -144,4 +252,17 @@ const styles = StyleSheet.create({
     ...tailwind.rounded,
     ...tailwind.shadow2xl,
   },
+  modalView:{
+    paddingHorizontal:10
+  },
+  modalSelectBtn:{
+    backgroundColor:'#2b427d',
+    marginTop:20
+  },
+  modalSelect:{
+    marginTop:10
+  },
+  modalProjectOkBtn:{
+    marginTop:30
+  }
 });
