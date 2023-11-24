@@ -22,6 +22,7 @@ import {syncCommonData} from '../utils/fetch-data';
 import {alert} from '../utils/alert';
 import * as user from '../database/user';
 import {version} from '../assets/versionNum'
+import { editionType,editionList } from '../assets/editionType';
 
 export default function Login() {
   // 引用 存输入框的值 用户名username、密码password、pin
@@ -350,13 +351,9 @@ export default function Login() {
               {/* 标题   欢迎使用 检立得 style={tailwind.flexRow} */}
               <View>
                 <Text style={[tailwind.text2xl, tailwind.fontBold, tailwind.mR2, 
-                  {color:'#2b427d', textAlign:'center', fontSize:16}]}>
-                欢迎使用 简立得®
+                    {color:'#2b427d', textAlign:'center', fontSize:16}]}>
+                    {editionList[editionType].loginPageCompanyName}
                 </Text>
-                {/* <Text style={[tailwind.text2xl, tailwind.fontBold, tailwind.mR2, 
-                  {color:'#2b427d', textAlign:'center', fontSize:16}]}>
-                黑龙江省工程质量道桥检测中心
-                </Text> */}
                 <Text
                   style={[
                     tailwind.text2xl,
