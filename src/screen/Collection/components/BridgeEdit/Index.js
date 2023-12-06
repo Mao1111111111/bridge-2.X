@@ -478,11 +478,12 @@ function Index({onClose, onSubmitOver, isClone}, ref) {
               <Button
                 style={[tailwind.bgRed700,{backgroundColor:'#808285'}]}
                 onPress={() => setVisible(false)}
-                loading={loading}>
+                loading={loading}
+                 disabled={loading}>
                 取消
               </Button>
               {/* 保存 */}
-              <Button onPress={handleSave} loading={loading} style={[{backgroundColor:'#2b427d'}]}>
+              <Button onPress={handleSave} loading={loading} style={[{backgroundColor:'#2b427d'}]} disabled={loading}>
                 保存
               </Button>
             </>
