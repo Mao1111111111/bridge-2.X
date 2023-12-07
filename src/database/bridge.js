@@ -254,3 +254,8 @@ export const cloudnum = async () => {
   const sql = 'select COUNT(*) as num from bridge where datasources = 1';
   return getResult(await db().executeSql(sql, []), 'object');
 };
+
+export const bridgeList = async () => {
+  const sql = 'select * from bridge';
+  return getResult(await db().executeSql(sql,[]), 'array');
+};

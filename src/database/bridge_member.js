@@ -54,3 +54,9 @@ export const remove = async bridgeid => {
   const sql = 'delete from bridge_member where bridgeid = ?';
   await db().executeSql(sql, [bridgeid]);
 };
+
+export const bridgeMemberList = async bridgeid => {
+  const sql =
+    'select * from bridge_member where bridgeid = ?';
+  return getResult(await db().executeSql(sql, [bridgeid]), 'array');
+};
