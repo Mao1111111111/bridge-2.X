@@ -9,7 +9,6 @@ import Main from './src/screen/Main';
 import location from './src/utils/location';
 import permission from './src/utils/permission';
 import {init as sqliteInit} from './src/utils/sqlite';
-import { deduplicate } from './src/utils/deduplicate'
 
 // 忽略的打印
 LogBox.ignoreLogs([
@@ -35,8 +34,6 @@ function App() {
         await permission();
         // 初始化数据库
         await sqliteInit();
-        // 数据库去重
-        await deduplicate()
         // 初始化定位监听
         location.initWatch();
         setIsReady(true);

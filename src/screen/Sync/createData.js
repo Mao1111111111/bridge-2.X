@@ -9,6 +9,7 @@ import * as bridgeReportFile from '../../database/bridge_report_file';
 import * as partsPlanGenesisData from '../../database/parts_plan_genesis_data';
 import {score, numeric} from '../../utils/score';
 import {groupMap, listToGroup} from '../../utils/common';
+import { memberDeduplicate } from '../../utils/deduplicate'
 import dayjs from 'dayjs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo from 'react-native-device-info';
@@ -476,7 +477,8 @@ export const getData =async (
     //初始构件数据
     let initialMemberData = null
     try{
-      initialMemberData = await bridgeMember.list(data.bridgeid)
+      let memberList = await bridgeMember.list(data.bridgeid)
+      initialMemberData = await memberDeduplicate(memberList)
     }catch(e){
       console.log('获取桥梁构件列表',e);
       return errorDeal(id,e,'获取桥梁构件列表失败')

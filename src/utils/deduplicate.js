@@ -1,60 +1,28 @@
 /* 
-    数据库去重
+    构件列表去重
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as bridge from '../database/bridge';
-import * as bridgeMember from '../database/bridge_member';
 
-// 数据库去重
-export const deduplicate = async () => {
-    // 桥梁构件去重
-    await deduplicate_bridge_member()
-}
-
-// 桥梁构件去重
-const deduplicate_bridge_member = async () => {
+// 构件列表去重
+export const memberDeduplicate = async (_memberList) => {
     try{
-        // ---判断是否 是 首次去重
-        // 本地 获取 去重参数
-        const isDeduplicate = await AsyncStorage.getItem('isDeduplicate')
-        // 如果没有去重则处理
-        if(!isDeduplicate){
-            // 桥梁列表
-            let bridgeList = await bridge.bridgeList();
-            console.log("bridgeList",bridgeList);
-            // 如果当前有桥梁
-            if(bridgeList.length>0){
-                for(let i=0;i<bridgeList.length;i++){
-                    let bridgeid = bridgeList[i].bridgeid
-                    // 逐个去重
-                    await _deduplicate_bridge_member(bridgeid)
+        let memberList = _memberList
+        const deWeight = () => {
+            for (var i = 0; i < memberList.length - 1; i++) {
+                for (var j = i + 1; j < memberList.length; j++) {
+                    if (memberList[i].position == memberList[j].position
+                        &&memberList[i].membertype == memberList[j].membertype
+                        &&memberList[i].membername == memberList[j].membername) {
+                        memberList.splice(j, 1);
+                        //因为数组长度减小1，所以直接 j++ 会漏掉一个元素，所以要 j--
+                        j--;
+                    }
                 }
             }
+            return memberList;
         }
+        let newMemberList = deWeight()
+        return newMemberList
     }catch(e){
-      console.log('-',e);
+      console.log('构件列表去重出错',e);
     }
-}
-
-// 构件去重函数
-const _deduplicate_bridge_member = async (bridgeid) => {
-    try{
-        // 根据桥梁id获取桥梁构件列表
-        let bridgeMemberList = await bridgeMember.bridgeMemberList(bridgeid)
-        console.log("bridgeMemberList",bridgeMemberList);
-        // if(bridgeMemberList)
-        // 构件编号分组
-        let memberIdGroup = {}
-        // 构件列表遍历
-        for(let i=0;i<bridgeMemberList.length;i++){
-            // 对构件编号分割
-            let bridgeMemberIdArr = bridgeMemberList[i].memberid.split('_')
-            // 判断构件编号分组中是否存在
-
-        }
-    }catch(e){
-      console.log('-',e);
-    }
-    
-    
 }
