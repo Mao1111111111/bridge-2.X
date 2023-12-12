@@ -7,6 +7,7 @@ import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
 import rules from '../../../../utils/rules';
 import {listToGroup} from '../../../../utils/common';
 import * as bridgeMember from '../../../../database/bridge_member';
+import { memberDeduplicate } from '../../../../utils/deduplicate';
 
 // 上下文空间
 const Context = React.createContext();
@@ -128,7 +129,7 @@ const Provider = ({values, project, children}) => {
       // 获取桥梁构件信息
       bridgeMember
         .list(values.bridgeid)
-        .then(res => {
+        .then(async res => {
           const _data = {
             // 上部部件
             b10: {},
@@ -137,8 +138,9 @@ const Provider = ({values, project, children}) => {
             // 桥面系部件
             b30: {},
           };
-
-          res.forEach(item => {
+          // 构件列表去重
+          let memberList = await memberDeduplicate(res)
+          memberList.forEach(item => {
             // item.position 部件结构
             if (_data[item.position][item.membertype]) {
               _data[item.position][item.membertype].push(item);
@@ -149,7 +151,7 @@ const Provider = ({values, project, children}) => {
           dispatch({type: 'topPartsData', payload: _data.b10});
           dispatch({type: 'bottomPartsData', payload: _data.b20});
           dispatch({type: 'pmxData', payload: _data.b30});
-          dispatch({type: 'partsList', payload: res});
+          dispatch({type: 'partsList', payload: memberList});
         })
         .catch(err => console.error(err));
     } else {
