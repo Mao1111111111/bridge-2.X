@@ -378,6 +378,24 @@ function Provider({children}) {
                     newFeedbackParams.objectinfo.filemd5 = (res.InterfaceResult.ETag.replace("\"","")).replace("\"","")
                     //---------反馈
                     await uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+                      if(res.download_status){
+                      }else{
+                        let errObj = state.promptFontErr
+                        let name = data.testData.projectname + '-' + data.bridgename
+                        if(errObj[name]){
+                          errObj[name]['testDataFont'] = JSON.stringify(res)
+                        }else{
+                          errObj[name] = {
+                            testDataFont:JSON.stringify(res)
+                          }
+                        }
+                        dispatch({
+                          type: 'promptFontErr',
+                          payload: errObj
+                        })
+                        // 测试数据上传成功 标志位
+                        testDataUploadSuccess = false
+                      }
                     }).catch(err=>{
                       let errObj = state.promptFontErr
                       let name = data.testData.projectname + '-' + data.bridgename
@@ -473,6 +491,32 @@ function Provider({children}) {
                                   }
                                   //---------反馈
                                   uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
+                                    if(res.download_status){
+                                    }else{
+                                      let errObj = state.promptFontErr
+                                      try{
+                                        let name = data.testData.projectname + '-' + data.bridgename
+                                        if(errObj[name]){
+                                          if(errObj[name]['mediaDataFont']){
+                                            errObj[name]['mediaDataFont'].push(JSON.stringify(res))
+                                          }else{
+                                            errObj[name]['mediaDataFont'] = [JSON.stringify(res)]
+                                          }
+                                        }else{
+                                          errObj[name] = {
+                                            mediaDataFont:[JSON.stringify(res)]
+                                          }
+                                        }
+                                      }catch(e){
+                                        errObj['errDealErr'] = '反馈错误处理失败-'+e
+                                      }
+                                      dispatch({
+                                        type: 'promptFontErr',
+                                        payload: errObj
+                                      })
+                                      // 媒体数据上传成功 标志位
+                                      mediaDataUploadSuccess = false
+                                    }
                                     successImgNum++
                                     dispatch({
                                       type: 'curUploadImgSucNUm',
@@ -544,7 +588,6 @@ function Provider({children}) {
                                   type: 'curUploadImgSucNUm',
                                   payload: successImgNum
                                 })
-                                mediaDataUploadSuccess = false
                                 mediaDataUploadSuccess = false
                                 return await errorDeal(e,'组内上传前出错',inx,state,dispatch)
                               }
