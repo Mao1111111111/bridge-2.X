@@ -462,6 +462,7 @@ function Provider({children}) {
                                 + data.bridgeid + '/'
                                 + data.testData.bridgereportid + '/'
                                 + arr[arr.length-1].replace("jpg","jpeg")
+                                console.log("arr",arr);
                               }catch(e){
                                 successImgNum++
                                 dispatch({
@@ -472,23 +473,26 @@ function Provider({children}) {
                                 return await errorDeal(e,'组内上传拼接key出错',inx,state,dispatch)
                               }
                               try{
-                                  return await uploadData.uploadImageToObs(key,item.appliedPath).then(res=>{
-                                  //设置反馈参数
-                                  let newFeedbackParams = {
-                                    ...feedbackParams,
-                                    objectkey:key,
-                                    objecttype:'img',
-                                    objectsize:item.filesize,
-                                    objectinfo:{
-                                      ...feedbackParams.objectinfo,
-                                      filenameuser:item.filename + '.' + item.filetypes.replace("jpg","jpeg"),
-                                      filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
-                                      filesize:Math.floor(item.filesize/1024*100)/100,
-                                      filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
-                                      filemd5:(res.InterfaceResult.ETag.replace("\"","")).replace("\"",""),
-                                      createtime:item.u_date
-                                    }
+                                  let file = {
+
                                   }
+                                  return await uploadData.uploadImageToObs(key,item.appliedPath).then(res=>{
+                                    //设置反馈参数
+                                    let newFeedbackParams = {
+                                      ...feedbackParams,
+                                      objectkey:key,
+                                      objecttype:'img',
+                                      objectsize:item.filesize,
+                                      objectinfo:{
+                                        ...feedbackParams.objectinfo,
+                                        filenameuser:item.filename + '.' + item.filetypes.replace("jpg","jpeg"),
+                                        filenamesys:arr[arr.length-1].replace("jpg","jpeg"),
+                                        filesize:Math.floor(item.filesize/1024*100)/100,
+                                        filetypes:'.' + item.filetypes.replace("jpg","jpeg"),
+                                        filemd5:(res.InterfaceResult.ETag.replace("\"","")).replace("\"",""),
+                                        createtime:item.u_date
+                                      }
+                                    }
                                   //---------反馈
                                   uploadData.syncUploadToObsAfterFeedback(newFeedbackParams).then(res=>{
                                     if(res.download_status){

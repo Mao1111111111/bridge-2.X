@@ -39,3 +39,32 @@ export const uploadTestDataToObs = (key,data) =>
         }
       })
   })
+
+// 上传图片
+export const uploadImageToObs = (key,file) => {
+  // --接口获取上传参数
+  // 参数
+  let obsUploadParams = {acl: 'public-read', 'content-type': 'image/jpeg'+file.type};
+  // 请求sdk
+  var postObjectResult = obsClient.createPostSignatureSync({Bucket : BucketName, Key : key,Expires:3600,obsUploadParams});
+
+  // --拼接form
+  let form = new FormData()
+  form.append('AccessKeyID',ObsConfig.ak);
+  form.append('policy',postObjectResult.Policy);
+  form.append('signature',postObjectResult.Signature);
+  form.append('content-type','image/'+file.type);
+  form.append('key', key);
+  form.append('file', {uri: file.filePath, type: 'application/octet-stream', name: key});
+
+  // 接口上传
+  fetch(OBSHost, {
+    method: 'POST',
+    header: {
+      'content-type': 'multipart/form-data'
+    },
+    body:form
+  })
+    .then(res => console.log(res))
+      .catch(e=>console.log(e));
+}
