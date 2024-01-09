@@ -27,4 +27,14 @@ export default {
     return RNFetchBlob.wrap(path);
   },
   dir: RNFS.DocumentDirectoryPath,
+  // 判断文件是否存在
+  fileExist : (path) => {
+    return new Promise((resolve, reject) => {
+        RNFS.exists(path).then(res=>{
+            resolve(res)
+        }).catch(e=>[
+            reject(e)
+        ])
+    })
+  }
 };
