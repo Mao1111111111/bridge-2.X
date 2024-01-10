@@ -436,7 +436,6 @@ function Provider({children}) {
                 if(mediaData.length>0){
                     await Promise.all(
                       mediaData
-                        .filter(({filepath}) => filepath)
                         .map(async item => {
                           try{
                             if(item.appliedPath){
@@ -700,7 +699,6 @@ function Provider({children}) {
                       for(let i=0;i<newMediaData.length;i++){
                         await Promise.all(
                           newMediaData[i]
-                            .filter(({filepath}) => filepath)
                             .map(async item => {
                               try{
                                 if(item.appliedPath){

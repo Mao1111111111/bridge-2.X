@@ -164,8 +164,18 @@ export default function NotSync({list, onUpload}) {
           null,
           basememberinfo
         )
+        let bridgesideKV = {
+          side111:'单幅',
+          side100:'左幅',
+          side001:'右幅',
+          side010:'中幅',
+          side200:'上行',
+          side002:'下行',
+          side999:'其他'
+        }
         // 创建文件夹
-        let folderPath = RNFS.ExternalStorageDirectoryPath + '/jianlide-data/exportData/'+allData.data.testData.projectname+'/'+allData.data.bridgename
+        let bridgeside = bridgesideKV[allData.data.bridgeside]
+        let folderPath = RNFS.ExternalStorageDirectoryPath + '/jianlide-data/exportData/'+allData.data.testData.projectname+'/'+allData.data.bridgename+'/'+bridgeside
         let imgFolderPath = folderPath + '/image'
         await fs.mkdir(imgFolderPath);
         // ----图片处理
