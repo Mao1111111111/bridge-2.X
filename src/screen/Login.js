@@ -12,9 +12,12 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ImageBackground,
+  Dimensions,
+  Pressable,
+  TouchableOpacity
 } from 'react-native';
 import {fetchAuthorize, fetchUsersProfile, fetchInitAccessToken, fetchRegisterApplication, fetchoOtainAccessToken, fetchObtainUserInfo} from '../utils/user';
-import {TextInput, Password} from '../components/Input';
+import {TextInput, Password,} from '../components/Input';
 import Button from '../components/Button';
 import {Context} from '../providers/GlobalProvider';
 import {Context as themeContext} from '../providers/ThemeProvider';
@@ -48,8 +51,20 @@ export default function Login() {
   // 同步显示的信息
   const [massage, setMassage] = React.useState('');
 
+  const [screenWidth,setScreenWidth] = React.useState(0) //屏幕宽度
+  const [screenHeight,setScreenHeight] = React.useState(0) //屏幕高度
+
+  const [startPage, setStartPage] = React.useState(true)
+
   // 页面加载时
   React.useEffect(() => {
+    setTimeout(()=>{
+      setStartPage(false)
+    },3000)
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
+    const windowHeight = Dimensions.get('window').height;
+    setScreenHeight(windowHeight)
     // 获取上次登录的用户信息
     user.getLastLoginUser().then(res => {
       if (res) {
@@ -63,7 +78,7 @@ export default function Login() {
   // 在线登录
   const handleLogin = async () => {
     // 设置按钮 loading
-    setIsLoading(true);
+    // setIsLoading(true);
     // 从引用中 获取 用户名、密码
     const username = form.current.username.value;
     const password = form.current.password.value;
@@ -313,17 +328,99 @@ export default function Login() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View>
         {/* 背景图片 */}
-        <ImageBackground source={require('../iconImg/loginBg1.jpg')} style={[{width:'100%', height:'100%'}]}>
+        <ImageBackground source={require('../iconImg/loginBg.jpg')} style={[{width:'100%', height:'100%',
+        display:'flex',justifyContent:'center',alignItems:'center'}]}>
+        <View style={{width:screenWidth*0.409,height:screenWidth*0.409*0.806,}}>
+          <ImageBackground source={require('../iconImg/loginFormBg.png')} style={[{width:screenWidth*0.409,height:screenWidth*0.409*0.806,
+          display:'flex',justifyContent:'center',alignItems:'center'}]}>
+            {/* 登录表单 */}
+            <View style={{width:'60%', height:'70%',}}>
+              <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+                <Text style={{fontSize:58*(screenWidth / 1920),letterSpacing:screenWidth*0.003}}>
+                  欢迎使用
+                </Text>
+                <Text style={{fontSize:58*(screenWidth / 1920),letterSpacing:screenWidth*0.003,color:'#2b427d'}}>简立得</Text>
+              </View>
+              <View style={tailwind.mY3} />
+              {/* 表单 */}
+              {/* 账号 */}
+              {/* <Text onPress={clickText} style={{position:'absolute',zIndex:9999999}}>333</Text> */}
+              {/* <Text style={[tailwind.mB1,tailwind.fontBold, {color:'#2b427d'}]}>账号</Text> */}
+              <ImageBackground source={require('../iconImg/inputBg.png')} style={[{width:screenWidth*0.24,height:screenWidth*0.24*0.152,}]}>
+                <TextInput ref={e => (form.current.username = e)} placeholder={'请输入账号'} inputStyle={{borderWidth:0}} />
+              </ImageBackground>
+              {/* 根据是否联网判断 密码登录 还是 pin登录 */}
+              {networkState?.isConnected ? (
+                // 联网时，密码登录
+                <>
+                  <View style={tailwind.mY2} />
+                  {/* <Text style={[tailwind.mB1,tailwind.fontBold,{color:'#2b427d'}]}>密码</Text> */}
+                  {/* <View style={tailwind.h6}>
+                    <Password ref={e => (form.current.password = e)} />
+                  </View> */}
+                  <ImageBackground source={require('../iconImg/inputBg.png')} style={[{width:screenWidth*0.24,height:screenWidth*0.24*0.152,}]}>
+                    <Password ref={e => (form.current.password = e)} placeholder={'请输入密码'} inputStyle={{borderWidth:0}} />
+                  </ImageBackground>
+                </>
+              ) : (
+                // 未联网时，pin登录
+                <>
+                  <View style={tailwind.mY2} />
+                  {/* <Text style={tailwind.mB1}>PIN</Text> */}
+                  {/* <View style={tailwind.h6}>
+                    <Password ref={e => (form.current.pin = e)} />
+                  </View> */}
+                  <ImageBackground source={require('../iconImg/inputBg.png')} style={[{width:screenWidth*0.24,height:screenWidth*0.24*0.152,}]}>
+                    <Password ref={e => (form.current.pin = e)} placeholder={'请输入PIN'} inputStyle={{borderWidth:0}} />
+                  </ImageBackground>
+                </>
+              )}
+              <View style={tailwind.mY2} />
+              {/* 登录按钮 */}
+              {/* <Button
+                // 按钮的loading状态 
+                loading={isLoading}
+                // 根据是否联网判断执行 在线登录 还是 离线登录
+                onPress={
+                  networkState?.isConnected ? handleLogin : handleOfflineLogin
+                }
+                style={[{backgroundColor:'#2b427d'}]}
+                >
+                登录
+              </Button> */}
+              <ImageBackground source={require('../iconImg/loginConfirm.png')} style={[{width:screenWidth*0.242,height:screenWidth*0.242*0.172,
+              display:'flex',justifyContent:'center',alignItems:'center'}]}>
+                {/* <Button
+                // 按钮的loading状态 
+                loading={isLoading}
+                // 根据是否联网判断执行 在线登录 还是 离线登录
+                onPress={
+                  networkState?.isConnected ? handleLogin : handleOfflineLogin
+                }
+                style={[{backgroundColor:'#2b427d'}]}
+                >
+                登录
+              </Button> */}
+              <Pressable style={{width:'100%',heigt:'100%',display:'flex',justifyContent:'center',alignItems:'center',}} onPress={
+                  networkState?.isConnected ? handleLogin : handleOfflineLogin
+                }>
+                <Text style={{color:'#2b427d'}}>登录</Text>
+              </Pressable>
+              </ImageBackground>
+            </View>
+          </ImageBackground>
+        </View>
           {/* 软件版本 */}
           <Text
             style={
               [
                 {
                   fontSize:8,
-                  color:'#394f86',
+                  color:'#2b427d',
                   fontWeight: 'bold',
-                  left:8,
-                  top:520
+                  position:'absolute',
+                  left:20,
+                  bottom:20
                 }
               ]
             }
@@ -346,73 +443,16 @@ export default function Login() {
             ) : (
               <></>
             )}
-            {/* 登录表单 */}
-            <View>
-              {/* 标题   欢迎使用 检立得 style={tailwind.flexRow} */}
-              <View>
-                <Text style={[tailwind.text2xl, tailwind.fontBold, tailwind.mR2, 
-                    {color:'#2b427d', textAlign:'center', fontSize:16}]}>
-                    {editionList[editionType].loginPageCompanyName}
-                </Text>
-                <Text
-                  style={[
-                    tailwind.text2xl,
-                    tailwind.fontBold,
-                    // tailwind.textPurple700,
-                    {
-                      color:'#2b427d',
-                      textAlign:'center'
-                    }
-                  ]}>
-                    桥梁辅助检测系统
-                </Text>
-              </View>
-              <View style={tailwind.mY1} />
-              {/* <View style={tailwind.selfStart}>
-                <Text style={[tailwind.textLg]}></Text>
-              </View> */}
-              {/* 表单 */}
-              {/* 账号 */}
-              <Text style={[tailwind.mB1,tailwind.fontBold, {color:'#2b427d'}]}>账号</Text>
-              <View style={tailwind.h6}>
-                <TextInput ref={e => (form.current.username = e)} />
-              </View>
-              {/* 根据是否联网判断 密码登录 还是 pin登录 */}
-              {networkState?.isConnected ? (
-                // 联网时，密码登录
-                <>
-                  <View style={tailwind.mY1} />
-                  <Text style={[tailwind.mB1,tailwind.fontBold,{color:'#2b427d'}]}>密码</Text>
-                  <View style={tailwind.h6}>
-                    <Password ref={e => (form.current.password = e)} />
-                  </View>
-                </>
-              ) : (
-                // 未联网时，pin登录
-                <>
-                  <View style={tailwind.mY1} />
-                  <Text style={tailwind.mB1}>PIN</Text>
-                  <View style={tailwind.h6}>
-                    <Password ref={e => (form.current.pin = e)} />
-                  </View>
-                </>
-              )}
-              <View style={tailwind.mY2} />
-              {/* 登录按钮 */}
-              <Button
-                // 按钮的loading状态 
-                loading={isLoading}
-                // 根据是否联网判断执行 在线登录 还是 离线登录
-                onPress={
-                  networkState?.isConnected ? handleLogin : handleOfflineLogin
-                }
-                style={[{backgroundColor:'#2b427d'}]}
-                >
-                登录
-              </Button>
-            </View>
+            
           </View>
         </ImageBackground>
+        {/* {
+          startPage ? 
+          <View style={{width:'100%',height:'100%',position:'absolute',top:0,}}>
+            <ImageBackground source={require('../iconImg/startPage.jpg')} style={[{width:'100%', height:'100%',}]}></ImageBackground>
+          </View>
+          : <></>
+        } */}
       </View>
     </TouchableWithoutFeedback>
   );
@@ -425,6 +465,6 @@ const styles = StyleSheet.create({
     ...tailwind.itemsCenter,
     ...tailwind.wFull,
     ...tailwind.hFull,
-    zIndex: 1000,
+    // zIndex: 1000,
   },
 });

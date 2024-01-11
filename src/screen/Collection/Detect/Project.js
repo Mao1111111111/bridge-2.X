@@ -89,7 +89,8 @@ export default function Project({navigation}) {
   const [deleteImg, setDeleteImg] = useState() // 删除 - 允许点击
   const [deleteDisImg, setdeleteDisImg] = useState() // 删除 - 禁用
 
-  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+  const [screenWidth,setScreenWidth] = useState(0) //屏幕宽度
+  const [screenHeight,setScreenHeight] = useState(0) //屏幕高度
 
   useEffect(() => {
     // console.log('223344');
@@ -99,8 +100,9 @@ export default function Project({navigation}) {
     let deleteDisImg = require('../../../../src/iconImg/deleteDis.png')
     setdeleteDisImg(deleteDisImg)
     const windowWidth = Dimensions.get('window').width;
-    // console.log('当前屏幕宽度',windowWidth);
     setScreenWidth(windowWidth)
+    const windowHeight = Dimensions.get('window').height;
+    setScreenHeight(windowHeight)
   }, [])
 
   React.useEffect(() => {
@@ -359,122 +361,121 @@ export default function Project({navigation}) {
       //   },
       // ]}
       >
-      {/* <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}> */}
-      {/* <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:29,width:715,top:1,borderRadius:5}]}> */}
-      <View style={
-        screenWidth > 830 ? [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:27,width:715,top:1,borderRadius:5}] 
-        :
-        [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
-      }>
+      <ImageBackground source={require('../../../iconImg/mainBg.png')}
+      style={{width:screenWidth*0.82,height:screenWidth*0.82*0.588,padding:'3%',
+      display:'flex',justifyContent:'center',alignItems:'center',position:'relative',top:'2%'}}>
          {/* 检索 */}
-      <View style={[
-        styles.searchCard,
-      ]}>
-        <TextInput
-          name="projectname"
-          label="项目名称:"
-          ref={el => (searchRef.current[0] = el)}
-          style={[tailwind.mR4, tailwind.flex1]}
-        />
-        <Select
-          name="areacode"
-          label="路段:"
-          style={[tailwind.mR4, tailwind.flex1]}
-          labelName="name"
-          valueName="code"
-          value={areacode.code}
-          onChange={setAreacode}
-          ref={el => (searchRef.current[1] = el)}
-          values={area}
-        />
-        {routeList && (
+        <View style={[
+          styles.searchCard,
+        ]}>
+          <ImageBackground source={require('../../../iconImg/proSearch.png')}
+          style={{width:screenWidth*0.253,height:screenWidth*0.253*0.1384}}>
+            <TextInput
+              name="projectname"
+              // label="项目名称:"
+              ref={el => (searchRef.current[0] = el)}
+              style={[tailwind.mR4, tailwind.flex1]}
+            />
+          </ImageBackground>
+          
           <Select
-            name="routecode"
-            label="路线:"
+            name="areacode"
+            label="路段:"
             style={[tailwind.mR4, tailwind.flex1]}
             labelName="name"
             valueName="code"
-            ref={el => (searchRef.current[2] = el)}
-            values={route}
+            value={areacode.code}
+            onChange={setAreacode}
+            ref={el => (searchRef.current[1] = el)}
+            values={area}
           />
-        )}
-        {/* 检索按钮 */}
-        <ImageBackground
-          source={require('../../../iconImg/search.png')} style={[{width:40, height:40}]}
-        >
-          {/* <Pressable OnPressIn={handleSearch}></Pressable> */}
-          <Text onPress={handleSearch}>{'         '}</Text>
+          {routeList && (
+            <Select
+              name="routecode"
+              label="路线:"
+              style={[tailwind.mR4, tailwind.flex1]}
+              labelName="name"
+              valueName="code"
+              ref={el => (searchRef.current[2] = el)}
+              values={route}
+            />
+          )}
+          {/* 检索按钮 */}
+          <ImageBackground
+            source={require('../../../iconImg/search.png')} style={[{width:40, height:40}]}
+          >
+            {/* <Pressable OnPressIn={handleSearch}></Pressable> */}
+            <Text onPress={handleSearch}>{'         '}</Text>
+          </ImageBackground>
+          {/* <Button
+            onPress={handleSearch}
+            style={[{backgroundColor: '#2b427d'}]}
+          >
+            检索1
+          </Button> */}
+        </View>
+        <View style={tailwind.mY1} />
+        {/* 项目信息表格 */}
+        <ImageBackground source={require('../../../iconImg/tableBg.png')}
+          style={{width:screenWidth*0.758,height:screenWidth*0.758*0.48297,padding:'0.5%'}}>
+          <Table.Box
+            loading={loading}
+            style={tailwind.roundedSm}
+            // 共几页
+            numberOfPages={pageTotal}
+            // 共几条
+            total={total}
+            // 当前页
+            pageNo={page?.pageNo || 0}
+            // 当页码改变时
+            onPageChange={e =>
+              setPage({
+                pageSize: 10,
+                pageNo: e,
+              })
+            }
+            header={
+              <Table.Header>
+                <Table.Title title="序号" flex={0.7} />
+                <Table.Title title="项目名称" flex={3} />
+                <Table.Title title="已采集" flex={0.7} />
+                <Table.Title title="创建人" flex={1} />
+                <Table.Title title="创建时间" flex={2} />
+                <Table.Title title="最后操作时间" flex={2} />
+                <Table.Title title="选择" flex={1} />
+              </Table.Header>
+            }>
+            <FlatList
+              data={list}
+              extraData={list}
+              renderItem={({item, index}) => (
+                <Table.Row
+                  key={index}
+                  onPress={() =>
+                    navigation.navigate('Collection/Detect/ProjectDetail', {
+                      project: item,
+                      list
+                    })
+                  }>
+                  <Table.Cell flex={0.7}>{index+1}</Table.Cell>
+                  <Table.Cell flex={3}>{item.projectname}</Table.Cell>
+                  <Table.Cell flex={0.7}>{item.yicaiji || 0}</Table.Cell>
+                  <Table.Cell flex={1}>{item.username}</Table.Cell>
+                  <Table.Cell flex={2}>{item.c_date}</Table.Cell>
+                  <Table.Cell flex={2}>{item.u_date}</Table.Cell>
+                  <Table.Cell flex={1}>
+                    {/* 核选框 */}
+                    <Checkbox
+                      checked={(nowChecked || {}).id === item.id}
+                      onPress={() => handleCheck(item)}
+                    />
+                  </Table.Cell>
+                </Table.Row>
+              )}
+            />
+          </Table.Box>
         </ImageBackground>
-        {/* <Button
-          onPress={handleSearch}
-          style={[{backgroundColor: '#2b427d'}]}
-        >
-          检索1
-        </Button> */}
-      </View>
-      <View style={tailwind.mY1} />
-      {/* 项目信息表格 */}
-      <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',padding:10}]}>
-        <Table.Box
-          loading={loading}
-          style={tailwind.roundedSm}
-          // 共几页
-          numberOfPages={pageTotal}
-          // 共几条
-          total={total}
-          // 当前页
-          pageNo={page?.pageNo || 0}
-          // 当页码改变时
-          onPageChange={e =>
-            setPage({
-              pageSize: 10,
-              pageNo: e,
-            })
-          }
-          header={
-            <Table.Header>
-              <Table.Title title="序号" flex={0.7} />
-              <Table.Title title="项目名称" flex={3} />
-              <Table.Title title="已采集" flex={0.7} />
-              <Table.Title title="创建人" flex={1} />
-              <Table.Title title="创建时间" flex={2} />
-              <Table.Title title="最后操作时间" flex={2} />
-              <Table.Title title="选择" flex={1} />
-            </Table.Header>
-          }>
-          <FlatList
-            data={list}
-            extraData={list}
-            renderItem={({item, index}) => (
-              <Table.Row
-                key={index}
-                // 点击跳转到项目细节，即路线管理
-                onPress={() =>
-                  navigation.navigate('Collection/Detect/ProjectDetail', {
-                    project: item,
-                    list
-                  })
-                }>
-                {/* 选择框 */}
-                
-                <Table.Cell flex={0.7}>{index+1}</Table.Cell>
-                <Table.Cell flex={3}>{item.projectname}</Table.Cell>
-                <Table.Cell flex={0.7}>{item.yicaiji || 0}</Table.Cell>
-                <Table.Cell flex={1}>{item.username}</Table.Cell>
-                <Table.Cell flex={2}>{item.c_date}</Table.Cell>
-                <Table.Cell flex={2}>{item.u_date}</Table.Cell>
-                <Table.Cell flex={1}>
-                  <Checkbox
-                    checked={(nowChecked || {}).id === item.id}
-                    onPress={() => handleCheck(item)}
-                  />
-                </Table.Cell>
-              </Table.Row>
-            )}
-          />
-        </Table.Box>
-      </View>
-      </View>
+      </ImageBackground>
        
       {/* 项目的 新增、修改表单 */}
       <Form ref={formRef} onSubmitOver={handleSubmitOver} />

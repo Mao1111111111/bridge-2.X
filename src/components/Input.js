@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   TextInput as RnTextInput,
+  ImageBackground,
 } from 'react-native';
 import {Context as ThemeContext} from '../providers/ThemeProvider';
 import {Context as GlobalContext} from '../providers/GlobalProvider';
@@ -33,6 +34,7 @@ export const TextInput = React.forwardRef(function (
     disabled,
     lines,
     height,
+    placeholder
   },
   ref,
 ) {
@@ -91,6 +93,7 @@ export const TextInput = React.forwardRef(function (
         blurOnSubmit={true}
         keyboardType={type || 'default'}
         value={textValue}
+        placeholder={placeholder}
         textContentType={isPassword ? 'password' : 'none'}
         secureTextEntry={isPassword}
         editable={!disabled}
@@ -110,6 +113,7 @@ export const TextInput = React.forwardRef(function (
     </LabelItem>
   );
 });
+
 
 export const WriteInput = React.forwardRef(function (
   {
@@ -570,7 +574,7 @@ export const Textarea = React.forwardRef(function (
 });
 
 export const Password = React.forwardRef(function (
-  {label, style, value, inputStyle, LabelStyle, name, onChange, type, disabled},
+  {label, style, value, inputStyle, LabelStyle, name, onChange, type, disabled,placeholder},
   ref,
 ) {
   const textRef = React.useRef();
@@ -634,10 +638,11 @@ export const Password = React.forwardRef(function (
           textContentType={isShow ? 'none' : 'password'}
           secureTextEntry={!isShow}
           editable={!disabled}
+          placeholder={placeholder}
           // defaultValue={value}
           onChangeText={handleChange}
           style={[
-            styles.passwordInput,
+            styles.input,
             inputStyle ? inputStyle : {},
             disabled && {
               ...tailwind.opacity50,
@@ -647,9 +652,11 @@ export const Password = React.forwardRef(function (
         />
         <TouchableOpacity onPress={() => setIsShow(!isShow)}>
           {isShow ? (
-            <Icon name="eye-off" size={20} style={tailwind.mR1} />
+            // <Icon name="eye-off" size={20} style={tailwind.mR1} />
+            <ImageBackground source={require('../iconImg/eye.png')} style={[tailwind.mR2,{width:20,height:17,}]}></ImageBackground>
           ) : (
-            <Icon name="eye" size={20} style={tailwind.mR1} />
+            // <Icon name="eye" size={20} style={tailwind.mR1} />
+            <ImageBackground source={require('../iconImg/eyeDis.png')} style={[tailwind.mR2,{width:20,height:17,}]}></ImageBackground>
           )}
         </TouchableOpacity>
       </View>
@@ -1002,8 +1009,8 @@ const styles = StyleSheet.create({
   },
 
   password: {
-    ...tailwind.border,
-    ...tailwind.borderGray400,
+    // ...tailwind.border,
+    // ...tailwind.borderGray400,
     ...tailwind.roundedSm,
     ...tailwind.flex1,
     ...tailwind.flexRow,

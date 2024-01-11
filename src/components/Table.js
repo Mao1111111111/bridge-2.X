@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity,ImageBackground,Dimensions} from 'react-native';
 import {DataTable, ActivityIndicator} from 'react-native-paper';
 import {tailwind, colors} from 'react-native-tailwindcss';
 import {Col, Row, Grid} from 'react-native-easy-grid';
@@ -23,11 +23,19 @@ export default {
       state: {theme},
     } = React.useContext(Context);
 
+    const [screenWidth,setScreenWidth] = useState(0) //屏幕宽度
+    const [screenHeight,setScreenHeight] = useState(0) //屏幕高度
+
+
     // ---跳转页码
     // 页码列表
     const [pageList,setPageList] = useState([])
     // 处理页码列表
     useEffect(()=>{
+      const windowWidth = Dimensions.get('window').width;
+      setScreenWidth(windowWidth)
+      const windowHeight = Dimensions.get('window').height;
+      setScreenHeight(windowHeight)
       let list = []
       for(let i=1;i<numberOfPages+1;i++){
         list.push({
@@ -60,7 +68,7 @@ export default {
           <Col>{children}</Col>
         </Row>
         {numberOfPages ? (
-          <Row size={10} style={[styles.foot, theme.infoBgStyle]}>
+          <Row size={10} style={[styles.foot,]}>
             {/* {foot ? foot : <></>} */}
             {
               showPageJump&&
@@ -95,10 +103,20 @@ export default {
     );
   },
   Header: ({children}) => {
+    const [screenWidth,setScreenWidth] = useState(0) //屏幕宽度
+    const [screenHeight,setScreenHeight] = useState(0) //屏幕高度
+    useEffect(()=>{
+      const windowWidth = Dimensions.get('window').width;
+      setScreenWidth(windowWidth)
+      const windowHeight = Dimensions.get('window').height;
+      setScreenHeight(windowHeight)
+    },[])
     const {
       state: {theme},
     } = React.useContext(Context);
-    return <Row style={[styles.header, theme.infoBgStyle]}>{children}</Row>;
+    return <Row style={[styles.header,{borderBottomColor:'#d8d8d8',borderBottomWidth:1}]}>
+      {children}
+      </Row>;
   },
   Title: ({title, flex, children}) => {
     return (
@@ -121,9 +139,20 @@ export default {
     </TouchableOpacity>
   ),
   Cell: ({flex, children, notText}) => {
+    const [screenWidth,setScreenWidth] = useState(0) //屏幕宽度
+    const [screenHeight,setScreenHeight] = useState(0) //屏幕高度
+    useEffect(()=>{
+      const windowWidth = Dimensions.get('window').width;
+      setScreenWidth(windowWidth)
+      const windowHeight = Dimensions.get('window').height;
+      setScreenHeight(windowHeight)
+    },[])
     return (
-      <Col style={[{flex: flex || 1}, styles.call]}>
+      <Col style={[{flex: flex || 1,}, styles.call]}>
         {notText ? children : <Text style={styles.colText}>{children}</Text>}
+        <ImageBackground source={require('../iconImg/tableLine.png')}
+        style={{width:screenWidth*0.7777,height:screenWidth*0.7777*0.0015,position:'absolute',bottom:0}}>
+        </ImageBackground>
       </Col>
     );
   },
@@ -242,8 +271,8 @@ const styles = StyleSheet.create({
     ...tailwind.justifyCenter,
     ...tailwind.itemsCenter,
     ...tailwind.flexRow,
-    ...tailwind.borderGray400,
-    borderWidth: 0.5,
+    // ...tailwind.borderGray400,
+    // borderWidth: 0.5,
   },
   headerText: {
     ...tailwind.textXs,
@@ -256,8 +285,8 @@ const styles = StyleSheet.create({
     height: 35,
   },
   box: {
-    ...tailwind.borderGray400,
-    borderWidth: 0.5,
+    // ...tailwind.borderGray400,
+    // borderWidth: 0.5,
   },
   header: {
     ...tailwind.h6,
@@ -269,8 +298,8 @@ const styles = StyleSheet.create({
   },
   paginationBtn: {
     ...tailwind.rounded,
-    ...tailwind.border,
-    ...tailwind.borderGray400,
+    // ...tailwind.border,
+    // ...tailwind.borderGray400,
     // ...tailwind.w5,
     ...tailwind.w10, // 表格页码加宽
     // ...tailwind.h5,

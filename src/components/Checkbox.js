@@ -13,6 +13,7 @@ export default function Checkbox({checked, onPress, disabled}) {
       value={checked}
       disabled={disabled}
       onChange={onPress}
+      style={{borderWidth:0}}
     />
   );
 }

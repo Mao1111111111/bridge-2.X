@@ -58,7 +58,7 @@ function App() {
             icon: props => <Icon {...props} />,
           }}>
           {/* 背景图片 */}
-          <ImageBackground source={require('./src/iconImg/wangge.jpg')} style={[{width:'100%', height:'100%'}]}>
+          <ImageBackground source={require('./src/iconImg/loginBg.jpg')} style={[{width:'100%', height:'100%'}]}>
             {/* 入口页面 */}
             <Main />
           </ImageBackground>
