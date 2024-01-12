@@ -249,16 +249,7 @@ export default function TestData({navigation}) {
   };
 
   return (
-    <Box
-      headerItems={[
-        {
-          name: '数据同步',
-          onPress: () => navigation.navigate('Collection/Sync/Main'),
-        },
-        {
-          name: '上传检测数据',
-        },
-      ]}>
+    <Box>
       <View style={[tailwind.flex1, tailwind.pY2]}>
         <View style={[styles.tab]}>
           <Tabs onChangeTab={setActive} defaultActive="未上传" tabs={tabs} style={[{position:'absolute',left:73}]} />

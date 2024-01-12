@@ -27,7 +27,6 @@ export function Box({navigation,route,pid, children, headerItems,project,project
   );
 }
 
-// 用于影音
 export function Content({
   children,
   onAdd,

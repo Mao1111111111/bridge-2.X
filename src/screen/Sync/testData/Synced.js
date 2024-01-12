@@ -34,7 +34,7 @@ export default function Synced({list, onUpload}) {
 
   const [nowEdit, setNowEdit] = React.useState(new Set());
 
-  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+  const [screenWidth,setScreenWidth] = React.useState(0) //屏幕宽度
 
   // 表格loading 
   const [loading,setLoading] = React.useState(false);
@@ -42,7 +42,7 @@ export default function Synced({list, onUpload}) {
   // 模态框
   // 是否显示
   const [modalVisible,setModalVisible] = useState(false)
-  // 模态框类型-- select-选择批量上传方式、project-项目上传
+  // 模态框类型-- select-选择批量上传方式、project-项目上传 
   const [uploadType,setUploadType] = useState('select')
   // 项目分组数据
   const [projectGruop,setProjectGruop] = useState([])
