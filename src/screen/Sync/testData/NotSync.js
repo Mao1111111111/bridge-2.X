@@ -1,6 +1,6 @@
 // 未上传
 import React from 'react';
-import {View, FlatList, StyleSheet, Text,Dimensions} from 'react-native';
+import {View, FlatList, StyleSheet, Text,Dimensions, ImageBackground } from 'react-native';
 import {tailwind} from 'react-native-tailwindcss';
 import Table from '../../../components/Table';
 import Checkbox from '../../../components/Checkbox';
@@ -46,7 +46,7 @@ export default function NotSync({list, onUpload}) {
     3:'已上传'
   }
 
-  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+  const [screenWidth,setScreenWidth] = React.useState(0) //屏幕宽度
 
   // 模态框
   // 是否显示
@@ -285,31 +285,22 @@ export default function NotSync({list, onUpload}) {
         },
       ]}>
         {/* [styles.card, theme.primaryBgStyle] */}
-      <View style={
-        screenWidth > 830 ? [styles.card, theme.primaryBgStyle,{backgroundColor:'rgba(255,255,255,1)',right:27,width:715,top:1,borderRadius:5}]
-        :
-        [styles.card, theme.primaryBgStyle,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
-      }>
+      <ImageBackground source={require('../../../iconImg/tableBg.png')}
+          style={{width:screenWidth*0.758,height:screenWidth*0.758*0.48297,padding:'0.5%'}}>
         <Table.Box loading={loading}>
           <Table.Header>
-            <Table.Title title="选择" flex={1} />
             <Table.Title title="桩号" flex={3} />
             <Table.Title title="桥梁名称" flex={3} />
             <Table.Title title="桥幅" flex={2} />
             <Table.Title title="上传状态" flex={2} />
             <Table.Title title="所属本地项目" flex={3} />
+            <Table.Title title="选择" flex={1} />
           </Table.Header>
           <FlatList
             extraData={tableData}
             data={tableData[tablePageNo - 1] || []}
             renderItem={({item, index}) => (
               <Table.Row key={index} onPress={() => handleEdit(item)}>
-                <Table.Cell flex={1}>
-                  <Checkbox
-                    onPress={() => handleEdit(item)}
-                    checked={nowEdit.has(item.id)}
-                  />
-                </Table.Cell>
                 <Table.Cell flex={3}>{item.bridgestation}</Table.Cell>
                 <Table.Cell flex={3}>{item.bridgename}</Table.Cell>
                 <Table.Cell flex={2}>
@@ -322,6 +313,12 @@ export default function NotSync({list, onUpload}) {
                   <Text style={{color:item.uploadState==1?'green':item.uploadState==2?'red':null}}>{uploadStateToFont[item.uploadState]}</Text>
                 </Table.Cell>
                 <Table.Cell flex={3}>{item.projectname}</Table.Cell>
+                <Table.Cell flex={1}>
+                  <Checkbox
+                    onPress={() => handleEdit(item)}
+                    checked={nowEdit.has(item.id)}
+                  />
+                </Table.Cell>
               </Table.Row>
             )}
           />
@@ -331,7 +328,7 @@ export default function NotSync({list, onUpload}) {
           onPageChange={setTablePageNo}
           numberOfPages={tableData.length}
         />
-      </View>
+      </ImageBackground>
       <Modal
         visible={modalVisible}
         title='批量上传'
