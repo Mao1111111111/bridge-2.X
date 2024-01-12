@@ -4,6 +4,7 @@
 //配置信息
 import * as ObsConfig from '../assets/uploadConfig/OBSConfig'
 import ObsClient from 'esdk-obs-browserjs/src/obs'
+import { OBSHost } from '../assets/uploadConfig/OBSConfig'
 
 // ObsClient实例
 const obsClient = new ObsClient({
@@ -41,21 +42,25 @@ export const uploadTestDataToObs = (key,data) =>
   })
 
 // 上传图片
-export const uploadImageToObs = (key,file) => {
+export const uploadImageToObs = () => {
+  console.log("111");
+  // key,file
+  let path = ''
   // --接口获取上传参数
   // 参数
-  let obsUploadParams = {acl: 'public-read', 'content-type': 'image/jpeg'+file.type};
+  // let obsUploadParams = {acl: 'public-read', 'content-type': 'image/jpeg'+file.type};
+  let obsUploadParams = {acl: 'public-read', 'content-type': '*/*'};
   // 请求sdk
-  var postObjectResult = obsClient.createPostSignatureSync({Bucket : BucketName, Key : key,Expires:3600,obsUploadParams});
+  var postObjectResult = obsClient.createPostSignatureSync({Bucket : BucketName, Key : 'test2222.mp3',Expires:3600,obsUploadParams});
 
   // --拼接form
   let form = new FormData()
   form.append('AccessKeyID',ObsConfig.ak);
   form.append('policy',postObjectResult.Policy);
   form.append('signature',postObjectResult.Signature);
-  form.append('content-type','image/'+file.type);
-  form.append('key', key);
-  form.append('file', {uri: file.filePath, type: 'application/octet-stream', name: key});
+  form.append('content-type','*/*');
+  form.append('key', 'test2222.mp3');
+  form.append('file', {uri: 'file:////data/user/0/com.jianlide/files/6a6f67a2-c3c6-4cff-9a8d-24f15920012e.mp3', type: 'application/octet-stream', name: 'test2222.mp3'});
 
   // 接口上传
   fetch(OBSHost, {
