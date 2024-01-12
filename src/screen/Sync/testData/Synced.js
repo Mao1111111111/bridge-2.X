@@ -3,7 +3,7 @@ import {View, StyleSheet, FlatList,Dimensions,Text,ImageBackground} from 'react-
 import {tailwind} from 'react-native-tailwindcss';
 import Table from '../../../components/Table';
 import Checkbox from '../../../components/Checkbox';
-import {Content} from '../../../components/CommonView';
+import {Content_1} from '../../../components/CommonView';
 import {Context as ThemeContext} from '../../../providers/ThemeProvider';
 import {Context as GlobalContext} from '../../../providers/GlobalProvider';
 import {Context} from '../Provider';
@@ -34,7 +34,7 @@ export default function Synced({list, onUpload}) {
 
   const [nowEdit, setNowEdit] = React.useState(new Set());
 
-  const [screenWidth,setScreenWidth] = React.useState(0) //屏幕宽度
+  const [screenWidth,setScreenWidth] = React.useState(0) //屏幕宽度 
 
   // 表格loading 
   const [loading,setLoading] = React.useState(false);
@@ -255,7 +255,7 @@ export default function Synced({list, onUpload}) {
   }
 
   return (
-    <Content
+    <Content_1
       operations={[
         {
           // name: 'cloud-upload',
@@ -361,7 +361,7 @@ export default function Synced({list, onUpload}) {
           </View>
         }
       </Modal>
-    </Content>
+    </Content_1>
   );
 }
 

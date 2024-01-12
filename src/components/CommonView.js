@@ -1,6 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import {tailwind} from 'react-native-tailwindcss';
-import {View, TouchableWithoutFeedback, Keyboard, Image,Dimensions} from 'react-native';
+import {View, TouchableWithoutFeedback, Keyboard, Image,Dimensions,ImageBackground} from 'react-native';
 import {CircleButton} from './Button';
 import Headerbar from './Headerbar';
 import EditMenu from './EditMenu';
@@ -162,6 +162,199 @@ export function Content({
       )}
       {/* 内容 */}
       <View style={tailwind.flex1}>{children}</View>
+      {/* 右侧菜单 */}
+      {!hideMenu ? (
+        <View style={tailwind.mL3}>
+          {/* <CircleButton name="help" /> */}
+          {/* <View style={tailwind.mY10} /> */}
+          {/* 父组件传入的组件 */}
+          {operationsComponents ? operationsComponents : <></>}
+          {/* 操作列表 */}
+          {operations ? (
+            operations.map((operation, index) => (
+              <React.Fragment key={index}>
+                <View style={tailwind.mY1} />
+                {/* <CircleButton {...operation} { height: 45, width: 45, alignItems: 'center' }/> */}
+                <View>
+                    {/* Pressable 按钮点击效果 */}
+                    <Pressable {...operation} onPressIn={() => imgPulldown(operation.img)} onPressOut={() => imgPullup(operation.img)}>
+                      <Image style={
+                        screenWidth > 830 ? [{ height: 60, width: 60,left: 15, alignItems: 'center' }] :
+                        [{ height: 35, width: 35, alignItems: 'center',left:8 }]
+                        // screenWidth > 830 && operation.img !== 'look' ? [{ height: 45, width: 45, left:15, alignItems: 'center' }] :
+                        // screenWidth > 830 && operation.img == 'look' ? [{height: 60, width: 60, left:15, alignItems: 'center'}] :
+                        // [{ height: 35, width: 35, alignItems: 'center',left:8 }]
+                      }
+                      source={
+                        operation.img == 'singleUpload' ? singleUploadImg : 
+                        (operation.img == 'allUpload' ? allUploadImg :
+                        (operation.img == 'look' && operation.disabled ? lookDisImg :
+                        (operation.img == 'disList' && operation.disabled ? diseaseListDisImg :
+                        (operation.img == 'maintainPlan' && operation.disabled ? maintainPlanDisImg: 
+                        (operation.img == 'look' && !operation.disabled ? lookImg :
+                        (operation.img == 'disList' && !operation.disabled ? diseaseListImg :
+                        (operation.img == 'maintainPlan' && !operation.disabled ? maintainPlanImg :
+                        (operation.img == 'bridgeInfo' ? bridgeInfoImg :
+                        (operation.img == 'singleGood' ? singleGoodImg :
+                        (operation.img == 'allGood' ? allGoodImg : {}))))))))))
+                      }
+                      />
+                    </Pressable>
+                  </View>
+                  <View style={tailwind.mY6} />
+              </React.Fragment>
+            ))
+          ) : (
+            <></>
+          )}
+        </View>
+      ) : (
+        <></>
+      )}
+    </View>
+  );
+}
+
+// 数据同步的 content
+export function Content_1({
+  children,
+  onAdd,
+  onEdit,
+  onCopy,
+  onCut,
+  onDelete,
+  onBack,
+  onAhead,
+  onStick,
+  hideMenu,
+  operations,
+  operationsComponents,
+}) {
+
+  const [singleUploadImg, setSingleUploadImg] = useState() // 单个上传
+  const [allUploadImg, setAllUploadImg] = useState() // 全部上传
+  const [lookImg, setLookImg] = useState() // 查看
+  const [lookDisImg, setLookDisImg] = useState() //查看 禁用
+  const [bridgeInfoImg, setBridgeInfoImg] = useState() // 桥梁信息
+  const [bridgeInfoDisImg, setBridgeInfoDisImg] = useState() // 桥梁信息 禁用
+  const [diseaseListImg, setDiseaseListImg] = useState() //病害列表
+  const [diseaseListDisImg, setDiseaseListDisImg] = useState() //病害列表 禁用
+  const [maintainPlanImg, setMaintainPlanImg] = useState() //养护计划
+  const [maintainPlanDisImg, setMaintainPlanDisImg] = useState() //养护计划 禁用
+  const [singleGoodImg, setSingleGoodImg] = useState() //单条确认
+  const [singleGoodDisImg, setSingleGoodDisImg] = useState() //单条确认 禁用
+  const [allGoodImg, setAllGoodImg] = useState() //全部确认
+  const [allGoodDisImg, setAllGoodDisImg] = useState() //全部确认 禁用
+
+  const [screenWidth,setScreenWidth] = useState(0) //屏幕宽度
+
+  useEffect(() => {
+    // 设置按钮的初始状态
+    // console.log('operations', operations);
+    let singleUploadImg = require('../iconImg/singleUpload.png')
+    setSingleUploadImg(singleUploadImg)
+    let allUploadImg = require('../iconImg/allUpload.png')
+    setAllUploadImg(allUploadImg)
+    let lookImg = require('../iconImg/look.png')
+    setLookImg(lookImg)
+    let lookDisImg = require('../iconImg/lookDis.png')
+    setLookDisImg(lookDisImg)
+    let bridgeInfoImg = require('../iconImg/bridgeInfo.png')
+    setBridgeInfoImg(bridgeInfoImg)
+    let bridgeInfoDisImg = require('../iconImg/bridgeInfo.png')
+    setBridgeInfoImg(bridgeInfoDisImg)
+    let diseaseListImg = require('../iconImg/disList.png')
+    setDiseaseListImg(diseaseListImg)
+    let diseaseListDisImg = require('../iconImg/disListDis.png')
+    setDiseaseListDisImg(diseaseListDisImg)
+    let maintainPlanImg = require('../iconImg/maintainPlan.png')
+    setMaintainPlanImg(maintainPlanImg)
+    let maintainPlanDisImg = require('../iconImg/maintainPlanDis.png')
+    setMaintainPlanDisImg(maintainPlanDisImg)
+    let singleGoodImg = require('../iconImg/singleGood.png')
+    setSingleGoodImg(singleGoodImg)
+    let singleGoodDisImg = require('../iconImg/singleGoodDis.png')
+    setSingleGoodDisImg(singleGoodDisImg)
+    let allGoodImg = require('../iconImg/allGood.png')
+    setAllGoodImg(allGoodImg)
+    let allGoodDisImg = require('../iconImg/allGoodDis.png')
+    setAllGoodDisImg(allGoodDisImg)
+
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
+  }, [])
+
+  // 图标按下 变化
+  const imgPulldown = (res) => {
+    if (res == 'singleUpload') {
+      let singleUploadImg = require('../iconImg/singleUploadPull.png')
+      setSingleUploadImg(singleUploadImg)
+    } else if (res == 'allUpload') {
+      let allUploadImg = require('../iconImg/allUploadPull.png')
+      setAllUploadImg(allUploadImg)
+    } else if (res == 'look') {
+      let lookImg = require('../iconImg/lookPull.png')
+      setLookImg(lookImg)
+    } else if (res == 'bridgeInfo') {
+      let bridgeInfoImg = require('../iconImg/bridgeInfoPull.png')
+      setBridgeInfoImg(bridgeInfoImg)
+    } else if (res == 'disList') {
+      let diseaseListImg = require('../iconImg/disListPull.png')
+      setDiseaseListImg(diseaseListImg)
+    } else if (res == 'maintainPlan') {
+      let maintainPlanImg = require('../iconImg/maintainPlanPull.png')
+      setMaintainPlanImg(maintainPlanImg)
+    }
+  }
+  // 图标松开 恢复
+  const imgPullup = (res) => {
+    if (res == 'singleUpload') {
+      let singleUploadImg = require('../iconImg/singleUpload.png')
+      setSingleUploadImg(singleUploadImg)
+    } else if (res == 'allUpload') {
+      let allUploadImg = require('../iconImg/allUpload.png')
+      setAllUploadImg(allUploadImg)
+    } else if (res == 'look') {
+      let lookImg = require('../iconImg/look.png')
+      setLookImg(lookImg)
+    } else if (res == 'bridgeInfo') {
+      let bridgeInfoImg = require('../iconImg/bridgeInfo.png')
+      setBridgeInfoImg(bridgeInfoImg)
+    } else if (res == 'disList') {
+      let diseaseListImg = require('../iconImg/disList.png')
+      setDiseaseListImg(diseaseListImg)
+    } else if (res == 'maintainPlan') {
+      let maintainPlanImg = require('../iconImg/maintainPlan.png')
+      setMaintainPlanImg(maintainPlanImg)
+    }
+  }
+
+  return (
+    <View
+      style={[tailwind.flex1, tailwind.flexRow, tailwind.pX4, tailwind.mB3]}>
+      {/* 左侧菜单 */}
+      {!hideMenu ? (
+        <View style={[tailwind.mR3,tailwind.pX1]}>
+          <EditMenu
+            onAdd={onAdd}
+            onEdit={onEdit}
+            onCopy={onCopy}
+            onCut={onCut}
+            onDelete={onDelete}
+            onBack={onBack}
+            onAhead={onAhead}
+            onStick={onStick}
+          />
+        </View>
+      ) : (
+        <></>
+      )}
+      {/* 内容 */}
+      <ImageBackground source={require('../iconImg/mainBg.png')}
+      style={{width:screenWidth*0.82,height:screenWidth*0.82*0.549,padding:'3%',
+      display:'flex',justifyContent:'center',alignItems:'center',position:'relative',}}>
+         <View style={tailwind.flex1}>{children}</View>
+      </ImageBackground>
       {/* 右侧菜单 */}
       {!hideMenu ? (
         <View style={tailwind.mL3}>

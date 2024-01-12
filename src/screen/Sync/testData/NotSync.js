@@ -4,7 +4,7 @@ import {View, FlatList, StyleSheet, Text,Dimensions, ImageBackground } from 'rea
 import {tailwind} from 'react-native-tailwindcss';
 import Table from '../../../components/Table';
 import Checkbox from '../../../components/Checkbox';
-import {Content} from '../../../components/CommonView';
+import {Content_1} from '../../../components/CommonView';
 import {Context as ThemeContext} from '../../../providers/ThemeProvider';
 import {Context as GlobalContext} from '../../../providers/GlobalProvider';
 import {Context} from '../Provider';
@@ -263,7 +263,7 @@ export default function NotSync({list, onUpload}) {
   }
 
   return (
-    <Content
+    <Content_1
       operations={[
         {
           // name: 'cloud-upload',
@@ -362,7 +362,7 @@ export default function NotSync({list, onUpload}) {
           </View>
         }
       </Modal>
-    </Content>
+    </Content_1>
   );
 }
 
