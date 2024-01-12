@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import {tailwind} from 'react-native-tailwindcss';
-import {View, Text, StyleSheet, TouchableOpacity, Image,Dimensions} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image,Pressable, ImageBackground,Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Context} from '../providers/ThemeProvider';
 import {Context as GlobalContext} from '../providers/GlobalProvider';
@@ -49,18 +49,20 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
   // 桥梁所有数据
   const [brigeAllValue, setBrigeAllValue] = React.useState([])
 
-  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
-
   // 桥幅属性
   const [bridgeSideText, setBridgeSideText] = React.useState()
+
+  const [screenWidth,setScreenWidth] = React.useState(0) //屏幕宽度
+  const [screenHeight,setScreenHeight] = React.useState(0) //屏幕高度
 
   React.useEffect(()=> {
     // console.log('Headerbar',bridge);
     // console.log('pid6---',project,projectList);
     // console.log('items.name',items[0].name);
     const windowWidth = Dimensions.get('window').width;
-    // console.log('当前屏幕宽度',windowWidth);
     setScreenWidth(windowWidth)
+    const windowHeight = Dimensions.get('window').height;
+    setScreenHeight(windowHeight)
     getProStorage()
     getBriStorage()
 
@@ -207,58 +209,32 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
 
   return (
     <View style={[
-      styles.box,
+      // styles.box,
       // theme.primaryBgStyle,
-      // {
-      //   backgroundColor: '#fff',
-      // }
+      {
+        position:'relative',
+        bottom:5,
+        // backgroundColor: '#fff',
+        height:'15%',
+        right:'8.5%',
+        // width:screenWidth*0.9
+      }
       ]}>
-      {/* 如项目管理中，顶部导航最左边的标签 */}
-      {/* {pid && pid !== 'P1001' || pid !== 'P1101' ? (
-        <View style={[styles.pid]}>
-          <Pid pid={pid} size="medium" />
-        </View>
-      ) : (
-        pid && pid == 'P1001' || pid == 'P1101' ? (
-          <View style={[styles.pid1]}>
-            <Pid pid={pid} size="medium" />
-          </View>
-        ) : (
-          <></>
-        )
-      )} */}
       {pid && pid !== 'P1001' && pid !== 'P1101' ? (
-        <View style={
-          screenWidth > 830 ? [styles.pid] :
-          [styles.pidSmall]
-        }>
-          <Pid pid={pid} size={
-            screenWidth > 830 ? 'medium' :'small'
-          } />
+        <View style={[styles.pidSmall]}>
+          <Pid pid={pid} size={'medium'} />
         </View>
       ) : (
         <></>
       )}
 
       {pid && pid == 'P1001' || pid == 'P1101' ? (
-        <View style={
-          screenWidth > 830 ? [styles.pid001] :
-          [styles.pidSmall]
-        }>
-          <Pid pid={pid} size={
-            screenWidth > 830 ? 'medium' :'small'
-          } />
+        <View style={[styles.pidSmall]}>
+          <Pid pid={pid} size={'medium'} />
         </View>
       ) : (
         <></>
       )}
-      
-      {/* <Text>{'  '}</Text> */}
-      {/* 顶部导航左侧的 蓝色粗竖线 */}
-      {/* <Image style={{ height: 20, width: 5, alignItems: 'center' }}
-          source={require('../iconImg/shuxian.png')}
-      /> */}
-      {/* <Text>{'  '}</Text> */}
       {/* 右侧导航 */}
       {items.map((item, index) => (
         // React.Fragment 相当于 <></>
@@ -290,74 +266,72 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
       ))}
       {items.map((item, index) =>(
         <React.Fragment key={index}>
-          {index !== items.length - 1 ? (
-            // 如果不是最后一个，加上
-            <></>
-          ) : (
-            // 最后一个导航，显示并 超长截取
-            // <ModalDropdown
-            //   adjustFrame={this._adjustType}
-            //   options={proList} // 选项内容
-            //   dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-            //   dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
-            //   dropdownTextStyle={[{width:130,textAlign:'center'}]}
-            //   onSelect={this._selectType} // 点击选项时，执行的方法
-            //   defaultValue={proList[0]}
-            //   onDropdownWillShow={()=>getStorage()}
-            // >
-            //   {/* <TouchableOpacity onPress={()=>getStorage()}> */}
-            //   <Text style={[tailwind.textSm, tailwind.fontBold]}>
-            //     {item.name.slice(0, 12)}
-            //     {item.name.length > 12 ? '...' : ''}
-            //   </Text>
-            // {/* </TouchableOpacity> */}
-            // </ModalDropdown>
-            pid == 'P1001' ? (
-              // <ModalDropdown
-              //   adjustFrame={this._adjustType}
-              //   options={proList} // 选项内容
-              //   dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-              //   dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
-              //   dropdownTextStyle={[{width:130,textAlign:'center'}]}
-              //   onSelect={this._selectProType} // 点击选项时，执行的方法
-              //   defaultValue={proList[0]}
-              //   onDropdownWillShow={()=>getProStorage()}
-              // >
-              //   <Text style={[tailwind.textSm, tailwind.fontBold]}>
-              //     {item.name.slice(0, 20)}
-              //     {item.name.length > 20 ? '...' : ''}
-              //   </Text>
-              // </ModalDropdown>
-              <Text style={[tailwind.textSm, tailwind.fontBold]}>
-                {item.name.slice(0, 20)}
-                {item.name.length > 20 ? '...' : ''}
-              </Text>
+          {/* 第一行 */}
+          <View style={{flexDirection:'row',justifyContent:'flex-start'}}>
+            {/* 项目管理 */}
+            <ImageBackground source={require('../iconImg/headerBar1.png')} style={{width:screenWidth*0.339,height:screenWidth*0.339*0.1198,
+            display:'flex',justifyContent:'center',alignItems:'flex-start',paddingLeft:20}}>
+            {index !== items.length - 1 ? (
+              <></>
             ) : (
-              pid == 'P1101' ? (
-                // <ModalDropdown
-                //   adjustFrame={this._adjustType}
-                //   options={briList} // 选项内容
-                //   dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-                //   dropdownStyle={[{width:150,height:155,alignItems:'center'}]}
-                //   dropdownTextStyle={[{width:130,textAlign:'center'}]}
-                //   onSelect={this._selectBriType} // 点击选项时，执行的方法
-                //   defaultValue={briList[0]}
-                //   onDropdownWillShow={()=>getBriStorage()}
-                // >
-                //   <Text style={[tailwind.textSm, tailwind.fontBold]}>
-                //     {item.name.slice(0, 12)}
-                //     {item.name.length > 12 ? '...' : ''}
-                //   </Text>
-                // </ModalDropdown>
-                <Text style={[tailwind.textSm, tailwind.fontBold]}>
-                  {item.name.slice(0, 20)}
-                  {item.name.length > 20 ? '...' : ''}
+              pid == 'P1001' ? (
+                <Text style={{color:'#203365',fontSize:17}}>
+                  {/* {item.name.slice(0, 20)}
+                  {item.name.length > 20 ? '...' : ''} */}
+                  项目管理
                 </Text>
               ) : (
-                <></>
+                pid == 'P1101' ? (
+                  <Text style={{color:'#203365',fontSize:16}}>
+                    {item.name.slice(0, 20)}
+                    {item.name.length > 20 ? '...' : ''}
+                  </Text>
+                ) : (
+                  <></>
+                )
               )
-            )
-          )}
+            )}
+            </ImageBackground>
+            {/* 路段 */}
+            <ImageBackground source={require('../iconImg/headerBar1.png')} style={{width:screenWidth*0.339,height:screenWidth*0.339*0.1198,
+            display:'flex',justifyContent:'center',alignItems:'flex-start',paddingLeft:20,marginLeft:'0.2%'}}>
+            {index !== items.length - 1 ? (
+              <></>
+            ) : (
+              <Text style={{color:'#999999',fontSize:17}}>路段</Text>
+            )}
+            </ImageBackground>
+            {/* 桥梁 */}
+            <ImageBackground source={require('../iconImg/headerBar2.png')} style={{width:screenWidth*0.21,height:screenWidth*0.21*0.193,
+            display:'flex',justifyContent:'center',alignItems:'flex-start',paddingLeft:20,marginLeft:'0.2%'}}>
+            {index !== items.length - 1 ? (
+              <></>
+            ) : (
+              <Text style={{color:'#999999',fontSize:17}}>桥梁</Text>
+            )}
+            </ImageBackground>
+          </View>
+          {/* 第二行 */}
+          <View style={{flexDirection:'row',justifyContent:'space-between',width:screenWidth*0.339,}}>
+            {/* 部件 */}
+            <ImageBackground source={require('../iconImg/headerBar3.png')} style={{width:screenWidth*0.1632,height:screenWidth*0.1632*0.2488,
+              display:'flex',justifyContent:'center',alignItems:'flex-start',paddingLeft:20}}>
+              {index !== items.length - 1 ? (
+                <></>
+              ) : (
+                <Text style={{color:'#999999',fontSize:17}}>部件</Text>
+              )}
+            </ImageBackground>
+            {/* 构件 */}
+            <ImageBackground source={require('../iconImg/headerBar3.png')} style={{width:screenWidth*0.1632,height:screenWidth*0.1632*0.2488,
+              display:'flex',justifyContent:'center',alignItems:'flex-start',paddingLeft:20,}}>
+              {index !== items.length - 1 ? (
+                <></>
+              ) : (
+                <Text style={{color:'#999999',fontSize:17}}>构件</Text>
+              )}
+            </ImageBackground>
+          </View>
         </React.Fragment>
       ))}
       {
@@ -439,13 +413,13 @@ const styles = StyleSheet.create({
   box: {
     ...tailwind.flexRow,
     ...tailwind.pY3,
-    ...tailwind.pX4,
+    // ...tailwind.pX4,
     position:'relative',
     bottom:5,
-    left:65,
+    // left:65,
     // zIndex:500
-    ...tailwind.shadow2xl,
-    marginBottom:15,
+    // ...tailwind.shadow2xl,
+    // marginBottom:15,
   },
   pid: {
     ...tailwind.mL2,

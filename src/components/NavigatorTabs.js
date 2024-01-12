@@ -90,9 +90,14 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
 
   const [menuTitle, setMenuTitle] = useState('采集平台') 
 
+  const [screenWidth,setScreenWidth] = useState(0) //屏幕宽度
+  const [screenHeight,setScreenHeight] = useState(0) //屏幕高度
+
   React.useEffect(() => {
     const windowWidth = Dimensions.get('window').width;
-    // console.log('当前屏幕宽度',windowWidth);
+    setScreenWidth(windowWidth)
+    const windowHeight = Dimensions.get('window').height;
+    setScreenHeight(windowHeight)
     if (isTabBarShow) {
       Animated.timing(tabHeight, {
         toValue: 1,
@@ -182,6 +187,8 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
       indexA == '2' && indexA == index ? handlePress1(route, index, value) :
       indexA == '3' && indexA == index ? handlePress1(route, index, value) : <></>
     ))}
+    // 关闭菜单弹窗
+    setUserMenuShow(false)
   }
   // 下拉列表分隔符
   _separator = () => {
@@ -202,6 +209,12 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
       top: 25,
       left: 25
     })
+  }
+
+  const [userMenuShow, setUserMenuShow] = useState(false)
+  // 头像点击事件
+  const userIconClick = () => {
+    setUserMenuShow(!userMenuShow)
   }
 
   return (
@@ -229,7 +242,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
         source={require('../iconImg/logo.png')}
       /> */}
       {/* 软件版本 */}
-      <Text
+      {/* <Text
         style={
           [
             {
@@ -241,7 +254,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
             }
           ]
         }
-      >{version}</Text>
+      >{version}</Text> */}
       {/* 检测公司名称 */}
       {/* <Text
         style={
@@ -259,7 +272,7 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
           ]
         }
       >采集平台</Text> */}
-      <ModalDropdown
+      {/* <ModalDropdown
         adjustFrame={this._adjustTypeL}
         options={typeL} // 选项内容
         dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
@@ -290,77 +303,61 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
           </View>
         </ImageBackground>
         
-      </ModalDropdown>
-      {/* 导航样式一 中间导航按钮 */}
-      {/* {state.routes.map((route, index) => (
-        <TouchableOpacity
-          key={index}
-          onPress={() => handlePress(route, index)}
-          style={[
-            tailwind.flexRow,
-            tailwind.flex1,
-            tailwind.justifyCenter,
-            tailwind.itemsCenter,
-            tailwind.shadow,
-          ]}>
-          <TabItem
-            {...descriptors[route.key].options}
-            isActive={state.index === index}
-          />
-        </TouchableOpacity>
-      ))} */}
+      </ModalDropdown> */}
 
-      {/* 用户信息 */}
-      {/* <Pressable onPress={() => menuList()}>
-        <View style={styles.user}>
-          <Image style={{ height: 24, width: 24, alignItems: 'center' }}
-              source={require('../iconImg/user.png')}
-          />
-          <Text>{' '}</Text>
-          <Text>{userInfo?.nickname}</Text>
-        </View>
-      </Pressable> */}
-      {/* <View style={styles.user}> */}
-        {/* 用户头像 */}
-        {/* <Image style={{ height: 24, width: 24, alignItems: 'center' }}
+      <Pressable style={{flexDirection:'row',justifyContent:'flex-end',position:'absolute',right:'3%',top:10}} onPress={userIconClick}>
+        <Image style={{ width:screenWidth*0.04,height:screenWidth*0.04*1, alignItems: 'center' }}
             source={require('../iconImg/user.png')}
-        /> */}
-        {/* 整个小间隔 */}
-        {/* <Text>{' '}</Text>
-        <Text>{userInfo?.nickname}</Text>
-      </View> */}
+        />
+      </Pressable>
 
-      {/* <View style={[tailwind.mX19,{width:'76%'}]}>
-        <Headerbar items={headerItems || []} pid={''} />
-      </View> */}
-      {/* 右下角的页面编号 */}
-      {/* {pid ? (
-        <View style={styles.pid}>
-          <Pid pid={pid} size="small" />
+      {/* 头像点击弹窗 */}
+      {
+        userMenuShow? 
+        <View style={{width:screenWidth,height:screenHeight,position:'absolute',left:0,top:0}}>
+          <Pressable style={{width:'100%',height:'100%',backgroundColor:'rgba(255,255,255,0)',
+          position:'absolute',left:0,top:0}} onPress={userIconClick}></Pressable>
+          <ImageBackground source={require('../iconImg/userIconMenuBg.png')} style={{width:screenWidth*0.17,height:screenWidth*0.17*1.369,
+            position:'absolute',top:0,right:0,display:'flex',justifyContent:'center',alignItems:'center',paddingLeft:'10%',paddingBottom:'5%',paddingRight:'5%'}}>
+              {/* 用户头像与用户名 */}
+              <View style={{width:'95%',height:'25%',flexDirection:'row',alignItems:'center',paddingLeft:'8%'}}>
+                <Image style={{ width:screenWidth*0.046,height:screenWidth*0.046*1, alignItems: 'center' }}
+                    source={require('../iconImg/user.png')}
+                />
+                <Text style={{marginLeft:'8%',fontSize:16}}>{userInfo?.nickname}</Text>
+              </View>
+              <View style={{width:'95%',height:'30%',flexDirection:'row',justifyContent:'space-between'}}>
+                {/* 采集平台 */}
+                <Pressable style={{width:'50%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',}}
+                  onPress={()=>this._selectTypeL('0','采集平台')}>
+                  <ImageBackground source={require('../iconImg/caiji.png')} style={{width:screenWidth*0.046,height:screenWidth*0.046*1,}}></ImageBackground>
+                  <Text style={{color:'#8e8e8e',fontSize:11}}>采集平台</Text>
+                </Pressable>
+                {/* 数据统计 */}
+                <Pressable style={{width:'50%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',}}
+                onPress={()=>this._selectTypeL('1','数据统计')}>
+                  <ImageBackground source={require('../iconImg/tongji.png')} style={{width:screenWidth*0.046,height:screenWidth*0.046*1,}}></ImageBackground>
+                  <Text style={{color:'#8e8e8e',fontSize:11}}>数据统计</Text>
+                </Pressable>
+              </View>
+              <View style={{width:'95%',height:'30%',flexDirection:'row',justifyContent:'space-between'}}>
+                {/* 数据同步 */}
+                <Pressable style={{width:'50%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',}}
+                onPress={()=>this._selectTypeL('2','数据同步')}>
+                  <ImageBackground source={require('../iconImg/tongbu.png')} style={{width:screenWidth*0.046,height:screenWidth*0.046*1,}}></ImageBackground>
+                  <Text style={{color:'#8e8e8e',fontSize:11}}>数据同步</Text>
+                </Pressable>
+                {/* 用户设置 */}
+                <Pressable style={{width:'50%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',}}
+                onPress={()=>this._selectTypeL('3','用户设置')}>
+                  <ImageBackground source={require('../iconImg/shezhi.png')} style={{width:screenWidth*0.046,height:screenWidth*0.046*1,}}></ImageBackground>
+                  <Text style={{color:'#8e8e8e',fontSize:11}}>用户设置</Text>
+                </Pressable>
+              </View>
+          </ImageBackground>
         </View>
-      ) : (
-        <></>
-      )} */}
-
-      {/* 导航样式二 下拉式一级导航菜单 */}
-      <ModalDropdown style={[styles.user,{top:15}]}
-        adjustFrame={this._adjustType}
-        options={type} // 选项内容
-        dropdownTextHighlightStyle={{color:'#2b427d',fontWeight:'800'}}
-        dropdownStyle={[{width:100,height:40,alignItems:'center'}]}
-        dropdownTextStyle={[{width:80,textAlign:'center'}]}
-        onSelect={this._selectType} // 点击选项时，执行的方法
-        defaultValue={'用户设置'}
-      >
-        
-        <View style={styles.user}>
-          <Image style={{ height: 24, width: 24, alignItems: 'center' }}
-              source={require('../iconImg/user.png')}
-          />
-          <Text>{' '}</Text>
-          <Text>{userInfo?.nickname}</Text>
-        </View>
-      </ModalDropdown>
+        : <></>
+      }
 
       <Modal onClose={close} visible={visible} title="退出登录" showHead>
         <View style={[styles.modelBody, theme.primaryBgStyle,{height: 80}]}>

@@ -107,10 +107,10 @@ export default function Project({navigation}) {
 
   React.useEffect(() => {
     if (areaList) {
-      setArea([{name: '无', code: ''}, ...areaList]);
+      setArea([{name: '请选择路段', code: ''}, ...areaList]);
       if (routeList && areacode) {
         setRoute([
-          {name: '无', code: ''},
+          {name: '请选择路线', code: ''},
           ...routeList?.filter(item => item.pcode === areacode.code),
         ]);
       } else {
@@ -362,11 +362,11 @@ export default function Project({navigation}) {
       // ]}
       >
       <ImageBackground source={require('../../../iconImg/mainBg.png')}
-      style={{width:screenWidth*0.82,height:screenWidth*0.82*0.588,padding:'3%',
-      display:'flex',justifyContent:'center',alignItems:'center',position:'relative',top:'2%'}}>
+      style={{width:screenWidth*0.82,height:screenWidth*0.82*0.549,padding:'3%',
+      display:'flex',justifyContent:'center',alignItems:'center',position:'relative',}}>
          {/* 检索 */}
         <View style={[
-          styles.searchCard,
+          styles.searchCard,{flexDirection:'row',justifyContent:'space-around',width:screenWidth*0.758}
         ]}>
           <ImageBackground source={require('../../../iconImg/proSearch.png')}
           style={{width:screenWidth*0.253,height:screenWidth*0.253*0.1384}}>
@@ -374,38 +374,51 @@ export default function Project({navigation}) {
               name="projectname"
               // label="项目名称:"
               ref={el => (searchRef.current[0] = el)}
-              style={[tailwind.mR4, tailwind.flex1]}
+              style={[tailwind.mR4, tailwind.flex1,]}
+              inputStyle={{borderWidth:0,}}
+              placeholder={'请输入项目名称'}
+            />
+          </ImageBackground>
+          <ImageBackground source={require('../../../iconImg/roadSearch.png')}
+          style={{width:screenWidth*0.211,height:screenWidth*0.211*0.167}}>
+            <Select
+              name="areacode"
+              // label="路段:"
+              style={[tailwind.mR4, tailwind.flex1,]}
+              labelName="name"
+              valueName="code"
+              value={areacode.code}
+              onChange={setAreacode}
+              ref={el => (searchRef.current[1] = el)}
+              values={area}
+              inputStyle={{borderWidth:0,}}
             />
           </ImageBackground>
           
-          <Select
-            name="areacode"
-            label="路段:"
-            style={[tailwind.mR4, tailwind.flex1]}
-            labelName="name"
-            valueName="code"
-            value={areacode.code}
-            onChange={setAreacode}
-            ref={el => (searchRef.current[1] = el)}
-            values={area}
-          />
           {routeList && (
-            <Select
-              name="routecode"
-              label="路线:"
-              style={[tailwind.mR4, tailwind.flex1]}
-              labelName="name"
-              valueName="code"
-              ref={el => (searchRef.current[2] = el)}
-              values={route}
-            />
+            <ImageBackground source={require('../../../iconImg/roadSearch.png')}
+            style={{width:screenWidth*0.211,height:screenWidth*0.211*0.167}}>
+              <Select
+                name="routecode"
+                // label="路线:"
+                style={[tailwind.mR4, tailwind.flex1]}
+                labelName="name"
+                valueName="code"
+                ref={el => (searchRef.current[2] = el)}
+                values={route}
+                inputStyle={{borderWidth:0,}}
+              />
+            </ImageBackground>
+            
           )}
           {/* 检索按钮 */}
           <ImageBackground
-            source={require('../../../iconImg/search.png')} style={[{width:40, height:40}]}
+            source={require('../../../iconImg/searchConfirm.png')}
+            style={[{width:screenWidth*0.0625, height:screenWidth*0.0625*0.5625,
+            display:'flex',justifyContent:'center',alignItems:'center'}]}
           >
             {/* <Pressable OnPressIn={handleSearch}></Pressable> */}
-            <Text onPress={handleSearch}>{'         '}</Text>
+            <Text onPress={handleSearch} style={{color:'#8e8e8e'}}>{'检索'}</Text>
           </ImageBackground>
           {/* <Button
             onPress={handleSearch}
@@ -417,7 +430,7 @@ export default function Project({navigation}) {
         <View style={tailwind.mY1} />
         {/* 项目信息表格 */}
         <ImageBackground source={require('../../../iconImg/tableBg.png')}
-          style={{width:screenWidth*0.758,height:screenWidth*0.758*0.48297,padding:'0.5%'}}>
+          style={{width:screenWidth*0.758,height:screenWidth*0.758*0.4478,padding:'0.5%'}}>
           <Table.Box
             loading={loading}
             style={tailwind.roundedSm}
@@ -491,9 +504,9 @@ const styles = StyleSheet.create({
   searchCard: {
     // ...tailwind.shadow2xl,
     // ...tailwind.roundedSm,
-    ...tailwind.flexRow,
-    ...tailwind.p2,
-    ...tailwind.pX3,
+    // ...tailwind.flexRow,
+    // ...tailwind.p2,
+    // ...tailwind.pX3,
   },
   tableCard: {
     ...tailwind.shadow2xl,

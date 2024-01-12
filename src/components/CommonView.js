@@ -363,36 +363,36 @@ export default function CommonView({
             {/* <CircleButton name="help" /> */}
             {/* 右侧图标整体距离顶部的距离 */}
             <View style={[tailwind.mY12]} />
-            {/* 此处operations内容由文件Project内的CommonView传入（文件位置：src\screen\Collection\Detect\Project） */}
-            {operations ? (
-              operations.map((operation, index) => (
-                <React.Fragment key={index}>
-                  {/* 右侧各图标之间的距离 */}
-                  <View style={tailwind.mY1} />
-                  {/* 项目变更‘完成’按钮 { height: 45, width: 45, alignItems: 'center' }*/}
-                  {/* <CircleButton {...operation} /> */}
-                  <View>
-                    <Pressable {...operation} onPressIn={() => donePulldown(operation.img)} onPressOut={() => donePullup(operation.img)}>
-                      <Image style={
-                      screenWidth > 830 ? [{ height: 60, width: 60,left: 15, alignItems: 'center' }] :
-                      { height: 35, width: 35, alignItems: 'center'}
-                    }
-                      // source={operation.disabled ? doneDisImg : doneImg}
-                      source={
-                        operation.disabled ? doneDisImg :
-                        (operation.img == 'check' ? doneImg : //判断img传入的值,显示对应的按钮图片
-                        (operation.img == 'induct' ? inductImg : //依次进行条件判断
-                        (operation.img == 'clone' ? cloneImg : cloneDisImg)))
+              {/* 此处operations内容由文件Project内的CommonView传入（文件位置：src\screen\Collection\Detect\Project） */}
+              {operations ? (
+                operations.map((operation, index) => (
+                  <React.Fragment key={index}>
+                    {/* 右侧各图标之间的距离 */}
+                    <View style={tailwind.mY1} />
+                    {/* 项目变更‘完成’按钮 { height: 45, width: 45, alignItems: 'center' }*/}
+                    {/* <CircleButton {...operation} /> */}
+                    <View>
+                      <Pressable {...operation} onPressIn={() => donePulldown(operation.img)} onPressOut={() => donePullup(operation.img)}>
+                        <Image style={
+                        screenWidth > 830 ? [{ height: 60, width: 60,left: 15, alignItems: 'center' }] :
+                        { height: 35, width: 35, alignItems: 'center'}
                       }
-                      />
-                    </Pressable>
-                  </View>
-                  
-                </React.Fragment>
-              ))
-            ) : (
-              <></>
-            )}
+                        // source={operation.disabled ? doneDisImg : doneImg}
+                        source={
+                          operation.disabled ? doneDisImg :
+                          (operation.img == 'check' ? doneImg : //判断img传入的值,显示对应的按钮图片
+                          (operation.img == 'induct' ? inductImg : //依次进行条件判断
+                          (operation.img == 'clone' ? cloneImg : cloneDisImg)))
+                        }
+                        />
+                      </Pressable>
+                    </View>
+                    
+                  </React.Fragment>
+                ))
+              ) : (
+                <></>
+              )}
           </View>
         </View>
       </View>

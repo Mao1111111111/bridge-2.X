@@ -128,7 +128,7 @@ export default function EditMenu({
   // =============以上 按钮的按下与松开状态============================================
 
   return (
-    <View>
+    <View style={{left:'30%'}}>
       {/* <CircleButton name="lock" onLayout={handleLayout} onPress={handleLock} /> */}
       {/* <View>
         <TouchableOpacity onLayout={handleLayout} onPress={handleLock} name="lock">

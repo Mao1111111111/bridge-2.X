@@ -930,6 +930,8 @@ const styles = StyleSheet.create({
     ...tailwind.pX2,
     // height: 25,
     height: 40,
+    color:'#8e8e8e',
+    marginLeft:3
   },
   writeInput: {
     textAlignVertical: 'center',

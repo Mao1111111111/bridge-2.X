@@ -102,10 +102,10 @@ const Select = React.forwardRef(function (props, ref) {
         <View style={styles.showText}>
           <Text
             numberOfLines={1}
-            style={[tailwind.textSm, tailwind.textBlack, tailwind.flex1]}>
+            style={[tailwind.textSm, tailwind.flex1,{color:'#8e8e8e',marginLeft:5}]}>
             {getLabel()}
           </Text>
-          <Icon name="menu-down" size={20} style={tailwind.selfCenter} />
+          {/* <Icon name="menu-down" size={20} style={tailwind.selfCenter} /> */}
         </View>
         <Picker
           ref={pickerRef}
