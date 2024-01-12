@@ -12,6 +12,9 @@ import {listToPage} from '../../../utils/common';
 import Modal from '../../../components/Modal';
 import Button from '../../../components/Button';
 import Select from '../../../components/Select';
+import * as createData from '../createData';
+import fs from '../../../utils/fs';
+import RNFS from 'react-native-fs';
 
 export default function NotSync({list, onUpload}) {
   const {
@@ -19,7 +22,7 @@ export default function NotSync({list, onUpload}) {
   } = React.useContext(ThemeContext);
 
   const {
-    state: {bridgeside},
+    state: {bridgeside,basememberinfo},
   } = React.useContext(GlobalContext);
 
   const {
@@ -31,6 +34,9 @@ export default function NotSync({list, onUpload}) {
   const [tablePageNo, setTablePageNo] = React.useState(1);
 
   const [nowEdit, setNowEdit] = React.useState(new Set());
+
+  // 表格loading 
+  const [loading,setLoading] = React.useState(false);
 
   // 上传状态对应文字
   const uploadStateToFont = {
@@ -143,6 +149,119 @@ export default function NotSync({list, onUpload}) {
     setModalVisible(false)
   }
 
+
+  // 导出数据到本地
+  const exportData =async () => {
+    try{
+      setLoading(true)
+      let nowEditList = Array.from(new Set([...nowEdit]))
+      // 获取数据
+      for(let i=0;i<nowEditList.length;i++){
+        let allData = await createData.getData(
+          nowEditList[i],
+          null,
+          null,
+          null,
+          basememberinfo
+        )
+        let bridgesideKV = {
+          side111:'单幅',
+          side100:'左幅',
+          side001:'右幅',
+          side010:'中幅',
+          side200:'上行',
+          side002:'下行',
+          side999:'其他'
+        }
+        // 创建文件夹
+        let bridgeside = bridgesideKV[allData.data.bridgeside]
+        let folderPath = RNFS.ExternalStorageDirectoryPath + '/jianlide-data/exportData/'+allData.data.testData.projectname+'/'+allData.data.bridgename+'/'+bridgeside
+        let imgFolderPath = folderPath + '/image'
+        await fs.mkdir(imgFolderPath);
+        // ----图片处理
+        // 图片日志
+        let imgLog = {
+          // 图片总数
+          imgTotal:allData.mediaData.length,
+          // 存在图片数
+          isExistNum:0,
+          // 存在图片列表
+          isExistList:[],
+          // 不存在图片数
+          inexistenceNum:0,
+          // 不存在图片列表
+          inexistenceList:[],
+          // 导出成功数据
+          exportSuccessNum:0,
+          // 导出成功列表
+          exportSuccessList:[],
+          // 导出失败数
+          exportFailNum:0,
+          // 导出失败列表
+          exportFailList:[]
+        }
+        // 判断图片是否存在
+        if(allData.mediaData.length>0){
+          let mediaData = allData.mediaData
+          // 图片列表遍历
+          for(let imgInx=0;imgInx<mediaData.length;imgInx++){
+            // 图片对象
+            let imgObj = mediaData[imgInx]
+            //imgObj.appliedPath = "/data/user/0/com.jianlide/files/589a68eb-c40d-4194-aae5-73d05e4a452e1.jpg"
+            // 图片是否存在
+            let imgFileExist = await fs.fileExist(imgObj.appliedPath)
+            if(imgFileExist){
+              // 图片存在
+              imgLog.isExistNum += 1 
+              imgLog.isExistList.push(imgObj)
+              // --图片导出
+              try{
+                await fs.copyFile(
+                  imgObj.appliedPath,
+                  imgFolderPath+'/'+imgObj.pathName,
+                )
+                imgLog.exportSuccessNum += 1 
+                imgLog.exportSuccessList.push(imgObj)
+              }catch(e){
+                imgLog.exportFailNum += 1 
+                imgLog.exportFailList.push({
+                  ...imgObj,
+                  exportErr:e
+                })
+              }
+            }else{
+              // 图片不存在
+              imgLog.inexistenceNum += 1 
+              imgLog.inexistenceList.push(imgObj)
+            }
+          }
+        }
+        try{
+          // 将桥梁数据写入
+          await fs.write(
+            folderPath+'/allData.json',
+            JSON.stringify(allData),
+            'utf8',
+          );
+          // 将图片导出日志写入
+          await fs.write(
+            folderPath+'/imgLog.json',
+            JSON.stringify(imgLog),
+            'utf8',
+          );
+        }catch(e){
+          alert('导出失败'+e);
+        }
+      }
+      alert('导出成功');
+      setLoading(false)
+    }catch(e){
+      console.log('导出数据到本地',e);
+      alert('导出失败'+e);
+      setLoading(false)
+    }
+  }
+
   return (
     <Content
       operations={[
@@ -151,6 +270,12 @@ export default function NotSync({list, onUpload}) {
           img:'singleUpload',
           disabled: testDataUploadingIds.length,
           onPress: handleUpload,
+        },
+        {
+          // name: 'table-arrow-up',
+          img:'maintainPlan',
+          disabled: testDataUploadingIds.length,
+          onPress: exportData,
         },
         {
           // name: 'table-arrow-up',
@@ -165,7 +290,7 @@ export default function NotSync({list, onUpload}) {
         :
         [styles.card, theme.primaryBgStyle,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
       }>
-        <Table.Box>
+        <Table.Box loading={loading}>
           <Table.Header>
             <Table.Title title="选择" flex={1} />
             <Table.Title title="桩号" flex={3} />

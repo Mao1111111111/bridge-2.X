@@ -249,7 +249,6 @@ function Provider({children}) {
               return await errorDeal(e,'上传时整理数据错误',inx,state,dispatch)
             }
             let successImgNum = 0
-            allData.state = false
             if(allData.state){
               // 数据整理成功
               let data = null
