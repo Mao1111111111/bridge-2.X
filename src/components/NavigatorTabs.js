@@ -255,6 +255,19 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
           ]
         }
       >{version}</Text> */}
+      <Text
+        style={
+          [
+            {
+              fontSize:8,
+              color:'#394f86',
+              fontWeight: 'bold',
+              left:8,
+              top:520
+            }
+          ]
+        }
+      ></Text>
       {/* 检测公司名称 */}
       {/* <Text
         style={

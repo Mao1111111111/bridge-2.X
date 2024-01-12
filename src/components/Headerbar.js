@@ -360,8 +360,6 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
                               项目：{project}
                         </Text>
                       </TouchableOpacity>
-                      
-                      <Text>    \   </Text>
                       <TouchableOpacity onPress={() => topage('桥梁')}>
                         <Text style={[tailwind.textSm,tailwind.fontBold,{color: '#2b427d',fontSize:14}]}>
                           桥梁：{bridge.bridgename} {bridgeSideText}
