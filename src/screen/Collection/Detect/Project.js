@@ -430,7 +430,7 @@ export default function Project({navigation}) {
         <View style={tailwind.mY1} />
         {/* 项目信息表格 */}
         <ImageBackground source={require('../../../iconImg/tableBg.png')}
-          style={{width:screenWidth*0.758,height:screenWidth*0.758*0.4478,padding:'0.5%'}}>
+          style={{width:screenWidth*0.758,height:screenWidth*0.758*0.4477,padding:'0.5%'}}>
           <Table.Box
             loading={loading}
             style={tailwind.roundedSm}
