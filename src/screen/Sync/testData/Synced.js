@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {View, StyleSheet, FlatList,Dimensions,Text} from 'react-native';
+import {View, StyleSheet, FlatList,Dimensions,Text,ImageBackground} from 'react-native';
 import {tailwind} from 'react-native-tailwindcss';
 import Table from '../../../components/Table';
 import Checkbox from '../../../components/Checkbox';
@@ -286,11 +286,8 @@ export default function Synced({list, onUpload}) {
           onPress: handleAll,
         },
       ]}>
-      <View style={
-        screenWidth > 830 ? [styles.card, theme.primaryBgStyle,{backgroundColor:'rgba(255,255,255,1)',right:27,width:715,top:1,borderRadius:5}]
-        :
-        [styles.card, theme.primaryBgStyle,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
-      }>
+      <ImageBackground source={require('../../../iconImg/tableBg.png')}
+          style={{width:screenWidth*0.758,height:screenWidth*0.758*0.48297,padding:'0.5%'}}>
         <Table.Box loading={loading}>
           <Table.Header>
             <Table.Title title="选择" flex={1} />
@@ -330,7 +327,7 @@ export default function Synced({list, onUpload}) {
           onPageChange={setTablePageNo}
           numberOfPages={tableData.length}
         />
-      </View>
+      </ImageBackground>
       <Modal
         visible={modalVisible}
         title='批量上传'
