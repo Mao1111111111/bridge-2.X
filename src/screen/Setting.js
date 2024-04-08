@@ -16,6 +16,7 @@ import {logout, check, createpin} from '../database/user';
 import {allData} from '../utils/sqlite';
 import fs from '../utils/fs';
 import RNFS from 'react-native-fs';
+import ExportData from './components/ExportData';
 
 const Info = () => (
   <View>
@@ -547,7 +548,7 @@ export default function Setting() {
       case 'user':
         return <User />;
       case 'debug':
-        return <Debug />;
+        return <ExportData />;
       default:
         return <></>;
     }

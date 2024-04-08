@@ -852,7 +852,6 @@ function Provider({children}) {
                                       payload: successImgNum
                                     })
                                     mediaDataUploadSuccess = false
-                                    mediaDataUploadSuccess = false
                                     return await errorDeal(e,'组内上传前出错',inx,state,dispatch)
                                   }
                                   
