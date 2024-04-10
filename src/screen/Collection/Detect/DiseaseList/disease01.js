@@ -358,7 +358,7 @@ export function DiseaseA({route, navigation}) {
             diseaseData['description'] = diseaseData.remark
           }
 
-          if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+          if (diseaseData.writePositionTxt == undefined) {
             let writePositionTxt = '/'
             setWritePositionTxt(writePositionTxt)
             diseaseData['writePositionTxt'] = writePositionTxt
@@ -2365,7 +2365,7 @@ export function DiseaseB({route, navigation}) {
           diseaseData['description'] = diseaseData.remark
         }
 
-        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+        if (diseaseData.writePositionTxt == undefined) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
@@ -4249,7 +4249,7 @@ export function DiseaseC({route, navigation}) {
           diseaseData['description'] = diseaseData.remark
         }
 
-        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+        if (diseaseData.writePositionTxt == undefined) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
@@ -6133,7 +6133,7 @@ export function DiseaseD({route, navigation}) {
         }
 
         // console.log('diseaseData.writePositionTxt00000000',diseaseData.writePositionTxt);
-        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+        if (diseaseData.writePositionTxt == undefined) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
@@ -7901,7 +7901,7 @@ export function DiseaseE({route, navigation}) {
           diseaseData['description'] = diseaseData.remark
         }
 
-        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+        if (diseaseData.writePositionTxt == undefined) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
@@ -9633,7 +9633,7 @@ export function DiseaseK({route, navigation}) {
           handleFormChenge(writePositionTxt, diseaseData.writePositionTxt)
         }
 
-        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+        if (diseaseData.writePositionTxt == undefined) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
@@ -9821,19 +9821,24 @@ export function DiseaseK({route, navigation}) {
     }, [baseData, saveData, version, route.params, dispatch]);
 
     useEffect(() => {
-      // console.log('桥跨：：',route.params.memberList);
-      let defaultPier = route.params.memberList[0].membername
-      // 提取第一个字符进行判断（表示墩台的数据）
-      let firstDefaultPier = defaultPier.slice(0,defaultPier.indexOf('-'))
-      if (firstDefaultPier == 1) {
-        let pier = '距' + (firstDefaultPier - 1) + '#台'
-        setPier(pier)
-        console.log('dundun:', pier);
-      } else {
-        let pier = '距' + (firstDefaultPier - 1) + '#墩'
-        setPier(pier)
-        console.log('dundun:', pier);
+      try {
+        console.log('桥跨：：',route.params.memberList);
+        let defaultPier = route.params.memberList[0].membername
+        // 提取第一个字符进行判断（表示墩台的数据）
+        let firstDefaultPier = defaultPier.slice(0,1)
+        if (firstDefaultPier == 1) {
+          let pier = '距' + (firstDefaultPier - 1) + '#台'
+          setPier(pier)
+          console.log('dundun:', pier);
+        } else {
+          let pier = '距' + (firstDefaultPier - 1) + '#墩'
+          setPier(pier)
+          console.log('dundun:', pier);
+        }
+      } catch (error) {
+        console.log('桥跨：：error',error);
       }
+      
 
       
 
@@ -11591,7 +11596,7 @@ export function DiseaseG({route, navigation}) {
           diseaseData['description'] = diseaseData.remark
         }
 
-        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+        if (diseaseData.writePositionTxt == undefined) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt
@@ -13522,7 +13527,7 @@ export function DiseaseH({route, navigation}) {
           diseaseData['description'] = diseaseData.remark
         }
 
-        if (diseaseData.writePositionTxt == undefined || diseaseData.writePositionTxt == '') {
+        if (diseaseData.writePositionTxt == undefined) {
           let writePositionTxt = '/'
           setWritePositionTxt(writePositionTxt)
           diseaseData['writePositionTxt'] = writePositionTxt

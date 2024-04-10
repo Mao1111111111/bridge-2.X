@@ -273,7 +273,7 @@ export default function NotSync({list, onUpload}) {
         },
         {
           // name: 'table-arrow-up',
-          img:'maintainPlan',
+          img:'export',
           disabled: testDataUploadingIds.length,
           onPress: exportData,
         },

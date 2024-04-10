@@ -62,12 +62,12 @@ export default function NotSync({list, onUpload}) {
           disabled: bridgeUploadingIds.length,
           onPress: handleUpload,
         },
-        {
-          // name: 'table-arrow-up',
-          img:'allUpload',
-          disabled: bridgeUploadingIds.length,
-          onPress: handleAll,
-        },
+        // {
+        //   // name: 'table-arrow-up',
+        //   img:'allUpload',
+        //   disabled: bridgeUploadingIds.length,
+        //   onPress: handleAll,
+        // },
       ]}>
       <View style={[styles.card, theme.primaryBgStyle]}>
         <Table.Box>

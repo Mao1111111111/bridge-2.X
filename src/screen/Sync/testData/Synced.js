@@ -265,7 +265,7 @@ export default function Synced({list, onUpload}) {
         },
         {
           // name: 'table-arrow-up',
-          img:'maintainPlan',
+          img:'export',
           disabled: testDataUploadingIds.length,
           onPress: exportData,
         },

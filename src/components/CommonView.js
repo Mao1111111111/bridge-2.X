@@ -57,6 +57,7 @@ export function Content({
   const [singleGoodDisImg, setSingleGoodDisImg] = useState() //单条确认 禁用
   const [allGoodImg, setAllGoodImg] = useState() //全部确认
   const [allGoodDisImg, setAllGoodDisImg] = useState() //全部确认 禁用
+  const [exportImg, setExportImg] = useState() //保存数据
 
   const [screenWidth,setScreenWidth] = useState() //屏幕宽度
 
@@ -91,6 +92,8 @@ export function Content({
     setAllGoodImg(allGoodImg)
     let allGoodDisImg = require('../iconImg/allGoodDis.png')
     setAllGoodDisImg(allGoodDisImg)
+    let exportImg = require('../iconImg/export.png')
+    setExportImg(exportImg)
 
     const windowWidth = Dimensions.get('window').width;
     setScreenWidth(windowWidth)
@@ -116,6 +119,9 @@ export function Content({
     } else if (res == 'maintainPlan') {
       let maintainPlanImg = require('../iconImg/maintainPlanPull.png')
       setMaintainPlanImg(maintainPlanImg)
+    } else if (res == 'export') {
+      let exportImg = require('../iconImg/exportPull.png')
+      setExportImg(exportImg)
     }
   }
   // 图标松开 恢复
@@ -138,6 +144,9 @@ export function Content({
     } else if (res == 'maintainPlan') {
       let maintainPlanImg = require('../iconImg/maintainPlan.png')
       setMaintainPlanImg(maintainPlanImg)
+    } else if (res == 'export') {
+      let exportImg = require('../iconImg/export.png')
+      setExportImg(exportImg)
     }
   }
 
@@ -194,7 +203,7 @@ export function Content({
                         (operation.img == 'maintainPlan' && operation.disabled ? maintainPlanDisImg: 
                         (operation.img == 'look' && !operation.disabled ? lookImg :
                         (operation.img == 'disList' && !operation.disabled ? diseaseListImg :
-                        (operation.img == 'maintainPlan' && !operation.disabled ? maintainPlanImg :
+                        (operation.img == 'export' ? exportImg :
                         (operation.img == 'bridgeInfo' ? bridgeInfoImg :
                         (operation.img == 'singleGood' ? singleGoodImg :
                         (operation.img == 'allGood' ? allGoodImg : {}))))))))))
