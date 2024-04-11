@@ -263,7 +263,9 @@ const MemberAdd = React.forwardRef(
     React.useEffect(() => {
       // 部件信息 ，根据 b10 b20 b30分组
       const memberInfo = listToGroup(basememberinfo, 'positionid');
+      // console.log('添加部件弹窗 所有的部件信息',memberInfo);
       if (memberList && basememberinfo) {
+        // console.log('当前已有的部件列表数据',memberList);
         const hide = new Set(memberList.map(({membertype}) => membertype));
         const checkOnly1 = membertype => {
           if (
@@ -322,6 +324,9 @@ const MemberAdd = React.forwardRef(
         const kua =
           parseInt(values.b200001num, 10) + parseInt(values.b200002num, 10) - 1;
         const data = [];
+        // console.log('checked values',checked,values);
+        // console.log('setset',set);
+        // console.log('set.has',set.has('b200005'));
         // 选中的部件 遍历
         checked.forEach(item => {
           // 如果现有的部件列表中 不存在选中的部件，那么把选中的部件的数据存入
@@ -342,6 +347,7 @@ const MemberAdd = React.forwardRef(
                   : '',
               ),
             );
+            // console.log('data999',data);
           }
         });
 
@@ -351,6 +357,7 @@ const MemberAdd = React.forwardRef(
         data.forEach((item,index)=>{
           item.memberid = bridgereportid + '_' + item.membertype + '_' + (time).toString(36) + '_' + index
         })
+        // console.log('确认添加的data',data);
         // 将所有的构件数据存入 桥梁检测构件表 
         await Promise.all(
           data.map(
@@ -407,6 +414,7 @@ const MemberAdd = React.forwardRef(
           _checked.add(membertype);
         }
         setChecked(_checked);
+        // console.log('选中的部件',_checked);
       };
       return (
         <>
@@ -585,7 +593,7 @@ function MemberEdit({onClose}, ref) {
         item.title = '伸缩装置'
       }
     })
-    console.log('MemberEdit memberList',memberList);
+    // console.log('MemberEdit memberList111',memberList.length);
   }, [partsList, nowEdit, memberList]);
 
   // 点击 添加部件 按钮

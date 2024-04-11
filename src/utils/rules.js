@@ -227,6 +227,7 @@ const getZhuipoAndHupo = (name, values, code, kua) => {
   // }
 
   if (values) {
+    // =================创建桥梁时的命名规则======================
     // 锥坡为双幅
     if (values.bridgeSlope == 'slopeDouble') {
       // 默认值
@@ -258,6 +259,17 @@ const getZhuipoAndHupo = (name, values, code, kua) => {
       _data.push(getItem('0#台右锥坡', 1));
       if (qiaotai > 0) {
         _data.push(getItem(`${kua}#台护坡`, kua));
+        _data.push(getItem(`${kua}#台右锥坡`, kua));
+      }
+    } else {
+      // =====================新增部件时的创建规则=============================
+      _data.push(getItem('0#台护坡', 1));
+      _data.push(getItem('0#台左锥坡', 1));
+      _data.push(getItem('0#台右锥坡', 1));
+
+      if (qiaotai > 0) {
+        _data.push(getItem(`${kua}#台护坡`, kua));
+        _data.push(getItem(`${kua}#台左锥坡`, kua));
         _data.push(getItem(`${kua}#台右锥坡`, kua));
       }
     }
