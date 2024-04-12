@@ -24,7 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Clone = React.forwardRef(({onSubmitOver}, ref) => {
   // 从 全局参数 中 获取 桥幅属性
   const {
-    state: {bridgeside},
+    state: {bridgeside,userInfo},
   } = React.useContext(GlobalContext);
 
   // 模态框是否显示
@@ -100,7 +100,14 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
     bridge
       .search({param: _search, page})
       .then(res => {
-        setList(res.list);
+        let userid = userInfo.userid
+        let newList = []
+        res.list.forEach(item=>{
+          if(item.userid==userid){
+            newList.push(item)
+          }
+        })
+        setList(newList);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
       })
@@ -363,8 +370,15 @@ const Inducts = React.forwardRef(({onSubmitOver}, ref) => {
         page,
       })
       .then(res => {
+        let userid = userInfo.userid
+        let newList = []
+        res.list.forEach(item=>{
+          if(item.userid==userid){
+            newList.push(item)
+          }
+        })
         // 设置表格数据
-        setList(res.list);
+        setList(newList);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
       })
