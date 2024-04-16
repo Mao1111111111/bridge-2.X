@@ -57,3 +57,5 @@ yarn android
 - newFormat：成员分支
 - newNavigator： 成员分支
 - main: 无用分支
+- newStyle_: 新样式，未应用到正式代码 master中
+- synergy_: 协同检测分支
