@@ -17,6 +17,7 @@ import Checkbox from '../../../components/Checkbox';
 import * as bridge from '../../../database/bridge';
 import * as bridgeProjectBind from '../../../database/bridge_project_bind';
 import * as bridgeReportMember from '../../../database/bridge_report_member';
+import * as synergyTest from '../../../database/synergy_test';
 import {alert, confirm} from '../../../utils/alert';
 import CommonView from '../../../components/CommonView';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -1350,6 +1351,14 @@ export default function ProjectDetail({route, navigation}) {
             projectid: project.projectid,
           }
           await bridgeProjectBind.get(bindDataParams).then(async res1=>{
+            _list[i].bridgereportid = res1.bridgereportid
+            await synergyTest.getByReportid(res1.bridgereportid).then(synergyTestData=>{
+              if(synergyTestData){
+                _list[i].synergyTestData = synergyTestData
+              }else{
+                _list[i].synergyTestData = {}
+              }
+            })
             await bridgeReportMember.searchUpDate(res1.bridgereportid).then(res2=>{
               if(res2){
                 _list[i].date = res2.u_date
@@ -1624,6 +1633,7 @@ export default function ProjectDetail({route, navigation}) {
                   {/* <Table.Title title="病害构件" />
                   <Table.Title title="媒体文件" /> */}
                   <Table.Title title="检测日期" flex={2} />
+                  <Table.Title title="协同检测" flex={2} />
                   <Table.Title title="存储" />
                   <Table.Title title="选择" flex={1} />
                 </Table.Header>
@@ -1659,6 +1669,9 @@ export default function ProjectDetail({route, navigation}) {
                     <Table.Cell>{item.file}</Table.Cell> */}
                     <Table.Cell flex={2}>
                       {(item.date || '').split(' ')[0] || '未检测'}
+                    </Table.Cell>
+                    <Table.Cell flex={2}>
+                      {item.synergyTestData.state? '是' : '否'}
                     </Table.Cell>
                     <Table.Cell>
                       {item.datasources === 0 ? '本地' : '云端'}

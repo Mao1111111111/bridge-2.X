@@ -56,9 +56,10 @@ export const update = async data => {
     await db().executeSql(sql, param);
   };
 
-//根据检测id查询
-export const getById = async bridgereportid => {
-  const sql = 'select * from upload_state_record where bridgereportid = ?';
+
+// 根据检测编号查询
+export const getByReportid = async bridgereportid => {
+  const sql = 'select * from synergy_test where bridgereportid = ?';
   const param = [bridgereportid];
   return getResult(await db().executeSql(sql, param), 'object');
 }; 
