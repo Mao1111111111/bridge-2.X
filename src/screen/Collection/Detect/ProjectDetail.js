@@ -714,7 +714,8 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
     setTaskCode('')
     setPersonNum('1')
     setPersonName('')
-
+    setJoinCode('')
+    setJoinPersonName('')
   };
 
   // 点击 选择框 -- 可多选
@@ -1190,10 +1191,6 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
                 : <></>
               }
             </View>
-            : funcShow == 1 && !bridgeInfo ? 
-              <View style={{width:'100%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center'}}>
-                <Text>*请选择桥梁后再创建协同检测任务</Text>
-              </View>
             : <></>
           }
           {
