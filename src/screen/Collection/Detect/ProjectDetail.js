@@ -1,6 +1,7 @@
 // 导入 、克隆桥梁
 import React,{useState,useEffect} from 'react';
-import {View, Text, StyleSheet, FlatList, TouchableOpacity,ImageBackground,Dimensions} from 'react-native';
+import {View, Text, StyleSheet, FlatList, TouchableOpacity,Pressable,
+  ImageBackground, ScrollView,Dimensions,} from 'react-native';
 import {Divider} from 'react-native-paper';
 import {useFocusEffect} from '@react-navigation/native';
 import {tailwind} from 'react-native-tailwindcss';
@@ -19,7 +20,7 @@ import * as bridgeReportMember from '../../../database/bridge_report_member';
 import {alert, confirm} from '../../../utils/alert';
 import CommonView from '../../../components/CommonView';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Clipboard from '@react-native-clipboard/clipboard';
 // 克隆
 const Clone = React.forwardRef(({onSubmitOver}, ref) => {
   // 从 全局参数 中 获取 桥幅属性
@@ -569,6 +570,661 @@ const Inducts = React.forwardRef(({onSubmitOver}, ref) => {
   );
 });
 
+// 协同检测
+const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
+  // 从全局参数中 获取 桥幅属性、用户信息
+  const {
+    state: {bridgeside, userInfo},
+  } = React.useContext(GlobalContext);
+
+  // 模态框是否显示
+  const [visible, setVisible] = React.useState(false);
+
+  // 当前的 项目id
+  const [projectid, setProjectId] = React.useState('');
+
+  // 表格loading
+  const [loading, setLoading] = React.useState(false);
+
+  // 表格数据
+  const [list, setList] = React.useState([]);
+
+  // 是否正在任务中
+  const [isTaskIng,setIsTaskIng] = useState(false)
+
+  // 当前页
+  const [page, setPage] = React.useState();
+
+  // 共几条
+  const [total, setTotal] = React.useState(0);
+
+  // 共几页
+  const [pageTotal, setPageTotal] = React.useState(0);
+
+  // 查询参数
+  const [keywords, setKeywords] = React.useState('');
+
+  // 当前选中桥梁的bridgeid，多选，是数组
+  const [checked, setChecked] = React.useState(new Set([]));
+
+  const [project,setProject] = useState()
+
+  // 检索输入框的引用
+  const searchRef = React.useRef([]);
+
+  const [bridgeInfo,setBridgeInfo] = useState()
+
+  const [navigation,setNavigation] = useState()
+  const [route,setRoute] = useState()
+
+  // 暴露给父组件的函数
+  React.useImperativeHandle(ref, () => ({
+    
+    // 打开
+    open: (project,bridge,navigation,route) => {
+      setNavigation(navigation)
+      setRoute(route)
+      console.log('navigationnavigation',navigation);
+      // 是否正在任务中
+      // isTaskIng 读取本地数据库
+      // setIsTaskIng(true)
+
+      if(isTaskIng) {
+        // 如果处于正在任务的状态，打开弹窗获取数据
+        getTableData()
+      } else if (!isTaskIng) {
+        setList([])
+      }
+      
+      
+      // project 是当前项目信息
+      // bridge 选择打开的桥梁信息
+      console.log('bridge',bridge);
+      setBridgeInfo(bridge)
+      if(bridge){
+        // 选择桥梁进入时，默认显示创建任务
+        setFuncShow(1)
+      } else if (!bridge){
+        // 未选择桥梁进入时，默认显示参与任务
+        setFuncShow(2)
+      }
+      setProject(project)
+      // 设置projectid
+      setProjectId(project.projectid);
+      // 表格loading
+      setLoading(true);
+      setPage({
+        pageSize: 10,
+        pageNo: 0,
+      });
+      setVisible(true);
+    },
+    // 关闭函数
+    close,
+  }));
+
+  // 当 查询参数变化 或 页码变化 或 项目id变化时 触发
+  React.useEffect(() => {
+    // 如果没有页码，那么返回
+    if (!page) {
+      return;
+    }
+    // 设置表格loading
+    setLoading(true);
+    // 查询桥梁数据--这里查询的是 bridge_project_bind 表中，项目id不等于当前项目id的数据
+    bridge
+      .search({
+        param: {
+          notId: projectid,
+          keywords,
+        },
+        page,
+      })
+      .then(res => {
+        let userid = userInfo.userid
+        let newList = []
+        res.list.forEach(item=>{
+          if(item.userid==userid){
+            newList.push(item)
+          }
+        })
+        // 设置表格数据
+        // setList(newList);
+        setPageTotal(res.page.pageTotal);
+        setTotal(res.page.total);
+      })
+      .finally(() => setLoading(false));
+  }, [keywords, page, projectid]);
+
+  // 关闭时
+  const close = () => {
+    // 关闭模态框
+    setVisible(false);
+    // 清空表格数据
+    setList([]);
+    // 清空选中
+    setChecked(new Set([]));
+    // 清空检索数据
+    if (searchRef.current[0]) {
+      searchRef.current[0].clear();
+    }
+    // 清空桥梁数据
+    setBridgeInfo('')
+    // 重置表单数据
+    setTaskCode('')
+    setPersonNum('1')
+    setPersonName('')
+
+  };
+
+  // 点击 选择框 -- 可多选
+  const handleCheck = id => {
+    // id 是 bridgeid
+    const _checked = checked;
+    if (_checked.has(id)) {
+      _checked.delete(id);
+    } else {
+      _checked.add(id);
+    }
+    setChecked(new Set(_checked));
+  };
+
+  const [taskCode,setTaskCode] = useState(0) // 任务码 - 创建
+  const [personNum,setPersonNum] = useState(1) //协同人数
+  const [personName,setPersonName] = useState('') //创建者名称 - 创建
+  const [btnText,setBtnText] = useState('') //确认按钮的文字
+
+  const [joinCode,setJoinCode] = useState('')
+  const [joinPersonName,setJoinPersonName] = useState('')
+
+  useEffect(()=>{
+    setPersonNum('1')
+    // if(bridgeInfo){
+    //   setFuncShow(1)
+    // } else if (!bridgeInfo){
+    //   setFuncShow(2)
+    // }
+    if(funcShow == 1){
+      setBtnText('确认创建')
+    } else if (funcShow == 2){
+      setBtnText('确认参与')
+    }
+    
+  },[])
+  const [funcShow,setFuncShow] = useState(1)
+
+  // 切换功能页面
+  const changeFunc = (e) => {
+    // console.log('11111',e);
+    setFuncShow(e)
+  }
+
+  
+  // 生成任务码
+  const changeTaskCode = () => {
+    // 随机六位整数
+    var code = '';
+    for(var i=0;i<6;i++){
+      code += parseInt(Math.random()*10);
+    }
+    console.log('切换任务码',code);
+    setTaskCode(code)
+    // console.log('切换任务码',);
+  }
+
+  // 复制任务码
+  const copyCode = async(value) =>{
+    // 写入
+    Clipboard.setString(value);
+    // 读取
+    let str = await Clipboard.getString();
+    // console.log('复制的内容',str)
+    if(str){
+      alert('复制任务码成功【' + str + '】');
+    }
+  }
+
+  const personNumChange = (e) => {
+    var a = parseInt(personNum)
+    if(personNum>=2 && personNum<10){
+      a+=e
+      setPersonNum(a.toString())
+    }
+    if(personNum == 1){
+      if(e>0){
+        a+=e
+        setPersonNum(a.toString())
+      }
+    }
+    if(personNum == 10){
+      if(e<0){
+        a+=e
+        setPersonNum(a.toString())
+      }
+    }
+  }
+
+  // 创建任务 的输入
+  const valueChange = (e) => {
+    console.log('输入内容',e);
+    if(e.name=='personName'){
+      setPersonName(e.value)
+    }
+  }
+
+  // 参与任务 的输入
+  const joinValueChange = (e) => {
+    console.log('输入内容',e);
+    if(e.name == 'joinCode'){
+      setJoinCode(e.value)
+    } else if (e.name == 'joinPersonName') {
+      setJoinPersonName(e.value)
+    }
+  }
+
+  // 确认
+  const confirm = () => {
+    if(funcShow == 1){
+      // 创建任务的确认操作
+      if(bridgeInfo){
+        console.log('创建任务');
+        // 任务码
+        if(taskCode){
+          console.log('任务码taskCode',taskCode);
+        }
+        // 协同人数
+        if(personNum){
+          console.log('协同人数personNum',personNum);
+        }
+        // 用户名称
+        if(personName){
+          console.log('用户名称personName',personName);
+        }
+      }
+      if(!bridgeInfo){
+        console.log('无数据空的确认');
+      }
+      // 获取数据
+      getTableData()
+
+      // 任务创建成功后改变'是否在任务中'的状态
+      setIsTaskIng(true)
+      
+      
+
+    } else if (funcShow == 2) {
+      console.log('参与任务');
+      // 任务码
+      console.log('参与者的任务码',joinCode);
+      // 用户名称
+      console.log('参与者的名称',joinPersonName);
+      // 获取数据
+      getTableData()
+    }
+
+  }
+
+  // 前往检测
+  const goWork = () => {
+    // console.log('页面跳转');
+    try {
+      // 关闭弹窗页面
+      close()
+      // 跳转
+      navigation.navigate('Collection/Detect/BridgeTest', {
+        project: project,
+        bridge: bridgeInfo,
+        list: route.params.list
+      })
+    } catch (error) {
+      console.log('创建协同任务页面跳转error',error);
+    }
+  }
+
+  const deleteTask = () => {
+    console.log('删除任务');
+
+    // 改变isTaskIng的状态
+    setIsTaskIng(false)
+
+    // 清除获取数据的定时器
+
+    // 清空表格数据
+    setList([])
+    // 重置页面状态
+
+  }
+
+  // 获取任务协同者表格数据
+  const getTableData = () => {
+      // 持续向盒子获取最新状态信息
+      // setInterval(()=>{
+        console.log('获取数据');
+        setList([])
+        // =====模拟表格数据====
+          let list = [
+            {
+              id:'1',
+              user:'张三1',
+              userName:'asfx',
+              joinTime:'10:21',
+              status:'在线'
+            },
+            {
+              id:'2',
+              user:'张三2',
+              userName:'asdfbdffx',
+              joinTime:'10:22',
+              status:'在线'
+            },
+            {
+              id:'3',
+              user:'张三3',
+              userName:'awrhwsfx',
+              joinTime:'10:23',
+              status:'离线'
+            },
+            {
+              id:'4',
+              user:'张三4',
+              userName:'asfxbsbx',
+              joinTime:'10:24',
+              status:'在线'
+            },
+            {
+              id:'5',
+              user:'张三5',
+              userName:'asfasx',
+              joinTime:'10:25',
+              status:'在线'
+            },
+            {
+              id:'6',
+              user:'张三2',
+              userName:'asdfbdffx',
+              joinTime:'10:22',
+              status:'在线'
+            },
+            {
+              id:'7',
+              user:'张三3',
+              userName:'awrhwsfx',
+              joinTime:'10:23',
+              status:'离线'
+            },
+            {
+              id:'8',
+              user:'张三4',
+              userName:'asfxbsbx',
+              joinTime:'10:24',
+              status:'在线'
+            },
+            {
+              id:'9',
+              user:'张三5',
+              userName:'asfasx',
+              joinTime:'10:25',
+              status:'在线'
+            },
+          ]
+          setList(list)
+      // },1000*2)
+  }
+
+  return (
+    // 导入桥梁模态框
+    <Modal
+      visible={visible}
+      title="协同检测"
+      pid="P1103"
+      showHead={true}
+      // 没有滚动条
+      notScroll={true}
+      width={800}
+      height={500}
+      keyboardVerticalOffset={-250}
+      onClose={() => setVisible(false)}>
+      <View style={[tailwind.flex1,{}]}>
+      <View style={{height:'10%',width:'100%',
+    flexDirection: 'row',justifyContent:'flex-start',alignItems:'center'}}>
+        <Pressable style={{width:'15%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',
+        backgroundColor:funcShow == 1 ? '#2b427d' : '#2b427d00'}}
+        onPress={()=>changeFunc(1)}>
+          <Text style={{color:funcShow == 1 ? '#fff' : '#808285'}}>创建任务</Text>
+        </Pressable>
+        <Pressable style={{width:'15%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',
+        backgroundColor:funcShow == 2 ? '#2b427d' : '#2b427d00'}}
+        onPress={()=>changeFunc(2)}>
+          <Text style={{color:funcShow == 2 ? '#fff' : '#808285'}}>参与任务</Text>
+        </Pressable>
+        <Pressable style={{width:'15%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',
+        backgroundColor:funcShow == 3 ? '#2b427d' : '#2b427d00'}}
+        onPress={()=>changeFunc(3)}>
+          <Text style={{color:funcShow == 3 ? '#fff' : '#808285'}}>使用帮助</Text>
+        </Pressable>
+      </View>
+        <View style={[tailwind.flex1,{}]}>
+          {/* <Text>选择的桥梁：{bridgeInfo?.bridgename}</Text> */}
+          {
+            funcShow == 1 && bridgeInfo ? 
+            <View style={{width:'100%',height:'100%',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
+              <View style={{width:'50%',height:'100%',alignItems:"center",paddingTop:50,paddingLeft:20}}>
+                <View style={{width:'100%',height:'20%',flexDirection:'row',alignItems:'center'}}>
+                  <TextInput
+                    name="taskCode"
+                    label="任务码:    "
+                    disabled
+                    value={taskCode}
+                    onChange={(e)=>valueChange(e)}
+                    style={[tailwind.mR6, {height:'100%',width:'50%'}]}
+                    inputStyle={[{color:'black'}]}
+                  />
+                  <Button style={{backgroundColor: '#2b427d'}} onPress={()=>changeTaskCode()}>生成任务码</Button>
+                  <Button style={{backgroundColor: '#2b427d'}} onPress={()=>copyCode(taskCode)}>复制任务码</Button>
+                </View>
+                <View style={{width:'100%',height:'20%',flexDirection:'row',alignItems:'center'}}>
+                  <TextInput
+                    name="personNum"
+                    label="协同人数:"
+                    disabled
+                    value={personNum}
+                    onChange={(e)=>valueChange(e)}
+                    style={[tailwind.mR6, {height:'100%',width:'50%'}]}
+                    inputStyle={[{color:'black'}]}
+                  />
+                  <Button style={{backgroundColor: '#2b427d'}} onPress={()=>personNumChange(1)}>+</Button>
+                  <Button style={{backgroundColor: '#2b427d'}} onPress={()=>personNumChange(-1)}>-</Button>
+                </View>
+                <View style={{width:'100%',paddingLeft:70}}>
+                  <Text>*除您之外的其他协作者人数（1~10）</Text>
+                </View>
+                <View style={{width:'100%',height:'20%',flexDirection:'row',alignItems:'center'}}>
+                  <TextInput
+                    name="personName"
+                    label="您的名称:"
+                    onChange={(e)=>valueChange(e)}
+                    style={[tailwind.mR6, {height:'100%',width:'50%'}]}
+                  />
+                </View>
+              </View>
+              {
+                list.length ?
+                <View style={{width:'45%',height:'100%',alignItems:'center',marginLeft:20}}>
+                  {/* 参与者信息表格 */}
+                  <View style={{width:'100%',height:'70%',padding:10}}>
+                    <Table.Box
+                      loading={loading}
+                      numberOfPages={pageTotal}
+                      total={total}
+                      pageNo={page?.pageNo || 0}
+                      onPageChange={e =>
+                        setPage({
+                          pageSize: 10,
+                          pageNo: e,
+                        })
+                      }
+                      header={
+                        <Table.Header>
+                          <Table.Title title="序号" flex={1} />
+                          <Table.Title title="账号" flex={4} />
+                          <Table.Title title="人员" flex={3} />
+                          <Table.Title title="加入时间" flex={2} />
+                          <Table.Title title="状态" flex={2} />
+                        </Table.Header>
+                      }>
+                      <FlatList
+                        data={list}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({item, index}) => (
+                          <Table.Row key={index}>
+                            <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                            <Table.Cell flex={4}>{item.user}</Table.Cell>
+                            <Table.Cell flex={3}>{item.userName}</Table.Cell>
+                            <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
+                            <Table.Cell flex={2}>{item.status}</Table.Cell>
+                          </Table.Row>
+                        )}
+                      />
+                    </Table.Box>
+                  </View>
+                  <View style={{width:'100%',height:'30%',flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                    <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>deleteTask()}>删除任务</Button>
+                    <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>goWork()}>开始检测</Button>
+                  </View>
+                </View> 
+                : <></>
+              }
+              {/* 创建任务成功后的左侧表单遮罩层 */}
+              {
+                list.length ? 
+                <View style={{width:'54%',height:'100%',alignItems:"center",paddingTop:50,paddingLeft:20,backgroundColor:'#fff',
+                position:'absolute',opacity:0.3,justifyContent:'flex-end',alignItems:'center',paddingBottom:40}}>
+                  <Text>不允许创建多个任务</Text>
+                </View>
+                : <></>
+              }
+            </View>
+            : funcShow == 1 && !bridgeInfo ? 
+              <View style={{width:'100%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center'}}>
+                <Text>*请选择桥梁后再创建协同检测任务</Text>
+              </View>
+            : <></>
+          }
+          {
+            funcShow == 2 ? 
+            <View style={{width:'100%',height:'100%',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
+              <View style={{width:'50%',height:'100%',alignItems:"center",paddingTop:50,paddingLeft:20}}>
+                <View style={{width:'100%',height:'20%',flexDirection:'row',alignItems:'center'}}>
+                  <TextInput
+                    name="joinCode"
+                    label="任务码:    "
+                    value={joinCode}
+                    onChange={(e)=>joinValueChange(e)}
+                    style={[tailwind.mR6, {height:'100%',width:'50%'}]}
+                    inputStyle={[{color:'black'}]}
+                  />
+                </View>
+                <View style={{width:'100%',height:'20%',flexDirection:'row',alignItems:'center'}}>
+                  <TextInput
+                    name="joinPersonName"
+                    label="您的名称:"
+                    onChange={(e)=>joinValueChange(e)}
+                    style={[tailwind.mR6, {height:'100%',width:'50%'}]}
+                  />
+                </View>
+              </View>
+              {
+                list.length ?
+                <View style={{width:'45%',height:'100%',alignItems:'center',marginLeft:20}}>
+                  {/* 参与者信息表格 */}
+                  <View style={{width:'100%',height:'70%',padding:10}}>
+                    <Table.Box
+                      loading={loading}
+                      numberOfPages={pageTotal}
+                      total={total}
+                      pageNo={page?.pageNo || 0}
+                      onPageChange={e =>
+                        setPage({
+                          pageSize: 10,
+                          pageNo: e,
+                        })
+                      }
+                      header={
+                        <Table.Header>
+                          <Table.Title title="序号" flex={1} />
+                          <Table.Title title="账号" flex={4} />
+                          <Table.Title title="人员" flex={3} />
+                          <Table.Title title="加入时间" flex={2} />
+                          <Table.Title title="状态" flex={2} />
+                        </Table.Header>
+                      }>
+                      <FlatList
+                        data={list}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({item, index}) => (
+                          <Table.Row key={index}>
+                            <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                            <Table.Cell flex={4}>{item.user}</Table.Cell>
+                            <Table.Cell flex={3}>{item.userName}</Table.Cell>
+                            <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
+                            <Table.Cell flex={2}>{item.status}</Table.Cell>
+                          </Table.Row>
+                        )}
+                      />
+                    </Table.Box>
+                  </View>
+                  <View style={{width:'100%',height:'30%',flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                    <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>deleteTask()}>删除任务</Button>
+                    <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>goWork()}>开始检测</Button>
+                  </View>
+                </View> 
+                : <></>
+              }
+              {/* 创建任务成功后的左侧表单遮罩层 */}
+              {
+                list.length ? 
+                <View style={{width:'54%',height:'100%',alignItems:"center",paddingTop:50,paddingLeft:20,backgroundColor:'#fff',
+                position:'absolute',opacity:0.3,justifyContent:'flex-end',alignItems:'center',paddingBottom:40}}>
+                  {/* <Text>不允许创建多个任务</Text> */}
+                </View>
+                : <></>
+              }
+            </View>
+            : funcShow == 1 && !bridgeInfo ? 
+              <View style={{width:'100%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center'}}>
+                <Text>*请选择桥梁后再创建协同检测任务</Text>
+              </View>
+            : <></>
+          }
+          {
+            funcShow == 3 ? 
+            <View style={{width:'100%',height:'100%',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
+              <View style={{width:'50%',height:'100%',alignItems:'flex-start',paddingTop:50,paddingLeft:20}}>
+                <Text>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
+                <Text>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
+                <Text>3.协同检测盒子WiFi密码：jianlide</Text>
+              </View>
+            </View>
+            : <></>
+          }
+        </View>
+        
+      </View>
+      {/* 分割线 */}
+      <Divider style={[tailwind.mB2]} />
+      {/* 底部操作按钮 */}
+      <View style={styles.modalFoote}>
+        {/* 取消按钮，关闭模态框 */}
+        <Button style={[{backgroundColor: '#808285'}]} onPress={() => close()}>
+          取消
+        </Button>
+        {/* 确认导入按钮 */}
+        <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>confirm()}>确认</Button>
+      </View>
+    </Modal>
+  );
+});
+
 export default function ProjectDetail({route, navigation}) {
   // 全局参数 -- 桥幅属性、养护区列表、路线列表
   const {
@@ -604,6 +1260,9 @@ export default function ProjectDetail({route, navigation}) {
 
   // 导入桥梁 模态框的 引用
   const inductsRef = React.useRef();
+
+  // 协同检测 模态框的 引用
+  const coopRef = React.useRef();
 
   // 桥梁引用
   const bridgeRef = React.useRef();
@@ -718,6 +1377,8 @@ export default function ProjectDetail({route, navigation}) {
         // console.log('bridgeList',bridgeList);
       })
       .finally(() => {});
+
+      setImgType('cooperate')
   }, [search, page, project]);
 
   // 当选中的养护区变化时，重置选中的路线
@@ -799,15 +1460,22 @@ export default function ProjectDetail({route, navigation}) {
     }
   };
 
+// 协同检测按钮 不同状态对应的图标
+  const [imgType,setImgType] = useState('cooperate')
+
   // 点击选择框 -- 单选
   const handleCheck = item => {
     if (!nowChecked) {
       setNowChecked(item);
+      setImgType('cooperate')
+
       return;
     } else if (nowChecked.id === item.id) {
       setNowChecked(null);
+      // setImgType('cooperateDis')
     } else {
       setNowChecked(item);
+      // setImgType('cooperateDis')
     }
   };
 
@@ -823,6 +1491,26 @@ export default function ProjectDetail({route, navigation}) {
   // 向前
   const goAhead = () => {
     console.log('点击了goAhead');
+  }
+
+  const openCoop = () => {
+    console.log('打开弹窗');
+    coopRef.current.open(project,nowChecked,navigation,route)
+
+    // 打开弹窗后重置表格选中状态、图标状态
+    setNowChecked(null);
+    // setImgType('cooperateDis')
+    // if(nowChecked){
+    //   console.log('选择的桥梁数据',nowChecked);
+    //   coopRef.current.open(project,nowChecked)
+
+    //   // 打开弹窗后重置表格选中状态、图标状态
+    //   setNowChecked(null);
+    //   setImgType('cooperateDis')
+    // } else {
+    //   console.log('未选择桥梁');
+    // }
+    
   }
 
   return (
@@ -849,15 +1537,23 @@ export default function ProjectDetail({route, navigation}) {
       operations={[
         // 导入桥梁 按钮
         {
-          name: 'table-arrow-left',
+          // name: 'table-arrow-left',
           img:'induct',
           onPress: () => inductsRef.current.open(project),
         },
         // 克隆桥梁按钮
         {
-          name: 'content-duplicate',
+          // name: 'content-duplicate',
           img:'clone',
           onPress: () => cloneRef.current.open(project),
+        },
+        // 占位空按钮
+        {},
+        {},
+        // 协同检测按钮
+        {
+          img:imgType,
+          onPress: () => openCoop(),
         },
       ]}>
         <View style={
@@ -993,6 +1689,9 @@ export default function ProjectDetail({route, navigation}) {
         project={project}
         onSubmitOver={handleSubmitOver}
       />
+      
+      {/* 协同检测 模态框 */}
+      <Cooperate ref={coopRef} onSubmitOver={handleSubmitOver} />
     </CommonView>
   );
 }

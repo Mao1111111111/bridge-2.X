@@ -102,8 +102,8 @@ export const TextInput = React.forwardRef(function (
           styles.input,
           inputStyle ? inputStyle : {},
           disabled && {
-            ...tailwind.opacity10,
-            ...tailwind.bgGray300,
+            // ...tailwind.opacity10,
+            // ...tailwind.bgGray300,
           },
         ]}
       />

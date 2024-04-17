@@ -251,6 +251,8 @@ export default function CommonView({
   const [inductImg, setInductImg] = useState() // 导入
   const [cloneImg, setCloneImg] = useState() // 克隆
   const [cloneDisImg, setCloneDisImg] = useState() // 克隆 - 禁用
+  const [cooperateImg, setCooperateImg] = useState() //协同检测
+  const [cooperateDisImg, setCooperateDisImg] = useState() //协同检测
 
   const [screenWidth,setScreenWidth] = useState() //屏幕宽度
 
@@ -268,8 +270,12 @@ export default function CommonView({
     setCloneImg(cloneImg)
     let cloneDisImg = require('../iconImg/cloneDis.png')
     setCloneDisImg(cloneDisImg)
-    const windowWidth = Dimensions.get('window').width;
+    let cooperateImg = require('../iconImg/cooperate.png')
+    setCooperateImg(cooperateImg)
+    let cooperateDisImg = require('../iconImg/cooperateDis.png')
+    setCooperateDisImg(cooperateDisImg)
     // console.log('当前屏幕宽度',windowWidth);
+    const windowWidth = Dimensions.get('window').width;
     setScreenWidth(windowWidth)
   }, [])
 
@@ -290,6 +296,10 @@ export default function CommonView({
       // 克隆桥梁
       let cloneImg = require('../iconImg/clonePull.png')
       setCloneImg(cloneImg)
+    } else if (res == 'cooperate') {
+      // 协同检测
+      let cooperateImg = require('../iconImg/cooperatePull.png')
+      setCooperateImg(cooperateImg)
     }
     
   }
@@ -305,6 +315,9 @@ export default function CommonView({
     } else if (res == 'clone') {
       let cloneImg = require('../iconImg/clone.png')
       setCloneImg(cloneImg)
+    } else if (res == 'cooperate') {
+      let cooperateImg = require('../iconImg/cooperate.png')
+      setCooperateImg(cooperateImg)
     }
     
   }
@@ -391,7 +404,9 @@ export default function CommonView({
                         operation.disabled ? doneDisImg :
                         (operation.img == 'check' ? doneImg : //判断img传入的值,显示对应的按钮图片
                         (operation.img == 'induct' ? inductImg : //依次进行条件判断
-                        (operation.img == 'clone' ? cloneImg : cloneDisImg)))
+                        (operation.img == 'clone' ? cloneImg : 
+                        (operation.img == 'cooperate' ? cooperateImg : 
+                        (operation.img == 'cooperateDis' ? cooperateDisImg : '')))))
                       }
                       />
                     </Pressable>
