@@ -1457,6 +1457,7 @@ const needBridgeData = {
         longitude:'',
         latitude:''
     },
+    // 不必要
     upload_state_record:{
 
     },
@@ -1465,8 +1466,6 @@ const needBridgeData = {
     createInfo:{
         // 协同编号
         synergyid:'',
-        // 任务号
-        taskId:'',
         // 协同人数
         synergyPeopleNum:'',
         // 创建者
