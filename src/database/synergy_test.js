@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS "synergy_test" (
     taskId TEXT NOT NULL, -- 任务id
     creator TEXT NOT NULL, -- 创建者信息
     c_date TEXT NOT NULL, -- 创建时间
-    state TEXT NOT NULL, -- 协同状态
+    state TEXT NOT NULL, -- 协同状态 '非协同'、'未开始'、'检测中'、'已完成'
     other TEXT NOT NULL -- 其他
 );
 `;

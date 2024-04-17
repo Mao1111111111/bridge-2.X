@@ -1354,9 +1354,10 @@ export default function ProjectDetail({route, navigation}) {
             _list[i].bridgereportid = res1.bridgereportid
             await synergyTest.getByReportid(res1.bridgereportid).then(synergyTestData=>{
               if(synergyTestData){
+                _list[i].isSynergyTest = true
                 _list[i].synergyTestData = synergyTestData
               }else{
-                _list[i].synergyTestData = {}
+                _list[i].isSynergyTest = false
               }
             })
             await bridgeReportMember.searchUpDate(res1.bridgereportid).then(res2=>{
@@ -1671,7 +1672,7 @@ export default function ProjectDetail({route, navigation}) {
                       {(item.date || '').split(' ')[0] || '未检测'}
                     </Table.Cell>
                     <Table.Cell flex={2}>
-                      {item.synergyTestData.state? '是' : '否'}
+                      {item.isSynergyTest? '是' : '否'}
                     </Table.Cell>
                     <Table.Cell>
                       {item.datasources === 0 ? '本地' : '云端'}
