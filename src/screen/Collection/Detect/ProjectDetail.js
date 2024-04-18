@@ -864,40 +864,12 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     if (funcShow == 1) {
       // 创建任务的确认操作
       createTask()
-      // if (bridgeInfo) {
-      //   console.log('创建任务');
-      //   // 任务码
-      //   if (taskCode) {
-      //     console.log('任务码taskCode', taskCode);
-      //   }
-      //   // 协同人数
-      //   if (personNum) {
-      //     console.log('协同人数personNum', personNum);
-      //   }
-      //   // 用户名称
-      //   if (personName) {
-      //     console.log('用户名称personName', personName);
-      //   }
-      // }
-      // if (!bridgeInfo) {
-      //   console.log('无数据空的确认');
-      // }
-      // // 获取数据
-      // getTableData()
-
-      // // 任务创建成功后改变'是否在任务中'的状态
-      // setIsTaskIng(true)
-
-
-
     } else if (funcShow == 2) {
-      console.log('参与任务');
-      // 任务码
-      console.log('参与者的任务码', joinCode);
-      // 用户名称
-      console.log('参与者的名称', joinPersonName);
+
       // 获取数据
-      getTableData()
+      // getTableData()
+      // 参与任务
+      joinTask()
     }
 
   }
@@ -995,8 +967,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
           await AsyncStorage.setItem('synergyData', JSON.stringify({ synergyData: synergyData, bridge: bridgeInfo }))
           // 设置任务号
           setTaskCode(result.room_id)
-          // 任务创建成功后改变'是否在任务中'的状态
-          setIsTaskIng(true)
           // 加入任务
           CTAfterAddTask(IP, result.room_id)
         } else {
@@ -1087,22 +1057,25 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   // 创建任务后加入任务
   const CTAfterAddTask = (IP, taskid) => {
     // url
-    // let url = 'http://'+IP+':8000/task_room/'+roomid
+    // let url = 'http://'+IP+':8000/task_room/'+taskid
     let url = 'http://10.1.1.71:8000/task_room/' + taskid
     fetch(url, {
       method: 'GET'
     })
       .then(res => res.json())
       .then(result => {
-        console.log("result", result);
         if (result.status == 'success') {
           // 地址
           let path = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
-          console.log("path", path);
+          // 将ws存入本地
+          AsyncStorage.setItem('synergyWS', result.ws)
           // 创建连接
           wsConnection.current = new WebSocket(path);
           // 打开
-          wsConnection.current.onopen = () => { }
+          wsConnection.current.onopen = () => {
+            // 任务创建成功后改变'是否在任务中'的状态
+            setIsTaskIng(true)
+          }
           // 接收
           wsConnection.current.onmessage = (e) => {
             console.log("接收", e);
@@ -1125,6 +1098,172 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   }
   // ----- 创建任务 end -------
 
+  // ----- 参与任务 start -------
+  // 参与任务
+  const joinTask = () => {
+    // 判断是否有任务码
+    if (!joinCode) {
+      Alert.alert('请输入任务号')
+      return
+    }
+    if (!(/^\d{5}$/.test(joinCode))) {
+      Alert.alert('请输入正确的任务号格式不正确')
+      return
+    }
+    if (!joinPersonName) {
+      Alert.alert('请输入工程师名称')
+      return
+    }
+
+    // 判断网络是否连接
+    if (!networkStateAll.isConnected.isConnected) {
+      Alert.alert('请连接网络')
+      return
+    }
+
+    // 是否连接了wifi
+    if (networkStateAll.type !== 'wifi') {
+      Alert.alert('请连接WIFI')
+      return
+    }
+
+    // 获取所连接wifi的ip
+    NetworkInfo.getGatewayIPAddress().then(IP => {
+      // 创建任务WS
+      joinTaskGetBridge(IP)
+    })
+  }
+  // 获取桥梁
+  const joinTaskGetBridge = async (IP) => {
+    // url
+    // let url = 'http://'+IP+':8000/task_room/'+taskid
+    let url = 'http://10.1.1.71:8000/task_room/' + joinCode
+    fetch(url, {
+      method: 'GET'
+    })
+      .then(res => res.json())
+      .then(result => {
+        console.log("result", result);
+        if (result.status == 'success') {
+          // 地址
+          let path = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
+          // 处理接收的桥梁数据
+          dealReceiveBridgeData(result)
+        } else {
+          if (result.detail.msg == 'invalid room_id') {
+            Alert.alert('任务号不存在')
+            return
+          }
+        }
+      })
+      .catch(err => {
+        console.log("err", err);
+      });
+  }
+  // 处理接收的桥梁数据
+  const dealReceiveBridgeData = async (result) => {
+    // 将桥梁数据存入本地
+    // bridge 表中是否存在这个桥梁
+    let bridgeTableData = await bridge.getByBridgeid(result.task_msg.bridge.bridgeid)
+    if (!bridgeTableData) {
+      // 不存在这个桥梁，将桥梁信息存入
+      // bridge 表 存入数据库
+      bridge.save({
+        ...result.task_msg.bridge,
+        userid: userInfo.userid
+      })
+      // bridgeMember 表 存入数据库
+      result.task_msg.bridge_member.forEach(item => {
+        bridgeMember.save(item)
+      })
+      // bridge_project_bind 数据存入数据库
+      bridgeProjectBind.save({
+        projectid: projectid,
+        bridgeid: result.task_msg.bridge.bridgeid,
+        bridgereportid: result.task_msg.bridge_project_bind.bridgereportid,
+        userid: userInfo.userid
+      })
+      // bridge_report 表数据 存入数据库
+      bridgeReport.save({
+        ...result.task_msg.bridge_report,
+        userid: userInfo.userid
+      })
+      // uploadStateRecord 表 数据存入数据库
+      uploadStateRecord.save({
+        bridgeid: result.task_msg.bridge.bridgeid,
+        bridgereportid: result.task_msg.bridge_project_bind.bridgereportid,
+        userid: userInfo.userid
+      })
+      // bridge_report_member 表 数据存入数据库
+      result.task_msg.bridge_report_member.forEach(item => {
+        bridgeReportMember.save(item)
+      })
+      // 协同信息
+      let synergyData = {
+        bridgeid: result.task_msg.bridge.bridgeid,
+        bridgereportid: result.task_msg.bridge.bridgereportid,
+        userid: userInfo.userid,
+        synergyid: new Date().getTime() + '',
+        synergyPeopleNum: result.task_msg.createInfo.synergyPeopleNum,
+        taskId: joinCode,
+        creator: result.task_msg.createInfo.creator,
+        participator: [],
+        c_date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        state: '检测中',
+        other: ''
+      }
+      let participator = []
+      JSON.parse(result.task_msg.createInfo.participator).forEach(item => {
+        participator.push({
+          ...item,
+          isSelf: 'false'
+        })
+      })
+      participator.push({
+        userName: joinPersonName,
+        userid: userInfo.userid,
+        deviceId: deviceId,
+        isSelf: 'true'
+      })
+      synergyData.participator = participator
+      // 将协同信息存入数据库
+      await synergyTest.save(synergyData)
+      // 将数据存入本地
+      await AsyncStorage.setItem('synergyData', JSON.stringify({ synergyData: synergyData, bridge: result.task_msg.bridge }))
+      // 将ws存入本地
+      await AsyncStorage.setItem('synergyWS', result.ws)
+      // 加入任务WS
+      joinTaskWS(result.ws)
+    } else {
+      // 存在这个桥梁
+    }
+  }
+  // 加入任务WS
+  const joinTaskWS = (ws) => {
+    // 地址
+    let path = 'ws://10.1.1.71:8000' + ws + '?user=' + deviceId
+    // 创建连接
+    wsConnection.current = new WebSocket(path);
+    // 打开
+    wsConnection.current.onopen = () => {
+      // 任务创建成功后改变'是否在任务中'的状态
+      setIsTaskIng(true)
+    }
+    // 接收
+    wsConnection.current.onmessage = (e) => {
+      console.log("接收", e);
+    };
+    // 关闭时触发
+    wsConnection.current.onclose = (e) => {
+      console.log("关闭", e);
+    };
+    // 处理错误
+    wsConnection.current.onerror = (e) => {
+      console.log('错误', e);
+    };
+  }
+  // ----- 参与任务 end -------
+
   // 前往检测
   const goWork = () => {
     // console.log('页面跳转');
@@ -1143,11 +1282,13 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   }
 
   // 删除任务
-  const deleteTask =async () => {
+  const deleteTask = async () => {
     // 数据库更新状态
-    await synergyTest.updateState({state: '协同结束',bridgereportid: bridgeInfo.bridgereportid})
+    await synergyTest.updateState({ state: '协同结束', bridgereportid: bridgeInfo.bridgereportid })
     // 删除本地存储
     AsyncStorage.setItem('synergyData', '')
+    // 删除本地的ws
+    AsyncStorage.setItem('synergyWS', '')
     // 重置检测状态
     setIsTaskIng(false)
     // 设置任务码
