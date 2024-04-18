@@ -583,7 +583,7 @@ const Inducts = React.forwardRef(({ onSubmitOver }, ref) => {
 const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   // 从全局参数中 获取 桥幅属性、用户信息
   const {
-    state: { bridgeside, userInfo, networkStateAll,deviceId },
+    state: { bridgeside, userInfo, networkStateAll, deviceId },
   } = React.useContext(GlobalContext);
 
   // 模态框是否显示
@@ -917,12 +917,60 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   }
 
   // 创建任务fetch
-  const creatTaskFetch =async (IP) => {
+  const creatTaskFetch = async (IP) => {
     // 处理初始桥梁数据
     let data = await dealInitBridgeData()
     // url
     // let url = 'http://'+IP+':8000/task/'+taskInfo.peopleNum+'/'
     let url = 'http://10.1.1.71:8000/task/' + personNum + '/'
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(async result => {
+        if (result.status == 'success') {
+          // 协同信息
+          let synetgyData = {
+            bridgeid: bridgeInfo.bridgeid,
+            bridgereportid: bridgeInfo.bridgereportid,
+            userid: userInfo.userid,
+            synergyid: new Date().getTime() + '',
+            synergyPeopleNum: personNum,
+            taskId: result.room_id,
+            creator: JSON.stringify({
+              userName: personName,
+              userid: userInfo.userid,
+              deviceId: deviceId
+            }),
+            participator: JSON.stringify([{
+              userName: personName,
+              userid: userInfo.userid,
+              deviceId: deviceId,
+              isSelf: 'true'
+            }]),
+            c_date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+            state: '检测中',
+            other: ''
+          }
+          // 将协同信息存入数据库
+          await synergyTest.save(synetgyData)
+          // 将数据存入本地
+          await AsyncStorage.setItem('synetgyData', JSON.stringify(synetgyData))
+          // 设置任务号
+          setTaskCode(result.room_id)
+          // 任务创建成功后改变'是否在任务中'的状态
+          setIsTaskIng(true)
+        } else {
+          Alert.alert('请连接指定WIFI,' + JSON.stringify(result))
+        }
+      })
+      .catch(error => {
+        Alert.alert('请连接指定WIFI,' + JSON.stringify(error))
+      });
   }
 
   // 处理初始桥梁数据
@@ -974,20 +1022,20 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     // 创建信息
     let createInfo = {
       // 协同编号
-      synergyid: bridgeInfo.bridgereportid + parseInt((new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)).toString(36),
+      synergyid: bridgeInfo.bridgereportid + parseInt((new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999 - 1000 + 1) + 1000 - 1)).toString(36),
       // 协同人数
-      synergyPeopleNum:personNum,
+      synergyPeopleNum: personNum,
       // 创建者
-      creator:{
-          // 名字
-          userName:personName,
-          // id
-          userid:userInfo.userid,
-          // 设备id
-          deviceId:deviceId
+      creator: {
+        // 名字
+        userName: personName,
+        // id
+        userid: userInfo.userid,
+        // 设备id
+        deviceId: deviceId
       },
       // 创建时间
-      c_date:dayjs().format('YYYY-MM-DD HH:mm:ss')
+      c_date: dayjs().format('YYYY-MM-DD HH:mm:ss')
     }
     // 数据
     let data = {
