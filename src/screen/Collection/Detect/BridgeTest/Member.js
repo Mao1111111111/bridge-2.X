@@ -1,7 +1,7 @@
 /* 
   构件管理
  */
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import dayjs from 'dayjs';
 import uuid from 'react-native-uuid';
 import {tailwind, colors} from 'react-native-tailwindcss';
@@ -9,10 +9,12 @@ import {
   View,
   Text,
   FlatList,
+  SectionList,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  Pressable
 } from 'react-native';
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
@@ -26,10 +28,14 @@ import * as editLog from '../../../../database/edit_log';
 import Button from '../../../../components/Button';
 import * as partsCheckstatusData from '../../../../database/parts_checkstatus_data';
 
-const Item = ({title, color, checked, onPress}) => {
+const Item = ({title, color,coopData,item, checked, onPress}) => {
   const {
     state: {theme},
   } = React.useContext(ThemeContext);
+  useEffect(()=>{
+    console.log('itemitem',item);
+    console.log('coopData',coopData);
+  },[])
 
   return (
     <TouchableOpacity
@@ -42,13 +48,22 @@ const Item = ({title, color, checked, onPress}) => {
       <View style={[{backgroundColor: color}, tailwind.w2]} />
       <View style={[styles.itemTitle]}>
         <Text>{title}</Text>
+        {/* <FlatList
+          data={coopData}
+          showsVerticalScrollIndicator={false}
+          renderItem={({item, index}) => (
+            <View key={index}>
+              <Text>{item?.membername}</Text>
+            </View>
+          )}
+        /> */}
       </View>
     </TouchableOpacity>
   );
 };
 
 // 左侧构件列表
-const BigData = ({title, data, onChange, onGroupChange}) => {
+const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
   // title-部件名称
   //data-部件进来时，data是跨列表;跨进来时，data是部件列表
   // 全局样式
@@ -135,6 +150,57 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
     onChange && onChange(_data);
   };
 
+  // 列表项渲染
+  const renderItems = ({ item,index }) => (
+    <TouchableOpacity>
+      <Items item={item} />
+    </TouchableOpacity>
+  );
+
+
+  const Items = (items,data) => {
+    console.log('nowEdit',nowEdit?.list);
+    console.log('data',data);
+    return (
+      <View>
+        {
+          data.map((item, index) => {
+            // nowEdit?.list.map((items,indexs)=>{
+              // if(item.memberId == items.memberid){
+                return (
+                  <View key={index}>
+                    {/* <Text>{item.mambername}</Text> */}
+                    <Text>
+                      {item.userGroup}a{item.membername}
+                    </Text>
+                    {/* {secondItems(item.userGroup)} */}
+                  </View>
+                )
+              // }
+            // })
+            
+          })
+        }
+      </View>
+    )
+  }
+
+  const secondItems = (e) => {
+    console.log('ee',e);
+    return(
+      e.map((item,index)=>{
+        return(
+          <View key={index}>
+            <Text>{item}</Text>
+          </View>
+        )
+        
+      })
+    )
+  }
+
+  
+
   return (
     <View style={[tailwind.flex1, tailwind.flexRow]}>
       {/* 左侧 */}
@@ -193,15 +259,46 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
         </View>
         <ScrollView>
           <View style={[tailwind.flexRow, tailwind.flex1, tailwind.flexWrap]}>
-            {nowEdit?.list?.map((item, index) => (
-              <Item
-                key={index}
-                color={handleColor(item)}
-                title={item.membername}
-                checked={checked.has(item.id)}
-                onPress={() => handleCheck(item.id)}
+            {nowEdit?.list?.map((items, index) => (
+              <View key={index}>
+                <Item
+                color={handleColor(items)}
+                coopData={coopData}
+                item={items}
+                title={items.membername}
+                checked={checked.has(items.id)}
+                onPress={() => handleCheck(items.id)}
               />
+              {
+                coopData ? 
+                <View style={{height:100,width:'100%',padding:15,paddingTop:0}}>
+                  <View style={{height:'100%',width:'100%',overflow:'scroll',}}>
+                    <ScrollView horizontal={false}>
+                      <Pressable style={{height:'100%',width:'100%',alignItems:'center',justifyContent:'center',}}>
+                        {
+                        coopData.map((item,index)=>{
+                          if(item.memberId == items.memberid) {
+                            return (
+                              <View key={index}>
+                                {/* <Text>{item.mambername}</Text> */}
+                                {/* <Text>
+                                  {item.userGroup}a{item.membername}
+                                </Text> */}
+                                {secondItems(item.userGroup)}
+                              </View>
+                            )
+                          }
+                        })
+                      }
+                      </Pressable>
+                    </ScrollView>
+                  </View>
+                </View>
+                : <></>
+              }
+              </View>
             ))}
+            
           </View>
         </ScrollView>
       </View>
@@ -210,7 +307,7 @@ const BigData = ({title, data, onChange, onGroupChange}) => {
 };
 
 // 当部件不是上部结构时，该部件里的所有跨信息显示在一起
-const AllData = ({title, data, onChange, onGroupChange}) => {
+const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
   // title-部件名称
   //data-部件进来时，data是跨列表;跨进来时，data是部件列表
   // 全局样式
@@ -446,6 +543,8 @@ const AllData = ({title, data, onChange, onGroupChange}) => {
                     <Item
                       key={index}
                       color={handleColor(item)}
+                      coopData={coopData}
+                      item={item}
                       title={item.membername}
                       checked={checked.has(item.id)}
                       onPress={() => handleCheck(item.id)}
@@ -752,6 +851,32 @@ export default function Member({route, navigation,item}) {
     handleEditPage('Collection/Detect/BridgeTest/Member/DiseaseList')
   }
 
+
+  // =============协同检测相关===================
+  const [coopData,setCoopData] = useState() //协同任务中各用户的检测记录数据
+  useEffect(()=>{
+    // console.log('allList',allList[0]?.list);
+    // 获取当前任务中各用户的检测记录数据
+    let data = [
+      {
+        memberId:'g114ondgptv9904ondgpuxc38_b100001_luuloy3z_0',
+        membername:'1-1#',
+        userGroup:['张三','张三三','张四','张五',]
+      },
+      {
+        memberId:'g114ondgptv9904ondgpuxc38_b100001_luuloy3z_1',
+        membername:'1-2#',
+        userGroup:['张三','张三三','张四','张五','李一','李二',]
+      },
+      {
+        memberId:'g114ondgptv9904ondgpuxc38_b100001_luuloy3z_2',
+        membername:'2-1#',
+        userGroup:['张三','李一','李二',]
+      },
+    ]
+    setCoopData(data)
+  },[])
+
   return (
     <Box pid="P1501" navigation={navigation} route={route} headerItems={getHeaderItems()} labelname={data.title} projectList={project} project={project.projectname} bridge={bridge}>
       {/* 年份 + 数据影音 tab，当选中构件时，数据影音tab禁用 */}
@@ -830,6 +955,8 @@ export default function Member({route, navigation,item}) {
                       title={data.title}
                       // 组列表 ,部件 或 跨 列表
                       data={allList}
+                      // 协同检测数据
+                      coopData={coopData}
                       // 组改变时，即点击左侧列表时
                       onGroupChange={item => {
                         // 如果跨编号存在
@@ -849,6 +976,8 @@ export default function Member({route, navigation,item}) {
                       title={data.title}
                       // 组列表 ,部件 或 跨 列表
                       data={list}
+                      // 协同检测数据
+                      coopData={coopData}
                       // 组改变时，即点击左侧列表时
                       onGroupChange={item => {
                         // 如果跨编号存在
@@ -882,6 +1011,20 @@ export default function Member({route, navigation,item}) {
 }
 
 const styles = StyleSheet.create({
+  contentContainer1: {
+    // flex: 1/2,
+    backgroundColor: 'orange',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height:40,
+    width:60,
+    overflow:'scroll'
+},
+redView: {
+  // backgroundColor:'red',
+  height: 100,
+  width: 100
+},
   card: {
     ...tailwind.shadow2xl,
     ...tailwind.rounded,
