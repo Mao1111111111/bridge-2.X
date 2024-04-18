@@ -57,15 +57,45 @@ export const save = async data => {
 // 更新
 export const update = async data => {
   const sql = `
-    update upload_state_record
+    update synergy_test
+    set bridgeid = ?
+    , userid = ?
+    , synergyid = ?
+    , synergyPeopleNum = ?
+    , taskId = ?
+    , creator = ?
+    , participator = ?
+    , c_date = ?
+    , state = ?
+    , other = ?
+    where bridgereportid = ?
+    `;
+  const param = [
+    data.bridgeid,
+    data.userid,
+    data.synergyid,
+    data.synergyPeopleNum,
+    data.taskId,
+    data.creator,
+    data.participator,
+    data.c_date,
+    data.state,
+    data.other,
+    data.bridgereportid
+  ];
+  await db().executeSql(sql, param);
+};
+
+// 更新状态
+export const updateState = async data => {
+  const sql = `
+    update synergy_test
     set state = ?
-        , u_date = ?
     where bridgereportid = ?
     `;
   const param = [
     data.state,
-    dayjs().format('YYYY-MM-DD HH:mm:ss'),
-    data.bridgereportid,
+    data.bridgereportid
   ];
   await db().executeSql(sql, param);
 };

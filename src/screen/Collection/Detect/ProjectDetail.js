@@ -618,6 +618,9 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
 
   const [project, setProject] = useState()
 
+  // ws连接
+  const wsConnection = React.useRef()
+
   // 检索输入框的引用
   const searchRef = React.useRef([]);
 
@@ -630,26 +633,50 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   React.useImperativeHandle(ref, () => ({
 
     // 打开
-    open: (project, bridge, navigation, route) => {
+    open: async (project, bridge, navigation, route) => {
       setNavigation(navigation)
       setRoute(route)
-      console.log('navigationnavigation', navigation);
-      // 是否正在任务中
-      // isTaskIng 读取本地数据库
-      // setIsTaskIng(true)
+      // bridge 选择打开的桥梁信息
+      setBridgeInfo(bridge)
 
-      if (isTaskIng) {
-        // 如果处于正在任务的状态，打开弹窗获取数据
-        getTableData()
-      } else if (!isTaskIng) {
-        setList([])
+      // 读取本地的协同检测数据
+      let synergyData_local = JSON.parse(await AsyncStorage.getItem('synergyData'))
+      // 如果存在本地协同检测的数据
+      if (synergyData_local) {
+        // 设置检测中
+        setIsTaskIng(true)
+        // 设置任务码
+        setTaskCode(synergyData_local.synergyData.taskId)
+        // 设置协同人数
+        setPersonNum(synergyData_local.synergyData.synergyPeopleNum)
+        // 设置创建者名称
+        setPersonName(JSON.parse(synergyData_local.synergyData.creator).userName)
+        // 设置参与者名称
+        JSON.parse(synergyData_local.synergyData.participator).forEach(item => {
+          if (item.isSelf) {
+            setJoinPersonName(item.userName)
+          }
+        })
+        // 设置参与者任务码
+        setJoinCode(synergyData_local.synergyData.taskId)
+      } else {
+        // 不存在协同检测数据
+        // 设置检测中
+        setIsTaskIng(false)
+        // 设置任务码
+        setTaskCode('')
+        // 设置协同人数
+        setPersonNum('1')
+        // 设置创建者名称
+        setPersonName('')
+        // 设置参与者名称
+        setJoinPersonName('')
+        // 设置参与者任务码
+        setJoinCode('')
       }
 
-
       // project 是当前项目信息
-      // bridge 选择打开的桥梁信息
-      console.log('bridge', bridge);
-      setBridgeInfo(bridge)
+
       if (bridge) {
         // 选择桥梁进入时，默认显示创建任务
         setFuncShow(1)
@@ -657,7 +684,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         // 未选择桥梁进入时，默认显示参与任务
         setFuncShow(2)
       }
-      console.log("project", project);
       setProject(project)
       // 设置projectid
       setProjectId(project.projectid);
@@ -934,7 +960,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       .then(async result => {
         if (result.status == 'success') {
           // 协同信息
-          let synetgyData = {
+          let synergyData = {
             bridgeid: bridgeInfo.bridgeid,
             bridgereportid: bridgeInfo.bridgereportid,
             userid: userInfo.userid,
@@ -956,14 +982,23 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
             state: '检测中',
             other: ''
           }
-          // 将协同信息存入数据库
-          await synergyTest.save(synetgyData)
+          // 检查数据库中是否存在这条数据
+          let synergyTestData = await synergyTest.getByReportid(bridgeInfo.bridgereportid)
+          if (synergyTestData) {
+            // 修改数据
+            await synergyTest.update(synergyData)
+          } else {
+            // 将协同信息存入数据库
+            await synergyTest.save(synergyData)
+          }
           // 将数据存入本地
-          await AsyncStorage.setItem('synetgyData', JSON.stringify(synetgyData))
+          await AsyncStorage.setItem('synergyData', JSON.stringify({ synergyData: synergyData, bridge: bridgeInfo }))
           // 设置任务号
           setTaskCode(result.room_id)
           // 任务创建成功后改变'是否在任务中'的状态
           setIsTaskIng(true)
+          // 加入任务
+          CTAfterAddTask(IP, result.room_id)
         } else {
           Alert.alert('请连接指定WIFI,' + JSON.stringify(result))
         }
@@ -1049,8 +1084,45 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     return data
   }
 
+  // 创建任务后加入任务
+  const CTAfterAddTask = (IP, taskid) => {
+    // url
+    // let url = 'http://'+IP+':8000/task_room/'+roomid
+    let url = 'http://10.1.1.71:8000/task_room/' + taskid
+    fetch(url, {
+      method: 'GET'
+    })
+      .then(res => res.json())
+      .then(result => {
+        console.log("result", result);
+        if (result.status == 'success') {
+          // 地址
+          let path = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
+          console.log("path", path);
+          // 创建连接
+          wsConnection.current = new WebSocket(path);
+          // 打开
+          wsConnection.current.onopen = () => { }
+          // 接收
+          wsConnection.current.onmessage = (e) => {
+            console.log("接收", e);
+          };
+          // 关闭时触发
+          wsConnection.current.onclose = (e) => {
+            console.log("关闭", e);
+          };
+          // 处理错误
+          wsConnection.current.onerror = (e) => {
+            console.log('错误', e);
+          };
+        } else {
 
-
+        }
+      })
+      .catch(err => {
+        console.log("err", err);
+      });
+  }
   // ----- 创建任务 end -------
 
   // 前往检测
@@ -1070,18 +1142,24 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     }
   }
 
-  const deleteTask = () => {
-    console.log('删除任务');
-
-    // 改变isTaskIng的状态
+  // 删除任务
+  const deleteTask =async () => {
+    // 数据库更新状态
+    await synergyTest.updateState({state: '协同结束',bridgereportid: bridgeInfo.bridgereportid})
+    // 删除本地存储
+    AsyncStorage.setItem('synergyData', '')
+    // 重置检测状态
     setIsTaskIng(false)
-
-    // 清除获取数据的定时器
-
-    // 清空表格数据
-    setList([])
-    // 重置页面状态
-
+    // 设置任务码
+    setTaskCode('')
+    // 设置协同人数
+    setPersonNum('1')
+    // 设置创建者名称
+    setPersonName('')
+    // 设置参与者名称
+    setJoinPersonName('')
+    // 设置参与者任务码
+    setJoinCode('')
   }
 
   // 获取任务协同者表格数据
@@ -1216,7 +1294,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                       style={[tailwind.mR6, { height: '100%', width: '50%' }]}
                       inputStyle={[{ color: 'black' }]}
                     />
-                    <Button style={{ backgroundColor: '#2b427d' }} onPress={() => changeTaskCode()}>生成任务码</Button>
+                    {/* <Button style={{ backgroundColor: '#2b427d' }} onPress={() => changeTaskCode()}>生成任务码</Button> */}
                     <Button style={{ backgroundColor: '#2b427d' }} onPress={() => copyCode(taskCode)}>复制任务码</Button>
                   </View>
                   <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
@@ -1229,67 +1307,73 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                       style={[tailwind.mR6, { height: '100%', width: '50%' }]}
                       inputStyle={[{ color: 'black' }]}
                     />
-                    <Button style={{ backgroundColor: '#2b427d' }} onPress={() => personNumChange(1)}>+</Button>
-                    <Button style={{ backgroundColor: '#2b427d' }} onPress={() => personNumChange(-1)}>-</Button>
+                    {
+                      !isTaskIng &&
+                      <>
+                        <Button style={{ backgroundColor: '#2b427d' }} onPress={() => personNumChange(1)}>+</Button>
+                        <Button style={{ backgroundColor: '#2b427d' }} onPress={() => personNumChange(-1)}>-</Button>
+                      </>
+                    }
                   </View>
                   <View style={{ width: '100%', paddingLeft: 70 }}>
                     <Text>*除您之外的其他协作者人数（1~10）</Text>
                   </View>
                   <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
                     <TextInput
+                      disabled={isTaskIng}
                       name="personName"
                       label="您的名称:"
+                      value={personName}
                       onChange={(e) => valueChange(e)}
                       style={[tailwind.mR6, { height: '100%', width: '50%' }]}
                     />
                   </View>
                 </View>
                 {
-                  list.length ?
-                    <View style={{ width: '45%', height: '100%', alignItems: 'center', marginLeft: 20 }}>
-                      {/* 参与者信息表格 */}
-                      <View style={{ width: '100%', height: '70%', padding: 10 }}>
-                        <Table.Box
-                          loading={loading}
-                          numberOfPages={pageTotal}
-                          total={total}
-                          pageNo={page?.pageNo || 0}
-                          onPageChange={e =>
-                            setPage({
-                              pageSize: 10,
-                              pageNo: e,
-                            })
-                          }
-                          header={
-                            <Table.Header>
-                              <Table.Title title="序号" flex={1} />
-                              <Table.Title title="账号" flex={4} />
-                              <Table.Title title="人员" flex={3} />
-                              <Table.Title title="加入时间" flex={2} />
-                              <Table.Title title="状态" flex={2} />
-                            </Table.Header>
-                          }>
-                          <FlatList
-                            data={list}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item, index }) => (
-                              <Table.Row key={index}>
-                                <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                                <Table.Cell flex={4}>{item.user}</Table.Cell>
-                                <Table.Cell flex={3}>{item.userName}</Table.Cell>
-                                <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
-                                <Table.Cell flex={2}>{item.status}</Table.Cell>
-                              </Table.Row>
-                            )}
-                          />
-                        </Table.Box>
-                      </View>
-                      <View style={{ width: '100%', height: '30%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                        <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => deleteTask()}>删除任务</Button>
-                        <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => goWork()}>开始检测</Button>
-                      </View>
+                  isTaskIng &&
+                  <View style={{ width: '45%', height: '100%', alignItems: 'center', marginLeft: 20 }}>
+                    {/* 参与者信息表格 */}
+                    <View style={{ width: '100%', height: '70%', padding: 10 }}>
+                      <Table.Box
+                        loading={loading}
+                        numberOfPages={pageTotal}
+                        total={total}
+                        pageNo={page?.pageNo || 0}
+                        onPageChange={e =>
+                          setPage({
+                            pageSize: 10,
+                            pageNo: e,
+                          })
+                        }
+                        header={
+                          <Table.Header>
+                            <Table.Title title="序号" flex={1} />
+                            <Table.Title title="账号" flex={4} />
+                            <Table.Title title="人员" flex={3} />
+                            <Table.Title title="加入时间" flex={2} />
+                            <Table.Title title="状态" flex={2} />
+                          </Table.Header>
+                        }>
+                        <FlatList
+                          data={list}
+                          showsVerticalScrollIndicator={false}
+                          renderItem={({ item, index }) => (
+                            <Table.Row key={index}>
+                              <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                              <Table.Cell flex={4}>{item.user}</Table.Cell>
+                              <Table.Cell flex={3}>{item.userName}</Table.Cell>
+                              <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
+                              <Table.Cell flex={2}>{item.status}</Table.Cell>
+                            </Table.Row>
+                          )}
+                        />
+                      </Table.Box>
                     </View>
-                    : <></>
+                    <View style={{ width: '100%', height: '30%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                      <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => deleteTask()}>删除任务</Button>
+                      <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => goWork()}>开始检测</Button>
+                    </View>
+                  </View>
                 }
                 {/* 创建任务成功后的左侧表单遮罩层 */}
                 {
@@ -1315,69 +1399,71 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                 <View style={{ width: '50%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20 }}>
                   <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
                     <TextInput
+                      disabled={isTaskIng}
                       name="joinCode"
                       label="任务码:    "
                       value={joinCode}
                       onChange={(e) => joinValueChange(e)}
                       style={[tailwind.mR6, { height: '100%', width: '50%' }]}
-                      inputStyle={[{ color: 'black' }]}
+                    // inputStyle={[{ color: 'black' }]}
                     />
                   </View>
                   <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
                     <TextInput
+                      disabled={isTaskIng}
                       name="joinPersonName"
                       label="您的名称:"
+                      value={joinPersonName}
                       onChange={(e) => joinValueChange(e)}
                       style={[tailwind.mR6, { height: '100%', width: '50%' }]}
                     />
                   </View>
                 </View>
                 {
-                  list.length ?
-                    <View style={{ width: '45%', height: '100%', alignItems: 'center', marginLeft: 20 }}>
-                      {/* 参与者信息表格 */}
-                      <View style={{ width: '100%', height: '70%', padding: 10 }}>
-                        <Table.Box
-                          loading={loading}
-                          numberOfPages={pageTotal}
-                          total={total}
-                          pageNo={page?.pageNo || 0}
-                          onPageChange={e =>
-                            setPage({
-                              pageSize: 10,
-                              pageNo: e,
-                            })
-                          }
-                          header={
-                            <Table.Header>
-                              <Table.Title title="序号" flex={1} />
-                              <Table.Title title="账号" flex={4} />
-                              <Table.Title title="人员" flex={3} />
-                              <Table.Title title="加入时间" flex={2} />
-                              <Table.Title title="状态" flex={2} />
-                            </Table.Header>
-                          }>
-                          <FlatList
-                            data={list}
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item, index }) => (
-                              <Table.Row key={index}>
-                                <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                                <Table.Cell flex={4}>{item.user}</Table.Cell>
-                                <Table.Cell flex={3}>{item.userName}</Table.Cell>
-                                <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
-                                <Table.Cell flex={2}>{item.status}</Table.Cell>
-                              </Table.Row>
-                            )}
-                          />
-                        </Table.Box>
-                      </View>
-                      <View style={{ width: '100%', height: '30%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                        <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => deleteTask()}>删除任务</Button>
-                        <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => goWork()}>开始检测</Button>
-                      </View>
+                  isTaskIng &&
+                  <View style={{ width: '45%', height: '100%', alignItems: 'center', marginLeft: 20 }}>
+                    {/* 参与者信息表格 */}
+                    <View style={{ width: '100%', height: '70%', padding: 10 }}>
+                      <Table.Box
+                        loading={loading}
+                        numberOfPages={pageTotal}
+                        total={total}
+                        pageNo={page?.pageNo || 0}
+                        onPageChange={e =>
+                          setPage({
+                            pageSize: 10,
+                            pageNo: e,
+                          })
+                        }
+                        header={
+                          <Table.Header>
+                            <Table.Title title="序号" flex={1} />
+                            <Table.Title title="账号" flex={4} />
+                            <Table.Title title="人员" flex={3} />
+                            <Table.Title title="加入时间" flex={2} />
+                            <Table.Title title="状态" flex={2} />
+                          </Table.Header>
+                        }>
+                        <FlatList
+                          data={list}
+                          showsVerticalScrollIndicator={false}
+                          renderItem={({ item, index }) => (
+                            <Table.Row key={index}>
+                              <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                              <Table.Cell flex={4}>{item.user}</Table.Cell>
+                              <Table.Cell flex={3}>{item.userName}</Table.Cell>
+                              <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
+                              <Table.Cell flex={2}>{item.status}</Table.Cell>
+                            </Table.Row>
+                          )}
+                        />
+                      </Table.Box>
                     </View>
-                    : <></>
+                    <View style={{ width: '100%', height: '30%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                      <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => deleteTask()}>删除任务</Button>
+                      <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => goWork()}>开始检测</Button>
+                    </View>
+                  </View>
                 }
                 {/* 创建任务成功后的左侧表单遮罩层 */}
                 {
@@ -1416,7 +1502,9 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
           取消
         </Button>
         {/* 确认导入按钮 */}
-        <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => confirm()}>确认</Button>
+        {
+          ((funcShow !== 1) || (funcShow == 1 && !isTaskIng)) && <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => confirm()}>确认</Button>
+        }
       </View>
     </Modal>
   );
@@ -1699,24 +1787,19 @@ export default function ProjectDetail({ route, navigation }) {
     console.log('点击了goAhead');
   }
 
-  const openCoop = () => {
-    console.log('打开弹窗');
-    coopRef.current.open(project, nowChecked, navigation, route)
-
-    // 打开弹窗后重置表格选中状态、图标状态
-    setNowChecked(null);
-    // setImgType('cooperateDis')
-    // if(nowChecked){
-    //   console.log('选择的桥梁数据',nowChecked);
-    //   coopRef.current.open(project,nowChecked)
-
-    //   // 打开弹窗后重置表格选中状态、图标状态
-    //   setNowChecked(null);
-    //   setImgType('cooperateDis')
-    // } else {
-    //   console.log('未选择桥梁');
-    // }
-
+  const openCoop = async () => {
+    // 读取本地的协同检测数据
+    let synergyData_local = JSON.parse(await AsyncStorage.getItem('synergyData'))
+    // 选中了桥梁 && 存在协同检测 && 选择的不是正在检测的
+    if (nowChecked && synergyData_local && (nowChecked.bridgereportid !== synergyData_local.synergyData.bridgereportid)) {
+      // 当前桥梁不是协同检测桥梁
+      Alert.alert('提示', '当前协同检测桥梁为\n桥梁名称：' + synergyData_local.bridge.bridgename + '  桩号：' + synergyData_local.bridge.bridgestation + '\n请勿重复创建')
+      return
+    } else {
+      coopRef.current.open(project, nowChecked, navigation, route)
+      // 打开弹窗后重置表格选中状态、图标状态
+      setNowChecked(null);
+    }
   }
 
   return (
@@ -1871,7 +1954,7 @@ export default function ProjectDetail({ route, navigation }) {
                     {(item.date || '').split(' ')[0] || '未检测'}
                   </Table.Cell>
                   <Table.Cell flex={2}>
-                    {item.isSynergyTest ? '是' : '否'}
+                    {item.isSynergyTest ? item.synergyTestData.state : '非协同'}
                   </Table.Cell>
                   <Table.Cell>
                     {item.datasources === 0 ? '本地' : '云端'}
