@@ -150,40 +150,6 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
     onChange && onChange(_data);
   };
 
-  // 列表项渲染
-  const renderItems = ({ item,index }) => (
-    <TouchableOpacity>
-      <Items item={item} />
-    </TouchableOpacity>
-  );
-
-
-  const Items = (items,data) => {
-    console.log('nowEdit',nowEdit?.list);
-    console.log('data',data);
-    return (
-      <View>
-        {
-          data.map((item, index) => {
-            // nowEdit?.list.map((items,indexs)=>{
-              // if(item.memberId == items.memberid){
-                return (
-                  <View key={index}>
-                    {/* <Text>{item.mambername}</Text> */}
-                    <Text>
-                      {item.userGroup}a{item.membername}
-                    </Text>
-                    {/* {secondItems(item.userGroup)} */}
-                  </View>
-                )
-              // }
-            // })
-            
-          })
-        }
-      </View>
-    )
-  }
 
   const secondItems = (e) => {
     console.log('ee',e);
@@ -280,10 +246,6 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
                           if(item.memberId == items.memberid) {
                             return (
                               <View key={index}>
-                                {/* <Text>{item.mambername}</Text> */}
-                                {/* <Text>
-                                  {item.userGroup}a{item.membername}
-                                </Text> */}
                                 {secondItems(item.userGroup)}
                               </View>
                             )
@@ -463,6 +425,20 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
     onChange && onChange(_data);
   };
 
+  const secondItems = (e) => {
+    console.log('ee',e);
+    return(
+      e.map((item,index)=>{
+        return(
+          <View key={index}>
+            <Text>{item}</Text>
+          </View>
+        )
+        
+      })
+    )
+  }
+
   return (
     <View style={[tailwind.flex1, tailwind.flexRow]}>
       {/* 左侧 */}
@@ -539,16 +515,41 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
                 </View>
                 
                 <View style={[tailwind.flexRow, tailwind.flex1, tailwind.flexWrap]}>
-                  {item.list.map((item, index) => (
+                  {item.list.map((items, index) => (
+                    <View key={index}>
                     <Item
-                      key={index}
-                      color={handleColor(item)}
-                      coopData={coopData}
-                      item={item}
-                      title={item.membername}
-                      checked={checked.has(item.id)}
-                      onPress={() => handleCheck(item.id)}
-                    />
+                    color={handleColor(items)}
+                    coopData={coopData}
+                    item={items}
+                    title={items.membername}
+                    checked={checked.has(items.id)}
+                    onPress={() => handleCheck(items.id)}
+                  />
+                  {
+                    coopData ? 
+                    <View style={{height:100,width:'100%',padding:15,paddingTop:0,}}>
+                      <View style={{height:'100%',width:'100%',overflow:'scroll',}}>
+                        <ScrollView horizontal={false}>
+                          <Pressable style={{height:'100%',width:'100%',alignItems:'center',justifyContent:'center',}}>
+                            {
+                            coopData.map((item,index)=>{
+                              if(item.memberId == items.memberid) {
+                                return (
+                                  <View key={index}>
+                                    {secondItems(item.userGroup)}
+                                  </View>
+                                )
+                              }
+                            })
+                          }
+                          </Pressable>
+                        </ScrollView>
+                      </View>
+                    </View>
+                    : <></>
+                  }
+                  </View>
+                    
                   ))}
                 </View>
               </View>
@@ -610,7 +611,6 @@ export default function Member({route, navigation,item}) {
         })
         .then(res => setEditLogList(res));
     }, [project, bridge]),
-    // console.log('11121212')
   );
 
   React.useEffect(() => {
@@ -780,6 +780,12 @@ export default function Member({route, navigation,item}) {
       list: list,
       dataGroupId: checkedList.size > 1 ? uuid.v4() : '',
       routeParams: data,
+      // 是否是协同检测
+      isCoop:true,
+      // 当前用户的信息
+      coopData:{
+        user:'张三134'
+      }
     });
   };
 

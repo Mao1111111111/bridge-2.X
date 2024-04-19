@@ -79,6 +79,7 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
     setScreenWidth(windowWidth)
   }, [itemData]);
 
+  
   React.useEffect(() => {
     const {memberList} = route.params;
     memberList.forEach(item =>

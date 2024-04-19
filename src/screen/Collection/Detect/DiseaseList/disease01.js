@@ -25,6 +25,7 @@ import ScaleInfo from '../BridgeTest/ScaleInfo';
 // 引入
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { log } from 'react-native-reanimated';
+import dayjs from 'dayjs';
 
 
 export function DiseaseA({route, navigation}) {
@@ -556,6 +557,8 @@ export function DiseaseA({route, navigation}) {
         };
       }, [baseData, saveData, version, route.params, dispatch]);
     
+
+      
       useEffect(() => {
         let defaultPier = route.params.memberList[0].membername
         // console.log('横杠',defaultPier.indexOf('-'));
@@ -599,6 +602,8 @@ export function DiseaseA({route, navigation}) {
           }
         }
       },[])
+
+      const {isCoop,coopData} = route.params;
 
       const handleScaleOpen = () => scaleInfoRef.current.open();
       const handleFormChenge = ({name,value}) => {
@@ -1165,6 +1170,16 @@ export function DiseaseA({route, navigation}) {
                 setSlantM(slantM)
               }
             }
+          }
+
+          if(isCoop){
+            console.log('当前为协同检测状态录入',itemData?.diseaseName);
+            diseaseData['isCoop'] = isCoop
+            if(itemData?.diseaseName){
+              coopData['diseaseName'] = itemData?.diseaseName
+              coopData['checkTime'] = dayjs().valueOf()
+            }
+            diseaseData['coopData'] = coopData
           }
           
           setDiseaseData(_data);
