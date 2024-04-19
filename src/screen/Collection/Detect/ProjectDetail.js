@@ -9,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { tailwind } from 'react-native-tailwindcss';
 import { Context as GlobalContext } from '../../../providers/GlobalProvider';
 import { Context as ThemeContext } from '../../../providers/ThemeProvider';
+import { Context as synergyContext } from '../Detect/SynergyProvider'
 import BridgeForm from '../components/BridgeEdit/Index';
 import { TextInput } from '../../../components/Input';
 import Button from '../../../components/Button';
@@ -585,6 +586,10 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   const {
     state: { bridgeside, userInfo, networkStateAll, deviceId },
   } = React.useContext(GlobalContext);
+  const {
+    state: { ally_status, synergyTestData, curSynergyInfo, wsConnection },
+    dispatch
+  } = React.useContext(synergyContext);
 
   // 模态框是否显示
   const [visible, setVisible] = React.useState(false);
@@ -619,7 +624,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   const [project, setProject] = useState()
 
   // ws连接
-  const wsConnection = React.useRef()
+  // const wsConnection = React.useRef()
 
   // 检索输入框的引用
   const searchRef = React.useRef([]);
@@ -636,11 +641,24 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     open: async (project, bridge, navigation, route) => {
       setNavigation(navigation)
       setRoute(route)
-      // bridge 选择打开的桥梁信息
-      setBridgeInfo(bridge)
 
+      // 设置全局的deviceId
+      dispatch({ type: 'synergydeviceId', payload: deviceId })
+
+      // 选择桥梁进入时，默认显示创建任务
+      if (bridge) {
+        setFuncShow(1)
+      } else if (!bridge) {
+        // 未选择桥梁进入时，默认显示参与任务
+        setFuncShow(2)
+      }
+      // 设置桥梁信息，没有选中桥梁信息时，bridgeInfo 为 null
+      setBridgeInfo(bridge)
+      
       // 读取本地的协同检测数据
       let synergyData_local = JSON.parse(await AsyncStorage.getItem('synergyData'))
+      // 设置全局数据 -- 当前协同检测信息
+      dispatch({ type: 'curSynergyInfo', payload: synergyData_local })
       // 如果存在本地协同检测的数据
       if (synergyData_local) {
         // 设置检测中
@@ -650,11 +668,11 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         // 设置协同人数
         setPersonNum(synergyData_local.synergyData.synergyPeopleNum)
         // 设置创建者名称
-        setPersonName(JSON.parse(synergyData_local.synergyData.creator).userName)
+        setPersonName(JSON.parse(synergyData_local.synergyData.creator).realname)
         // 设置参与者名称
         JSON.parse(synergyData_local.synergyData.participator).forEach(item => {
           if (item.isSelf) {
-            setJoinPersonName(item.userName)
+            setJoinPersonName(item.realname)
           }
         })
         // 设置参与者任务码
@@ -675,15 +693,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         setJoinCode('')
       }
 
-      // project 是当前项目信息
-
-      if (bridge) {
-        // 选择桥梁进入时，默认显示创建任务
-        setFuncShow(1)
-      } else if (!bridge) {
-        // 未选择桥梁进入时，默认显示参与任务
-        setFuncShow(2)
-      }
       setProject(project)
       // 设置projectid
       setProjectId(project.projectid);
@@ -731,6 +740,10 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       })
       .finally(() => setLoading(false));
   }, [keywords, page, projectid]);
+
+  useEffect(()=>{
+    setList(ally_status)
+  },[ally_status])
 
   // 关闭时
   const close = () => {
@@ -940,12 +953,14 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
             synergyPeopleNum: personNum,
             taskId: result.room_id,
             creator: JSON.stringify({
-              userName: personName,
+              username: userInfo.username,
+              realname: personName,
               userid: userInfo.userid,
               deviceId: deviceId
             }),
             participator: JSON.stringify([{
-              userName: personName,
+              username: userInfo.username,
+              realname: personName,
               userid: userInfo.userid,
               deviceId: deviceId,
               isSelf: 'true'
@@ -1032,8 +1047,10 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       synergyPeopleNum: personNum,
       // 创建者
       creator: {
-        // 名字
-        userName: personName,
+        // 账号
+        username: userInfo.username,
+        // 真实姓名
+        realname: personName,
         // id
         userid: userInfo.userid,
         // 设备id
@@ -1129,7 +1146,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
 
     // 获取所连接wifi的ip
     NetworkInfo.getGatewayIPAddress().then(IP => {
-      // 创建任务WS
+      // 创建任务获取桥梁数据
       joinTaskGetBridge(IP)
     })
   }
@@ -1145,8 +1162,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       .then(result => {
         console.log("result", result);
         if (result.status == 'success') {
-          // 地址
-          let path = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
           // 处理接收的桥梁数据
           dealReceiveBridgeData(result)
         } else {
@@ -1206,26 +1221,23 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         synergyid: new Date().getTime() + '',
         synergyPeopleNum: result.task_msg.createInfo.synergyPeopleNum,
         taskId: joinCode,
-        creator: result.task_msg.createInfo.creator,
-        participator: [],
+        creator: JSON.stringify(result.task_msg.createInfo.creator),
+        participator: JSON.stringify([
+          {
+            ...result.task_msg.createInfo.creator,
+            isSelf: 'false'
+          },
+          {
+            username: userInfo.username,
+            realname: joinPersonName,
+            userid: userInfo.userid,
+            deviceId: deviceId,
+            isSelf: 'true'
+          }]),
         c_date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         state: '检测中',
         other: ''
       }
-      let participator = []
-      JSON.parse(result.task_msg.createInfo.participator).forEach(item => {
-        participator.push({
-          ...item,
-          isSelf: 'false'
-        })
-      })
-      participator.push({
-        userName: joinPersonName,
-        userid: userInfo.userid,
-        deviceId: deviceId,
-        isSelf: 'true'
-      })
-      synergyData.participator = participator
       // 将协同信息存入数据库
       await synergyTest.save(synergyData)
       // 将数据存入本地
@@ -1235,34 +1247,26 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       // 加入任务WS
       joinTaskWS(result.ws)
     } else {
-      // 存在这个桥梁
+      // Alert.alert('桥梁已存在')
+      // 加入任务WS
+      joinTaskWS(result.ws)
     }
   }
   // 加入任务WS
   const joinTaskWS = (ws) => {
-    // 地址
-    let path = 'ws://10.1.1.71:8000' + ws + '?user=' + deviceId
-    // 创建连接
-    wsConnection.current = new WebSocket(path);
-    // 打开
-    wsConnection.current.onopen = () => {
-      // 任务创建成功后改变'是否在任务中'的状态
-      setIsTaskIng(true)
-    }
-    // 接收
-    wsConnection.current.onmessage = (e) => {
-      console.log("接收", e);
-    };
-    // 关闭时触发
-    wsConnection.current.onclose = (e) => {
-      console.log("关闭", e);
-    };
-    // 处理错误
-    wsConnection.current.onerror = (e) => {
-      console.log('错误', e);
-    };
+    // 设置全局ws
+    dispatch({ type: 'ws', payload: ws })
+    // 设置任务状态打开
+    dispatch({ type: 'wsConnectionState', payload: true })
+    // 任务创建成功后改变'是否在任务中'的状态
+    setIsTaskIng(true)
   }
   // ----- 参与任务 end -------
+
+  // 发送测试
+  const sendTest = () => {
+    wsConnection.current.send(JSON.stringify({ 'aa': 1 }));  // send a message
+  }
 
   // 前往检测
   const goWork = () => {
@@ -1270,10 +1274,12 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     try {
       // 关闭弹窗页面
       close()
+      let bridge = curSynergyInfo.bridge
+      bridge['status'] = 'isTasking'
       // 跳转
       navigation.navigate('Collection/Detect/BridgeTest', {
         project: project,
-        bridge: bridgeInfo,
+        bridge: bridge,
         list: route.params.list
       })
     } catch (error) {
@@ -1284,7 +1290,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   // 删除任务
   const deleteTask = async () => {
     // 数据库更新状态
-    await synergyTest.updateState({ state: '协同结束', bridgereportid: bridgeInfo.bridgereportid })
+    await synergyTest.updateState({ state: '协同结束', bridgereportid: curSynergyInfo.synergyData.bridgereportid })
     // 删除本地存储
     AsyncStorage.setItem('synergyData', '')
     // 删除本地的ws
@@ -1310,72 +1316,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     console.log('获取数据');
     setList([])
     // =====模拟表格数据====
-    let list = [
-      {
-        id: '1',
-        user: '张三1',
-        userName: 'asfx',
-        joinTime: '10:21',
-        status: '在线'
-      },
-      {
-        id: '2',
-        user: '张三2',
-        userName: 'asdfbdffx',
-        joinTime: '10:22',
-        status: '在线'
-      },
-      {
-        id: '3',
-        user: '张三3',
-        userName: 'awrhwsfx',
-        joinTime: '10:23',
-        status: '离线'
-      },
-      {
-        id: '4',
-        user: '张三4',
-        userName: 'asfxbsbx',
-        joinTime: '10:24',
-        status: '在线'
-      },
-      {
-        id: '5',
-        user: '张三5',
-        userName: 'asfasx',
-        joinTime: '10:25',
-        status: '在线'
-      },
-      {
-        id: '6',
-        user: '张三2',
-        userName: 'asdfbdffx',
-        joinTime: '10:22',
-        status: '在线'
-      },
-      {
-        id: '7',
-        user: '张三3',
-        userName: 'awrhwsfx',
-        joinTime: '10:23',
-        status: '离线'
-      },
-      {
-        id: '8',
-        user: '张三4',
-        userName: 'asfxbsbx',
-        joinTime: '10:24',
-        status: '在线'
-      },
-      {
-        id: '9',
-        user: '张三5',
-        userName: 'asfasx',
-        joinTime: '10:25',
-        status: '在线'
-      },
-    ]
-    setList(list)
     // },1000*2)
   }
 
@@ -1463,7 +1403,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                     <TextInput
                       disabled={isTaskIng}
                       name="personName"
-                      label="您的名称:"
+                      label="创建者:    "
                       value={personName}
                       onChange={(e) => valueChange(e)}
                       style={[tailwind.mR6, { height: '100%', width: '50%' }]}
@@ -1518,14 +1458,13 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                 }
                 {/* 创建任务成功后的左侧表单遮罩层 */}
                 {
-                  list.length ?
+                  isTaskIng &&
                     <View style={{
                       width: '54%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20, backgroundColor: '#fff',
                       position: 'absolute', opacity: 0.3, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 40
                     }}>
                       <Text>不允许创建多个任务</Text>
                     </View>
-                    : <></>
                 }
               </View>
               : funcShow == 1 && !bridgeInfo ?
@@ -1591,10 +1530,10 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                           renderItem={({ item, index }) => (
                             <Table.Row key={index}>
                               <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                              <Table.Cell flex={4}>{item.user}</Table.Cell>
-                              <Table.Cell flex={3}>{item.userName}</Table.Cell>
+                              <Table.Cell flex={4}>{item.username}</Table.Cell>
+                              <Table.Cell flex={3}>{item.realname}</Table.Cell>
                               <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
-                              <Table.Cell flex={2}>{item.status}</Table.Cell>
+                              <Table.Cell flex={2}>{item.state}</Table.Cell>
                             </Table.Row>
                           )}
                         />
@@ -1608,14 +1547,13 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                 }
                 {/* 创建任务成功后的左侧表单遮罩层 */}
                 {
-                  list.length ?
+                  isTaskIng &&
                     <View style={{
                       width: '54%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20, backgroundColor: '#fff',
                       position: 'absolute', opacity: 0.3, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 40
                     }}>
                       {/* <Text>不允许创建多个任务</Text> */}
                     </View>
-                    : <></>
                 }
               </View>
               : <></>
@@ -1627,6 +1565,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                   <Text>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
                   <Text>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
                   <Text>3.协同检测盒子WiFi密码：jianlide</Text>
+                  <Button title='发送' onPress={sendTest}></Button>
                 </View>
               </View>
               : <></>
