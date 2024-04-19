@@ -1,7 +1,7 @@
 /* 
     协同检测记录表
  */
-import {db, getResult} from '../utils/sqlite';
+import { db, getResult } from '../utils/sqlite';
 import dayjs from 'dayjs';
 
 export const ddl = `
@@ -14,51 +14,96 @@ CREATE TABLE IF NOT EXISTS "synergy_test" (
     synergyPeopleNum INTEGER NOT NULL, -- 协同人数
     taskId TEXT NOT NULL, -- 任务id
     creator TEXT NOT NULL, -- 创建者信息
+    participator TEXT NOT NULL, -- 参与者信息
     c_date TEXT NOT NULL, -- 创建时间
-    state TEXT NOT NULL, -- 协同状态
+    state TEXT NOT NULL, -- 协同状态 '非协同'、'未开始'、'检测中'、'已完成'
     other TEXT NOT NULL -- 其他
 );
 `;
 
 // 保存
 export const save = async data => {
-    const sql = `
-    insert into upload_state_record (
+  const sql = `
+    insert into synergy_test (
         bridgeid
         , bridgereportid
         , userid
-        , u_date
+        , synergyid
+        , synergyPeopleNum
+        , taskId
+        , creator
+        , participator
+        , c_date
         , state
-    ) values (?, ?, ?, ?, 0)
+        , other
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const param = [
-      data.bridgeid,
-      data.bridgereportid,
-      data.userid,
-      dayjs().format('YYYY-MM-DD HH:mm:ss'),
-    ];
-    await db().executeSql(sql, param);
-  };
+  const param = [
+    data.bridgeid,
+    data.bridgereportid,
+    data.userid,
+    data.synergyid,
+    data.synergyPeopleNum,
+    data.taskId,
+    data.creator,
+    data.participator,
+    data.c_date,
+    data.state,
+    data.other,
+  ];
+  await db().executeSql(sql, param);
+};
 
 // 更新
 export const update = async data => {
-    const sql = `
-    update upload_state_record
-    set state = ?
-        , u_date = ?
+  const sql = `
+    update synergy_test
+    set bridgeid = ?
+    , userid = ?
+    , synergyid = ?
+    , synergyPeopleNum = ?
+    , taskId = ?
+    , creator = ?
+    , participator = ?
+    , c_date = ?
+    , state = ?
+    , other = ?
     where bridgereportid = ?
     `;
-    const param = [
-      data.state,
-      dayjs().format('YYYY-MM-DD HH:mm:ss'),
-      data.bridgereportid,
-    ];
-    await db().executeSql(sql, param);
-  };
+  const param = [
+    data.bridgeid,
+    data.userid,
+    data.synergyid,
+    data.synergyPeopleNum,
+    data.taskId,
+    data.creator,
+    data.participator,
+    data.c_date,
+    data.state,
+    data.other,
+    data.bridgereportid
+  ];
+  await db().executeSql(sql, param);
+};
 
-//根据检测id查询
-export const getById = async bridgereportid => {
-  const sql = 'select * from upload_state_record where bridgereportid = ?';
+// 更新状态
+export const updateState = async data => {
+  const sql = `
+    update synergy_test
+    set state = ?
+    where bridgereportid = ?
+    `;
+  const param = [
+    data.state,
+    data.bridgereportid
+  ];
+  await db().executeSql(sql, param);
+};
+
+
+// 根据检测编号查询
+export const getByReportid = async bridgereportid => {
+  const sql = 'select * from synergy_test where bridgereportid = ?';
   const param = [bridgereportid];
   return getResult(await db().executeSql(sql, param), 'object');
 }; 

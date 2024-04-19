@@ -7,6 +7,8 @@ import * as area from '../database/area';
 import * as baseData from '../database/base_data';
 import * as user from '../database/user';
 import reducer from './reducer';
+//获取设备id 
+import DeviceInfo from 'react-native-device-info';
 
 // 上下文空间
 const Context = React.createContext();
@@ -26,7 +28,7 @@ const Provider = props => {
     // 是否锁屏
     isLock: false,
     // 锁屏的偏移值
-    lockXY: {x: 0, y: 0},
+    lockXY: { x: 0, y: 0 },
     // 数据库更新标志，当变化时，执行 useEffect2
     upBaseDataFlg: '',
     // 是否初始化结束 (有初始化，结束后变为 true)
@@ -34,7 +36,7 @@ const Provider = props => {
     // 无意义参数
     FABItem: [],
     // 桥梁结构数据 (有初始化)
-    basememberinfo: [], 
+    basememberinfo: [],
     // 用户信息 (有初始化)
     userInfo: null,
     // 是否登录 (有初始化判断)
@@ -53,6 +55,10 @@ const Provider = props => {
     },
     // 网络连接状态 (有初始化 并 持续监听)
     networkState: {},
+    // 网络连接状态全部
+    networkStateAll: null,
+    //设备id
+    deviceId: '',
 
     //*********后续添加的参数 start **********/
     // ---- area表 获取
@@ -104,6 +110,13 @@ const Provider = props => {
           isConnected: res.isConnected,
         },
       });
+      dispatch({
+        type: 'networkStateAll',
+        payload: {
+          type: res.type,
+          isConnected: res,
+        },
+      });
     });
     NetInfo.fetch().then(res => {
       dispatch({
@@ -114,6 +127,13 @@ const Provider = props => {
         },
       });
     });
+
+    //获取设备id
+    let deviceId = DeviceInfo.getUniqueId()
+    dispatch({
+      type: 'deviceId',
+      payload: deviceId
+    })
 
     //从 user 表中获取
     //获取当前登录的用户的信息
@@ -138,15 +158,15 @@ const Provider = props => {
             payload: userData,
           });
           // 设置登录为 true
-          dispatch({type: 'isLogin', payload: true});
+          dispatch({ type: 'isLogin', payload: true });
         } else {
           // res 不存在表示，当前未登录
-          dispatch({type: 'isLogin', payload: false});
+          dispatch({ type: 'isLogin', payload: false });
         }
         // 获取完用户信息后，初始化结束
-        dispatch({type: 'isInit', payload: true});
+        dispatch({ type: 'isInit', payload: true });
       })
-      .catch((e)=>console.log("eeeeee"));
+      .catch((e) => console.log("eeeeee"));
   }, []);
 
   // useEffect1
@@ -177,8 +197,8 @@ const Provider = props => {
         }
       });
       // 将参数存入 全局的 state
-      dispatch({type: 'areaList', payload: areaList});
-      dispatch({type: 'routeList', payload: routeList});
+      dispatch({ type: 'areaList', payload: areaList });
+      dispatch({ type: 'routeList', payload: routeList });
     });
     // 获取 基础数据表 的数据
     baseData.list().then(res => {
@@ -201,7 +221,7 @@ const Provider = props => {
     });
     // 从本地获取 桥梁结构数据 ，并将数据赋值给 state中的参数
     storage.getBaseItem('桥梁结构数据').then(res => {
-      dispatch({type: 'basememberinfo', payload: res?.data || []});
+      dispatch({ type: 'basememberinfo', payload: res?.data || [] });
     });
   }, [state.userInfo]);
 
@@ -226,8 +246,8 @@ const Provider = props => {
           routeList.push(item);
         }
       });
-      dispatch({type: 'areaList', payload: areaList});
-      dispatch({type: 'routeList', payload: routeList});
+      dispatch({ type: 'areaList', payload: areaList });
+      dispatch({ type: 'routeList', payload: routeList });
     });
     // 获取 基础数据表 的数据
     baseData.list().then(res => {
@@ -249,15 +269,15 @@ const Provider = props => {
     // 对值排序后，将每个key存入 全局的state
     storage.getBaseItem('桥梁结构数据').then(res => {
       console.info('basememberinfo');
-      dispatch({type: 'basememberinfo', payload: res?.data || []});
+      dispatch({ type: 'basememberinfo', payload: res?.data || [] });
     });
   }, [state.upBaseDataFlg, state.userInfo]);
 
   return (
-    <Context.Provider value={{state, dispatch}}>
+    <Context.Provider value={{ state, dispatch }}>
       {props.children}
     </Context.Provider>
   );
 };
 
-export {Context, Consumer, Provider};
+export { Context, Consumer, Provider };

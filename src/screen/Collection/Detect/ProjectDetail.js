@@ -1,31 +1,40 @@
 // 导入 、克隆桥梁
-import React,{useState,useEffect} from 'react';
-import {View, Text, StyleSheet, FlatList, TouchableOpacity,Pressable,
-  ImageBackground, ScrollView,Dimensions,} from 'react-native';
-import {Divider} from 'react-native-paper';
-import {useFocusEffect} from '@react-navigation/native';
-import {tailwind} from 'react-native-tailwindcss';
-import {Context as GlobalContext} from '../../../providers/GlobalProvider';
-import {Context as ThemeContext} from '../../../providers/ThemeProvider';
+import React, { useState, useEffect } from 'react';
+import {
+  View, Text, StyleSheet, FlatList, TouchableOpacity, Pressable,
+  ImageBackground, ScrollView, Dimensions, Alert
+} from 'react-native';
+import { Divider } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
+import { tailwind } from 'react-native-tailwindcss';
+import { Context as GlobalContext } from '../../../providers/GlobalProvider';
+import { Context as ThemeContext } from '../../../providers/ThemeProvider';
 import BridgeForm from '../components/BridgeEdit/Index';
-import {TextInput} from '../../../components/Input';
+import { TextInput } from '../../../components/Input';
 import Button from '../../../components/Button';
 import Table from '../../../components/Table';
 import Select from '../../../components/Select';
 import Modal from '../../../components/Modal';
 import Checkbox from '../../../components/Checkbox';
 import * as bridge from '../../../database/bridge';
+import * as bridgeMember from '../../../database/bridge_member';
 import * as bridgeProjectBind from '../../../database/bridge_project_bind';
+import * as bridgeReport from '../../../database/bridge_report';
+import * as uploadStateRecord from '../../../database/upload_state_record';
 import * as bridgeReportMember from '../../../database/bridge_report_member';
-import {alert, confirm} from '../../../utils/alert';
+import * as synergyTest from '../../../database/synergy_test';
+import { alert, confirm } from '../../../utils/alert';
+import { loop, listToGroup } from '../../../utils/common';
 import CommonView from '../../../components/CommonView';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { NetworkInfo } from 'react-native-network-info';
+import dayjs from 'dayjs';
 // 克隆
-const Clone = React.forwardRef(({onSubmitOver}, ref) => {
+const Clone = React.forwardRef(({ onSubmitOver }, ref) => {
   // 从 全局参数 中 获取 桥幅属性
   const {
-    state: {bridgeside,userInfo},
+    state: { bridgeside, userInfo },
   } = React.useContext(GlobalContext);
 
   // 模态框是否显示
@@ -85,26 +94,26 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
     close,
   }));
 
-  
+
   // 当检索条件 或 页码 变化时触发
   React.useEffect(() => {
     if (!page) {
       return;
     }
     let _search = search
-    if(_search.bridgeside == 'all'){
-       _search.bridgeside = ''
+    if (_search.bridgeside == 'all') {
+      _search.bridgeside = ''
     }
     // 表格loading
     setLoading(true);
     // 查询桥梁数据 -- 查询的是 所有桥梁的数据
     bridge
-      .search({param: _search, page})
+      .search({ param: _search, page })
       .then(res => {
         let userid = userInfo.userid
         let newList = []
-        res.list.forEach(item=>{
-          if(item.userid==userid){
+        res.list.forEach(item => {
+          if (item.userid == userid) {
             newList.push(item)
           }
         })
@@ -211,11 +220,11 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
               ...(bridgeside || []),
             ]}
             value={selBridgeside}
-            onChange={el =>setSelBridgeside(el.paramid)}
+            onChange={el => setSelBridgeside(el.paramid)}
             ref={el => (searchRef.current.bridgeside = el)}
             style={[tailwind.mR6, tailwind.flex1]}
           />
-          <Button onPress={handleSearch} style={[{backgroundColor: '#2b427d'}]}>检索</Button>
+          <Button onPress={handleSearch} style={[{ backgroundColor: '#2b427d' }]}>检索</Button>
         </View>
         {/* 表格区域 */}
         <View style={[tailwind.flex1]}>
@@ -245,7 +254,7 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
             <FlatList
               data={list}
               extraData={list}
-              renderItem={({item, index}) => (
+              renderItem={({ item, index }) => (
                 <Table.Row key={index}>
                   {/* 选择框--单选 */}
                   <Table.Cell flex={1}>
@@ -278,11 +287,11 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
         {/* 底部操作按钮 */}
         <View style={styles.modalFoote}>
           {/* 取消，关闭模态框 */}
-          <Button style={[{backgroundColor: '#808285'}]} onPress={() => setVisible(false)}>
+          <Button style={[{ backgroundColor: '#808285' }]} onPress={() => setVisible(false)}>
             取消
           </Button>
           {/* 克隆 */}
-          <Button onPress={handleClone} style={[{backgroundColor: '#2b427d'}]}>克隆选中的桥梁</Button>
+          <Button onPress={handleClone} style={[{ backgroundColor: '#2b427d' }]}>克隆选中的桥梁</Button>
         </View>
       </Modal>
       {/* 桥梁表单 */}
@@ -298,10 +307,10 @@ const Clone = React.forwardRef(({onSubmitOver}, ref) => {
 });
 
 // 导入桥梁
-const Inducts = React.forwardRef(({onSubmitOver}, ref) => {
+const Inducts = React.forwardRef(({ onSubmitOver }, ref) => {
   // 从全局参数中 获取 桥幅属性、用户信息
   const {
-    state: {bridgeside, userInfo},
+    state: { bridgeside, userInfo },
   } = React.useContext(GlobalContext);
 
   // 模态框是否显示
@@ -373,8 +382,8 @@ const Inducts = React.forwardRef(({onSubmitOver}, ref) => {
       .then(res => {
         let userid = userInfo.userid
         let newList = []
-        res.list.forEach(item=>{
-          if(item.userid==userid){
+        res.list.forEach(item => {
+          if (item.userid == userid) {
             newList.push(item)
           }
         })
@@ -498,7 +507,7 @@ const Inducts = React.forwardRef(({onSubmitOver}, ref) => {
             ref={el => (searchRef.current[0] = el)}
             style={[tailwind.mR6, tailwind.flex1]}
           />
-          <Button onPress={handleSearch} style={[{backgroundColor: '#2b427d'}]}>检索</Button>
+          <Button onPress={handleSearch} style={[{ backgroundColor: '#2b427d' }]}>检索</Button>
         </View>
         {/* 表格区域 */}
         <View style={[tailwind.flex1]}>
@@ -527,7 +536,7 @@ const Inducts = React.forwardRef(({onSubmitOver}, ref) => {
             }>
             <FlatList
               data={list}
-              renderItem={({item, index}) => (
+              renderItem={({ item, index }) => (
                 <Table.Row key={index}>
                   <Table.Cell flex={1}>
                     <Checkbox
@@ -560,21 +569,21 @@ const Inducts = React.forwardRef(({onSubmitOver}, ref) => {
       {/* 底部操作按钮 */}
       <View style={styles.modalFoote}>
         {/* 取消按钮，关闭模态框 */}
-        <Button style={[{backgroundColor: '#808285'}]} onPress={() => setVisible(false)}>
+        <Button style={[{ backgroundColor: '#808285' }]} onPress={() => setVisible(false)}>
           取消
         </Button>
         {/* 确认导入按钮 */}
-        <Button onPress={handleInducts} style={[{backgroundColor: '#2b427d'}]}>确认导入</Button>
+        <Button onPress={handleInducts} style={[{ backgroundColor: '#2b427d' }]}>确认导入</Button>
       </View>
     </Modal>
   );
 });
 
 // 协同检测
-const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
+const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   // 从全局参数中 获取 桥幅属性、用户信息
   const {
-    state: {bridgeside, userInfo},
+    state: { bridgeside, userInfo, networkStateAll, deviceId },
   } = React.useContext(GlobalContext);
 
   // 模态框是否显示
@@ -590,7 +599,7 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
   const [list, setList] = React.useState([]);
 
   // 是否正在任务中
-  const [isTaskIng,setIsTaskIng] = useState(false)
+  const [isTaskIng, setIsTaskIng] = useState(false)
 
   // 当前页
   const [page, setPage] = React.useState();
@@ -607,44 +616,71 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
   // 当前选中桥梁的bridgeid，多选，是数组
   const [checked, setChecked] = React.useState(new Set([]));
 
-  const [project,setProject] = useState()
+  const [project, setProject] = useState()
+
+  // ws连接
+  const wsConnection = React.useRef()
 
   // 检索输入框的引用
   const searchRef = React.useRef([]);
 
-  const [bridgeInfo,setBridgeInfo] = useState()
+  const [bridgeInfo, setBridgeInfo] = useState()
 
-  const [navigation,setNavigation] = useState()
-  const [route,setRoute] = useState()
+  const [navigation, setNavigation] = useState()
+  const [route, setRoute] = useState()
 
   // 暴露给父组件的函数
   React.useImperativeHandle(ref, () => ({
-    
+
     // 打开
-    open: (project,bridge,navigation,route) => {
+    open: async (project, bridge, navigation, route) => {
       setNavigation(navigation)
       setRoute(route)
-      console.log('navigationnavigation',navigation);
-      // 是否正在任务中
-      // isTaskIng 读取本地数据库
-      // setIsTaskIng(true)
-
-      if(isTaskIng) {
-        // 如果处于正在任务的状态，打开弹窗获取数据
-        getTableData()
-      } else if (!isTaskIng) {
-        setList([])
-      }
-      
-      
-      // project 是当前项目信息
       // bridge 选择打开的桥梁信息
-      console.log('bridge',bridge);
       setBridgeInfo(bridge)
-      if(bridge){
+
+      // 读取本地的协同检测数据
+      let synergyData_local = JSON.parse(await AsyncStorage.getItem('synergyData'))
+      // 如果存在本地协同检测的数据
+      if (synergyData_local) {
+        // 设置检测中
+        setIsTaskIng(true)
+        // 设置任务码
+        setTaskCode(synergyData_local.synergyData.taskId)
+        // 设置协同人数
+        setPersonNum(synergyData_local.synergyData.synergyPeopleNum)
+        // 设置创建者名称
+        setPersonName(JSON.parse(synergyData_local.synergyData.creator).userName)
+        // 设置参与者名称
+        JSON.parse(synergyData_local.synergyData.participator).forEach(item => {
+          if (item.isSelf) {
+            setJoinPersonName(item.userName)
+          }
+        })
+        // 设置参与者任务码
+        setJoinCode(synergyData_local.synergyData.taskId)
+      } else {
+        // 不存在协同检测数据
+        // 设置检测中
+        setIsTaskIng(false)
+        // 设置任务码
+        setTaskCode('')
+        // 设置协同人数
+        setPersonNum('1')
+        // 设置创建者名称
+        setPersonName('')
+        // 设置参与者名称
+        setJoinPersonName('')
+        // 设置参与者任务码
+        setJoinCode('')
+      }
+
+      // project 是当前项目信息
+
+      if (bridge) {
         // 选择桥梁进入时，默认显示创建任务
         setFuncShow(1)
-      } else if (!bridge){
+      } else if (!bridge) {
         // 未选择桥梁进入时，默认显示参与任务
         setFuncShow(2)
       }
@@ -683,8 +719,8 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
       .then(res => {
         let userid = userInfo.userid
         let newList = []
-        res.list.forEach(item=>{
-          if(item.userid==userid){
+        res.list.forEach(item => {
+          if (item.userid == userid) {
             newList.push(item)
           }
         })
@@ -730,29 +766,29 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
     setChecked(new Set(_checked));
   };
 
-  const [taskCode,setTaskCode] = useState(0) // 任务码 - 创建
-  const [personNum,setPersonNum] = useState(1) //协同人数
-  const [personName,setPersonName] = useState('') //创建者名称 - 创建
-  const [btnText,setBtnText] = useState('') //确认按钮的文字
+  const [taskCode, setTaskCode] = useState(0) // 任务码 - 创建
+  const [personNum, setPersonNum] = useState(1) //协同人数
+  const [personName, setPersonName] = useState('') //创建者名称 - 创建
+  const [btnText, setBtnText] = useState('') //确认按钮的文字
 
-  const [joinCode,setJoinCode] = useState('')
-  const [joinPersonName,setJoinPersonName] = useState('')
+  const [joinCode, setJoinCode] = useState('')
+  const [joinPersonName, setJoinPersonName] = useState('')
 
-  useEffect(()=>{
+  useEffect(() => {
     setPersonNum('1')
     // if(bridgeInfo){
     //   setFuncShow(1)
     // } else if (!bridgeInfo){
     //   setFuncShow(2)
     // }
-    if(funcShow == 1){
+    if (funcShow == 1) {
       setBtnText('确认创建')
-    } else if (funcShow == 2){
+    } else if (funcShow == 2) {
       setBtnText('确认参与')
     }
-    
-  },[])
-  const [funcShow,setFuncShow] = useState(1)
+
+  }, [])
+  const [funcShow, setFuncShow] = useState(1)
 
   // 切换功能页面
   const changeFunc = (e) => {
@@ -760,46 +796,46 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
     setFuncShow(e)
   }
 
-  
+
   // 生成任务码
   const changeTaskCode = () => {
     // 随机六位整数
     var code = '';
-    for(var i=0;i<6;i++){
-      code += parseInt(Math.random()*10);
+    for (var i = 0; i < 6; i++) {
+      code += parseInt(Math.random() * 10);
     }
-    console.log('切换任务码',code);
+    console.log('切换任务码', code);
     setTaskCode(code)
     // console.log('切换任务码',);
   }
 
   // 复制任务码
-  const copyCode = async(value) =>{
+  const copyCode = async (value) => {
     // 写入
     Clipboard.setString(value);
     // 读取
     let str = await Clipboard.getString();
     // console.log('复制的内容',str)
-    if(str){
+    if (str) {
       alert('复制任务码成功【' + str + '】');
     }
   }
 
   const personNumChange = (e) => {
     var a = parseInt(personNum)
-    if(personNum>=2 && personNum<10){
-      a+=e
+    if (personNum >= 2 && personNum < 10) {
+      a += e
       setPersonNum(a.toString())
     }
-    if(personNum == 1){
-      if(e>0){
-        a+=e
+    if (personNum == 1) {
+      if (e > 0) {
+        a += e
         setPersonNum(a.toString())
       }
     }
-    if(personNum == 10){
-      if(e<0){
-        a+=e
+    if (personNum == 10) {
+      if (e < 0) {
+        a += e
         setPersonNum(a.toString())
       }
     }
@@ -807,16 +843,16 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
 
   // 创建任务 的输入
   const valueChange = (e) => {
-    console.log('输入内容',e);
-    if(e.name=='personName'){
+    console.log('输入内容', e);
+    if (e.name == 'personName') {
       setPersonName(e.value)
     }
   }
 
   // 参与任务 的输入
   const joinValueChange = (e) => {
-    console.log('输入内容',e);
-    if(e.name == 'joinCode'){
+    console.log('输入内容', e);
+    if (e.name == 'joinCode') {
       setJoinCode(e.value)
     } else if (e.name == 'joinPersonName') {
       setJoinPersonName(e.value)
@@ -825,45 +861,408 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
 
   // 确认
   const confirm = () => {
-    if(funcShow == 1){
+    if (funcShow == 1) {
       // 创建任务的确认操作
-      if(bridgeInfo){
-        console.log('创建任务');
-        // 任务码
-        if(taskCode){
-          console.log('任务码taskCode',taskCode);
-        }
-        // 协同人数
-        if(personNum){
-          console.log('协同人数personNum',personNum);
-        }
-        // 用户名称
-        if(personName){
-          console.log('用户名称personName',personName);
-        }
-      }
-      if(!bridgeInfo){
-        console.log('无数据空的确认');
-      }
-      // 获取数据
-      getTableData()
-
-      // 任务创建成功后改变'是否在任务中'的状态
-      setIsTaskIng(true)
-      
-      
-
+      createTask()
     } else if (funcShow == 2) {
-      console.log('参与任务');
-      // 任务码
-      console.log('参与者的任务码',joinCode);
-      // 用户名称
-      console.log('参与者的名称',joinPersonName);
+
       // 获取数据
-      getTableData()
+      // getTableData()
+      // 参与任务
+      joinTask()
     }
 
   }
+
+  // ----- 创建任务 start -------
+  // 创建任务
+  const createTask = () => {
+    // 判断是否有桥梁数据
+    if (!bridgeInfo) {
+      Alert.alert('无数据空的确认')
+      return
+    }
+
+    // 判断工程师名字是否规范
+    if (!personName) {
+      Alert.alert('请输入工程师名称')
+      return
+    }
+
+    // 判断网络是否连接
+    if (!networkStateAll.isConnected.isConnected) {
+      Alert.alert('请连接网络')
+      return
+    }
+
+    // 是否连接了wifi
+    if (networkStateAll.type !== 'wifi') {
+      Alert.alert('请连接WIFI')
+      return
+    }
+
+    // 是否连接了指定wifi
+    // if(networkStateAll.isConnected.ssid!==WIFIName){
+    //     Alert.alert('请连接指定WIFI')
+    //     return
+    // }
+
+    // 获取所连接wifi的ip
+    NetworkInfo.getGatewayIPAddress().then(IP => {
+      // 创建任务并加入房间
+      creatTaskFetch(IP)
+    })
+  }
+
+  // 创建任务fetch
+  const creatTaskFetch = async (IP) => {
+    // 处理初始桥梁数据
+    let data = await dealInitBridgeData()
+    // url
+    // let url = 'http://'+IP+':8000/task/'+taskInfo.peopleNum+'/'
+    let url = 'http://10.1.1.71:8000/task/' + personNum + '/'
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(async result => {
+        if (result.status == 'success') {
+          // 协同信息
+          let synergyData = {
+            bridgeid: bridgeInfo.bridgeid,
+            bridgereportid: bridgeInfo.bridgereportid,
+            userid: userInfo.userid,
+            synergyid: new Date().getTime() + '',
+            synergyPeopleNum: personNum,
+            taskId: result.room_id,
+            creator: JSON.stringify({
+              userName: personName,
+              userid: userInfo.userid,
+              deviceId: deviceId
+            }),
+            participator: JSON.stringify([{
+              userName: personName,
+              userid: userInfo.userid,
+              deviceId: deviceId,
+              isSelf: 'true'
+            }]),
+            c_date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+            state: '检测中',
+            other: ''
+          }
+          // 检查数据库中是否存在这条数据
+          let synergyTestData = await synergyTest.getByReportid(bridgeInfo.bridgereportid)
+          if (synergyTestData) {
+            // 修改数据
+            await synergyTest.update(synergyData)
+          } else {
+            // 将协同信息存入数据库
+            await synergyTest.save(synergyData)
+          }
+          // 将数据存入本地
+          await AsyncStorage.setItem('synergyData', JSON.stringify({ synergyData: synergyData, bridge: bridgeInfo }))
+          // 设置任务号
+          setTaskCode(result.room_id)
+          // 加入任务
+          CTAfterAddTask(IP, result.room_id)
+        } else {
+          Alert.alert('请连接指定WIFI,' + JSON.stringify(result))
+        }
+      })
+      .catch(error => {
+        Alert.alert('请连接指定WIFI,' + JSON.stringify(error))
+      });
+  }
+
+  // 处理初始桥梁数据
+  const dealInitBridgeData = async () => {
+    // 判断 是否有 桥梁检测报告数据
+    const bridgeReportData = await bridgeReport.get({
+      bridgeid: bridgeInfo.bridgeid,
+      bridgereportid: bridgeInfo.bridgereportid
+    })
+    // 如果 桥梁检测报告 数据 不存在，那么存入检测报告数据
+    if (!bridgeReportData) {
+      // 新建桥梁检测数据
+      await bridgeReport.save({
+        bridgeid: bridgeInfo.bridgeid,
+        bridgereportid: bridgeInfo.bridgereportid,
+        userid: userInfo.userid
+      });
+      // 上传状态记录
+      await uploadStateRecord.save({
+        bridgeid: bridgeInfo.bridgeid,
+        bridgereportid: bridgeInfo.bridgereportid,
+        userid: userInfo.userid
+      })
+      // 获取桥梁的构件，并在数据中加入 报告id、构件检测状态、构件评分、更新时间
+      let _partsList = [];
+      _partsList = (await bridgeMember.list(bridgeInfo.bridgeid)).map(item => ({
+        ...item,
+        bridgereportid: bridgeInfo.bridgereportid,
+        memberstatus: '0',
+        dpscores_auto: 0,
+        u_date: '',
+      }));
+      // 处理构件编号
+      _partsList.forEach(item => {
+        item.memberid = item.memberid.replace(bridgeInfo.bridgeid, bridgeInfo.bridgereportid)
+      })
+      // 将桥梁构件数据 存入 桥梁构件检测表
+      await loop(_partsList, bridgeReportMember.save);
+    }
+
+    // 获取 桥梁构件 数据
+    let bridge_member = await bridgeMember.list(bridgeInfo.bridgeid)
+    // 获取 桥梁项目绑定 数据
+    let bridge_project_bind = await bridgeProjectBind.get({ bridgeid: bridgeInfo.bridgeid, projectid: projectid })
+    // 获取 桥梁报告 数据
+    let bridge_report = await bridgeReport.get({ bridgeid: bridgeInfo.bridgeid, bridgereportid: bridgeInfo.bridgereportid })
+    // 获取 桥梁检测构件 数据
+    let bridge_report_member = await bridgeReportMember.list({ bridgeid: bridgeInfo.bridgeid, bridgereportid: bridgeInfo.bridgereportid })
+    // 创建信息
+    let createInfo = {
+      // 协同编号
+      synergyid: bridgeInfo.bridgereportid + parseInt((new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999 - 1000 + 1) + 1000 - 1)).toString(36),
+      // 协同人数
+      synergyPeopleNum: personNum,
+      // 创建者
+      creator: {
+        // 名字
+        userName: personName,
+        // id
+        userid: userInfo.userid,
+        // 设备id
+        deviceId: deviceId
+      },
+      // 创建时间
+      c_date: dayjs().format('YYYY-MM-DD HH:mm:ss')
+    }
+    // 数据
+    let data = {
+      bridge: bridgeInfo,
+      bridge_member,
+      bridge_project_bind,
+      bridge_report,
+      bridge_report_member,
+      createInfo
+    }
+    return data
+  }
+
+  // 创建任务后加入任务
+  const CTAfterAddTask = (IP, taskid) => {
+    // url
+    // let url = 'http://'+IP+':8000/task_room/'+taskid
+    let url = 'http://10.1.1.71:8000/task_room/' + taskid
+    fetch(url, {
+      method: 'GET'
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (result.status == 'success') {
+          // 地址
+          let path = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
+          // 将ws存入本地
+          AsyncStorage.setItem('synergyWS', result.ws)
+          // 创建连接
+          wsConnection.current = new WebSocket(path);
+          // 打开
+          wsConnection.current.onopen = () => {
+            // 任务创建成功后改变'是否在任务中'的状态
+            setIsTaskIng(true)
+          }
+          // 接收
+          wsConnection.current.onmessage = (e) => {
+            console.log("接收", e);
+          };
+          // 关闭时触发
+          wsConnection.current.onclose = (e) => {
+            console.log("关闭", e);
+          };
+          // 处理错误
+          wsConnection.current.onerror = (e) => {
+            console.log('错误', e);
+          };
+        } else {
+
+        }
+      })
+      .catch(err => {
+        console.log("err", err);
+      });
+  }
+  // ----- 创建任务 end -------
+
+  // ----- 参与任务 start -------
+  // 参与任务
+  const joinTask = () => {
+    // 判断是否有任务码
+    if (!joinCode) {
+      Alert.alert('请输入任务号')
+      return
+    }
+    if (!(/^\d{5}$/.test(joinCode))) {
+      Alert.alert('请输入正确的任务号格式不正确')
+      return
+    }
+    if (!joinPersonName) {
+      Alert.alert('请输入工程师名称')
+      return
+    }
+
+    // 判断网络是否连接
+    if (!networkStateAll.isConnected.isConnected) {
+      Alert.alert('请连接网络')
+      return
+    }
+
+    // 是否连接了wifi
+    if (networkStateAll.type !== 'wifi') {
+      Alert.alert('请连接WIFI')
+      return
+    }
+
+    // 获取所连接wifi的ip
+    NetworkInfo.getGatewayIPAddress().then(IP => {
+      // 创建任务WS
+      joinTaskGetBridge(IP)
+    })
+  }
+  // 获取桥梁
+  const joinTaskGetBridge = async (IP) => {
+    // url
+    // let url = 'http://'+IP+':8000/task_room/'+taskid
+    let url = 'http://10.1.1.71:8000/task_room/' + joinCode
+    fetch(url, {
+      method: 'GET'
+    })
+      .then(res => res.json())
+      .then(result => {
+        console.log("result", result);
+        if (result.status == 'success') {
+          // 地址
+          let path = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
+          // 处理接收的桥梁数据
+          dealReceiveBridgeData(result)
+        } else {
+          if (result.detail.msg == 'invalid room_id') {
+            Alert.alert('任务号不存在')
+            return
+          }
+        }
+      })
+      .catch(err => {
+        console.log("err", err);
+      });
+  }
+  // 处理接收的桥梁数据
+  const dealReceiveBridgeData = async (result) => {
+    // 将桥梁数据存入本地
+    // bridge 表中是否存在这个桥梁
+    let bridgeTableData = await bridge.getByBridgeid(result.task_msg.bridge.bridgeid)
+    if (!bridgeTableData) {
+      // 不存在这个桥梁，将桥梁信息存入
+      // bridge 表 存入数据库
+      bridge.save({
+        ...result.task_msg.bridge,
+        userid: userInfo.userid
+      })
+      // bridgeMember 表 存入数据库
+      result.task_msg.bridge_member.forEach(item => {
+        bridgeMember.save(item)
+      })
+      // bridge_project_bind 数据存入数据库
+      bridgeProjectBind.save({
+        projectid: projectid,
+        bridgeid: result.task_msg.bridge.bridgeid,
+        bridgereportid: result.task_msg.bridge_project_bind.bridgereportid,
+        userid: userInfo.userid
+      })
+      // bridge_report 表数据 存入数据库
+      bridgeReport.save({
+        ...result.task_msg.bridge_report,
+        userid: userInfo.userid
+      })
+      // uploadStateRecord 表 数据存入数据库
+      uploadStateRecord.save({
+        bridgeid: result.task_msg.bridge.bridgeid,
+        bridgereportid: result.task_msg.bridge_project_bind.bridgereportid,
+        userid: userInfo.userid
+      })
+      // bridge_report_member 表 数据存入数据库
+      result.task_msg.bridge_report_member.forEach(item => {
+        bridgeReportMember.save(item)
+      })
+      // 协同信息
+      let synergyData = {
+        bridgeid: result.task_msg.bridge.bridgeid,
+        bridgereportid: result.task_msg.bridge.bridgereportid,
+        userid: userInfo.userid,
+        synergyid: new Date().getTime() + '',
+        synergyPeopleNum: result.task_msg.createInfo.synergyPeopleNum,
+        taskId: joinCode,
+        creator: result.task_msg.createInfo.creator,
+        participator: [],
+        c_date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        state: '检测中',
+        other: ''
+      }
+      let participator = []
+      JSON.parse(result.task_msg.createInfo.participator).forEach(item => {
+        participator.push({
+          ...item,
+          isSelf: 'false'
+        })
+      })
+      participator.push({
+        userName: joinPersonName,
+        userid: userInfo.userid,
+        deviceId: deviceId,
+        isSelf: 'true'
+      })
+      synergyData.participator = participator
+      // 将协同信息存入数据库
+      await synergyTest.save(synergyData)
+      // 将数据存入本地
+      await AsyncStorage.setItem('synergyData', JSON.stringify({ synergyData: synergyData, bridge: result.task_msg.bridge }))
+      // 将ws存入本地
+      await AsyncStorage.setItem('synergyWS', result.ws)
+      // 加入任务WS
+      joinTaskWS(result.ws)
+    } else {
+      // 存在这个桥梁
+    }
+  }
+  // 加入任务WS
+  const joinTaskWS = (ws) => {
+    // 地址
+    let path = 'ws://10.1.1.71:8000' + ws + '?user=' + deviceId
+    // 创建连接
+    wsConnection.current = new WebSocket(path);
+    // 打开
+    wsConnection.current.onopen = () => {
+      // 任务创建成功后改变'是否在任务中'的状态
+      setIsTaskIng(true)
+    }
+    // 接收
+    wsConnection.current.onmessage = (e) => {
+      console.log("接收", e);
+    };
+    // 关闭时触发
+    wsConnection.current.onclose = (e) => {
+      console.log("关闭", e);
+    };
+    // 处理错误
+    wsConnection.current.onerror = (e) => {
+      console.log('错误', e);
+    };
+  }
+  // ----- 参与任务 end -------
 
   // 前往检测
   const goWork = () => {
@@ -878,98 +1277,106 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
         list: route.params.list
       })
     } catch (error) {
-      console.log('创建协同任务页面跳转error',error);
+      console.log('创建协同任务页面跳转error', error);
     }
   }
 
-  const deleteTask = () => {
-    console.log('删除任务');
-
-    // 改变isTaskIng的状态
+  // 删除任务
+  const deleteTask = async () => {
+    // 数据库更新状态
+    await synergyTest.updateState({ state: '协同结束', bridgereportid: bridgeInfo.bridgereportid })
+    // 删除本地存储
+    AsyncStorage.setItem('synergyData', '')
+    // 删除本地的ws
+    AsyncStorage.setItem('synergyWS', '')
+    // 重置检测状态
     setIsTaskIng(false)
-
-    // 清除获取数据的定时器
-
-    // 清空表格数据
-    setList([])
-    // 重置页面状态
-
+    // 设置任务码
+    setTaskCode('')
+    // 设置协同人数
+    setPersonNum('1')
+    // 设置创建者名称
+    setPersonName('')
+    // 设置参与者名称
+    setJoinPersonName('')
+    // 设置参与者任务码
+    setJoinCode('')
   }
 
   // 获取任务协同者表格数据
   const getTableData = () => {
-      // 持续向盒子获取最新状态信息
-      // setInterval(()=>{
-        console.log('获取数据');
-        setList([])
-        // =====模拟表格数据====
-          let list = [
-            {
-              id:'1',
-              user:'张三1',
-              userName:'asfx',
-              joinTime:'10:21',
-              status:'在线'
-            },
-            {
-              id:'2',
-              user:'张三2',
-              userName:'asdfbdffx',
-              joinTime:'10:22',
-              status:'在线'
-            },
-            {
-              id:'3',
-              user:'张三3',
-              userName:'awrhwsfx',
-              joinTime:'10:23',
-              status:'离线'
-            },
-            {
-              id:'4',
-              user:'张三4',
-              userName:'asfxbsbx',
-              joinTime:'10:24',
-              status:'在线'
-            },
-            {
-              id:'5',
-              user:'张三5',
-              userName:'asfasx',
-              joinTime:'10:25',
-              status:'在线'
-            },
-            {
-              id:'6',
-              user:'张三2',
-              userName:'asdfbdffx',
-              joinTime:'10:22',
-              status:'在线'
-            },
-            {
-              id:'7',
-              user:'张三3',
-              userName:'awrhwsfx',
-              joinTime:'10:23',
-              status:'离线'
-            },
-            {
-              id:'8',
-              user:'张三4',
-              userName:'asfxbsbx',
-              joinTime:'10:24',
-              status:'在线'
-            },
-            {
-              id:'9',
-              user:'张三5',
-              userName:'asfasx',
-              joinTime:'10:25',
-              status:'在线'
-            },
-          ]
-          setList(list)
-      // },1000*2)
+    // 持续向盒子获取最新状态信息
+    // setInterval(()=>{
+    console.log('获取数据');
+    setList([])
+    // =====模拟表格数据====
+    let list = [
+      {
+        id: '1',
+        user: '张三1',
+        userName: 'asfx',
+        joinTime: '10:21',
+        status: '在线'
+      },
+      {
+        id: '2',
+        user: '张三2',
+        userName: 'asdfbdffx',
+        joinTime: '10:22',
+        status: '在线'
+      },
+      {
+        id: '3',
+        user: '张三3',
+        userName: 'awrhwsfx',
+        joinTime: '10:23',
+        status: '离线'
+      },
+      {
+        id: '4',
+        user: '张三4',
+        userName: 'asfxbsbx',
+        joinTime: '10:24',
+        status: '在线'
+      },
+      {
+        id: '5',
+        user: '张三5',
+        userName: 'asfasx',
+        joinTime: '10:25',
+        status: '在线'
+      },
+      {
+        id: '6',
+        user: '张三2',
+        userName: 'asdfbdffx',
+        joinTime: '10:22',
+        status: '在线'
+      },
+      {
+        id: '7',
+        user: '张三3',
+        userName: 'awrhwsfx',
+        joinTime: '10:23',
+        status: '离线'
+      },
+      {
+        id: '8',
+        user: '张三4',
+        userName: 'asfxbsbx',
+        joinTime: '10:24',
+        status: '在线'
+      },
+      {
+        id: '9',
+        user: '张三5',
+        userName: 'asfasx',
+        joinTime: '10:25',
+        status: '在线'
+      },
+    ]
+    setList(list)
+    // },1000*2)
   }
 
   return (
@@ -985,253 +1392,275 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
       height={500}
       keyboardVerticalOffset={-250}
       onClose={() => setVisible(false)}>
-      <View style={[tailwind.flex1,{}]}>
-      <View style={{height:'10%',width:'100%',
-    flexDirection: 'row',justifyContent:'flex-start',alignItems:'center'}}>
-        <Pressable style={{width:'15%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',
-        backgroundColor:funcShow == 1 ? '#2b427d' : '#2b427d00'}}
-        onPress={()=>changeFunc(1)}>
-          <Text style={{color:funcShow == 1 ? '#fff' : '#808285'}}>创建任务</Text>
-        </Pressable>
-        <Pressable style={{width:'15%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',
-        backgroundColor:funcShow == 2 ? '#2b427d' : '#2b427d00'}}
-        onPress={()=>changeFunc(2)}>
-          <Text style={{color:funcShow == 2 ? '#fff' : '#808285'}}>参与任务</Text>
-        </Pressable>
-        <Pressable style={{width:'15%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',
-        backgroundColor:funcShow == 3 ? '#2b427d' : '#2b427d00'}}
-        onPress={()=>changeFunc(3)}>
-          <Text style={{color:funcShow == 3 ? '#fff' : '#808285'}}>使用帮助</Text>
-        </Pressable>
-      </View>
-        <View style={[tailwind.flex1,{}]}>
+      <View style={[tailwind.flex1, {}]}>
+        <View style={{
+          height: '10%', width: '100%',
+          flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'
+        }}>
+          <Pressable style={{
+            width: '15%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center',
+            backgroundColor: funcShow == 1 ? '#2b427d' : '#2b427d00'
+          }}
+            onPress={() => changeFunc(1)}>
+            <Text style={{ color: funcShow == 1 ? '#fff' : '#808285' }}>创建任务</Text>
+          </Pressable>
+          <Pressable style={{
+            width: '15%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center',
+            backgroundColor: funcShow == 2 ? '#2b427d' : '#2b427d00'
+          }}
+            onPress={() => changeFunc(2)}>
+            <Text style={{ color: funcShow == 2 ? '#fff' : '#808285' }}>参与任务</Text>
+          </Pressable>
+          <Pressable style={{
+            width: '15%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center',
+            backgroundColor: funcShow == 3 ? '#2b427d' : '#2b427d00'
+          }}
+            onPress={() => changeFunc(3)}>
+            <Text style={{ color: funcShow == 3 ? '#fff' : '#808285' }}>使用帮助</Text>
+          </Pressable>
+        </View>
+        <View style={[tailwind.flex1, {}]}>
           {/* <Text>选择的桥梁：{bridgeInfo?.bridgename}</Text> */}
           {
-            funcShow == 1 && bridgeInfo ? 
-            <View style={{width:'100%',height:'100%',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-              <View style={{width:'50%',height:'100%',alignItems:"center",paddingTop:50,paddingLeft:20}}>
-                <View style={{width:'100%',height:'20%',flexDirection:'row',alignItems:'center'}}>
-                  <TextInput
-                    name="taskCode"
-                    label="任务码:    "
-                    disabled
-                    value={taskCode}
-                    onChange={(e)=>valueChange(e)}
-                    style={[tailwind.mR6, {height:'100%',width:'50%'}]}
-                    inputStyle={[{color:'black'}]}
-                  />
-                  <Button style={{backgroundColor: '#2b427d'}} onPress={()=>changeTaskCode()}>生成任务码</Button>
-                  <Button style={{backgroundColor: '#2b427d'}} onPress={()=>copyCode(taskCode)}>复制任务码</Button>
-                </View>
-                <View style={{width:'100%',height:'20%',flexDirection:'row',alignItems:'center'}}>
-                  <TextInput
-                    name="personNum"
-                    label="协同人数:"
-                    disabled
-                    value={personNum}
-                    onChange={(e)=>valueChange(e)}
-                    style={[tailwind.mR6, {height:'100%',width:'50%'}]}
-                    inputStyle={[{color:'black'}]}
-                  />
-                  <Button style={{backgroundColor: '#2b427d'}} onPress={()=>personNumChange(1)}>+</Button>
-                  <Button style={{backgroundColor: '#2b427d'}} onPress={()=>personNumChange(-1)}>-</Button>
-                </View>
-                <View style={{width:'100%',paddingLeft:70}}>
-                  <Text>*除您之外的其他协作者人数（1~10）</Text>
-                </View>
-                <View style={{width:'100%',height:'20%',flexDirection:'row',alignItems:'center'}}>
-                  <TextInput
-                    name="personName"
-                    label="您的名称:"
-                    onChange={(e)=>valueChange(e)}
-                    style={[tailwind.mR6, {height:'100%',width:'50%'}]}
-                  />
-                </View>
-              </View>
-              {
-                list.length ?
-                <View style={{width:'45%',height:'100%',alignItems:'center',marginLeft:20}}>
-                  {/* 参与者信息表格 */}
-                  <View style={{width:'100%',height:'70%',padding:10}}>
-                    <Table.Box
-                      loading={loading}
-                      numberOfPages={pageTotal}
-                      total={total}
-                      pageNo={page?.pageNo || 0}
-                      onPageChange={e =>
-                        setPage({
-                          pageSize: 10,
-                          pageNo: e,
-                        })
-                      }
-                      header={
-                        <Table.Header>
-                          <Table.Title title="序号" flex={1} />
-                          <Table.Title title="账号" flex={4} />
-                          <Table.Title title="人员" flex={3} />
-                          <Table.Title title="加入时间" flex={2} />
-                          <Table.Title title="状态" flex={2} />
-                        </Table.Header>
-                      }>
-                      <FlatList
-                        data={list}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({item, index}) => (
-                          <Table.Row key={index}>
-                            <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                            <Table.Cell flex={4}>{item.user}</Table.Cell>
-                            <Table.Cell flex={3}>{item.userName}</Table.Cell>
-                            <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
-                            <Table.Cell flex={2}>{item.status}</Table.Cell>
-                          </Table.Row>
-                        )}
-                      />
-                    </Table.Box>
+            funcShow == 1 && bridgeInfo ?
+              <View style={{ width: '100%', height: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ width: '50%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20 }}>
+                  <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
+                    <TextInput
+                      name="taskCode"
+                      label="任务码:    "
+                      disabled
+                      value={taskCode}
+                      onChange={(e) => valueChange(e)}
+                      style={[tailwind.mR6, { height: '100%', width: '50%' }]}
+                      inputStyle={[{ color: 'black' }]}
+                    />
+                    {/* <Button style={{ backgroundColor: '#2b427d' }} onPress={() => changeTaskCode()}>生成任务码</Button> */}
+                    <Button style={{ backgroundColor: '#2b427d' }} onPress={() => copyCode(taskCode)}>复制任务码</Button>
                   </View>
-                  <View style={{width:'100%',height:'30%',flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                    <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>deleteTask()}>删除任务</Button>
-                    <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>goWork()}>开始检测</Button>
+                  <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
+                    <TextInput
+                      name="personNum"
+                      label="协同人数:"
+                      disabled
+                      value={personNum}
+                      onChange={(e) => valueChange(e)}
+                      style={[tailwind.mR6, { height: '100%', width: '50%' }]}
+                      inputStyle={[{ color: 'black' }]}
+                    />
+                    {
+                      !isTaskIng &&
+                      <>
+                        <Button style={{ backgroundColor: '#2b427d' }} onPress={() => personNumChange(1)}>+</Button>
+                        <Button style={{ backgroundColor: '#2b427d' }} onPress={() => personNumChange(-1)}>-</Button>
+                      </>
+                    }
                   </View>
-                </View> 
-                : <></>
-              }
-              {/* 创建任务成功后的左侧表单遮罩层 */}
-              {
-                list.length ? 
-                <View style={{width:'54%',height:'100%',alignItems:"center",paddingTop:50,paddingLeft:20,backgroundColor:'#fff',
-                position:'absolute',opacity:0.3,justifyContent:'flex-end',alignItems:'center',paddingBottom:40}}>
-                  <Text>不允许创建多个任务</Text>
+                  <View style={{ width: '100%', paddingLeft: 70 }}>
+                    <Text>*除您之外的其他协作者人数（1~10）</Text>
+                  </View>
+                  <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
+                    <TextInput
+                      disabled={isTaskIng}
+                      name="personName"
+                      label="您的名称:"
+                      value={personName}
+                      onChange={(e) => valueChange(e)}
+                      style={[tailwind.mR6, { height: '100%', width: '50%' }]}
+                    />
+                  </View>
+                </View>
+                {
+                  isTaskIng &&
+                  <View style={{ width: '45%', height: '100%', alignItems: 'center', marginLeft: 20 }}>
+                    {/* 参与者信息表格 */}
+                    <View style={{ width: '100%', height: '70%', padding: 10 }}>
+                      <Table.Box
+                        loading={loading}
+                        numberOfPages={pageTotal}
+                        total={total}
+                        pageNo={page?.pageNo || 0}
+                        onPageChange={e =>
+                          setPage({
+                            pageSize: 10,
+                            pageNo: e,
+                          })
+                        }
+                        header={
+                          <Table.Header>
+                            <Table.Title title="序号" flex={1} />
+                            <Table.Title title="账号" flex={4} />
+                            <Table.Title title="人员" flex={3} />
+                            <Table.Title title="加入时间" flex={2} />
+                            <Table.Title title="状态" flex={2} />
+                          </Table.Header>
+                        }>
+                        <FlatList
+                          data={list}
+                          showsVerticalScrollIndicator={false}
+                          renderItem={({ item, index }) => (
+                            <Table.Row key={index}>
+                              <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                              <Table.Cell flex={4}>{item.user}</Table.Cell>
+                              <Table.Cell flex={3}>{item.userName}</Table.Cell>
+                              <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
+                              <Table.Cell flex={2}>{item.status}</Table.Cell>
+                            </Table.Row>
+                          )}
+                        />
+                      </Table.Box>
+                    </View>
+                    <View style={{ width: '100%', height: '30%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                      <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => deleteTask()}>删除任务</Button>
+                      <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => goWork()}>开始检测</Button>
+                    </View>
+                  </View>
+                }
+                {/* 创建任务成功后的左侧表单遮罩层 */}
+                {
+                  list.length ?
+                    <View style={{
+                      width: '54%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20, backgroundColor: '#fff',
+                      position: 'absolute', opacity: 0.3, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 40
+                    }}>
+                      <Text>不允许创建多个任务</Text>
+                    </View>
+                    : <></>
+                }
+              </View>
+              : funcShow == 1 && !bridgeInfo ?
+                <View style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Text>*请选择桥梁后再创建协同检测任务</Text>
                 </View>
                 : <></>
-              }
-            </View>
-            : funcShow == 1 && !bridgeInfo ? 
-              <View style={{width:'100%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center'}}>
-                <Text>*请选择桥梁后再创建协同检测任务</Text>
-              </View>
-            : <></>
           }
           {
-            funcShow == 2 ? 
-            <View style={{width:'100%',height:'100%',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-              <View style={{width:'50%',height:'100%',alignItems:"center",paddingTop:50,paddingLeft:20}}>
-                <View style={{width:'100%',height:'20%',flexDirection:'row',alignItems:'center'}}>
-                  <TextInput
-                    name="joinCode"
-                    label="任务码:    "
-                    value={joinCode}
-                    onChange={(e)=>joinValueChange(e)}
-                    style={[tailwind.mR6, {height:'100%',width:'50%'}]}
-                    inputStyle={[{color:'black'}]}
-                  />
+            funcShow == 2 ?
+              <View style={{ width: '100%', height: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ width: '50%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20 }}>
+                  <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
+                    <TextInput
+                      disabled={isTaskIng}
+                      name="joinCode"
+                      label="任务码:    "
+                      value={joinCode}
+                      onChange={(e) => joinValueChange(e)}
+                      style={[tailwind.mR6, { height: '100%', width: '50%' }]}
+                    // inputStyle={[{ color: 'black' }]}
+                    />
+                  </View>
+                  <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
+                    <TextInput
+                      disabled={isTaskIng}
+                      name="joinPersonName"
+                      label="您的名称:"
+                      value={joinPersonName}
+                      onChange={(e) => joinValueChange(e)}
+                      style={[tailwind.mR6, { height: '100%', width: '50%' }]}
+                    />
+                  </View>
                 </View>
-                <View style={{width:'100%',height:'20%',flexDirection:'row',alignItems:'center'}}>
-                  <TextInput
-                    name="joinPersonName"
-                    label="您的名称:"
-                    onChange={(e)=>joinValueChange(e)}
-                    style={[tailwind.mR6, {height:'100%',width:'50%'}]}
-                  />
-                </View>
+                {
+                  isTaskIng &&
+                  <View style={{ width: '45%', height: '100%', alignItems: 'center', marginLeft: 20 }}>
+                    {/* 参与者信息表格 */}
+                    <View style={{ width: '100%', height: '70%', padding: 10 }}>
+                      <Table.Box
+                        loading={loading}
+                        numberOfPages={pageTotal}
+                        total={total}
+                        pageNo={page?.pageNo || 0}
+                        onPageChange={e =>
+                          setPage({
+                            pageSize: 10,
+                            pageNo: e,
+                          })
+                        }
+                        header={
+                          <Table.Header>
+                            <Table.Title title="序号" flex={1} />
+                            <Table.Title title="账号" flex={4} />
+                            <Table.Title title="人员" flex={3} />
+                            <Table.Title title="加入时间" flex={2} />
+                            <Table.Title title="状态" flex={2} />
+                          </Table.Header>
+                        }>
+                        <FlatList
+                          data={list}
+                          showsVerticalScrollIndicator={false}
+                          renderItem={({ item, index }) => (
+                            <Table.Row key={index}>
+                              <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                              <Table.Cell flex={4}>{item.user}</Table.Cell>
+                              <Table.Cell flex={3}>{item.userName}</Table.Cell>
+                              <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
+                              <Table.Cell flex={2}>{item.status}</Table.Cell>
+                            </Table.Row>
+                          )}
+                        />
+                      </Table.Box>
+                    </View>
+                    <View style={{ width: '100%', height: '30%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                      <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => deleteTask()}>删除任务</Button>
+                      <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => goWork()}>开始检测</Button>
+                    </View>
+                  </View>
+                }
+                {/* 创建任务成功后的左侧表单遮罩层 */}
+                {
+                  list.length ?
+                    <View style={{
+                      width: '54%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20, backgroundColor: '#fff',
+                      position: 'absolute', opacity: 0.3, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 40
+                    }}>
+                      {/* <Text>不允许创建多个任务</Text> */}
+                    </View>
+                    : <></>
+                }
               </View>
-              {
-                list.length ?
-                <View style={{width:'45%',height:'100%',alignItems:'center',marginLeft:20}}>
-                  {/* 参与者信息表格 */}
-                  <View style={{width:'100%',height:'70%',padding:10}}>
-                    <Table.Box
-                      loading={loading}
-                      numberOfPages={pageTotal}
-                      total={total}
-                      pageNo={page?.pageNo || 0}
-                      onPageChange={e =>
-                        setPage({
-                          pageSize: 10,
-                          pageNo: e,
-                        })
-                      }
-                      header={
-                        <Table.Header>
-                          <Table.Title title="序号" flex={1} />
-                          <Table.Title title="账号" flex={4} />
-                          <Table.Title title="人员" flex={3} />
-                          <Table.Title title="加入时间" flex={2} />
-                          <Table.Title title="状态" flex={2} />
-                        </Table.Header>
-                      }>
-                      <FlatList
-                        data={list}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({item, index}) => (
-                          <Table.Row key={index}>
-                            <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                            <Table.Cell flex={4}>{item.user}</Table.Cell>
-                            <Table.Cell flex={3}>{item.userName}</Table.Cell>
-                            <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
-                            <Table.Cell flex={2}>{item.status}</Table.Cell>
-                          </Table.Row>
-                        )}
-                      />
-                    </Table.Box>
-                  </View>
-                  <View style={{width:'100%',height:'30%',flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                    <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>deleteTask()}>删除任务</Button>
-                    <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>goWork()}>开始检测</Button>
-                  </View>
-                </View> 
-                : <></>
-              }
-              {/* 创建任务成功后的左侧表单遮罩层 */}
-              {
-                list.length ? 
-                <View style={{width:'54%',height:'100%',alignItems:"center",paddingTop:50,paddingLeft:20,backgroundColor:'#fff',
-                position:'absolute',opacity:0.3,justifyContent:'flex-end',alignItems:'center',paddingBottom:40}}>
-                  {/* <Text>不允许创建多个任务</Text> */}
-                </View>
-                : <></>
-              }
-            </View>
-            : <></>
+              : <></>
           }
           {
-            funcShow == 3 ? 
-            <View style={{width:'100%',height:'100%',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-              <View style={{width:'50%',height:'100%',alignItems:'flex-start',paddingTop:50,paddingLeft:20}}>
-                <Text>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
-                <Text>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
-                <Text>3.协同检测盒子WiFi密码：jianlide</Text>
+            funcShow == 3 ?
+              <View style={{ width: '100%', height: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ width: '50%', height: '100%', alignItems: 'flex-start', paddingTop: 50, paddingLeft: 20 }}>
+                  <Text>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
+                  <Text>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
+                  <Text>3.协同检测盒子WiFi密码：jianlide</Text>
+                </View>
               </View>
-            </View>
-            : <></>
+              : <></>
           }
         </View>
-        
+
       </View>
       {/* 分割线 */}
       <Divider style={[tailwind.mB2]} />
       {/* 底部操作按钮 */}
       <View style={styles.modalFoote}>
         {/* 取消按钮，关闭模态框 */}
-        <Button style={[{backgroundColor: '#808285'}]} onPress={() => close()}>
+        <Button style={[{ backgroundColor: '#808285' }]} onPress={() => close()}>
           取消
         </Button>
         {/* 确认导入按钮 */}
-        <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>confirm()}>确认</Button>
+        {
+          ((funcShow !== 1) || (funcShow == 1 && !isTaskIng)) && <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => confirm()}>确认</Button>
+        }
       </View>
     </Modal>
   );
 });
 
-export default function ProjectDetail({route, navigation}) {
+export default function ProjectDetail({ route, navigation }) {
   // 全局参数 -- 桥幅属性、养护区列表、路线列表
   const {
-    state: {bridgeside, areaList, routeList},
+    state: { bridgeside, areaList, routeList },
     dispatch,
   } = React.useContext(GlobalContext);
 
   // 全局样式
   const {
-    state: {theme},
+    state: { theme },
   } = React.useContext(ThemeContext);
 
   // 表格数据
@@ -1275,9 +1704,9 @@ export default function ProjectDetail({route, navigation}) {
 
   // 当前选中的路线
   const [routecode, setRoutecode] = React.useState('');
-  
+
   // 项目管理传递过来的 此条项目的数据
-  const {project} = route.params;
+  const { project } = route.params;
 
   // 顶部导航项
   const headerItems = [
@@ -1318,7 +1747,7 @@ export default function ProjectDetail({route, navigation}) {
   // 桥梁名称列表
   const [bridgeList, setBridgeList] = useState()
 
-  const [screenWidth,setScreenWidth] = useState() //屏幕宽度
+  const [screenWidth, setScreenWidth] = useState() //屏幕宽度
 
   // 检索条件变化、页码变化、项目变化时 触发
   React.useEffect(() => {
@@ -1344,14 +1773,23 @@ export default function ProjectDetail({route, navigation}) {
       .then(async res => {
         setLoading(false);
         let _list = res.list
-        for(let i=0;i<_list.length;i++){
+        for (let i = 0; i < _list.length; i++) {
           let bindDataParams = {
-            bridgeid:_list[i].bridgeid,
+            bridgeid: _list[i].bridgeid,
             projectid: project.projectid,
           }
-          await bridgeProjectBind.get(bindDataParams).then(async res1=>{
-            await bridgeReportMember.searchUpDate(res1.bridgereportid).then(res2=>{
-              if(res2){
+          await bridgeProjectBind.get(bindDataParams).then(async res1 => {
+            _list[i].bridgereportid = res1.bridgereportid
+            await synergyTest.getByReportid(res1.bridgereportid).then(synergyTestData => {
+              if (synergyTestData) {
+                _list[i].isSynergyTest = true
+                _list[i].synergyTestData = synergyTestData
+              } else {
+                _list[i].isSynergyTest = false
+              }
+            })
+            await bridgeReportMember.searchUpDate(res1.bridgereportid).then(res2 => {
+              if (res2) {
                 _list[i].date = res2.u_date
               }
             })
@@ -1360,27 +1798,27 @@ export default function ProjectDetail({route, navigation}) {
         setList(_list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
-        res.list.forEach((item)=> {
+        res.list.forEach((item) => {
           bridgeList.push({
             project,
             list,
-            bridgeName:item.bridgename,
-            bridgeStation:item.bridgestation,
-            bridgeId:item.bridgeid
+            bridgeName: item.bridgename,
+            bridgeStation: item.bridgestation,
+            bridgeId: item.bridgeid
           })
         })
         setBridgeList(bridgeList)
         setBriStorage(bridgeList)
         // console.log('bridgeList',bridgeList);
       })
-      .finally(() => {});
+      .finally(() => { });
 
-      setImgType('cooperate')
+    setImgType('cooperate')
   }, [search, page, project]);
 
   // 当选中的养护区变化时，重置选中的路线
   React.useEffect(() => {
-    setRoutecode({code: ''});
+    setRoutecode({ code: '' });
   }, [areacode]);
 
   // 点击查询
@@ -1431,14 +1869,14 @@ export default function ProjectDetail({route, navigation}) {
   };
 
   // 全局保存桥梁列表数据
-  const setBriStorage = async(value) => {
+  const setBriStorage = async (value) => {
     // console.log('valueeeeeee',value);
     try {
       const name = 'briList'
       const jsonValue = JSON.stringify(value)
       await AsyncStorage.setItem(name, jsonValue)
     } catch (err) {
-      console.log('setBriStorage err',err);
+      console.log('setBriStorage err', err);
     }
   }
 
@@ -1457,8 +1895,8 @@ export default function ProjectDetail({route, navigation}) {
     }
   };
 
-// 协同检测按钮 不同状态对应的图标
-  const [imgType,setImgType] = useState('cooperate')
+  // 协同检测按钮 不同状态对应的图标
+  const [imgType, setImgType] = useState('cooperate')
 
   // 点击选择框 -- 单选
   const handleCheck = item => {
@@ -1490,24 +1928,19 @@ export default function ProjectDetail({route, navigation}) {
     console.log('点击了goAhead');
   }
 
-  const openCoop = () => {
-    console.log('打开弹窗');
-    coopRef.current.open(project,nowChecked,navigation,route)
-
-    // 打开弹窗后重置表格选中状态、图标状态
-    setNowChecked(null);
-    // setImgType('cooperateDis')
-    // if(nowChecked){
-    //   console.log('选择的桥梁数据',nowChecked);
-    //   coopRef.current.open(project,nowChecked)
-
-    //   // 打开弹窗后重置表格选中状态、图标状态
-    //   setNowChecked(null);
-    //   setImgType('cooperateDis')
-    // } else {
-    //   console.log('未选择桥梁');
-    // }
-    
+  const openCoop = async () => {
+    // 读取本地的协同检测数据
+    let synergyData_local = JSON.parse(await AsyncStorage.getItem('synergyData'))
+    // 选中了桥梁 && 存在协同检测 && 选择的不是正在检测的
+    if (nowChecked && synergyData_local && (nowChecked.bridgereportid !== synergyData_local.synergyData.bridgereportid)) {
+      // 当前桥梁不是协同检测桥梁
+      Alert.alert('提示', '当前协同检测桥梁为\n桥梁名称：' + synergyData_local.bridge.bridgename + '  桩号：' + synergyData_local.bridge.bridgestation + '\n请勿重复创建')
+      return
+    } else {
+      coopRef.current.open(project, nowChecked, navigation, route)
+      // 打开弹窗后重置表格选中状态、图标状态
+      setNowChecked(null);
+    }
   }
 
   return (
@@ -1535,13 +1968,13 @@ export default function ProjectDetail({route, navigation}) {
         // 导入桥梁 按钮
         {
           // name: 'table-arrow-left',
-          img:'induct',
+          img: 'induct',
           onPress: () => inductsRef.current.open(project),
         },
         // 克隆桥梁按钮
         {
           // name: 'content-duplicate',
-          img:'clone',
+          img: 'clone',
           onPress: () => cloneRef.current.open(project),
         },
         // 占位空按钮
@@ -1549,133 +1982,137 @@ export default function ProjectDetail({route, navigation}) {
         {},
         // 协同检测按钮
         {
-          img:imgType,
+          img: imgType,
           onPress: () => openCoop(),
         },
       ]}>
-        <View style={
-        screenWidth > 830 ? [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:27,width:715,top:1,borderRadius:5}] 
-        :
-        [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+      <View style={
+        screenWidth > 830 ? [styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', right: 27, width: 715, top: 1, borderRadius: 5 }]
+          :
+          [styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', right: 19, width: 715, top: 1, borderRadius: 5 }]
       }>
-          {/* 检索 */}
-          <View style={[styles.searchCard]}>
-            <TextInput
-              name="bridgename"
-              label="桥梁名称:"
-              ref={el => (searchRef.current[0] = el)}
-              style={[tailwind.mR4, tailwind.flex1]}
-            />
-            <Select
-              name="areacode"
-              label="路段:"
-              labelName="name"
-              valueName="code"
-              value={areacode.code}
-              onChange={setAreacode}
-              style={[tailwind.mR4, tailwind.flex1]}
-              ref={el => (searchRef.current[1] = el)}
-              values={[{name: '无', code: ''}, ...(areaList || [])]}
-            />
-            <Select
-              name="routecode"
-              label="路线:"
-              labelName="name"
-              valueName="code"
-              value={routecode.code}
-              onChange={setRoutecode}
-              style={[tailwind.mR4, tailwind.flex1]}
-              ref={el => (searchRef.current[2] = el)}
-              values={[
-                {name: '无', code: ''},
-                ...(routeList?.filter(item => item.pcode === areacode.code) || []),
-              ]}
-            />
-            {/* <Button onPress={handleSearch} style={[{backgroundColor: '#2b427d'}]}>检索</Button> */}
-            {/* 检索按钮 */}
-            <ImageBackground
-              source={require('../../../iconImg/search.png')} style={[{width:40, height:40}]}
-            >
-              {/* <Pressable OnPressIn={handleSearch}></Pressable> */}
-              <Text onPress={handleSearch}>{'         '}</Text>
-            </ImageBackground>
-          </View>
-          <View style={tailwind.mY1} />
-          {/* 表格 */}
-          <View style={[styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',padding:10}]}>
-            <Table.Box
-              loading={loading}
-              numberOfPages={pageTotal}
-              total={total}
-              pageNo={page?.pageNo || 0}
-              showPageJump={true}
-              onPageChange={e =>
-                setPage({
-                  pageSize: 10,
-                  pageNo: e,
-                })
-              }
-              header={
-                <Table.Header>
-                  <Table.Title title="序号" flex={1} />
-                  <Table.Title title="桩号" flex={2} />
-                  <Table.Title title="桥梁名称" flex={3} />
-                  <Table.Title title="桥幅" />
-                  {/* <Table.Title title="病害构件" />
-                  <Table.Title title="媒体文件" /> */}
-                  <Table.Title title="检测日期" flex={2} />
-                  <Table.Title title="存储" />
-                  <Table.Title title="选择" flex={1} />
-                </Table.Header>
-              }>
-              <FlatList
-                data={list}
-                extraData={list}
-                renderItem={({item, index}) => (
-                  <Table.Row key={index}>
-                    <Table.Cell flex={1}>{index + page.pageNo*10 +1}</Table.Cell>
-                    <Table.Cell flex={2} notText={true}>
-                      {/* 跳转到桥梁检测 */}
-                      <TouchableOpacity
-                        // style={[styles.linkBox]}
-                        onPress={() =>
-                          navigation.navigate('Collection/Detect/BridgeTest', {
-                            project: project,
-                            bridge: item,
-                            list: route.params.list
-                          })
-                        }>
-                        <Text style={[{color: '#2b427d', textDecorationLine: 'underline'}]}>{item.bridgestation}</Text>
-                      </TouchableOpacity>
-                    </Table.Cell>
-                    <Table.Cell flex={3}>{item.bridgename}</Table.Cell>
-                    <Table.Cell>
-                      {
-                        bridgeside?.find(it => it.paramid === item.bridgeside)
-                          .paramname
-                      }
-                    </Table.Cell>
-                    {/* <Table.Cell>{item.member}</Table.Cell>
-                    <Table.Cell>{item.file}</Table.Cell> */}
-                    <Table.Cell flex={2}>
-                      {(item.date || '').split(' ')[0] || '未检测'}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {item.datasources === 0 ? '本地' : '云端'}
-                    </Table.Cell>
-                    <Table.Cell flex={1}>
-                      <Checkbox
-                        checked={(nowChecked || {}) === item}
-                        onPress={() => handleCheck(item)}
-                      />
-                    </Table.Cell>
-                  </Table.Row>
-                )}
-              />
-            </Table.Box>
-          </View>
+        {/* 检索 */}
+        <View style={[styles.searchCard]}>
+          <TextInput
+            name="bridgename"
+            label="桥梁名称:"
+            ref={el => (searchRef.current[0] = el)}
+            style={[tailwind.mR4, tailwind.flex1]}
+          />
+          <Select
+            name="areacode"
+            label="路段:"
+            labelName="name"
+            valueName="code"
+            value={areacode.code}
+            onChange={setAreacode}
+            style={[tailwind.mR4, tailwind.flex1]}
+            ref={el => (searchRef.current[1] = el)}
+            values={[{ name: '无', code: '' }, ...(areaList || [])]}
+          />
+          <Select
+            name="routecode"
+            label="路线:"
+            labelName="name"
+            valueName="code"
+            value={routecode.code}
+            onChange={setRoutecode}
+            style={[tailwind.mR4, tailwind.flex1]}
+            ref={el => (searchRef.current[2] = el)}
+            values={[
+              { name: '无', code: '' },
+              ...(routeList?.filter(item => item.pcode === areacode.code) || []),
+            ]}
+          />
+          {/* <Button onPress={handleSearch} style={[{backgroundColor: '#2b427d'}]}>检索</Button> */}
+          {/* 检索按钮 */}
+          <ImageBackground
+            source={require('../../../iconImg/search.png')} style={[{ width: 40, height: 40 }]}
+          >
+            {/* <Pressable OnPressIn={handleSearch}></Pressable> */}
+            <Text onPress={handleSearch}>{'         '}</Text>
+          </ImageBackground>
         </View>
-       
+        <View style={tailwind.mY1} />
+        {/* 表格 */}
+        <View style={[styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', padding: 10 }]}>
+          <Table.Box
+            loading={loading}
+            numberOfPages={pageTotal}
+            total={total}
+            pageNo={page?.pageNo || 0}
+            showPageJump={true}
+            onPageChange={e =>
+              setPage({
+                pageSize: 10,
+                pageNo: e,
+              })
+            }
+            header={
+              <Table.Header>
+                <Table.Title title="序号" flex={1} />
+                <Table.Title title="桩号" flex={2} />
+                <Table.Title title="桥梁名称" flex={3} />
+                <Table.Title title="桥幅" />
+                {/* <Table.Title title="病害构件" />
+                  <Table.Title title="媒体文件" /> */}
+                <Table.Title title="检测日期" flex={2} />
+                <Table.Title title="协同检测" flex={2} />
+                <Table.Title title="存储" />
+                <Table.Title title="选择" flex={1} />
+              </Table.Header>
+            }>
+            <FlatList
+              data={list}
+              extraData={list}
+              renderItem={({ item, index }) => (
+                <Table.Row key={index}>
+                  <Table.Cell flex={1}>{index + page.pageNo * 10 + 1}</Table.Cell>
+                  <Table.Cell flex={2} notText={true}>
+                    {/* 跳转到桥梁检测 */}
+                    <TouchableOpacity
+                      // style={[styles.linkBox]}
+                      onPress={() =>
+                        navigation.navigate('Collection/Detect/BridgeTest', {
+                          project: project,
+                          bridge: item,
+                          list: route.params.list
+                        })
+                      }>
+                      <Text style={[{ color: '#2b427d', textDecorationLine: 'underline' }]}>{item.bridgestation}</Text>
+                    </TouchableOpacity>
+                  </Table.Cell>
+                  <Table.Cell flex={3}>{item.bridgename}</Table.Cell>
+                  <Table.Cell>
+                    {
+                      bridgeside?.find(it => it.paramid === item.bridgeside)
+                        .paramname
+                    }
+                  </Table.Cell>
+                  {/* <Table.Cell>{item.member}</Table.Cell>
+                    <Table.Cell>{item.file}</Table.Cell> */}
+                  <Table.Cell flex={2}>
+                    {(item.date || '').split(' ')[0] || '未检测'}
+                  </Table.Cell>
+                  <Table.Cell flex={2}>
+                    {item.isSynergyTest ? item.synergyTestData.state : '非协同'}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {item.datasources === 0 ? '本地' : '云端'}
+                  </Table.Cell>
+                  <Table.Cell flex={1}>
+                    <Checkbox
+                      checked={(nowChecked || {}) === item}
+                      onPress={() => handleCheck(item)}
+                    />
+                  </Table.Cell>
+                </Table.Row>
+              )}
+            />
+          </Table.Box>
+        </View>
+      </View>
+
       {/* 克隆桥梁 模态框 */}
       <Clone ref={cloneRef} onSubmitOver={handleSubmitOver} />
       {/* 导入桥梁 模态框 */}
@@ -1686,7 +2123,7 @@ export default function ProjectDetail({route, navigation}) {
         project={project}
         onSubmitOver={handleSubmitOver}
       />
-      
+
       {/* 协同检测 模态框 */}
       <Cooperate ref={coopRef} onSubmitOver={handleSubmitOver} />
     </CommonView>

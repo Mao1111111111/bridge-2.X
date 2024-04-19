@@ -16,6 +16,7 @@ import {ddl as partsPlanGenesisDataDdl} from '../database/parts_plan_genesis_dat
 import {ddl as uploadLogDdl} from '../database/upload_log';
 import {ddl as userDdl} from '../database/user';
 import {ddl as uploadStateRecordDdl} from '../database/upload_state_record';
+import {ddl as synergyTest} from '../database/synergy_test';
 
 SQLite.enablePromise(true);
 let _db = null;
@@ -70,6 +71,8 @@ export const init = async () => {
   await _db.executeSql(userDdl);
   // 上传状态记录表
   await _db.executeSql(uploadStateRecordDdl);
+  // 协同检测表
+  await _db.executeSql(synergyTest);
 };
 export const db = () => _db;
 
