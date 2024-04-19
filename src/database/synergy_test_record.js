@@ -34,7 +34,7 @@ export const save = async data => {
         , memberid
         , membername
         , user
-    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
   const param = [
     data.bridgeid,
