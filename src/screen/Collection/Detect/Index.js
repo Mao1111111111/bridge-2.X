@@ -3,6 +3,7 @@ import NavigatorStack from '../../../components/NavigatorStack';
 import ProjectDetail from './ProjectDetail';
 import Project from './Project';
 import Index from './BridgeTest/Index';
+import { Provider as SynergyProvider } from '../Detect/SynergyProvider'
 
 export default function () {
   const routes = [
@@ -20,5 +21,5 @@ export default function () {
     },
   ];
 
-  return <NavigatorStack routes={routes} />;
+  return <SynergyProvider><NavigatorStack routes={routes} /></SynergyProvider>;
 }
