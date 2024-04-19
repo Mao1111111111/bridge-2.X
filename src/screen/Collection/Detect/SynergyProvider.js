@@ -22,7 +22,9 @@ const Provider = props => {
     wsConnectionState: false,
     // deviceId
     synergydeviceId:'',
-    wsConnection : React.useRef()
+    wsConnection : React.useRef(),
+    // 用户检测记录
+    userRecordData:null
   });
 
   useEffect(() => {

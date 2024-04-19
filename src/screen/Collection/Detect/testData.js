@@ -25,6 +25,112 @@ const bridgeData = {
 }
 
 
+const recordData = {
+    b10001:{
+        // memberid
+        g114mxibm3qwzo4mxibm4eka8_b100001_lmtyqnix_0:[
+            {
+                // 账号
+                username: 'test_user',
+                // 真实姓名
+                realname: '张三',
+                // 用户id
+                userid: '111',
+                // 设备id
+                deviceId: 'ee234235',
+                // 是否是自己
+                isSelf: 'true'
+            },
+            {
+                // 账号
+                username: 'guest',
+                // 真实姓名
+                realname: '李四',
+                // 用户id
+                userid: '22',
+                // 设备id
+                deviceId: '22434',
+                // 是否是自己
+                isSelf: 'false'
+            }
+        ],
+        g114mxibm3qwzo4mxibm4eka8_b100001_lmtyqnix_1:[
+            {
+                // 账号
+                username: 'test_user',
+                // 真实姓名
+                realname: '张三',
+                // 用户id
+                userid: '111',
+                // 设备id
+                deviceId: 'ee234235',
+                // 是否是自己
+                isSelf: 'true'
+            }
+        ]
+    },
+    b10002:{}
+}
+
+let data = {
+    b10001:[
+        {
+            memberid:'g114mxibm3qwzo4mxibm4eka8_b100001_lmtyqnix_0',
+            memberName:'1-1',
+            userGroup:['张三','李四']
+        },
+        {
+            memberid:'g114mxibm3qwzo4mxibm4eka8_b100001_lmtyqnix_0',
+            memberName:'1-1',
+            userGroup:['张三','李四']
+        }
+    ],
+    b20001:[
+        {
+            memberid:'g114mxibm3qwzo4mxibm4eka8_b100001_lmtyqnix_0',
+            memberName:'1-1',
+            userGroup:['张三','李四']
+        }
+    ]
+}
+
+const recordDataList = {
+    b10001:[
+        {
+            // 用户信息
+            userInfo:{
+                // 账号
+                username: 'test_user',
+                // 真实姓名
+                realname: '张三',
+                // 用户id
+                userid: '111',
+                // 设备id
+                deviceId: 'ee234235'
+            },
+            // 构件基本信息
+            member:{
+                "u_date": "2024-04-19 09:22:02",
+                "memberstatus": "100",
+                "dpscores_auto": 0,
+                "orderdesc": 10,
+                "membername": "1-1#",
+                "bridgeid": "g114mxibm3qwzo",
+                "membertype": "b100001",
+                "memberid": "g114mxibm3qwzo4mxibm4eka8_b100001_lmtyqnix_0",
+                "bridgereportid": "g114mxibm3qwzo4mxibm4eka8",
+                "position": "b10",
+                "stepno": 1,
+                "id": 109
+            },
+            // 检测病害信息 -- disease里内容取决于上传的是什么样的
+            disease:{},
+            // 检测时间
+            data:''
+        }
+    ]
+}
+
 
 // 需要的 桥梁数据
 const needBridgeData = {

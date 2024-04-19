@@ -641,16 +641,26 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     open: async (project, bridge, navigation, route) => {
       setNavigation(navigation)
       setRoute(route)
-      // bridge 选择打开的桥梁信息
+
+      // 设置全局的deviceId
+      dispatch({ type: 'synergydeviceId', payload: deviceId })
+
+      // 选择桥梁进入时，默认显示创建任务
+      if (bridge) {
+        setFuncShow(1)
+      } else if (!bridge) {
+        // 未选择桥梁进入时，默认显示参与任务
+        setFuncShow(2)
+      }
+      // 设置桥梁信息，没有选中桥梁信息时，bridgeInfo 为 null
       setBridgeInfo(bridge)
+      
       // 读取本地的协同检测数据
       let synergyData_local = JSON.parse(await AsyncStorage.getItem('synergyData'))
       // 设置全局数据 -- 当前协同检测信息
       dispatch({ type: 'curSynergyInfo', payload: synergyData_local })
-      // 设置全局的deviceId
-      dispatch({ type: 'synergydeviceId', payload: deviceId })
       // 如果存在本地协同检测的数据
-      if (!synergyData_local) {
+      if (synergyData_local) {
         // 设置检测中
         setIsTaskIng(true)
         // 设置任务码
@@ -683,14 +693,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         setJoinCode('')
       }
 
-      // project 是当前项目信息
-      if (bridge) {
-        // 选择桥梁进入时，默认显示创建任务
-        setFuncShow(1)
-      } else if (!bridge) {
-        // 未选择桥梁进入时，默认显示参与任务
-        setFuncShow(2)
-      }
       setProject(project)
       // 设置projectid
       setProjectId(project.projectid);
@@ -1288,7 +1290,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   // 删除任务
   const deleteTask = async () => {
     // 数据库更新状态
-    await synergyTest.updateState({ state: '协同结束', bridgereportid: bridgeInfo.bridgereportid })
+    await synergyTest.updateState({ state: '协同结束', bridgereportid: curSynergyInfo.synergyData.bridgereportid })
     // 删除本地存储
     AsyncStorage.setItem('synergyData', '')
     // 删除本地的ws
@@ -1401,7 +1403,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                     <TextInput
                       disabled={isTaskIng}
                       name="personName"
-                      label="您的名称:"
+                      label="创建者:    "
                       value={personName}
                       onChange={(e) => valueChange(e)}
                       style={[tailwind.mR6, { height: '100%', width: '50%' }]}
@@ -1456,14 +1458,13 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                 }
                 {/* 创建任务成功后的左侧表单遮罩层 */}
                 {
-                  list.length ?
+                  isTaskIng &&
                     <View style={{
                       width: '54%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20, backgroundColor: '#fff',
                       position: 'absolute', opacity: 0.3, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 40
                     }}>
                       <Text>不允许创建多个任务</Text>
                     </View>
-                    : <></>
                 }
               </View>
               : funcShow == 1 && !bridgeInfo ?
