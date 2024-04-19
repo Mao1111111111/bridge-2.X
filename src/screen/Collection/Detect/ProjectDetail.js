@@ -1272,10 +1272,12 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     try {
       // 关闭弹窗页面
       close()
+      let bridge = curSynergyInfo.bridge
+      bridge['status'] = 'isTasking'
       // 跳转
       navigation.navigate('Collection/Detect/BridgeTest', {
         project: project,
-        bridge: bridgeInfo,
+        bridge: bridge,
         list: route.params.list
       })
     } catch (error) {

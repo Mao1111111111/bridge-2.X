@@ -36,16 +36,16 @@ const Provider = props => {
       state.wsConnection.current.onopen = () => {}
       // 接收
       state.wsConnection.current.onmessage = (e) => {
-        console.log("接收", e);
         let data = JSON.parse(e.data)
-        console.log("data", data);
-        console.log("curSynergyInfo", state.curSynergyInfo);
+        console.log("data",data);
         if (data.type == 'ally_status') {
           // 处理协同人员状态
           let SynergyStateList = dealSynergyPeople(data.content)
-          console.log("SynergyStateList",SynergyStateList);
           // 设置协同人员状态 ally_status
           dispatch({ type: 'ally_status', payload: SynergyStateList })
+        }else if(data.type == 'record'){
+          // 处理检测记录数据
+          dealTestRecordData(data)
         }
       };
       // 关闭时触发
@@ -82,6 +82,11 @@ const Provider = props => {
       }
     })
     return newList
+  }
+
+  // 检测记录数据
+  const dealTestRecordData = (data) => {
+    // 
   }
 
 
