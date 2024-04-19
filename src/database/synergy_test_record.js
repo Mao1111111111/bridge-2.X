@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS "synergy_test_record" (
     isCoop TEXT NOT NULL, -- 是否是协同检测的数据
     memberid TEXT NOT NULL, -- 构件id
     membername TEXT NOT NULL, -- 构件名称
-    user TEXT NOT NULL, -- 协同检测任务中填入的用户名称
+    user TEXT NOT NULL -- 协同检测任务中填入的用户名称
 );
 `;
 
