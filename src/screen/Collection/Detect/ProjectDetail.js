@@ -1263,10 +1263,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   }
   // ----- 参与任务 end -------
 
-  // 发送测试
-  const sendTest = () => {
-    wsConnection.current.send(JSON.stringify({ 'aa': 1 }));  // send a message
-  }
 
   // 前往检测
   const goWork = () => {
@@ -1376,7 +1372,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                       inputStyle={[{ color: 'black' }]}
                     />
                     {/* <Button style={{ backgroundColor: '#2b427d' }} onPress={() => changeTaskCode()}>生成任务码</Button> */}
-                    <Button style={{ backgroundColor: '#2b427d' }} onPress={() => copyCode(taskCode)}>复制任务码</Button>
+                    
                   </View>
                   <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
                     <TextInput
@@ -1451,6 +1447,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                       </Table.Box>
                     </View>
                     <View style={{ width: '100%', height: '30%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                      <Button style={{ backgroundColor: '#2b427d' }} onPress={() => copyCode(taskCode)}>复制任务码</Button>
                       <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => deleteTask()}>删除任务</Button>
                       <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => goWork()}>开始检测</Button>
                     </View>
@@ -1565,7 +1562,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                   <Text>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
                   <Text>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
                   <Text>3.协同检测盒子WiFi密码：jianlide</Text>
-                  <Button title='发送' onPress={sendTest}></Button>
                 </View>
               </View>
               : <></>
