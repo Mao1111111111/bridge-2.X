@@ -269,9 +269,9 @@ const getZhuipoAndHupo = (name, values, code, kua) => {
 
       if (qiaotai > 0 && kua) {
         console.log('构件命名规则222');
-        _data.push(getItem(`${kua}#台护坡`, kua));
-        _data.push(getItem(`${kua}#台左锥坡`, kua));
-        _data.push(getItem(`${kua}#台右锥坡`, kua));
+        // _data.push(getItem(`${kua}#台护坡`, kua));
+        // _data.push(getItem(`${kua}#台左锥坡`, kua));
+        // _data.push(getItem(`${kua}#台右锥坡`, kua));
       } else {
         _data.push(getItem('0#台护坡', 1));
         _data.push(getItem('0#台左锥坡', 1));
