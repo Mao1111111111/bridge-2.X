@@ -1,4 +1,4 @@
 /* 
     版本号记录
  */
-export const version = 'v3.18'
+export const version = 'v3.19'
