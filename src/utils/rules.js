@@ -207,6 +207,7 @@ const getYiQiang = (name, values, code, kua, bridgewallName) => {
 const getZhuipoAndHupo = (name, values, code, kua) => {
   // console.log('规则',name, values.bridgeSlope,);
   const qiaotai = parseInt(values.b200001num || 0, 10);
+  console.log('qiaotai',qiaotai,kua);
   const _data = [];
   const getItem = (membername, _qiaotai) => ({
     position: code.pCode,
@@ -262,15 +263,19 @@ const getZhuipoAndHupo = (name, values, code, kua) => {
         _data.push(getItem(`${kua}#台右锥坡`, kua));
       }
     } else {
+      console.log('构件命名规则');
       // =====================新增部件时的创建规则=============================
-      _data.push(getItem('0#台护坡', 1));
-      _data.push(getItem('0#台左锥坡', 1));
-      _data.push(getItem('0#台右锥坡', 1));
+      
 
-      if (qiaotai > 0) {
+      if (qiaotai > 0 && kua) {
+        console.log('构件命名规则222');
         _data.push(getItem(`${kua}#台护坡`, kua));
         _data.push(getItem(`${kua}#台左锥坡`, kua));
         _data.push(getItem(`${kua}#台右锥坡`, kua));
+      } else {
+        _data.push(getItem('0#台护坡', 1));
+        _data.push(getItem('0#台左锥坡', 1));
+        _data.push(getItem('0#台右锥坡', 1));
       }
     }
   }
