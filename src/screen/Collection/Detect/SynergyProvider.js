@@ -17,14 +17,14 @@ const Provider = props => {
     // 协同检测数据
     synergyTestData: null,
     // ws
-    ws:'',
+    ws: '',
     //  连接状态
     wsConnectionState: false,
     // deviceId
-    synergydeviceId:'',
-    wsConnection : React.useRef(),
+    synergydeviceId: '',
+    wsConnection: React.useRef(),
     // 用户检测记录
-    userRecordData:null
+    userRecordData: null
   });
 
   useEffect(() => {
@@ -35,17 +35,17 @@ const Provider = props => {
       // 创建连接
       state.wsConnection.current = new WebSocket(path);
       // 打开
-      state.wsConnection.current.onopen = () => {}
+      state.wsConnection.current.onopen = () => { }
       // 接收
       state.wsConnection.current.onmessage = (e) => {
         let data = JSON.parse(e.data)
-        console.log("data",data);
+        console.log("data", data);
         if (data.type == 'ally_status') {
           // 处理协同人员状态
           let SynergyStateList = dealSynergyPeople(data.content)
           // 设置协同人员状态 ally_status
           dispatch({ type: 'ally_status', payload: SynergyStateList })
-        }else if(data.type == 'record'){
+        } else if (data.type == 'record') {
           // 处理检测记录数据
           dealTestRecordData(data)
         }
@@ -65,21 +65,21 @@ const Provider = props => {
   const dealSynergyPeople = (list) => {
     let participator = JSON.parse(state.curSynergyInfo.synergyData.participator)
     let newList = []
-    list.offline.forEach(item=>{
-      let existIndex = participator.findIndex(i=>i.deviceId==item)
-      if(existIndex!==-1){
+    list.offline.forEach(item => {
+      let existIndex = participator.findIndex(i => i.deviceId == item)
+      if (existIndex !== -1) {
         newList.push({
           ...participator[existIndex],
-          state:'offline'
+          state: 'offline'
         })
       }
     })
-    list.online.forEach(item=>{
-      let existIndex = participator.findIndex(i=>i.deviceId==item)
-      if(existIndex!==-1){
+    list.online.forEach(item => {
+      let existIndex = participator.findIndex(i => i.deviceId == item)
+      if (existIndex !== -1) {
         newList.push({
           ...participator[existIndex],
-          state:'online'
+          state: 'online'
         })
       }
     })

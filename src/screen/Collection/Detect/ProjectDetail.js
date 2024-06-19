@@ -654,7 +654,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       }
       // 设置桥梁信息，没有选中桥梁信息时，bridgeInfo 为 null
       setBridgeInfo(bridge)
-      
+
       // 读取本地的协同检测数据
       let synergyData_local = JSON.parse(await AsyncStorage.getItem('synergyData'))
       // 设置全局数据 -- 当前协同检测信息
@@ -741,9 +741,9 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       .finally(() => setLoading(false));
   }, [keywords, page, projectid]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setList(ally_status)
-  },[ally_status])
+  }, [ally_status])
 
   // 关闭时
   const close = () => {
@@ -1370,7 +1370,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                       inputStyle={[{ color: 'black' }]}
                     />
                     {/* <Button style={{ backgroundColor: '#2b427d' }} onPress={() => changeTaskCode()}>生成任务码</Button> */}
-                    
+
                   </View>
                   <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
                     <TextInput
@@ -1454,12 +1454,12 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                 {/* 创建任务成功后的左侧表单遮罩层 */}
                 {
                   isTaskIng &&
-                    <View style={{
-                      width: '54%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20, backgroundColor: '#fff',
-                      position: 'absolute', opacity: 0.3, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 40
-                    }}>
-                      <Text>不允许创建多个任务</Text>
-                    </View>
+                  <View style={{
+                    width: '54%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20, backgroundColor: '#fff',
+                    position: 'absolute', opacity: 0.3, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 40
+                  }}>
+                    <Text>不允许创建多个任务</Text>
+                  </View>
                 }
               </View>
               : funcShow == 1 && !bridgeInfo ?
@@ -1543,12 +1543,12 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                 {/* 创建任务成功后的左侧表单遮罩层 */}
                 {
                   isTaskIng &&
-                    <View style={{
-                      width: '54%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20, backgroundColor: '#fff',
-                      position: 'absolute', opacity: 0.3, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 40
-                    }}>
-                      {/* <Text>不允许创建多个任务</Text> */}
-                    </View>
+                  <View style={{
+                    width: '54%', height: '100%', alignItems: "center", paddingTop: 50, paddingLeft: 20, backgroundColor: '#fff',
+                    position: 'absolute', opacity: 0.3, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 40
+                  }}>
+                    {/* <Text>不允许创建多个任务</Text> */}
+                  </View>
                 }
               </View>
               : <></>
