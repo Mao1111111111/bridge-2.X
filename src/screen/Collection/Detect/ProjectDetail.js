@@ -856,7 +856,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
 
   // 创建任务 的输入
   const valueChange = (e) => {
-    console.log('输入内容', e);
     if (e.name == 'personName') {
       setPersonName(e.value)
     }
@@ -864,7 +863,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
 
   // 参与任务 的输入
   const joinValueChange = (e) => {
-    console.log('输入内容', e);
     if (e.name == 'joinCode') {
       setJoinCode(e.value)
     } else if (e.name == 'joinPersonName') {
@@ -932,7 +930,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     // 处理初始桥梁数据
     let data = await dealInitBridgeData()
     // url
-    // let url = 'http://'+IP+':8000/task/'+taskInfo.peopleNum+'/'
+    // let url = 'http://'+IP+':8000/task/'+personNum+'/'
     let url = 'http://10.1.1.71:8000/task/' + personNum + '/'
     fetch(url, {
       method: 'POST',
@@ -989,7 +987,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         }
       })
       .catch(error => {
-        Alert.alert('请连接指定WIFI,' + JSON.stringify(error))
+        Alert.alert('请连接指定WIFI,' + error)
       });
   }
 
@@ -1123,7 +1121,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       Alert.alert('请输入任务号')
       return
     }
-    if (!(/^\d{5}$/.test(joinCode))) {
+    if (!(/^\d{4}$/.test(joinCode))) {
       Alert.alert('请输入正确的任务号格式不正确')
       return
     }
@@ -1577,7 +1575,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         <Button style={[{ backgroundColor: '#808285' }]} onPress={() => close()}>
           取消
         </Button>
-        {/* 确认导入按钮 */}
+        {/* 确认按钮 */}
         {
           ((funcShow !== 1) || (funcShow == 1 && !isTaskIng)) && <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => confirm()}>确认</Button>
         }
