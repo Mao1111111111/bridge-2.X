@@ -31,6 +31,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { NetworkInfo } from 'react-native-network-info';
 import dayjs from 'dayjs';
+import CooperateTest from '../components/CooperateTest';
 // 克隆
 const Clone = React.forwardRef(({ onSubmitOver }, ref) => {
   // 从 全局参数 中 获取 桥幅属性
@@ -643,7 +644,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       setRoute(route)
 
       // 设置全局的deviceId
-      dispatch({ type: 'synergydeviceId', payload: deviceId })
+      // dispatch({ type: 'synergydeviceId', payload: deviceId })
 
       // 选择桥梁进入时，默认显示创建任务
       if (bridge) {
@@ -1081,33 +1082,29 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       .then(result => {
         if (result.status == 'success') {
           // 地址
-          let path = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
+          let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
           // 将ws存入本地
-          AsyncStorage.setItem('synergyWS', result.ws)
-          // 创建连接
-          wsConnection.current = new WebSocket(path);
-          // 打开
-          wsConnection.current.onopen = () => {
-            // 任务创建成功后改变'是否在任务中'的状态
-            setIsTaskIng(true)
-          }
-          // 接收
-          wsConnection.current.onmessage = (e) => {
-            console.log("接收", e);
-          };
-          // 关闭时触发
-          wsConnection.current.onclose = (e) => {
-            console.log("关闭", e);
-          };
-          // 处理错误
-          wsConnection.current.onerror = (e) => {
-            console.log('错误', e);
-          };
+          AsyncStorage.setItem('synergyWS', WSPath)
+          // 设置参与任务码
+          setJoinCode(taskid)
+          // 设置参与人名字
+          setJoinPersonName(joinPersonName)
+          // 设置全局ws
+          dispatch({ type: 'WSPath', payload: WSPath })
+          // 设置任务状态打开
+          dispatch({ type: 'wsConnectionState', payload: true })
+          // 任务创建成功后改变'是否在任务中'的状态
+          setIsTaskIng(true)
         } else {
-
+          if (result.detail.msg == 'invalid room_id') {
+            Alert.alert('任务号不存在')
+          }else{
+            Alert.alert(result)
+          }
         }
       })
       .catch(err => {
+        Alert.alert(err)
         console.log("err", err);
       });
   }
@@ -1165,11 +1162,13 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         } else {
           if (result.detail.msg == 'invalid room_id') {
             Alert.alert('任务号不存在')
-            return
+          }else{
+            Alert.alert(result)
           }
         }
       })
       .catch(err => {
+        Alert.alert(err)
         console.log("err", err);
       });
   }
@@ -1623,6 +1622,9 @@ export default function ProjectDetail({ route, navigation }) {
   // 协同检测 模态框的 引用
   const coopRef = React.useRef();
 
+  // 协同检测引用
+  const coopTestRef = React.useRef();
+
   // 桥梁引用
   const bridgeRef = React.useRef();
 
@@ -1876,6 +1878,10 @@ export default function ProjectDetail({ route, navigation }) {
     }
   }
 
+  const openCoopTest = () => {
+    coopTestRef.current.open(project, nowChecked, navigation, route)
+  }
+
   return (
     // 公共box
     <CommonView
@@ -1916,7 +1922,8 @@ export default function ProjectDetail({ route, navigation }) {
         // 协同检测按钮
         {
           img: imgType,
-          onPress: () => openCoop(),
+          // onPress: () => openCoop(),
+          onPress: () => openCoopTest(),
         },
       ]}>
       <View style={
@@ -2059,6 +2066,9 @@ export default function ProjectDetail({ route, navigation }) {
 
       {/* 协同检测 模态框 */}
       <Cooperate ref={coopRef} onSubmitOver={handleSubmitOver} />
+
+      {/* 协同检测 模态框 */}
+      <CooperateTest ref={coopTestRef} onSubmitOver={handleSubmitOver} ></CooperateTest>
     </CommonView>
   );
 }

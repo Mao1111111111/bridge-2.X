@@ -10,32 +10,33 @@ const Consumer = Context.Consumer;
 // 全局的state
 const Provider = props => {
   const [state, dispatch] = React.useReducer(reducer, {
+    // WSPath
+    WSPath: '',
+    // ws开启
+    wsOpen:false,
+    //  连接状态 未连接、已连接、断开、结束
+    wsConnectionState: '未连接',
+    // ws对象
+    wsConnection: React.useRef(),
     // 当前协同检测信息
     curSynergyInfo: null,
+
     // 在线状态
     ally_status: null,
     // 协同检测数据
     synergyTestData: null,
-    // ws
-    ws: '',
-    //  连接状态
-    wsConnectionState: false,
-    // deviceId
-    synergydeviceId: '',
-    wsConnection: React.useRef(),
     // 用户检测记录
     userRecordData: null
   });
 
   useEffect(() => {
-    if (state.wsConnectionState) {
-      console.log("111");
-      // 地址
-      let path = 'ws://10.1.1.71:8000' + state.ws + '?user=' + state.synergydeviceId
+    if (state.wsOpen) {
       // 创建连接
-      state.wsConnection.current = new WebSocket(path);
+      state.wsConnection.current = new WebSocket(state.WSPath);
       // 打开
-      state.wsConnection.current.onopen = () => { }
+      state.wsConnection.current.onopen = () => {
+        dispatch({ type: 'wsConnectionState', payload: '已连接' })
+      }
       // 接收
       state.wsConnection.current.onmessage = (e) => {
         let data = JSON.parse(e.data)
@@ -59,7 +60,7 @@ const Provider = props => {
         console.log('错误', e);
       };
     }
-  }, [state.wsConnectionState])
+  }, [state.wsOpen])
 
   // 处理在线人员
   const dealSynergyPeople = (list) => {
