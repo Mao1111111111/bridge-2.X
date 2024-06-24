@@ -357,12 +357,7 @@ const Provider = ({bridge, project, children}) => {
         // 桥梁报告文件表，保存数据
         await bridgeReportFile.save(data);
         // 文件gps表，存入数据
-        try{
-         await fileGPS.save(gpsData)
-        }catch(e){
-          console.log('-',e);
-        }
-        
+        await fileGPS.save(gpsData)
       }
       // 更新 -- 即 对图片位置添加图片
       if (state.cacheFileData.isUpdate) {
