@@ -23,6 +23,7 @@ const initWatchGPS = () => {
   Geolocation.watchPosition(
     _position => {
       console.info(_position);
+      console.log("position",position);
       position === _position;
     },
     error => {
@@ -41,7 +42,8 @@ const initWatchGPS = () => {
 
 export default {
   initWatch: () => {
-    initWatchGPS()
+    console.log("111");
+    initWatchAmapGPS()
   },
   getPosition: () => position,
 };

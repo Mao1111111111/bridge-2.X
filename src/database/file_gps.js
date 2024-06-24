@@ -55,38 +55,26 @@ export const save = async data => {
 export const update = async data => {
   const sql = `
     update file_gps 
-      set bridgename = '?'
-      , bridgename = ?
-      , bridgetype = ?
-      , bridgestation = ?
-      , b16 = ?
-      , areacode = ?
-      , routecode = ?
-      , bridgefunc = ?
-      , bridgeside = ?
-      , bridgestruct = ?
-      , userid = ?
-      , u_date = ?
+      set u_date = ?
       , longitude = ?
       , latitude = ?
-      , bridgeconfig = ?
-    where bridgeid = ?`;
+      , accuracy = ?
+      , altitude = ?
+    where mediaid = ?`;
 
   await db().executeSql(sql, [
-    data.bridgename,
-    data.bridgetype,
-    data.bridgestation,
-    data.b16,
-    data.areacode,
-    data.routecode,
-    data.bridgefunc,
-    data.bridgeside,
-    data.bridgestruct,
-    data.userid,
-    data.u_date,
+    data.u_date ||dayjs().format('YYYY-MM-DD HH:mm:ss'),
     data.longitude,
     data.latitude,
-    data.bridgeconfig,
-    data.bridgeid,
+    data.accuracy,
+    data.altitude,
+    data.mediaid,
   ]);
+};
+
+export const remove = async mediaid => {
+  const sql =
+    'delete from file_gps where mediaid = ?';
+  const param = [mediaid];
+  await db().executeSql(sql, param);
 };
