@@ -42,7 +42,6 @@ const initWatchGPS = () => {
 
 export default {
   initWatch: () => {
-    console.log("111");
     initWatchAmapGPS()
   },
   getPosition: () => position,
