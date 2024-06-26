@@ -24,13 +24,12 @@ const initWatchGPS = () => {
   Geolocation.watchPosition(
     _position => {
       position = {
-        ..._position,
+        ..._position.coords,
         errorCode:0
       };
     },
     error => {
       // See error code charts below.
-      console.log(error.code, error.message);
       position={
         errorCode:error.code,
         locationDetail:error.message
