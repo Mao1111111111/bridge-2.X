@@ -3,7 +3,7 @@
  */
 import React, { useEffect, useState } from 'react'
 import Modal from '../../../components/Modal'
-import { View, StyleSheet, Pressable, Text, Alert } from 'react-native'
+import { View, StyleSheet, Pressable, Text, Alert, DeviceEventEmitter } from 'react-native'
 import { tailwind } from 'react-native-tailwindcss';
 import { TextInput } from '../../../components/Input';
 import Button from '../../../components/Button';
@@ -20,6 +20,8 @@ import * as synergyTest from '../../../database/synergy_test';
 import { loop } from '../../../utils/common';
 import dayjs from 'dayjs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Clipboard from '@react-native-clipboard/clipboard';
+import Loading from '../../../components/Loading';
 
 const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
     const {
@@ -28,12 +30,14 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
     const {
         state: { wsConnectionState, synergyTestData, curSynergyInfo, wsConnection },
         dispatch
-      } = React.useContext(synergyContext);
+    } = React.useContext(synergyContext);
 
     // 模态框显示
     const [visible, setVisible] = useState(false)
     // 当前顶部tab
     const [curTopItem, setCurTopItem] = useState('创建任务')
+    // 模态框loading
+    const [isLoading, setIsLoading] = useState(false)
     // 项目数据
     const [project, setProject] = useState(null)
     // 桥梁数据
@@ -54,7 +58,8 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
     // 暴露给父组件的函数
     React.useImperativeHandle(ref, () => ({
         // 打开
-        open: (project, bridge, navigation, route) => {
+        open: async (project, bridge, navigation, route) => {
+            console.log("bridge",bridge);
             // 设置项目数据
             setProject(project)
             // 设置桥梁数据
@@ -63,21 +68,51 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
             setCurTopItem(bridge ? '创建任务' : '参与任务')
             // 显示模态框
             setVisible(true)
+            // 获取本地协同检测数据
+            let _curSynergyInfo = JSON.parse(await AsyncStorage.getItem('curSynergyInfo'))
+            // 存在协同检测信息
+            if (_curSynergyInfo) {
+                // 设置模态框loading
+                setIsLoading(true)
+                // 将协同信息存入全局
+                dispatch({ type: 'curSynergyInfo', payload: _curSynergyInfo })
+                // 获取ws本地地址
+                let _WSPath = await AsyncStorage.getItem('WSPath')
+                // 设置全局ws路径
+                dispatch({ type: 'WSPath', payload: _WSPath })
+                // 设置任务状态打开
+                dispatch({ type: 'wsOpen', payload: true })
+                // 设置模态框loading
+                setIsLoading(false)
+            } else {
+                // 不存在协同检测信息，清除填写的内容
+                setTaskCode('')
+                setPersonNum('1')
+                setCreator('')
+                setJoinCode('')
+                setJoinName('')
+            }
         }
     }))
 
     // 监听ws连接状态
     useEffect(() => {
-        if(wsConnectionState!=='已连接'){
+        console.log("wsConnectionState",wsConnectionState);
+        if (wsConnectionState == '已连接') {
+            // 设置页面内容
             setTaskCode(curSynergyInfo.taskId)
             setPersonNum(curSynergyInfo.synergyPeopleNum)
             setCreator(JSON.parse(curSynergyInfo.creator).realname)
             setJoinCode(curSynergyInfo.taskId)
-            JSON.parse(curSynergyInfo.participator).forEach(item=>{
-                if(item.isSelf=='true'){
+            JSON.parse(curSynergyInfo.participator).forEach(item => {
+                if (item.isSelf == 'true') {
                     setJoinName(item.realname)
                 }
             })
+            setIsTaskIng(true)
+        }
+        if (wsConnectionState == '已关闭' || wsConnectionState == '错误') {
+            setIsTaskIng(false)
         }
     }, [wsConnectionState])
 
@@ -125,10 +160,16 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
             return
         }
 
+        // 设置模态框loading
+        setIsLoading(true)
+
         // 获取所连接wifi的ip
         NetworkInfo.getGatewayIPAddress().then(IP => {
             // 创建任务并加入房间
             creatTaskFetch(IP)
+        }).catch(e => {
+            // 设置模态框loading
+            setIsLoading(false)
         })
     }
     // 创建任务fetch
@@ -183,7 +224,7 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
                         await synergyTest.save(synergyData)
                     }
                     // 将数据存入本地
-                    await AsyncStorage.setItem('synergyData', JSON.stringify(synergyData))
+                    await AsyncStorage.setItem('curSynergyInfo', JSON.stringify(synergyData))
                     // 将协同信息存入全局
                     dispatch({ type: 'curSynergyInfo', payload: synergyData })
                     // 加入任务
@@ -194,6 +235,8 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
             })
             .catch(error => {
                 Alert.alert('请连接指定WIFI,2' + error)
+                // 设置模态框loading
+                setIsLoading(false)
             });
     }
     // 处理初始桥梁数据
@@ -285,25 +328,72 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
             .then(result => {
                 if (result.status == 'success') {
                     // 地址
+                    // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
                     let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
                     // 将ws地址存入本地
-                    AsyncStorage.setItem('synergyWS', WSPath)
+                    AsyncStorage.setItem('WSPath', WSPath)
                     // 设置全局ws路径
                     dispatch({ type: 'WSPath', payload: WSPath })
                     // 设置任务状态打开
                     dispatch({ type: 'wsOpen', payload: true })
+                    // 设置模态框loading
+                    setIsLoading(false)
                 } else {
                     if (result.detail.msg == 'invalid room_id') {
                         Alert.alert('任务号不存在')
                     } else {
-                        Alert.alert('ws失败1：'+result)
+                        Alert.alert('ws失败1：' + result)
                     }
+                    // 设置模态框loading
+                    setIsLoading(false)
                 }
             })
             .catch(err => {
-                Alert.alert('ws失败2：'+err)
+                Alert.alert('ws失败2：' + err)
                 console.log("err", err);
+                // 设置模态框loading
+                setIsLoading(false)
             });
+    }
+    // 复制任务码
+    const copyCode = async () => {
+        // 写入
+        Clipboard.setString(taskCode);
+        // 读取
+        let str = await Clipboard.getString();
+        if (str) {
+            Alert.alert('提示', '复制任务码成功【' + str + '】');
+        }
+    }
+    // 删除任务 - 创建任务部分
+    const CTDeleteTask = async () => {
+        // 设置模态框loading
+        setIsLoading(true)
+        // 检测记录表--更新检测状态
+        await synergyTest.updateState({ state: '检测结束', bridgereportid: bridge.bridgereportid })
+        // 清除本地数据
+        await AsyncStorage.removeItem('curSynergyInfo')
+        // 请求本地ws地址
+        await AsyncStorage.removeItem('WSPath')
+        // 清空全局协同信息
+        dispatch({ type: 'curSynergyInfo', payload: null })
+        // 清除全局ws地址
+        dispatch({ type: 'WSPath', payload: '' })
+        // 清除任务状态
+        dispatch({ type: 'wsOpen', payload: false })
+        // 处理页面字段
+        setTaskCode('')
+        setPersonNum('1')
+        setCreator('')
+        setJoinCode('')
+        setJoinName('')
+        setIsTaskIng(false)
+        // 设置模态框loading
+        setIsLoading(false)
+    }
+    // 开始检测 - 创建任务部分
+    const CTGoWork = () => {
+
     }
 
 
@@ -333,114 +423,135 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
                     <Text style={{ color: curTopItem == '使用帮助' ? '#ffffff' : '#808285' }}>使用帮助</Text>
                 </Pressable>
             </View>
-            {/* 内容盒子 */}
-            <View style={styles.contentBox}>
-                {/* 创建任务 */}
-                {
-                    curTopItem == '创建任务' &&
-                    <View style={styles.taskConAllBox}>
-                        {/* 左侧 */}
-                        <View style={styles.taskLeftBox}>
-                            <TextInput
-                                name="taskCode"
-                                label="任务码:    "
-                                disabled
-                                value={taskCode}
-                                style={[styles.InputBox]}
-                                inputStyle={styles.inputStyle} />
-                            <View style={styles.taskLeftRowBox}>
-                                <TextInput
-                                    name="personNum"
-                                    label="协同人数:"
-                                    disabled
-                                    value={personNum}
-                                    style={[styles.InputBox2]}
-                                    inputStyle={styles.inputStyle} />
-                                {
-                                    !isTaskIng &&
-                                    <>
-                                        <Button style={styles.addNumBtn} onPress={() => personNumChange(1)}>+</Button>
-                                        <Button style={styles.addNumBtn} onPress={() => personNumChange(-1)}>-</Button>
-                                    </>
-                                }
-                            </View>
-                            <TextInput
-                                name="creator"
-                                label="创建者:    "
-                                disabled={isTaskIng}
-                                value={creator}
-                                style={[styles.InputBox]}
-                                inputStyle={styles.inputStyle}
-                                onChange={(e) => setCreator(e.value)} />
+            {
+                isLoading ? <Loading text='加载中...'></Loading> :
+                    <>
+                        {/* 内容盒子 */}
+                        <View style={styles.contentBox}>
+                            {/* 创建任务 */}
+                            {
+                                curTopItem == '创建任务' &&
+                                <View style={styles.taskConAllBox}>
+                                    {/* 左侧 */}
+                                    <View style={styles.taskLeftBox}>
+                                        {
+                                            isTaskIng && <TextInput
+                                                name="taskCode"
+                                                label="任务码:    "
+                                                disabled
+                                                value={taskCode}
+                                                style={[styles.InputBox]}
+                                                inputStyle={styles.inputStyle} />
+                                        }
+                                        <View style={styles.taskLeftRowBox}>
+                                            <TextInput
+                                                name="personNum"
+                                                label="协同人数:"
+                                                disabled
+                                                value={personNum}
+                                                style={[styles.InputBox2]}
+                                                inputStyle={styles.inputStyle} />
+                                            {
+                                                !isTaskIng &&
+                                                <>
+                                                    <Button style={styles.addNumBtn} onPress={() => personNumChange(1)}>+</Button>
+                                                    <Button style={styles.addNumBtn} onPress={() => personNumChange(-1)}>-</Button>
+                                                </>
+                                            }
+                                        </View>
+                                        <TextInput
+                                            name="creator"
+                                            label="创建者:    "
+                                            disabled={isTaskIng}
+                                            value={creator}
+                                            style={[styles.InputBox]}
+                                            inputStyle={styles.inputStyle}
+                                            onChange={(e) => setCreator(e.value)} />
+                                    </View>
+                                    {/* 左侧表单遮罩层 */}
+                                    {
+                                        isTaskIng &&
+                                        <View style={styles.leftFormShelter}>
+                                            <Text>不允许创建多个任务</Text>
+                                        </View>
+                                    }
+                                    {/* 右侧 表格+操作按钮 */}
+                                    {
+                                        isTaskIng &&
+                                        <View style={[styles.rightBox]}>
+                                            {/* 表格 */}
+                                            <View style={[styles.rightTableBox]}></View>
+                                            {/* 操作按钮 */}
+                                            <View style={[styles.rightActionBox]}>
+                                                <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
+                                                <Button style={[styles.rightBtn]} onPress={CTDeleteTask}>删除任务</Button>
+                                                <Button style={[styles.rightBtn]} onPress={CTGoWork}>开始检测</Button>
+                                            </View>
+                                        </View>
+                                    }
+                                </View>
+                            }
+                            {/* 参与任务 */}
+                            {
+                                curTopItem == '参与任务' &&
+                                <View style={styles.taskConAllBox}>
+                                    {/* 左侧 */}
+                                    <View style={styles.taskLeftBox}>
+                                        <TextInput
+                                            name="joinCode"
+                                            label="任务码:    "
+                                            disabled={isTaskIng}
+                                            value={joinCode}
+                                            style={[styles.InputBox]}
+                                            inputStyle={styles.inputStyle}
+                                            onChange={(e) => setJoinCode(e.value)} />
+                                        <TextInput
+                                            name="joinName"
+                                            label="您的名称:"
+                                            disabled={isTaskIng}
+                                            value={joinName}
+                                            style={[styles.InputBox]}
+                                            inputStyle={styles.inputStyle}
+                                            onChange={(e) => setJoinName(e.value)} />
+                                    </View>
+                                    {/* 左侧表单遮罩层 */}
+                                    {
+                                        isTaskIng &&
+                                        <View style={styles.leftFormShelter}>
+                                            <Text>协同任务进行中</Text>
+                                        </View>
+                                    }
+                                </View>
+                            }
+                            {/* 使用帮助 */}
+                            {
+                                curTopItem == '使用帮助' &&
+                                <View style={styles.helpBox}>
+                                    <Text style={styles.helpText}>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
+                                    <Text style={styles.helpText}>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
+                                    <Text style={styles.helpText}>3.协同检测盒子WiFi密码：jianlide</Text>
+                                </View>
+                            }
                         </View>
-                        {/* 左侧表单遮罩层 */}
-                        {
-                            isTaskIng &&
-                            <View style={styles.leftFormShelter}>
-                                <Text>不允许创建多个任务</Text>
-                            </View>
-                        }
-                    </View>
-                }
-                {/* 参与任务 */}
-                {
-                    curTopItem == '参与任务' &&
-                    <View style={styles.taskConAllBox}>
-                        {/* 左侧 */}
-                        <View style={styles.taskLeftBox}>
-                            <TextInput
-                                name="joinCode"
-                                label="任务码:    "
-                                disabled={isTaskIng}
-                                value={joinCode}
-                                style={[styles.InputBox]}
-                                inputStyle={styles.inputStyle}
-                                onChange={(e) => setJoinCode(e.value)} />
-                            <TextInput
-                                name="joinName"
-                                label="您的名称:"
-                                disabled={isTaskIng}
-                                value={joinName}
-                                style={[styles.InputBox]}
-                                inputStyle={styles.inputStyle}
-                                onChange={(e) => setJoinName(e.value)} />
+                        {/* 分割线 */}
+                        <Divider style={[tailwind.mB2]} />
+                        {/* 底部操作按钮 */}
+                        <View style={styles.modalFoote}>
+                            {/* 取消按钮，关闭模态框 */}
+                            <Button style={[styles.closeBtn]} onPress={closeModal}>取消</Button>
+                            {/* 确认按钮 */}
+                            {
+                                curTopItem == '创建任务' && (!isTaskIng) && <Button style={[styles.okBtn]} onPress={createOk}>确认创建</Button>
+                            }
+                            {
+                                curTopItem == '参与任务' && (!isTaskIng) && <Button style={[styles.okBtn]}>确认参与</Button>
+                            }
+                            {
+                                curTopItem == '使用帮助' && <Button style={[styles.okBtn]} onPress={closeModal}>确认</Button>
+                            }
                         </View>
-                        {/* 左侧表单遮罩层 */}
-                        {
-                            isTaskIng &&
-                            <View style={styles.leftFormShelter}>
-                                <Text>协同任务进行中</Text>
-                            </View>
-                        }
-                    </View>
-                }
-                {/* 使用帮助 */}
-                {
-                    curTopItem == '使用帮助' &&
-                    <View style={styles.helpBox}>
-                        <Text style={styles.helpText}>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
-                        <Text style={styles.helpText}>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
-                        <Text style={styles.helpText}>3.协同检测盒子WiFi密码：jianlide</Text>
-                    </View>
-                }
-            </View>
-            {/* 分割线 */}
-            <Divider style={[tailwind.mB2]} />
-            {/* 底部操作按钮 */}
-            <View style={styles.modalFoote}>
-                {/* 取消按钮，关闭模态框 */}
-                <Button style={[styles.closeBtn]} onPress={closeModal}>取消</Button>
-                {/* 确认按钮 */}
-                {
-                    curTopItem == '创建任务' && (!isTaskIng) && <Button style={[styles.okBtn]} onPress={createOk}>确认创建</Button>
-                }
-                {
-                    curTopItem == '参与任务' && (!isTaskIng) && <Button style={[styles.okBtn]}>确认参与</Button>
-                }
-                {
-                    curTopItem == '使用帮助' && <Button style={[styles.okBtn]}>确认</Button>
-                }
-            </View>
+                    </>
+            }
         </Modal>)
 })
 
@@ -531,6 +642,27 @@ const styles = StyleSheet.create({
         backgroundColor: '#808285'
     },
     okBtn: {
+        backgroundColor: '#2b427d'
+    },
+    rightBox: {
+        width: '45%',
+        height: '100%',
+        alignItems: 'center',
+        marginLeft: 20
+    },
+    rightTableBox: {
+        width: '100%',
+        height: '70%',
+        padding: 10
+    },
+    rightActionBox: {
+        width: '100%',
+        height: '30%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    rightBtn: {
         backgroundColor: '#2b427d'
     }
 })

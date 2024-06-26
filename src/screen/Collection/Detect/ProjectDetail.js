@@ -1590,6 +1590,10 @@ export default function ProjectDetail({ route, navigation }) {
     dispatch,
   } = React.useContext(GlobalContext);
 
+  const {
+    state: { ally_status, synergyTestData, curSynergyInfo, wsConnection, wsConnectionState }
+  } = React.useContext(synergyContext);
+
   // 全局样式
   const {
     state: { theme },
@@ -1749,7 +1753,7 @@ export default function ProjectDetail({ route, navigation }) {
       .finally(() => { });
 
     setImgType('cooperate')
-  }, [search, page, project]);
+  }, [search, page, project, wsConnectionState]);
 
   // 当选中的养护区变化时，重置选中的路线
   React.useEffect(() => {

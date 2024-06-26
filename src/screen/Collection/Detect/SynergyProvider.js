@@ -13,7 +13,7 @@ const Provider = props => {
     // WSPath
     WSPath: '',
     // ws开启
-    wsOpen:false,
+    wsOpen: false,
     //  连接状态 未连接、已连接、断开、结束
     wsConnectionState: '未连接',
     // ws对象
@@ -30,7 +30,8 @@ const Provider = props => {
   });
 
   useEffect(() => {
-    if (state.wsOpen) {
+    if (state.wsOpen && (state.wsConnectionState == '未连接')) {
+      console.log("11");
       // 创建连接
       state.wsConnection.current = new WebSocket(state.WSPath);
       // 打开
@@ -54,42 +55,57 @@ const Provider = props => {
       // 关闭时触发
       state.wsConnection.current.onclose = (e) => {
         console.log("关闭", e);
+        dispatch({ type: 'wsConnectionState', payload: '未连接' })
       };
       // 处理错误
       state.wsConnection.current.onerror = (e) => {
         console.log('错误', e);
+        dispatch({ type: 'wsConnectionState', payload: '错误' })
       };
+    }else if(state.wsOpen == false && state.wsConnectionState == '已连接'){
+      // 设置ws状态
+      dispatch({ type: 'wsConnectionState', payload: '未连接' })
+      // 关闭协同检测
+      closeWs()
+      console.log("3333");
     }
   }, [state.wsOpen])
 
   // 处理在线人员
   const dealSynergyPeople = (list) => {
-    let participator = JSON.parse(state.curSynergyInfo.synergyData.participator)
-    let newList = []
-    list.offline.forEach(item => {
-      let existIndex = participator.findIndex(i => i.deviceId == item)
-      if (existIndex !== -1) {
-        newList.push({
-          ...participator[existIndex],
-          state: 'offline'
-        })
-      }
-    })
-    list.online.forEach(item => {
-      let existIndex = participator.findIndex(i => i.deviceId == item)
-      if (existIndex !== -1) {
-        newList.push({
-          ...participator[existIndex],
-          state: 'online'
-        })
-      }
-    })
-    return newList
+    // let participator = JSON.parse(state.curSynergyInfo.synergyData.participator)
+    // let newList = []
+    // list.offline.forEach(item => {
+    //   let existIndex = participator.findIndex(i => i.deviceId == item)
+    //   if (existIndex !== -1) {
+    //     newList.push({
+    //       ...participator[existIndex],
+    //       state: 'offline'
+    //     })
+    //   }
+    // })
+    // list.online.forEach(item => {
+    //   let existIndex = participator.findIndex(i => i.deviceId == item)
+    //   if (existIndex !== -1) {
+    //     newList.push({
+    //       ...participator[existIndex],
+    //       state: 'online'
+    //     })
+    //   }
+    // })
+    // return newList
   }
 
   // 检测记录数据
   const dealTestRecordData = (data) => {
     // 
+  }
+
+  // 关闭协同检测
+  const closeWs = () => {
+    if (state.wsConnection.current) {
+      state.wsConnection.current?.close();
+    }
   }
 
 
