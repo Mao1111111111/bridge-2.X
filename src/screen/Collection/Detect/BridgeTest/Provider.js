@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import uuid from 'react-native-uuid';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet,DeviceEventEmitter} from 'react-native';
 import {tailwind, colors} from 'react-native-tailwindcss';
 import {ActivityIndicator} from 'react-native-paper';
 import reducer from '../../../../providers/reducer';
@@ -342,14 +342,21 @@ const Provider = ({bridge, project, children}) => {
         bridgereportid: state.bridgereportid,
         userid: userInfo.userid,
       };
-      const gpsData = {
-        bridgeid:data.bridgeid,
-        bridgereportid:data.bridgereportid,
-        mediaid:data.mediaid,
-        longitude:location.getPosition().longitude,
-        latitude:location.getPosition().latitude,
-        accuracy:location.getPosition().accuracy,
-        altitude:location.getPosition().altitude,
+      // gps数据处理
+      let gpsData = null
+      let gpsDataAll = location.getPosition()
+      if(gpsDataAll.errorCode==0){
+        gpsData = {
+          bridgeid:data.bridgeid,
+          bridgereportid:data.bridgereportid,
+          mediaid:data.mediaid,
+          longitude:gpsDataAll.longitude,
+          latitude:gpsDataAll.latitude,
+          accuracy:gpsDataAll.accuracy,
+          altitude:gpsDataAll.altitude,
+        }
+      }else{
+        DeviceEventEmitter.emit('toast', {title:'GPS获取失败,'+gpsDataAll.errorCode+':'+gpsDataAll.locationDetail,position:'bottom',duration:'LENGTH_LOG'})
       }
       if (state.cacheFileData.isAdd) {
         // 检测桥梁构件状态的媒体表bridge_report_member_checkstatus_media ，保存数据
@@ -357,7 +364,7 @@ const Provider = ({bridge, project, children}) => {
         // 桥梁报告文件表，保存数据
         await bridgeReportFile.save(data);
         // 文件gps表，存入数据
-        await fileGPS.save(gpsData)
+        gpsData&&await fileGPS.save(gpsData)
       }
       // 更新 -- 即 对图片位置添加图片
       if (state.cacheFileData.isUpdate) {
@@ -366,7 +373,7 @@ const Provider = ({bridge, project, children}) => {
         // 桥梁报告文件表，更新数据
         await checkstatusMedia.update(data);
         // 文件gps表，更新数据
-        await fileGPS.update(gpsData)
+        gpsData&&await fileGPS.update(gpsData)
         // 如果复制路径存在
         if (data.copypath) {
           // 删除原来的图片数据再保存
@@ -378,7 +385,7 @@ const Provider = ({bridge, project, children}) => {
             mediaid: newMediaid,
             parentmediaid: data.mediaid,
           });
-          await fileGPS.save({
+          gpsData&&await fileGPS.save({
             ...gpsData,
             mediaid: newMediaid
           })

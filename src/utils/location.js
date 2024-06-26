@@ -1,14 +1,15 @@
 import Geolocation from 'react-native-geolocation-service';
 
 // 高德定位
-import { init,addLocationListener,start, stop,setInterval} from "react-native-amap-geolocation";
+// import { init,addLocationListener,start, stop,setInterval} from "react-native-amap-geolocation";
+import {  init,addLocationListener,start, stop,setInterval } from 'react-native-amap-geolocation'
 
 let position = {};
 
 // 高德定位
 const initWatchAmapGPS = async () => {
   await init({
-      android: "a6b8a1e83fd87a7c31f1ae2d0777f479",
+      android: "6a8dfa3196f2eab56910cbbd668b1622", 
       ios:''
   });
   addLocationListener((location) => {
@@ -22,13 +23,18 @@ const initWatchAmapGPS = async () => {
 const initWatchGPS = () => {
   Geolocation.watchPosition(
     _position => {
-      console.info(_position);
-      console.log("position",position);
-      position === _position;
+      position = {
+        ..._position,
+        errorCode:0
+      };
     },
     error => {
       // See error code charts below.
       console.log(error.code, error.message);
+      position={
+        errorCode:error.code,
+        locationDetail:error.message
+      }
     },
     {
       enableHighAccuracy: false,
@@ -42,7 +48,7 @@ const initWatchGPS = () => {
 
 export default {
   initWatch: () => {
-    initWatchAmapGPS()
+    initWatchGPS()
   },
   getPosition: () => position,
 };
