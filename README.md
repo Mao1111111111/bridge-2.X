@@ -51,11 +51,11 @@ yarn android
 
 
 ## git分支说明
-- master：主分支，主要使用，上传使用华为云
+- master：主分支，主要使用
 - bridgeCreatesCaton：（未）解决创建桥梁时，新增大量构件时卡顿的问题，解决了一半，未合并到主分支
-- JXR：成员分支
-- newFormat：成员分支
-- newNavigator： 成员分支
+- JXR：成员分支(主分支)
+- newFormat：成员分支(主分支)
+- newNavigator： 成员分支(主分支)
 - main: 无用分支
 - newStyle_: 新样式，未应用到正式代码 master中
 - synergy_: 协同检测分支

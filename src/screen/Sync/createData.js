@@ -7,6 +7,7 @@ import * as bridgeReportMember from '../../database/bridge_report_member';
 import * as partsCheckstatusData from '../../database/parts_checkstatus_data';
 import * as bridgeReportFile from '../../database/bridge_report_file';
 import * as partsPlanGenesisData from '../../database/parts_plan_genesis_data';
+import * as fileGPS from '../../database/file_gps';
 import {score, numeric} from '../../utils/score';
 import {groupMap, listToGroup} from '../../utils/common';
 import { memberDeduplicate } from '../../utils/deduplicate'
@@ -549,7 +550,8 @@ export const getData =async (
     }
     // 处理照片数据
     try{
-      fileList.forEach(item=>{
+      for(let i=0;i<fileList.length;i++){
+        let item = fileList[i]
         // 真正应用的路径
         let appliedPath = item.filepath
         if(item.is_source==0){
@@ -560,7 +562,24 @@ export const getData =async (
         let pathName = pathArr[pathArr.length-1]
         item['appliedPath'] = appliedPath
         item['pathName'] = pathName
-      })
+        // 获取经纬度
+        let gpsINfo = await fileGPS.getForMediaid(item.mediaid)
+        if(gpsINfo){
+            let {
+            longitude,
+            latitude,
+            accuracy,
+            altitude
+          } = gpsINfo
+          item['gpsInfo'] = {
+            longitude,
+            latitude,
+            accuracy,
+            altitude
+          }
+        }
+        fileList[i] = item
+      }
     }catch(e){
       console.log('处理照片数据',e);
       return errorDeal(id,e,'处理照片数据失败')

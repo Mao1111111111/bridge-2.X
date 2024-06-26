@@ -12,6 +12,7 @@ import Chart from './Chart';
 import Setting from './Setting';
 import Login from './Login';
 import Lock from '../components/Lock';
+import NurToast from '../components/NurToast';
 
 
 export default function Main() {
@@ -164,6 +165,9 @@ export default function Main() {
         />
         {/* tab 导航 */}
         <NavigatorTabs routes={routes} headerItems={headerItems}  pid='P1001' />
+        <View style={{alignItems: "center"}}>
+          <NurToast />
+        </View>
       </NavigationContainer>
     </>
   ) : (

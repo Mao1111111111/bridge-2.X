@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import uuid from 'react-native-uuid';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet,DeviceEventEmitter} from 'react-native';
 import {tailwind, colors} from 'react-native-tailwindcss';
 import {ActivityIndicator} from 'react-native-paper';
 import reducer from '../../../../providers/reducer';
@@ -16,6 +16,7 @@ import * as bridgeProjectBind from '../../../../database/bridge_project_bind';
 import * as bridgeReportMember from '../../../../database/bridge_report_member';
 import * as partsCheckstatusData from '../../../../database/parts_checkstatus_data';
 import * as checkstatusMedia from '../../../../database/bridge_report_member_checkstatus_media';
+import * as fileGPS from '../../../../database/file_gps';
 import location from '../../../../utils/location';
 import storage from '../../../../utils/storage';
 import {loop, listToGroup} from '../../../../utils/common';
@@ -341,11 +342,29 @@ const Provider = ({bridge, project, children}) => {
         bridgereportid: state.bridgereportid,
         userid: userInfo.userid,
       };
+      // gps数据处理
+      let gpsData = null
+      let gpsDataAll = location.getPosition()
+      if(gpsDataAll.errorCode==0){
+        gpsData = {
+          bridgeid:data.bridgeid,
+          bridgereportid:data.bridgereportid,
+          mediaid:data.mediaid,
+          longitude:gpsDataAll.longitude,
+          latitude:gpsDataAll.latitude,
+          accuracy:gpsDataAll.accuracy,
+          altitude:gpsDataAll.altitude,
+        }
+      }else{
+        DeviceEventEmitter.emit('toast', {title:'GPS获取失败,'+gpsDataAll.errorCode+':'+gpsDataAll.locationDetail,position:'bottom',duration:'LENGTH_LOG'})
+      }
       if (state.cacheFileData.isAdd) {
         // 检测桥梁构件状态的媒体表bridge_report_member_checkstatus_media ，保存数据
         await checkstatusMedia.save(data);
         // 桥梁报告文件表，保存数据
         await bridgeReportFile.save(data);
+        // 文件gps表，存入数据
+        gpsData&&await fileGPS.save(gpsData)
       }
       // 更新 -- 即 对图片位置添加图片
       if (state.cacheFileData.isUpdate) {
@@ -353,22 +372,30 @@ const Provider = ({bridge, project, children}) => {
         await bridgeReportFile.update(data);
         // 桥梁报告文件表，更新数据
         await checkstatusMedia.update(data);
+        // 文件gps表，更新数据
+        gpsData&&await fileGPS.update(gpsData)
         // 如果复制路径存在
         if (data.copypath) {
           // 删除原来的图片数据再保存
           await checkstatusMedia.removeByParentmediaid(data.mediaid);
+          let newMediaid = uuid.v4()
           await checkstatusMedia.save({
             ...data,
             filepath: data.copypath,
-            mediaid: uuid.v4(),
+            mediaid: newMediaid,
             parentmediaid: data.mediaid,
           });
+          gpsData&&await fileGPS.save({
+            ...gpsData,
+            mediaid: newMediaid
+          })
         }
       }
       // 删除媒体
       if (state.cacheFileData.isDelete) {
         await checkstatusMedia.remove(data.mediaid);
         await bridgeReportFile.remove(data.mediaid);
+        await fileGPS.remove(data.mediaid);
       }
       const res = await bridgeReportFile.list({
         bridgeid: state.bridge.bridgeid,

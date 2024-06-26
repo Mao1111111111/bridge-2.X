@@ -18,6 +18,7 @@ import {ddl as userDdl} from '../database/user';
 import {ddl as uploadStateRecordDdl} from '../database/upload_state_record';
 import {ddl as synergyTest} from '../database/synergy_test';
 import {ddl as synergyTestRecord} from '../database/synergy_test_record';
+import {ddl as fileGPSDdl} from '../database/file_gps';
 
 SQLite.enablePromise(true);
 let _db = null;
@@ -76,6 +77,8 @@ export const init = async () => {
   await _db.executeSql(synergyTest);
   // 协同检测记录表
   await _db.executeSql(synergyTestRecord);
+  // 文件gps记录表
+  await _db.executeSql(fileGPSDdl);
 };
 export const db = () => _db;
 
