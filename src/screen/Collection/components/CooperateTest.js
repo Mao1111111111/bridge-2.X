@@ -371,41 +371,6 @@ export default function ({
             Alert.alert('提示', '复制任务码成功【' + str + '】');
         }
     }
-    // 删除任务 - 创建任务部分
-    const CTDeleteTask = async () => {
-        // 设置模态框loading
-        setIsLoading(true)
-        // 检测记录表--更新检测状态
-        await synergyTest.updateState({ state: '检测结束', bridgereportid: curSynergyInfo.bridgereportid })
-        // 清除本地数据
-        await AsyncStorage.removeItem('curSynergyInfo')
-        // 清楚本地协同桥梁信息
-        await AsyncStorage.removeItem('curSynergyBridgeInfo')
-        // 请求本地ws地址
-        await AsyncStorage.removeItem('WSPath')
-        // 清空全局协同信息
-        dispatch({ type: 'curSynergyInfo', payload: null })
-        // 清空全局协同桥梁信息
-        dispatch({ type: 'curSynergyBridgeInfo', payload: null })
-        // 清除全局ws地址
-        dispatch({ type: 'WSPath', payload: '' })
-        // 清除任务状态
-        dispatch({ type: 'wsOpen', payload: false })
-        // 处理页面字段
-        setTaskCode('')
-        setPersonNum('1')
-        setCreator('')
-        setJoinCode('')
-        setJoinName('')
-        setIsTaskIng(false)
-        // 设置模态框loading
-        setIsLoading(false)
-    }
-    // 开始检测 - 创建任务部分
-    const CTGoWork = () => {
-        // 协同检测开始
-        CoopIntoTest(curSynergyBridgeInfo)
-    }
 
     //------参与任务------
     // 确认参与
@@ -573,6 +538,43 @@ export default function ({
         }
     }
 
+    //------任务操作------
+    // 删除任务
+    const deleteTask = async () => {
+        // 设置模态框loading
+        setIsLoading(true)
+        // 检测记录表--更新检测状态
+        await synergyTest.updateState({ state: '检测结束', bridgereportid: curSynergyInfo.bridgereportid })
+        // 清除本地数据
+        await AsyncStorage.removeItem('curSynergyInfo')
+        // 清楚本地协同桥梁信息
+        await AsyncStorage.removeItem('curSynergyBridgeInfo')
+        // 请求本地ws地址
+        await AsyncStorage.removeItem('WSPath')
+        // 清空全局协同信息
+        dispatch({ type: 'curSynergyInfo', payload: null })
+        // 清空全局协同桥梁信息
+        dispatch({ type: 'curSynergyBridgeInfo', payload: null })
+        // 清除全局ws地址
+        dispatch({ type: 'WSPath', payload: '' })
+        // 清除任务状态
+        dispatch({ type: 'wsOpen', payload: false })
+        // 处理页面字段
+        setTaskCode('')
+        setPersonNum('1')
+        setCreator('')
+        setJoinCode('')
+        setJoinName('')
+        setIsTaskIng(false)
+        // 设置模态框loading
+        setIsLoading(false)
+    }
+    // 开始检测
+    const goWork = () => {
+        // 协同检测开始
+        CoopIntoTest(curSynergyBridgeInfo)
+    }
+
 
     return (
         <Modal
@@ -661,8 +663,8 @@ export default function ({
                                                 {/* 操作按钮 */}
                                                 <View style={[styles.rightActionBox]}>
                                                     <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
-                                                    <Button style={[styles.rightBtn]} onPress={CTDeleteTask}>删除任务</Button>
-                                                    <Button style={[styles.rightBtn]} onPress={CTGoWork}>开始检测</Button>
+                                                    <Button style={[styles.rightBtn]} onPress={deleteTask}>删除任务</Button>
+                                                    <Button style={[styles.rightBtn]} onPress={goWork}>开始检测</Button>
                                                 </View>
                                             </View>
                                         }
@@ -696,6 +698,20 @@ export default function ({
                                             isTaskIng &&
                                             <View style={styles.leftFormShelter}>
                                                 <Text>协同任务进行中</Text>
+                                            </View>
+                                        }
+                                        {/* 右侧 表格+操作按钮 */}
+                                        {
+                                            isTaskIng &&
+                                            <View style={[styles.rightBox]}>
+                                                {/* 表格 */}
+                                                <View style={[styles.rightTableBox]}></View>
+                                                {/* 操作按钮 */}
+                                                <View style={[styles.rightActionBox]}>
+                                                    <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
+                                                    <Button style={[styles.rightBtn]} onPress={deleteTask}>删除任务</Button>
+                                                    <Button style={[styles.rightBtn]} onPress={goWork}>开始检测</Button>
+                                                </View>
                                             </View>
                                         }
                                     </View>
