@@ -23,7 +23,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Loading from '../../../components/Loading';
 
-const CooperateTest = React.forwardRef(({ onSubmitOver, CoopIntoTest }, ref) => {
+const CooperateTest = React.forwardRef(({
+    project,
+    bridge,
+    closeModal,
+    CoopIntoTest }, ref) => {
     const {
         state: { networkStateAll, userInfo, deviceId },
     } = React.useContext(GlobalContext);
@@ -32,16 +36,10 @@ const CooperateTest = React.forwardRef(({ onSubmitOver, CoopIntoTest }, ref) => 
         dispatch
     } = React.useContext(synergyContext);
 
-    // 模态框显示
-    const [visible, setVisible] = useState(false)
     // 当前顶部tab
     const [curTopItem, setCurTopItem] = useState('创建任务')
     // 模态框loading
     const [isLoading, setIsLoading] = useState(false)
-    // 项目数据
-    const [project, setProject] = useState(null)
-    // 桥梁数据
-    const [bridge, setBridge] = useState(null)
     // 任务码
     const [taskCode, setTaskCode] = useState('')
     // 协同人数
@@ -55,53 +53,13 @@ const CooperateTest = React.forwardRef(({ onSubmitOver, CoopIntoTest }, ref) => 
     // 任务进行中
     const [isTaskIng, setIsTaskIng] = useState(false)
 
-    // 暴露给父组件的函数
-    React.useImperativeHandle(ref, () => ({
-        // 打开
-        open: async (project, bridge, navigation, route) => {
-            // 设置项目数据
-            setProject(project)
-            // 设置桥梁数据
-            setBridge(bridge)
-            // 设置顶部tab
-            setCurTopItem(bridge ? '创建任务' : '参与任务')
-            // 显示模态框
-            setVisible(true)
-            console.log("2");
-            // 获取本地协同检测数据
-            let _curSynergyInfo = JSON.parse(await AsyncStorage.getItem('curSynergyInfo'))
-            // 存在协同检测信息
-            if (_curSynergyInfo) {
-                // 设置模态框loading
-                setIsLoading(true)
-                // 将协同信息存入全局
-                dispatch({ type: 'curSynergyInfo', payload: _curSynergyInfo })
-                // 获取本地协同桥梁信息
-                let _curSynergyBridgeInfo = JSON.parse(await AsyncStorage.getItem('curSynergyBridgeInfo'))
-                // 将协同桥梁信息存入全局
-                dispatch({ type: 'curSynergyBridgeInfo', payload: _curSynergyBridgeInfo })
-                // 获取ws本地地址
-                let _WSPath = await AsyncStorage.getItem('WSPath')
-                // 设置全局ws路径
-                dispatch({ type: 'WSPath', payload: _WSPath })
-                // 设置任务状态打开
-                dispatch({ type: 'wsOpen', payload: true })
-                // 设置模态框loading
-                setIsLoading(false)
-            } else {
-                // 不存在协同检测信息，清除填写的内容
-                setTaskCode('')
-                setPersonNum('1')
-                setCreator('')
-                setJoinCode('')
-                setJoinName('')
-            }
-        }
-    }))
+    // 打开模态框时触发
+    useEffect(()=>{
+        initModal()
+    },[])
 
     // 监听ws连接状态
     useEffect(() => {
-        console.log("wsConnectionState", wsConnectionState);
         if (wsConnectionState == '已连接') {
             // 设置页面内容
             setTaskCode(curSynergyInfo.taskId)
@@ -118,15 +76,49 @@ const CooperateTest = React.forwardRef(({ onSubmitOver, CoopIntoTest }, ref) => 
         if (wsConnectionState == '已关闭' || wsConnectionState == '错误') {
             setIsTaskIng(false)
         }
+        // 设置模态框loading
+        setIsLoading(false)
     }, [wsConnectionState])
+
+    // 初始化数据
+    const initModal = async () => {
+        // 设置模态框loading
+        setIsLoading(true)
+        // 设置顶部tab
+        setCurTopItem(bridge ? '创建任务' : '参与任务')
+        // 获取本地协同检测数据
+        let _curSynergyInfo = JSON.parse(await AsyncStorage.getItem('curSynergyInfo'))
+        // 存在协同检测信息
+        if (_curSynergyInfo) {
+            // 将协同信息存入全局
+            dispatch({ type: 'curSynergyInfo', payload: _curSynergyInfo })
+            // 获取本地协同桥梁信息
+            let _curSynergyBridgeInfo = JSON.parse(await AsyncStorage.getItem('curSynergyBridgeInfo'))
+            // 将协同桥梁信息存入全局
+            dispatch({ type: 'curSynergyBridgeInfo', payload: _curSynergyBridgeInfo })
+            // 获取ws本地地址
+            let _WSPath = await AsyncStorage.getItem('WSPath')
+            // 设置全局ws路径
+            dispatch({ type: 'WSPath', payload: _WSPath })
+            // 设置任务状态打开
+            dispatch({ type: 'wsOpen', payload: true })
+        } else {
+            // 不存在协同检测信息，清除填写的内容
+            setTaskCode('')
+            setPersonNum('1')
+            setCreator('')
+            setJoinCode('')
+            setJoinName('')
+            // 设置模态框loading
+            setIsLoading(false)
+        }
+    }
 
     //-----模态框操作-----
     // 关闭模态框
-    const closeModal = () => {
-        // 关闭模态框
-        setVisible(false)
+    const closeModalOk = () => {
         // 调用父组件的回调
-        onSubmitOver()
+        closeModal()
     }
     // 顶部bar点击
     const topBarClick = (item) => {
@@ -347,8 +339,6 @@ const CooperateTest = React.forwardRef(({ onSubmitOver, CoopIntoTest }, ref) => 
                     dispatch({ type: 'WSPath', payload: WSPath })
                     // 设置任务状态打开
                     dispatch({ type: 'wsOpen', payload: true })
-                    // 设置模态框loading
-                    setIsLoading(false)
                 } else {
                     if (result.detail.msg == 'invalid room_id') {
                         Alert.alert('任务号不存在')
@@ -415,7 +405,6 @@ const CooperateTest = React.forwardRef(({ onSubmitOver, CoopIntoTest }, ref) => 
 
     return (
         <Modal
-            visible={visible}
             title="协同检测"
             pid="P1103"
             showHead={true}
@@ -425,7 +414,7 @@ const CooperateTest = React.forwardRef(({ onSubmitOver, CoopIntoTest }, ref) => 
             height={500}
             keyboardVerticalOffset={-50}
             //点击顶部关闭按钮
-            onClose={closeModal}
+            onClose={closeModalOk}
         >
             {/* 顶部tab */}
             <View style={styles.topBarBox}>
@@ -554,7 +543,7 @@ const CooperateTest = React.forwardRef(({ onSubmitOver, CoopIntoTest }, ref) => 
                         {/* 底部操作按钮 */}
                         <View style={styles.modalFoote}>
                             {/* 取消按钮，关闭模态框 */}
-                            <Button style={[styles.closeBtn]} onPress={closeModal}>取消</Button>
+                            <Button style={[styles.closeBtn]} onPress={closeModalOk}>取消</Button>
                             {/* 确认按钮 */}
                             {
                                 curTopItem == '创建任务' && (!isTaskIng) && <Button style={[styles.okBtn]} onPress={createOk}>确认创建</Button>
@@ -563,7 +552,7 @@ const CooperateTest = React.forwardRef(({ onSubmitOver, CoopIntoTest }, ref) => 
                                 curTopItem == '参与任务' && (!isTaskIng) && <Button style={[styles.okBtn]}>确认参与</Button>
                             }
                             {
-                                curTopItem == '使用帮助' && <Button style={[styles.okBtn]} onPress={closeModal}>确认</Button>
+                                curTopItem == '使用帮助' && <Button style={[styles.okBtn]} onPress={closeModalOk}>确认</Button>
                             }
                         </View>
                     </>

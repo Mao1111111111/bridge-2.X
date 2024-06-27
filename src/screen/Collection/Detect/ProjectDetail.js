@@ -1098,7 +1098,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         } else {
           if (result.detail.msg == 'invalid room_id') {
             Alert.alert('任务号不存在')
-          }else{
+          } else {
             Alert.alert(result)
           }
         }
@@ -1162,7 +1162,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         } else {
           if (result.detail.msg == 'invalid room_id') {
             Alert.alert('任务号不存在')
-          }else{
+          } else {
             Alert.alert(result)
           }
         }
@@ -1836,6 +1836,8 @@ export default function ProjectDetail({ route, navigation }) {
 
   // 协同检测按钮 不同状态对应的图标
   const [imgType, setImgType] = useState('cooperate')
+  // 协同检测模态框显示
+  const [CoopModalShow, setCoopModalShow] = useState(false)
 
   // 点击选择框 -- 单选
   const handleCheck = item => {
@@ -1882,9 +1884,16 @@ export default function ProjectDetail({ route, navigation }) {
     }
   }
 
-  const openCoopTest = () => {
+  // 打开协同检测模态框
+  const openCoopModal = () => {
     console.log("1");
-    coopTestRef.current.open(project, nowChecked, navigation, route)
+    // coopTestRef.current.open(project, nowChecked, navigation, route)
+    setCoopModalShow(true)
+  }
+  // 关闭协同检测模态框
+  const closeCoopModal = () => {
+    setCoopModalShow(false)
+    handleSubmitOver()
   }
 
   // 协同检测--开始检测
@@ -1937,7 +1946,7 @@ export default function ProjectDetail({ route, navigation }) {
         {
           img: imgType,
           // onPress: () => openCoop(),
-          onPress: () => openCoopTest(),
+          onPress: () => openCoopModal(),
         },
       ]}>
       <View style={
@@ -2082,10 +2091,20 @@ export default function ProjectDetail({ route, navigation }) {
       <Cooperate ref={coopRef} onSubmitOver={handleSubmitOver} />
 
       {/* 协同检测 模态框 */}
-      <CooperateTest 
+      {/* <CooperateTest 
         ref={coopTestRef} 
         onSubmitOver={handleSubmitOver}
-        CoopIntoTest={CoopIntoTest} ></CooperateTest>
+        CoopIntoTest={CoopIntoTest} ></CooperateTest> */}
+      {
+        CoopModalShow &&
+        <CooperateTest
+          project={project}
+          bridge={nowChecked}
+          // 关闭协同检测模态框
+          closeModal={closeCoopModal}
+          // 协同检测--开始检测
+          CoopIntoTest={CoopIntoTest} ></CooperateTest>
+      }
     </CommonView>
   );
 }
