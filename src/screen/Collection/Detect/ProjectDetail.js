@@ -1886,8 +1886,6 @@ export default function ProjectDetail({ route, navigation }) {
 
   // 打开协同检测模态框
   const openCoopModal = () => {
-    console.log("1");
-    // coopTestRef.current.open(project, nowChecked, navigation, route)
     setCoopModalShow(true)
   }
   // 关闭协同检测模态框
@@ -1903,6 +1901,8 @@ export default function ProjectDetail({ route, navigation }) {
       bridge: item,
       list: route.params.list
     })
+    handleSubmitOver()
+    setCoopModalShow(false)
   }
 
   return (

@@ -32,7 +32,7 @@ const Provider = props => {
   });
 
   useEffect(() => {
-    if (state.wsOpen && (state.wsConnectionState == '未连接')) {
+    if (state.wsOpen && (state.wsConnectionState == '未连接'||state.wsConnectionState == '已关闭')) {
       console.log("11");
       // 创建连接
       state.wsConnection.current = new WebSocket(state.WSPath);
@@ -57,7 +57,7 @@ const Provider = props => {
       // 关闭时触发
       state.wsConnection.current.onclose = (e) => {
         console.log("关闭", e);
-        dispatch({ type: 'wsConnectionState', payload: '未连接' })
+        dispatch({ type: 'wsConnectionState', payload: '已关闭' })
       };
       // 处理错误
       state.wsConnection.current.onerror = (e) => {

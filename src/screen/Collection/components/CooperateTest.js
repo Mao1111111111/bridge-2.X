@@ -23,11 +23,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Loading from '../../../components/Loading';
 
-const CooperateTest = React.forwardRef(({
+export default function ({
     project,
     bridge,
     closeModal,
-    CoopIntoTest }, ref) => {
+    CoopIntoTest }){
     const {
         state: { networkStateAll, userInfo, deviceId },
     } = React.useContext(GlobalContext);
@@ -563,9 +563,7 @@ const CooperateTest = React.forwardRef(({
                     </>
             }
         </Modal>)
-})
-
-export default CooperateTest
+}
 
 const styles = StyleSheet.create({
     topBarBox: {
