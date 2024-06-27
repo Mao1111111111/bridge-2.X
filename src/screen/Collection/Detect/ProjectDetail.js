@@ -1883,7 +1883,17 @@ export default function ProjectDetail({ route, navigation }) {
   }
 
   const openCoopTest = () => {
+    console.log("1");
     coopTestRef.current.open(project, nowChecked, navigation, route)
+  }
+
+  // 协同检测--开始检测
+  const CoopIntoTest = (item) => {
+    navigation.navigate('Collection/Detect/BridgeTest', {
+      project: project,
+      bridge: item,
+      list: route.params.list
+    })
   }
 
   return (
@@ -2072,7 +2082,10 @@ export default function ProjectDetail({ route, navigation }) {
       <Cooperate ref={coopRef} onSubmitOver={handleSubmitOver} />
 
       {/* 协同检测 模态框 */}
-      <CooperateTest ref={coopTestRef} onSubmitOver={handleSubmitOver} ></CooperateTest>
+      <CooperateTest 
+        ref={coopTestRef} 
+        onSubmitOver={handleSubmitOver}
+        CoopIntoTest={CoopIntoTest} ></CooperateTest>
     </CommonView>
   );
 }

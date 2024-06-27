@@ -23,12 +23,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Loading from '../../../components/Loading';
 
-const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
+const CooperateTest = React.forwardRef(({ onSubmitOver, CoopIntoTest }, ref) => {
     const {
         state: { networkStateAll, userInfo, deviceId },
     } = React.useContext(GlobalContext);
     const {
-        state: { wsConnectionState, synergyTestData, curSynergyInfo, wsConnection },
+        state: { wsConnectionState, synergyTestData, curSynergyInfo, wsConnection, curSynergyBridgeInfo },
         dispatch
     } = React.useContext(synergyContext);
 
@@ -59,7 +59,6 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
     React.useImperativeHandle(ref, () => ({
         // 打开
         open: async (project, bridge, navigation, route) => {
-            console.log("bridge",bridge);
             // 设置项目数据
             setProject(project)
             // 设置桥梁数据
@@ -68,6 +67,7 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
             setCurTopItem(bridge ? '创建任务' : '参与任务')
             // 显示模态框
             setVisible(true)
+            console.log("2");
             // 获取本地协同检测数据
             let _curSynergyInfo = JSON.parse(await AsyncStorage.getItem('curSynergyInfo'))
             // 存在协同检测信息
@@ -76,6 +76,10 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
                 setIsLoading(true)
                 // 将协同信息存入全局
                 dispatch({ type: 'curSynergyInfo', payload: _curSynergyInfo })
+                // 获取本地协同桥梁信息
+                let _curSynergyBridgeInfo = JSON.parse(await AsyncStorage.getItem('curSynergyBridgeInfo'))
+                // 将协同桥梁信息存入全局
+                dispatch({ type: 'curSynergyBridgeInfo', payload: _curSynergyBridgeInfo })
                 // 获取ws本地地址
                 let _WSPath = await AsyncStorage.getItem('WSPath')
                 // 设置全局ws路径
@@ -97,7 +101,7 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
 
     // 监听ws连接状态
     useEffect(() => {
-        console.log("wsConnectionState",wsConnectionState);
+        console.log("wsConnectionState", wsConnectionState);
         if (wsConnectionState == '已连接') {
             // 设置页面内容
             setTaskCode(curSynergyInfo.taskId)
@@ -119,7 +123,10 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
     //-----模态框操作-----
     // 关闭模态框
     const closeModal = () => {
+        // 关闭模态框
         setVisible(false)
+        // 调用父组件的回调
+        onSubmitOver()
     }
     // 顶部bar点击
     const topBarClick = (item) => {
@@ -223,10 +230,14 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
                         // 将协同信息存入数据库
                         await synergyTest.save(synergyData)
                     }
-                    // 将数据存入本地
+                    // 将协同数据存入本地
                     await AsyncStorage.setItem('curSynergyInfo', JSON.stringify(synergyData))
+                    // 将协同桥梁存入本地
+                    await AsyncStorage.setItem('curSynergyBridgeInfo', JSON.stringify(bridge))
                     // 将协同信息存入全局
                     dispatch({ type: 'curSynergyInfo', payload: synergyData })
+                    // 将协同桥梁信息存入全局
+                    dispatch({ type: 'curSynergyBridgeInfo', payload: bridge })
                     // 加入任务
                     CTAfterAddTask(IP, result.room_id)
                 } else {
@@ -370,13 +381,17 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
         // 设置模态框loading
         setIsLoading(true)
         // 检测记录表--更新检测状态
-        await synergyTest.updateState({ state: '检测结束', bridgereportid: bridge.bridgereportid })
+        await synergyTest.updateState({ state: '检测结束', bridgereportid: curSynergyInfo.bridgereportid })
         // 清除本地数据
         await AsyncStorage.removeItem('curSynergyInfo')
+        // 清楚本地协同桥梁信息
+        await AsyncStorage.removeItem('curSynergyBridgeInfo')
         // 请求本地ws地址
         await AsyncStorage.removeItem('WSPath')
         // 清空全局协同信息
         dispatch({ type: 'curSynergyInfo', payload: null })
+        // 清空全局协同桥梁信息
+        dispatch({ type: 'curSynergyBridgeInfo', payload: null })
         // 清除全局ws地址
         dispatch({ type: 'WSPath', payload: '' })
         // 清除任务状态
@@ -393,7 +408,8 @@ const CooperateTest = React.forwardRef(({ onSubmitOver }, ref) => {
     }
     // 开始检测 - 创建任务部分
     const CTGoWork = () => {
-
+        // 协同检测开始
+        CoopIntoTest(curSynergyBridgeInfo)
     }
 
 

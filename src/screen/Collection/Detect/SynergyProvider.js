@@ -20,6 +20,8 @@ const Provider = props => {
     wsConnection: React.useRef(),
     // 当前协同检测信息
     curSynergyInfo: null,
+    // 当前协同检测的桥梁信息
+    curSynergyBridgeInfo: null,
 
     // 在线状态
     ally_status: null,
