@@ -52,6 +52,8 @@ const CooperateTest = React.forwardRef(({
     const [joinName, setJoinName] = useState('')
     // 任务进行中
     const [isTaskIng, setIsTaskIng] = useState(false)
+    // 任务错误
+    const [isError,setIsError] = useState(false)
 
     // 打开模态框时触发
     useEffect(()=>{
@@ -72,9 +74,11 @@ const CooperateTest = React.forwardRef(({
                 }
             })
             setIsTaskIng(true)
+            setIsError(false)
         }
         if (wsConnectionState == '已关闭' || wsConnectionState == '错误') {
             setIsTaskIng(false)
+            setIsError(true)
         }
         // 设置模态框loading
         setIsLoading(false)
@@ -430,6 +434,7 @@ const CooperateTest = React.forwardRef(({
             </View>
             {
                 isLoading ? <Loading text='加载中...'></Loading> :
+                isError ? <Text>加载错误</Text> :
                     <>
                         {/* 内容盒子 */}
                         <View style={styles.contentBox}>
