@@ -55,6 +55,8 @@ export default function ({
     const [isTaskIng, setIsTaskIng] = useState(false)
     // 任务错误
     const [isError, setIsError] = useState(false)
+    // 是否是任务创建者
+    const [isCreator, setIsCreator] = useState(false)
 
     // 打开模态框时触发
     useEffect(() => {
@@ -76,8 +78,17 @@ export default function ({
             })
             setIsTaskIng(true)
             setIsError(false)
+            // 判断是否是创建者
+            if(JSON.parse(curSynergyInfo.creator).deviceId==deviceId){
+                setIsCreator(true)
+            }else{
+                setIsCreator(false)
+            }
         }
-        if (wsConnectionState == '已关闭' || wsConnectionState == '错误') {
+        if (wsConnectionState == '已关闭') {
+            setIsTaskIng(false)
+        }
+        if (wsConnectionState == '错误') {
             setIsTaskIng(false)
             setIsError(true)
         }
@@ -337,7 +348,7 @@ export default function ({
                 if (result.status == 'success') {
                     // 地址
                     // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
-                    let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
+                    let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + creator
                     // 将ws地址存入本地
                     AsyncStorage.setItem('WSPath', WSPath)
                     // 设置全局ws路径
@@ -356,7 +367,6 @@ export default function ({
             })
             .catch(err => {
                 Alert.alert('ws失败2：' + err)
-                console.log("err", err);
                 // 设置模态框loading
                 setIsLoading(false)
             });
@@ -423,7 +433,6 @@ export default function ({
         })
             .then(res => res.json())
             .then(result => {
-                console.log("result", JSON.stringify(result));
                 if (result.status == 'success') {
                     // 处理接收的桥梁数据
                     dealReceiveBridgeData(result)
@@ -439,7 +448,6 @@ export default function ({
             })
             .catch(err => {
                 Alert.alert('ws失败2：' + err)
-                console.log("err", err);
                 // 设置模态框loading
                 setIsLoading(false)
             });
@@ -510,11 +518,11 @@ export default function ({
             // 协同桥梁
             let newBridge = {
                 ...result.task_msg.bridge,
-                synergyTestData:synergyData
+                synergyTestData: synergyData
             }
             // 地址
             // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
-            let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
+            let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + joinName
             // 将协同信息存入数据库
             await synergyTest.save(synergyData)
             // 将协同数据存入本地
@@ -539,8 +547,8 @@ export default function ({
     }
 
     //------任务操作------
-    // 删除任务
-    const deleteTask = async () => {
+    // 退出任务
+    const quitTask = async () => {
         // 设置模态框loading
         setIsLoading(true)
         // 检测记录表--更新检测状态
@@ -591,9 +599,12 @@ export default function ({
         >
             {/* 顶部tab */}
             <View style={styles.topBarBox}>
-                <Pressable style={[styles.topBarBtn, { backgroundColor: curTopItem == '创建任务' ? '#2b427d' : '#2b427d00' }]} onPress={() => topBarClick('创建任务')}>
-                    <Text style={{ color: curTopItem == '创建任务' ? '#ffffff' : '#808285' }}>创建任务</Text>
-                </Pressable>
+                {
+                    bridge &&
+                    <Pressable style={[styles.topBarBtn, { backgroundColor: curTopItem == '创建任务' ? '#2b427d' : '#2b427d00' }]} onPress={() => topBarClick('创建任务')}>
+                        <Text style={{ color: curTopItem == '创建任务' ? '#ffffff' : '#808285' }}>创建任务</Text>
+                    </Pressable>
+                }
                 <Pressable style={[styles.topBarBtn, { backgroundColor: curTopItem == '参与任务' ? '#2b427d' : '#2b427d00' }]} onPress={() => topBarClick('参与任务')}>
                     <Text style={{ color: curTopItem == '参与任务' ? '#ffffff' : '#808285' }}>参与任务</Text>
                 </Pressable>
@@ -661,11 +672,14 @@ export default function ({
                                                 {/* 表格 */}
                                                 <View style={[styles.rightTableBox]}></View>
                                                 {/* 操作按钮 */}
-                                                <View style={[styles.rightActionBox]}>
-                                                    <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
-                                                    <Button style={[styles.rightBtn]} onPress={deleteTask}>删除任务</Button>
-                                                    <Button style={[styles.rightBtn]} onPress={goWork}>开始检测</Button>
-                                                </View>
+                                                {
+                                                    isCreator &&
+                                                    <View style={[styles.rightActionBox]}>
+                                                        <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
+                                                        <Button style={[styles.rightBtn]} onPress={quitTask}>删除任务</Button>
+                                                        <Button style={[styles.rightBtn]} onPress={goWork}>开始检测</Button>
+                                                    </View>
+                                                }
                                             </View>
                                         }
                                     </View>
@@ -709,7 +723,7 @@ export default function ({
                                                 {/* 操作按钮 */}
                                                 <View style={[styles.rightActionBox]}>
                                                     <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
-                                                    <Button style={[styles.rightBtn]} onPress={deleteTask}>删除任务</Button>
+                                                    <Button style={[styles.rightBtn]} onPress={quitTask}>退出任务</Button>
                                                     <Button style={[styles.rightBtn]} onPress={goWork}>开始检测</Button>
                                                 </View>
                                             </View>

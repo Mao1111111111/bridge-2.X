@@ -33,17 +33,17 @@ const Provider = props => {
 
   useEffect(() => {
     if (state.wsOpen && (state.wsConnectionState == '未连接'||state.wsConnectionState == '已关闭')) {
-      console.log("11");
       // 创建连接
       state.wsConnection.current = new WebSocket(state.WSPath);
       // 打开
       state.wsConnection.current.onopen = () => {
         dispatch({ type: 'wsConnectionState', payload: '已连接' })
+        sendPeople()
       }
       // 接收
       state.wsConnection.current.onmessage = (e) => {
         let data = JSON.parse(e.data)
-        console.log("data", data);
+        console.log("data", JSON.stringify(data));
         if (data.type == 'ally_status') {
           // 处理协同人员状态
           let SynergyStateList = dealSynergyPeople(data.content)
@@ -108,6 +108,11 @@ const Provider = props => {
     if (state.wsConnection.current) {
       state.wsConnection.current?.close();
     }
+  }
+
+  // 发送人员信息
+  const sendPeople = () => {
+    state.wsConnection.current.send(JSON.stringify({ 'aa': 1 }))
   }
 
 
