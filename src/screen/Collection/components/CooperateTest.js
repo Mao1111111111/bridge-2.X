@@ -40,7 +40,7 @@ export default function ({
     // 当前顶部tab
     const [curTopItem, setCurTopItem] = useState('创建任务')
     // 模态框loading
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     // 任务码
     const [taskCode, setTaskCode] = useState('')
     // 协同人数
@@ -76,30 +76,32 @@ export default function ({
                     setJoinName(item.realname)
                 }
             })
-            setIsTaskIng(true)
-            setIsError(false)
             // 判断是否是创建者
             if(JSON.parse(curSynergyInfo.creator).deviceId==deviceId){
                 setIsCreator(true)
             }else{
                 setIsCreator(false)
             }
+            setIsTaskIng(true)
+            setIsError(false)
+            // 设置模态框loading
+            setIsLoading(false)
         }
         if (wsConnectionState == '已关闭') {
             setIsTaskIng(false)
+            // 设置模态框loading
+            setIsLoading(false)
         }
         if (wsConnectionState == '错误') {
             setIsTaskIng(false)
             setIsError(true)
+            // 设置模态框loading
+            setIsLoading(false)
         }
-        // 设置模态框loading
-        setIsLoading(false)
     }, [wsConnectionState])
 
     // 初始化数据
     const initModal = async () => {
-        // 设置模态框loading
-        setIsLoading(true)
         // 设置顶部tab
         setCurTopItem(bridge ? '创建任务' : '参与任务')
         // 获取本地协同检测数据
@@ -547,6 +549,10 @@ export default function ({
     }
 
     //------任务操作------
+    // 删除任务
+    const deleteTask = () => {
+
+    }
     // 退出任务
     const quitTask = async () => {
         // 设置模态框loading
