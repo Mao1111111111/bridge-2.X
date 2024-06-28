@@ -423,9 +423,13 @@ const Inducts = React.forwardRef(({onSubmitOver}, ref) => {
           [...checked].map(
             id =>
               new Promise((resolve, reject) => {
+                // 设置bridgereportid
+                let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
+                let bridgereportid = id + parseInt(time).toString(36)
                 // 将数据存到桥梁绑定关系中
                 bridgeProjectBind
                   .save({
+                    bridgereportid:bridgereportid,
                     projectid: projectid,
                     bridgeid: id,
                     userid: userInfo.userid,
