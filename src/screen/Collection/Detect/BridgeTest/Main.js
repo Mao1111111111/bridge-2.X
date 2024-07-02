@@ -169,6 +169,10 @@ export default function Main({ navigation, route }) {
   const {
     state: { theme },
   } = React.useContext(ThemeContext);
+  // 协同检测全局参数
+  const {
+    state: { wsOpen }
+  } = React.useContext(synergyContext);
 
   // 桥梁检测的全局参数
   const {
@@ -607,8 +611,8 @@ export default function Main({ navigation, route }) {
               // 协同检测按钮
               // name: 'book-plus',
               img: imgType,
-              onPress: () => openCoop(),
-              disabled: !isCoop,
+              onPress: openCoop,
+              disabled: !wsOpen,
             },
           ]}>
           {/* <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
