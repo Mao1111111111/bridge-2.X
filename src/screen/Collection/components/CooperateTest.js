@@ -3,7 +3,7 @@
  */
 import React, { useEffect, useState } from 'react'
 import Modal from '../../../components/Modal'
-import { View, StyleSheet, Pressable, Text, Alert, DeviceEventEmitter } from 'react-native'
+import { View, StyleSheet, Pressable, Text, Alert, FlatList } from 'react-native'
 import { tailwind } from 'react-native-tailwindcss';
 import { TextInput } from '../../../components/Input';
 import Button from '../../../components/Button';
@@ -23,6 +23,7 @@ import dayjs from 'dayjs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Loading from '../../../components/Loading';
+import Table from '../../../components/Table';
 
 export default function ({
     project,
@@ -33,7 +34,7 @@ export default function ({
         state: { networkStateAll, userInfo, deviceId },
     } = React.useContext(GlobalContext);
     const {
-        state: { wsConnectionState, synergyTestData, curSynergyInfo, wsConnection, curSynergyBridgeInfo },
+        state: { wsConnectionState, synergyTestData, curSynergyInfo, wsConnection, curSynergyBridgeInfo, allyStatusList },
         dispatch
     } = React.useContext(synergyContext);
 
@@ -621,6 +622,15 @@ export default function ({
         CoopIntoTest(curSynergyBridgeInfo)
     }
 
+    // -------功能函数--------
+    // 时间转换
+    const timeToHS = (dateTime) => {
+        let time = dateTime.split(' ')[1]
+        let timeArr = time.split(':')
+        let HSTime = timeArr[0] + ':' + timeArr[1]
+        return HSTime
+    }
+
 
     return (
         <Modal
@@ -708,7 +718,32 @@ export default function ({
                                             isTaskIng &&
                                             <View style={[styles.rightBox]}>
                                                 {/* 表格 */}
-                                                <View style={[styles.rightTableBox]}></View>
+                                                <View style={[styles.rightTableBox]}>
+                                                    <Table.Box
+                                                        header={
+                                                            <Table.Header>
+                                                                <Table.Title title="序号" flex={1} />
+                                                                <Table.Title title="账号" flex={4} />
+                                                                <Table.Title title="人员" flex={3} />
+                                                                <Table.Title title="加入时间" flex={2} />
+                                                                <Table.Title title="状态" flex={2} />
+                                                            </Table.Header>
+                                                        }>
+                                                        <FlatList
+                                                            data={allyStatusList}
+                                                            showsVerticalScrollIndicator={false}
+                                                            renderItem={({ item, index }) => (
+                                                                <Table.Row key={index}>
+                                                                    <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                                                                    <Table.Cell flex={4}>{item.user_id}</Table.Cell>
+                                                                    <Table.Cell flex={3}>{item.user_name}</Table.Cell>
+                                                                    <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
+                                                                    <Table.Cell flex={2}>{item.state}</Table.Cell>
+                                                                </Table.Row>
+                                                            )}
+                                                        />
+                                                    </Table.Box>
+                                                </View>
                                                 {/* 操作按钮 */}
                                                 {
                                                     isCreator &&
@@ -757,7 +792,32 @@ export default function ({
                                             isTaskIng &&
                                             <View style={[styles.rightBox]}>
                                                 {/* 表格 */}
-                                                <View style={[styles.rightTableBox]}></View>
+                                                <View style={[styles.rightTableBox]}>
+                                                    <Table.Box
+                                                        header={
+                                                            <Table.Header>
+                                                                <Table.Title title="序号" flex={1} />
+                                                                <Table.Title title="账号" flex={4} />
+                                                                <Table.Title title="人员" flex={3} />
+                                                                <Table.Title title="加入时间" flex={2} />
+                                                                <Table.Title title="状态" flex={2} />
+                                                            </Table.Header>
+                                                        }>
+                                                        <FlatList
+                                                            data={allyStatusList}
+                                                            showsVerticalScrollIndicator={false}
+                                                            renderItem={({ item, index }) => (
+                                                                <Table.Row key={index}>
+                                                                    <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                                                                    <Table.Cell flex={4}>{item.user_id}</Table.Cell>
+                                                                    <Table.Cell flex={3}>{item.user_name}</Table.Cell>
+                                                                    <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
+                                                                    <Table.Cell flex={2}>{item.state}</Table.Cell>
+                                                                </Table.Row>
+                                                            )}
+                                                        />
+                                                    </Table.Box>
+                                                </View>
                                                 {/* 操作按钮 */}
                                                 <View style={[styles.rightActionBox]}>
                                                     <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
