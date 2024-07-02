@@ -22,6 +22,7 @@ import HeaderTabs from './HeaderTabs';
 import MemberEdit from './MemberEdit';
 import Media from './Media';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Context as synergyContext } from '../../Detect/SynergyProvider'
 
 import {Divider} from 'react-native-paper';
 import Modal from '../../../../components/Modal';
@@ -32,6 +33,10 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
   const {
     state: {bridgeside, userInfo},
   } = React.useContext(GlobalContext);
+  // 协同检测全局参数
+  const {
+    state:{ allyStatusList }
+  } = React.useContext(synergyContext);
 
   // 模态框是否显示
   const [visible, setVisible] = React.useState(false);
@@ -379,6 +384,14 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
       // },1000*2)
   }
 
+  // 时间转换
+  const timeToHS = (dateTime) => {
+    let time = dateTime.split(' ')[1]
+    let timeArr = time.split(':')
+    let HSTime = timeArr[0] + ':' + timeArr[1]
+    return HSTime
+}
+
   return (
     // 导入桥梁模态框
     <Modal
@@ -413,39 +426,30 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
               <View style={{width:'50%',height:'100%',alignItems:'center',paddingTop:20,paddingLeft:20}}>
                   {/* 参与者信息表格 */}
                   <View style={{width:'100%',height:'90%',padding:10}}>
-                    <Table.Box
-                      numberOfPages={pageTotal}
-                      total={total}
-                      pageNo={page?.pageNo || 0}
-                      onPageChange={e =>
-                        setPage({
-                          pageSize: 10,
-                          pageNo: e,
-                        })
-                      }
+                  <Table.Box
                       header={
-                        <Table.Header>
-                          <Table.Title title="序号" flex={1} />
-                          <Table.Title title="账号" flex={4} />
-                          <Table.Title title="人员" flex={3} />
-                          <Table.Title title="加入时间" flex={2} />
-                          <Table.Title title="状态" flex={2} />
-                        </Table.Header>
+                          <Table.Header>
+                              <Table.Title title="序号" flex={1} />
+                              <Table.Title title="账号" flex={4} />
+                              <Table.Title title="人员" flex={3} />
+                              <Table.Title title="加入时间" flex={2} />
+                              <Table.Title title="状态" flex={2} />
+                          </Table.Header>
                       }>
                       <FlatList
-                        data={list}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({item, index}) => (
-                          <Table.Row key={index}>
-                            <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                            <Table.Cell flex={4}>{item.user}</Table.Cell>
-                            <Table.Cell flex={3}>{item.userName}</Table.Cell>
-                            <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
-                            <Table.Cell flex={2}>{item.status}</Table.Cell>
-                          </Table.Row>
-                        )}
+                          data={allyStatusList}
+                          showsVerticalScrollIndicator={false}
+                          renderItem={({ item, index }) => (
+                              <Table.Row key={index}>
+                                  <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                                  <Table.Cell flex={4}>{item.user_id}</Table.Cell>
+                                  <Table.Cell flex={3}>{item.user_name}</Table.Cell>
+                                  <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
+                                  <Table.Cell flex={2}>{item.state}</Table.Cell>
+                              </Table.Row>
+                          )}
                       />
-                    </Table.Box>
+                  </Table.Box>
                   </View>
                 </View>
             </View>
