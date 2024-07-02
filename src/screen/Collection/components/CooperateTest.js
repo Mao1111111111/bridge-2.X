@@ -77,9 +77,9 @@ export default function ({
                 }
             })
             // 判断是否是创建者
-            if(JSON.parse(curSynergyInfo.creator).deviceId==deviceId){
+            if (JSON.parse(curSynergyInfo.creator).deviceId == deviceId) {
                 setIsCreator(true)
-            }else{
+            } else {
                 setIsCreator(false)
             }
             setIsTaskIng(true)
@@ -428,7 +428,7 @@ export default function ({
     // 创建任务获取桥梁数据
     const joinTaskGetBridge = async (IP) => {
         // url
-        // let url = 'http://'+IP+':8000/task_room/'+taskid
+        // let url = 'http://'+IP+':8000/task_room/'+joinCode
         let url = 'http://10.1.1.71:8000/task_room/' + joinCode
         fetch(url, {
             method: 'GET'
@@ -551,7 +551,39 @@ export default function ({
     //------任务操作------
     // 删除任务
     const deleteTask = () => {
-
+        // 设置模态框loading
+        setIsLoading(true)
+        // 获取所连接wifi的ip
+        NetworkInfo.getGatewayIPAddress().then(IP => {
+            // let url = 'http://'+IP+':8000/task_room/'+taskCode
+            let url = 'http://10.1.1.71:8000/task_room/' + taskCode
+            fetch(url, {
+                method: 'Delete'
+            })
+                .then(res => res.json())
+                .then(result => {
+                    if (result.status == 'success') {
+                        // 退出任务
+                        quitTask()
+                    } else {
+                        if (result.detail.msg == 'invalid room_id') {
+                            Alert.alert('任务号不存在')
+                        } else {
+                            Alert.alert('ws失败1：' + result)
+                        }
+                        // 设置模态框loading
+                        setIsLoading(false)
+                    }
+                })
+                .catch(err => {
+                    Alert.alert('ws失败2：' + err)
+                    // 设置模态框loading
+                    setIsLoading(false)
+                });
+        }).catch(e => {
+            // 设置模态框loading
+            setIsLoading(false)
+        })
     }
     // 退出任务
     const quitTask = async () => {
@@ -682,7 +714,7 @@ export default function ({
                                                     isCreator &&
                                                     <View style={[styles.rightActionBox]}>
                                                         <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
-                                                        <Button style={[styles.rightBtn]} onPress={quitTask}>删除任务</Button>
+                                                        <Button style={[styles.rightBtn]} onPress={deleteTask}>删除任务</Button>
                                                         <Button style={[styles.rightBtn]} onPress={goWork}>开始检测</Button>
                                                     </View>
                                                 }
