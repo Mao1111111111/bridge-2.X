@@ -60,11 +60,13 @@ const allData = [
         }
     },
     {
+        dataType: 'memberUserState',
         bridgereportid: 'g114pct5vyqtw04pct5vz3hf4',
         membertype: 'b100001',
         membername: '1-1#',
         realname: '李四',
-        enterTime: '2024-10-2 10:30'
+        time: '2024-10-2 10:30',
+        state:'enter'
     },
     {
         dataType: 'memberUserState',
@@ -72,16 +74,26 @@ const allData = [
         membertype: 'b100001',
         membername: '2-1#',
         realname: '张三',
-        quitTime: '2024-10-2 11:30'
+        time: '2024-10-2 11:30',
+        state:'quit'
     },
     {
+        dataType: 'memberUserState',
         bridgereportid: 'g114pct5vyqtw04pct5vz3hf4',
         membertype: 'b100001',
         membername: '2-1#',
         realname: '张三',
-        enterTime: '2024-10-2 10:30'
+        time: '2024-10-2 10:30',
+        state:'enter'
     }
 ]
 
-// 整理用户状态
-const 
+// 整理数据
+const dealData = (allData,bridgereportid,membertype) => {
+    let enterList = []
+    allData.forEach(item=>{
+        if(item.dataType=='memberUserState'&&item.bridgereportid==bridgereportid&&item.membertype==membertype){
+
+        }
+    })
+}
