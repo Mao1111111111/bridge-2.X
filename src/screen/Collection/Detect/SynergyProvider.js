@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import reducer from '../../../providers/reducer';
+import * as synergyTest from '../../../database/synergy_test';
 
 // 上下文空间
 const Context = React.createContext();
@@ -86,9 +87,34 @@ const Provider = props => {
         state:'离线'
       })
     }
+    console.log("list",list);
+    syPeopleToDatabase(list)
     // 设置协同人员状态列表 allyStatusList
     dispatch({ type: 'allyStatusList', payload: list })
   }
+
+  // 人员信息存入协同检测表
+  const syPeopleToDatabase = (list) => {
+    console.log("curSynergyInfo",state.curSynergyInfo);
+    let participator = JSON.parse(state.curSynergyInfo.participator)
+    for(let i=0;i<list.length;i++){
+      let existIndex = participator.findIndex(item=>item.deviceId==list[i].device_id)
+      if(existIndex==-1){
+        participator.push({
+          username:list[i].user_id,
+          realname:list[i].user_name,
+          userid:list[i].user_id,
+          deviceId:list[i].device_id,
+          isSelf:"false"
+        })
+      }
+    }
+    synergyTest.updateParticipator({
+      participator:JSON.stringify(participator),
+      bridgereportid:state.curSynergyInfo.bridgereportid
+    })
+  }
+
 
   // 检测记录数据
   const dealTestRecordData = (data) => {

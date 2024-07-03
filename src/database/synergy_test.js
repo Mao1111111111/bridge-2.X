@@ -100,6 +100,20 @@ export const updateState = async data => {
   await db().executeSql(sql, param);
 };
 
+// 更新参与者
+export const updateParticipator = async data => {
+  const sql = `
+    update synergy_test
+    set participator = ?
+    where bridgereportid = ?
+    `;
+  const param = [
+    data.participator,
+    data.bridgereportid
+  ];
+  await db().executeSql(sql, param);
+};
+
 
 // 根据检测编号查询
 export const getByReportid = async bridgereportid => {
