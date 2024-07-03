@@ -39,7 +39,7 @@ export const save = async data => {
     data.membername,
     data.stepno || -1,
     data.orderdesc || 0,
-    dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    data.u_date||dayjs().format('YYYY-MM-DD HH:mm:ss'),
   ];
   await db().executeSql(sql, param);
 };
