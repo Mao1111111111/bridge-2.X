@@ -148,7 +148,9 @@ export default function ({
     // 协同人数加减按钮点击
     const personNumChange = (e) => {
         var _personNum = parseInt(personNum)
-        _personNum += e
+        if(_personNum<10){
+            _personNum += e
+        }
         if (e < 1) {
             setPersonNum('1')
         } else {
@@ -696,6 +698,9 @@ export default function ({
                                                         <Button style={styles.addNumBtn} onPress={() => personNumChange(-1)}>-</Button>
                                                     </>
                                                 }
+                                            </View>
+                                            <View style={{ width: '100%', paddingLeft: 70 }}>
+                                                <Text>*除您之外的其他协作者人数（1~10）</Text>
                                             </View>
                                             <TextInput
                                                 name="creator"
