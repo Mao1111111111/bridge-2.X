@@ -532,24 +532,24 @@ export default function DiseaseList({route, navigation}) {
       data.secondDisTypeData.paneltype === 'p1001'
         ? 'Collection/Detect/BridgeTest/Member/DiseaseEdit'
         : 'Collection/Detect/BridgeTest/Member/DiseaseEdit2';
-    navigation.navigate(url, {
-      title,
-      stairgroupid:data.firstDisTypeData.checktypegroupid,
-      type:data.secondDisTypeData,
-      thridData:data.thridDisTypeData,
-      data: {
-        ...waitingData,
-        version:uuid.v4(),
-        kuaMembertype
-      },
-      memberList: list,
-      dataGroupId,
-      routeParams,
-      mediaType:'add',
-      // 向病害录入页面传入协同检测信息
-      isCoop, //是否是协同检测
-      coopData //协同检测用户的信息
-    });
+      navigation.navigate(url, {
+        title,
+        stairgroupid:data.firstDisTypeData.checktypegroupid,
+        type:data.secondDisTypeData,
+        thridData:data.thridDisTypeData,
+        data: {
+          ...waitingData,
+          version:uuid.v4(),
+          kuaMembertype
+        },
+        memberList: list,
+        dataGroupId,
+        routeParams,
+        mediaType:'add',
+        // 向病害录入页面传入协同检测信息
+        isCoop, //是否是协同检测
+        coopData //协同检测用户的信息
+      });
     setThridData(data.thridDisTypeData)
     setWaitingData({});
   };

@@ -151,18 +151,27 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
   };
 
 
-  const secondItems = (e) => {
-    console.log('ee',e);
-    return(
-      e.map((item,index)=>{
-        return(
-          <View key={index}>
-            <Text>{item}</Text>
-          </View>
-        )
-        
-      })
-    )
+  // 每个构件下的协同信息
+  const secondItems_big = (e) => {
+    console.log('部件进入__构件下的协同信息ee',e);
+    // return(
+    //   e.map((item,index)=>{
+    //     return(
+    //       <View key={index}>
+    //         <Text>{item}</Text>
+    //       </View>
+    //     )
+    //   })
+    // )
+    return (
+      <ScrollView horizontal={true} style={{width:80}}>
+        {e.map((item, index) => (
+          <Pressable key={index} style={{ paddingHorizontal: 3, paddingVertical: 0 }}>
+            <Text style={{color:'#586988',}}>{item}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    );
   }
 
   
@@ -236,24 +245,39 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
                 onPress={() => handleCheck(items.id)}
               />
               {
-                coopData ? 
-                <View style={{height:100,width:'100%',padding:15,paddingTop:0}}>
-                  <View style={{height:'100%',width:'100%',overflow:'scroll',}}>
-                    <ScrollView horizontal={false}>
-                      <Pressable style={{height:'100%',width:'100%',alignItems:'center',justifyContent:'center',}}>
-                        {
+                coopData && coopData.some(coopItem => coopItem.memberId === items.memberid) ? 
+                <View style={{height:50,width:'100%',paddingTop:0}}>
+                  <View style={{
+                    width:'85%',
+                    flexDirection:'row',
+                    alignItems:'center',
+                  }}>
+                    <View style={{marginRight:5,}}>
+                      {
+                        coopData.map((item,index)=>{
+                          if(item.memberId == items.memberid) {
+                            return (
+                              <Text key={index} style={{color:'#2e407a',fontWeight:'500'}}>
+                                {item.userGroup.length}
+                              </Text>
+                            )
+                          }
+                        })
+                      }
+                    </View>
+                    <Pressable style={{borderLeftWidth:1,borderLeftColor:'#ccd4df',borderStyle:'solid'}}>
+                      {
                         coopData.map((item,index)=>{
                           if(item.memberId == items.memberid) {
                             return (
                               <View key={index}>
-                                {secondItems(item.userGroup)}
+                                {secondItems_big(item.userGroup)}
                               </View>
                             )
                           }
                         })
                       }
                       </Pressable>
-                    </ScrollView>
                   </View>
                 </View>
                 : <></>
@@ -425,18 +449,27 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
     onChange && onChange(_data);
   };
 
-  const secondItems = (e) => {
-    console.log('ee',e);
-    return(
-      e.map((item,index)=>{
-        return(
-          <View key={index}>
-            <Text>{item}</Text>
-          </View>
-        )
+  const secondItems_all = (e) => {
+    console.log('桥跨进入__构件下的协同信息ee',e);
+    // return(
+    //   e.map((item,index)=>{
+    //     return(
+    //       <View key={index}>
+    //         <Text>{item}</Text>
+    //       </View>
+    //     )
         
-      })
-    )
+    //   })
+    // )
+    return (
+      <ScrollView horizontal={true} style={{width:80}}>
+        {e.map((item, index) => (
+          <Pressable key={index} style={{ paddingHorizontal: 3, paddingVertical: 0 }}>
+            <Text style={{color:'#586988',}}>{item}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    );
   }
 
   return (
@@ -514,7 +547,7 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
                   <Text style={[styles.memberListTitle1, {color:'#2b427d'}]}>{item.title}</Text>
                 </View>
                 
-                <View style={[tailwind.flexRow, tailwind.flex1, tailwind.flexWrap]}>
+                <View style={[tailwind.flexRow, tailwind.flex1, tailwind.flexWrap,]}>
                   {item.list.map((items, index) => (
                     <View key={index}>
                     <Item
@@ -526,24 +559,39 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
                     onPress={() => handleCheck(items.id)}
                   />
                   {
-                    coopData ? 
-                    <View style={{height:100,width:'100%',padding:15,paddingTop:0,}}>
-                      <View style={{height:'100%',width:'100%',overflow:'scroll',}}>
-                        <ScrollView horizontal={false}>
-                          <Pressable style={{height:'100%',width:'100%',alignItems:'center',justifyContent:'center',}}>
-                            {
+                    coopData && coopData.some(coopItem => coopItem.memberId === items.memberid) ? 
+                    <View style={{height:50,width:'100%',paddingTop:0,}}>
+                      <View style={{
+                          width:'85%',
+                          flexDirection:'row',
+                          alignItems:'center',
+                        }}>
+                        <View style={{marginRight:5,}}>
+                          {
+                            coopData.map((item,index)=>{
+                              if(item.memberId == items.memberid) {
+                                return (
+                                  <Text key={index} style={{color:'#2e407a',fontWeight:'500'}}>
+                                    {item.userGroup.length}
+                                  </Text>
+                                )
+                              }
+                            })
+                          }
+                        </View>
+                        <Pressable style={{borderLeftWidth:1,borderLeftColor:'#ccd4df',borderStyle:'solid'}}>
+                          {
                             coopData.map((item,index)=>{
                               if(item.memberId == items.memberid) {
                                 return (
                                   <View key={index}>
-                                    {secondItems(item.userGroup)}
+                                    {secondItems_all(item.userGroup)}
                                   </View>
                                 )
                               }
                             })
                           }
-                          </Pressable>
-                        </ScrollView>
+                        </Pressable>
                       </View>
                     </View>
                     : <></>
@@ -609,7 +657,12 @@ export default function Member({route, navigation,item}) {
           projectid: project.projectid,
           bridgeid: bridge.bridgeid,
         })
-        .then(res => setEditLogList(res));
+        .then(res => 
+          {
+            console.log('editLog res',res.length);
+            setEditLogList(res)
+          }
+        );
     }, [project, bridge]),
   );
 
@@ -872,7 +925,7 @@ export default function Member({route, navigation,item}) {
       {
         memberId:'g114ondgptv9904ondgpuxc38_b100001_luuloy3z_1',
         membername:'1-2#',
-        userGroup:['张三','张三三','张四','张五','李一','李二',]
+        userGroup:['张三','张三三','张四','张五','李一','李二','李三','李四','李五','李六','李七','李八','李九',]
       },
       {
         memberId:'g114ondgptv9904ondgpuxc38_b100001_luuloy3z_2',

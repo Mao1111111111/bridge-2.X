@@ -1,9 +1,14 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import Table from '../../../../components/Table';
 import {tailwind} from 'react-native-tailwindcss';
 import {View, Text, FlatList} from 'react-native';
 
 export default function LogList({list}) {
+
+  useEffect(()=>{
+    console.log('操作历史LogList',list);
+  })
+
   return (
     <View style={[tailwind.flex1, tailwind.p2]}>
       <Text style={[tailwind.fontBold, tailwind.mB2,{color:'#2b427d'}]}>
