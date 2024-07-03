@@ -715,7 +715,7 @@ export default function Member({route, navigation,item}) {
             key =>
               basememberinfo.find(item => item.membertype === key).membername,
           );
-    setNowGroup(_list ? _list[0].stepno : null);
+    setNowGroup(_list ? _list[0]?.stepno : null);
     // console.log('listttttt',_list);
     _list.forEach((item) => {
       // console.log('_list item',item);
