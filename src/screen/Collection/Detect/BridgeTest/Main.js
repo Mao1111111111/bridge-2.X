@@ -171,7 +171,7 @@ export default function Main({ navigation, route }) {
   } = React.useContext(ThemeContext);
   // 协同检测全局参数
   const {
-    state: { wsOpen }
+    state: { wsOpen,wsConnection }
   } = React.useContext(synergyContext);
 
   // 桥梁检测的全局参数
@@ -532,7 +532,8 @@ export default function Main({ navigation, route }) {
 
   const openCoop = () => {
     console.log('打开协同检测弹窗');
-    coopRef.current.open(navigation, route)
+    wsConnection.current.send(JSON.stringify({b:'11'}))
+    // coopRef.current.open(navigation, route)
 
     // 打开弹窗后重置表格选中状态、图标状态
     // setNowChecked(null);
