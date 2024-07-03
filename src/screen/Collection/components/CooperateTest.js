@@ -355,7 +355,7 @@ export default function ({
                 if (result.status == 'success') {
                     // 地址
                     // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
-                    let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + creator
+                    let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + creator + '&device_id=' + deviceId
                     // 将ws地址存入本地
                     AsyncStorage.setItem('WSPath', WSPath)
                     // 设置全局ws路径
@@ -529,7 +529,7 @@ export default function ({
             }
             // 地址
             // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
-            let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + joinName
+            let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + joinName + '&device_id=' + deviceId
             // 将协同信息存入数据库
             await synergyTest.save(synergyData)
             // 将协同数据存入本地
