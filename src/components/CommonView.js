@@ -220,8 +220,8 @@ export function Content({
                         (operation.img == 'bridgeInfo' ? bridgeInfoImg :
                         (operation.img == 'singleGood' ? singleGoodImg :
                         (operation.img == 'allGood' ? allGoodImg : 
-                        (operation.img == 'cooperate' ? cooperateImg : 
-                        (operation.img == 'cooperateDis' ? cooperateDisImg : ''))))))))))))
+                        (operation.img == 'cooperate' && !operation.disabled ? cooperateImg : 
+                        (operation.img == 'cooperate' && operation.disabled ? cooperateDisImg : ''))))))))))))
                       }
                       />
                     </Pressable>

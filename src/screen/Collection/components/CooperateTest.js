@@ -3,7 +3,7 @@
  */
 import React, { useEffect, useState } from 'react'
 import Modal from '../../../components/Modal'
-import { View, StyleSheet, Pressable, Text, Alert, DeviceEventEmitter } from 'react-native'
+import { View, StyleSheet, Pressable, Text, Alert, FlatList } from 'react-native'
 import { tailwind } from 'react-native-tailwindcss';
 import { TextInput } from '../../../components/Input';
 import Button from '../../../components/Button';
@@ -23,6 +23,7 @@ import dayjs from 'dayjs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Loading from '../../../components/Loading';
+import Table from '../../../components/Table';
 
 export default function ({
     project,
@@ -33,7 +34,7 @@ export default function ({
         state: { networkStateAll, userInfo, deviceId },
     } = React.useContext(GlobalContext);
     const {
-        state: { wsConnectionState, synergyTestData, curSynergyInfo, wsConnection, curSynergyBridgeInfo },
+        state: { wsConnectionState, synergyTestData, curSynergyInfo, wsConnection, curSynergyBridgeInfo, allyStatusList },
         dispatch
     } = React.useContext(synergyContext);
 
@@ -77,9 +78,9 @@ export default function ({
                 }
             })
             // 判断是否是创建者
-            if(JSON.parse(curSynergyInfo.creator).deviceId==deviceId){
+            if (JSON.parse(curSynergyInfo.creator).deviceId == deviceId) {
                 setIsCreator(true)
-            }else{
+            } else {
                 setIsCreator(false)
             }
             setIsTaskIng(true)
@@ -147,7 +148,9 @@ export default function ({
     // 协同人数加减按钮点击
     const personNumChange = (e) => {
         var _personNum = parseInt(personNum)
-        _personNum += e
+        if(_personNum<10){
+            _personNum += e
+        }
         if (e < 1) {
             setPersonNum('1')
         } else {
@@ -428,7 +431,7 @@ export default function ({
     // 创建任务获取桥梁数据
     const joinTaskGetBridge = async (IP) => {
         // url
-        // let url = 'http://'+IP+':8000/task_room/'+taskid
+        // let url = 'http://'+IP+':8000/task_room/'+joinCode
         let url = 'http://10.1.1.71:8000/task_room/' + joinCode
         fetch(url, {
             method: 'GET'
@@ -551,7 +554,39 @@ export default function ({
     //------任务操作------
     // 删除任务
     const deleteTask = () => {
-
+        // 设置模态框loading
+        setIsLoading(true)
+        // 获取所连接wifi的ip
+        NetworkInfo.getGatewayIPAddress().then(IP => {
+            // let url = 'http://'+IP+':8000/task_room/'+taskCode
+            let url = 'http://10.1.1.71:8000/task_room/' + taskCode
+            fetch(url, {
+                method: 'Delete'
+            })
+                .then(res => res.json())
+                .then(result => {
+                    if (result.status == 'success') {
+                        // 退出任务
+                        quitTask()
+                    } else {
+                        if (result.detail.msg == 'invalid room_id') {
+                            Alert.alert('任务号不存在')
+                        } else {
+                            Alert.alert('ws失败1：' + result)
+                        }
+                        // 设置模态框loading
+                        setIsLoading(false)
+                    }
+                })
+                .catch(err => {
+                    Alert.alert('ws失败2：' + err)
+                    // 设置模态框loading
+                    setIsLoading(false)
+                });
+        }).catch(e => {
+            // 设置模态框loading
+            setIsLoading(false)
+        })
     }
     // 退出任务
     const quitTask = async () => {
@@ -587,6 +622,15 @@ export default function ({
     const goWork = () => {
         // 协同检测开始
         CoopIntoTest(curSynergyBridgeInfo)
+    }
+
+    // -------功能函数--------
+    // 时间转换
+    const timeToHS = (dateTime) => {
+        let time = dateTime.split(' ')[1]
+        let timeArr = time.split(':')
+        let HSTime = timeArr[0] + ':' + timeArr[1]
+        return HSTime
     }
 
 
@@ -655,6 +699,9 @@ export default function ({
                                                     </>
                                                 }
                                             </View>
+                                            <View style={{ width: '100%', paddingLeft: 70 }}>
+                                                <Text>*除您之外的其他协作者人数（1~10）</Text>
+                                            </View>
                                             <TextInput
                                                 name="creator"
                                                 label="创建者:    "
@@ -676,13 +723,38 @@ export default function ({
                                             isTaskIng &&
                                             <View style={[styles.rightBox]}>
                                                 {/* 表格 */}
-                                                <View style={[styles.rightTableBox]}></View>
+                                                <View style={[styles.rightTableBox]}>
+                                                    <Table.Box
+                                                        header={
+                                                            <Table.Header>
+                                                                <Table.Title title="序号" flex={1} />
+                                                                <Table.Title title="账号" flex={4} />
+                                                                <Table.Title title="人员" flex={3} />
+                                                                <Table.Title title="加入时间" flex={2} />
+                                                                <Table.Title title="状态" flex={2} />
+                                                            </Table.Header>
+                                                        }>
+                                                        <FlatList
+                                                            data={allyStatusList}
+                                                            showsVerticalScrollIndicator={false}
+                                                            renderItem={({ item, index }) => (
+                                                                <Table.Row key={index}>
+                                                                    <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                                                                    <Table.Cell flex={4}>{item.user_id}</Table.Cell>
+                                                                    <Table.Cell flex={3}>{item.user_name}</Table.Cell>
+                                                                    <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
+                                                                    <Table.Cell flex={2}>{item.state}</Table.Cell>
+                                                                </Table.Row>
+                                                            )}
+                                                        />
+                                                    </Table.Box>
+                                                </View>
                                                 {/* 操作按钮 */}
                                                 {
                                                     isCreator &&
                                                     <View style={[styles.rightActionBox]}>
                                                         <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
-                                                        <Button style={[styles.rightBtn]} onPress={quitTask}>删除任务</Button>
+                                                        <Button style={[styles.rightBtn]} onPress={deleteTask}>删除任务</Button>
                                                         <Button style={[styles.rightBtn]} onPress={goWork}>开始检测</Button>
                                                     </View>
                                                 }
@@ -725,7 +797,32 @@ export default function ({
                                             isTaskIng &&
                                             <View style={[styles.rightBox]}>
                                                 {/* 表格 */}
-                                                <View style={[styles.rightTableBox]}></View>
+                                                <View style={[styles.rightTableBox]}>
+                                                    <Table.Box
+                                                        header={
+                                                            <Table.Header>
+                                                                <Table.Title title="序号" flex={1} />
+                                                                <Table.Title title="账号" flex={4} />
+                                                                <Table.Title title="人员" flex={3} />
+                                                                <Table.Title title="加入时间" flex={2} />
+                                                                <Table.Title title="状态" flex={2} />
+                                                            </Table.Header>
+                                                        }>
+                                                        <FlatList
+                                                            data={allyStatusList}
+                                                            showsVerticalScrollIndicator={false}
+                                                            renderItem={({ item, index }) => (
+                                                                <Table.Row key={index}>
+                                                                    <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                                                                    <Table.Cell flex={4}>{item.user_id}</Table.Cell>
+                                                                    <Table.Cell flex={3}>{item.user_name}</Table.Cell>
+                                                                    <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
+                                                                    <Table.Cell flex={2}>{item.state}</Table.Cell>
+                                                                </Table.Row>
+                                                            )}
+                                                        />
+                                                    </Table.Box>
+                                                </View>
                                                 {/* 操作按钮 */}
                                                 <View style={[styles.rightActionBox]}>
                                                     <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>

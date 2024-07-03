@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import NavigatorStack from '../../../../components/NavigatorStack';
-import {Provider} from './Provider';
+import { Provider } from './Provider';
 import Main from './Main';
 import Member from './Member';
 import GoodEdit from './GoodEdit';
@@ -12,13 +12,15 @@ import DiseaseEdit from './DiseaseEdit';
 import DiseaseEdit2 from './DiseaseEdit2';
 import PlanEdit from './PlanEdit';
 import GenesisEdit from './GenesisEdit';
+import SyTag from '../../components/SyTag';
 
-export default function Index({route}) {
-  const {project, bridge} = route.params;
+export default function Index({ route }) {
+  const { project, bridge } = route.params;
 
   return (
     // bridge是这条桥梁的数据，project是项目信息
     <Provider bridge={bridge} project={project}>
+      <SyTag></SyTag>
       <NavigatorStack
         routes={[
           {

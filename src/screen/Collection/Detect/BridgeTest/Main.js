@@ -1,106 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import {ProgressBar, Portal, Modal as PaperModal} from 'react-native-paper';
-import {tailwind} from 'react-native-tailwindcss';
-import {useFocusEffect} from '@react-navigation/native';
+import { ProgressBar, Portal, Modal as PaperModal } from 'react-native-paper';
+import { tailwind } from 'react-native-tailwindcss';
+import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {View, Text, Image, FlatList, StyleSheet,Dimensions, TouchableOpacity,Pressable,ImageBackground} from 'react-native';
-import {Context} from './Provider';
-import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
-import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
+import { View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
+import { Context } from './Provider';
+import { Context as ThemeContext } from '../../../../providers/ThemeProvider';
+import { Context as GlobalContext } from '../../../../providers/GlobalProvider';
 import Tabs from '../../../../components/Tabs';
 import Table from '../../../../components/Table';
 import Checkbox from '../../../../components/Checkbox';
-import {Box, Content} from '../../../../components/CommonView';
-import {TextInput, KeyboardInput, WriteInput, Textarea} from '../../../../components/Input';
+import { Box, Content } from '../../../../components/CommonView';
+import { TextInput, KeyboardInput, WriteInput, Textarea } from '../../../../components/Input';
 import {
   getDiseaseDataTotal,
   getMainTotal,
 } from '../../../../database/parts_checkstatus_data';
-import {listToPage} from '../../../../utils/common';
+import { listToPage } from '../../../../utils/common';
 import Button from '../../../../components/Button';
 import HeaderTabs from './HeaderTabs';
 import MemberEdit from './MemberEdit';
 import Media from './Media';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Context as synergyContext } from '../../Detect/SynergyProvider'
 
-import {Divider} from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import Modal from '../../../../components/Modal';
 
 // 协同检测
-const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
-  // 从全局参数中 获取 桥幅属性、用户信息
+const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
+  // 协同检测全局参数
   const {
-    state: {bridgeside, userInfo},
-  } = React.useContext(GlobalContext);
+    state: { allyStatusList }
+  } = React.useContext(synergyContext);
 
   // 模态框是否显示
   const [visible, setVisible] = React.useState(false);
-
-  // 当前的 项目id
-  const [projectid, setProjectId] = React.useState('');
-
-  // 表格loading
-  const [loading, setLoading] = React.useState(false);
-
-  // 表格数据
-  const [list, setList] = React.useState([]);
-
-  // 是否正在任务中
-  const [isTaskIng,setIsTaskIng] = useState(false)
-
-  // 当前页
-  const [page, setPage] = React.useState();
-
-  // 共几条
-  const [total, setTotal] = React.useState(0);
-
-  // 共几页
-  const [pageTotal, setPageTotal] = React.useState(0);
-
-  // 查询参数
-  const [keywords, setKeywords] = React.useState('');
-
-  // 当前选中桥梁的bridgeid，多选，是数组
-  const [checked, setChecked] = React.useState(new Set([]));
-
-  const [project,setProject] = useState()
-
-  // 检索输入框的引用
-  const searchRef = React.useRef([]);
-
-  const [bridgeInfo,setBridgeInfo] = useState()
-
-  const [navigation,setNavigation] = useState()
-  const [route,setRoute] = useState()
+  // 当前展示的页面
+  const [funcShow, setFuncShow] = useState(1)
 
   // 暴露给父组件的函数
   React.useImperativeHandle(ref, () => ({
-    
-    // 打开
-    open: (project,bridge,navigation,route) => {
-      setNavigation(navigation)
-      setRoute(route)
-      console.log('navigationnavigation',navigation);
-      // 是否正在任务中
-      // isTaskIng 读取本地数据库
-      // setIsTaskIng(true)
 
-      getTableData()
+    // 打开
+    open: (project, bridge, navigation, route) => {
       setFuncShow(1)
-      
-      // project 是当前项目信息
-      // bridge 选择打开的桥梁信息
-      console.log('bridge',bridge);
-      setBridgeInfo(bridge)
-      setProject(project)
-      // 设置projectid
-      setProjectId(project.projectid);
-      // 表格loading
-      setLoading(true);
-      setPage({
-        pageSize: 10,
-        pageNo: 0,
-      });
       setVisible(true);
     },
     // 关闭函数
@@ -112,271 +56,21 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
   const close = () => {
     // 关闭模态框
     setVisible(false);
-    // 清空表格数据
-    setList([]);
-    // 清空选中
-    setChecked(new Set([]));
-    // 清空检索数据
-    if (searchRef.current[0]) {
-      searchRef.current[0].clear();
-    }
-    // 清空桥梁数据
-    setBridgeInfo('')
-    // 重置表单数据
-    setTaskCode('')
-    setPersonNum('1')
-    setPersonName('')
-    setJoinCode('')
-    setJoinPersonName('')
   };
-
-  // 点击 选择框 -- 可多选
-  const handleCheck = id => {
-    // id 是 bridgeid
-    const _checked = checked;
-    if (_checked.has(id)) {
-      _checked.delete(id);
-    } else {
-      _checked.add(id);
-    }
-    setChecked(new Set(_checked));
-  };
-
-  const [taskCode,setTaskCode] = useState(0) // 任务码 - 创建
-  const [personNum,setPersonNum] = useState(1) //协同人数
-  const [personName,setPersonName] = useState('') //创建者名称 - 创建
-  const [btnText,setBtnText] = useState('') //确认按钮的文字
-
-  const [joinCode,setJoinCode] = useState('')
-  const [joinPersonName,setJoinPersonName] = useState('')
-
-  useEffect(()=>{
-    setPersonNum('1')
-    if(funcShow == 1){
-      setBtnText('确认创建')
-    } else if (funcShow == 2){
-      setBtnText('确认参与')
-    }
-    
-  },[])
-  const [funcShow,setFuncShow] = useState(1)
 
   // 切换功能页面
   const changeFunc = (e) => {
-    // console.log('11111',e);
     setFuncShow(e)
   }
 
-  
-  // 生成任务码
-  const changeTaskCode = () => {
-    // 随机六位整数
-    var code = '';
-    for(var i=0;i<6;i++){
-      code += parseInt(Math.random()*10);
-    }
-    console.log('切换任务码',code);
-    setTaskCode(code)
-    // console.log('切换任务码',);
-  }
 
-  // 复制任务码
-  const copyCode = async(value) =>{
-    // 写入
-    Clipboard.setString(value);
-    // 读取
-    let str = await Clipboard.getString();
-    // console.log('复制的内容',str)
-    if(str){
-      alert('复制任务码成功【' + str + '】');
-    }
-  }
 
-  const personNumChange = (e) => {
-    var a = parseInt(personNum)
-    if(personNum>=2 && personNum<10){
-      a+=e
-      setPersonNum(a.toString())
-    }
-    if(personNum == 1){
-      if(e>0){
-        a+=e
-        setPersonNum(a.toString())
-      }
-    }
-    if(personNum == 10){
-      if(e<0){
-        a+=e
-        setPersonNum(a.toString())
-      }
-    }
-  }
-
-  // 创建任务 的输入
-  const valueChange = (e) => {
-    console.log('输入内容',e);
-    if(e.name=='personName'){
-      setPersonName(e.value)
-    }
-  }
-
-  // 参与任务 的输入
-  const joinValueChange = (e) => {
-    console.log('输入内容',e);
-    if(e.name == 'joinCode'){
-      setJoinCode(e.value)
-    } else if (e.name == 'joinPersonName') {
-      setJoinPersonName(e.value)
-    }
-  }
-
-  // 确认
-  const confirm = () => {
-    if(funcShow == 1){
-      // 创建任务的确认操作
-      if(bridgeInfo){
-        console.log('创建任务');
-        // 任务码
-        if(taskCode){
-          console.log('任务码taskCode',taskCode);
-        }
-        // 协同人数
-        if(personNum){
-          console.log('协同人数personNum',personNum);
-        }
-        // 用户名称
-        if(personName){
-          console.log('用户名称personName',personName);
-        }
-      }
-      if(!bridgeInfo){
-        console.log('无数据空的确认');
-      }
-      // 获取数据
-      getTableData()
-
-      // 任务创建成功后改变'是否在任务中'的状态
-      setIsTaskIng(true)
-      
-      
-
-    } else if (funcShow == 2) {
-      console.log('参与任务');
-      // 任务码
-      console.log('参与者的任务码',joinCode);
-      // 用户名称
-      console.log('参与者的名称',joinPersonName);
-      // 获取数据
-      getTableData()
-    }
-
-  }
-
-  // 前往检测
-  const goWork = () => {
-    // console.log('页面跳转');
-    try {
-      // 关闭弹窗页面
-      close()
-      // 跳转
-      navigation.navigate('Collection/Detect/BridgeTest', {
-        project: project,
-        bridge: bridgeInfo,
-        list: route.params.list
-      })
-    } catch (error) {
-      console.log('创建协同任务页面跳转error',error);
-    }
-  }
-
-  const deleteTask = () => {
-    console.log('删除任务');
-
-    // 改变isTaskIng的状态
-    setIsTaskIng(false)
-
-    // 清除获取数据的定时器
-
-    // 清空表格数据
-    setList([])
-    // 重置页面状态
-
-  }
-
-  // 获取任务协同者表格数据
-  const getTableData = () => {
-      // 持续向盒子获取最新状态信息
-      // setInterval(()=>{
-        console.log('获取数据');
-        setList([])
-        // =====模拟表格数据====
-          let list = [
-            {
-              id:'1',
-              user:'张三1',
-              userName:'asfx',
-              joinTime:'10:21',
-              status:'在线'
-            },
-            {
-              id:'2',
-              user:'张三2',
-              userName:'asdfbdffx',
-              joinTime:'10:22',
-              status:'在线'
-            },
-            {
-              id:'3',
-              user:'张三3',
-              userName:'awrhwsfx',
-              joinTime:'10:23',
-              status:'离线'
-            },
-            {
-              id:'4',
-              user:'张三4',
-              userName:'asfxbsbx',
-              joinTime:'10:24',
-              status:'在线'
-            },
-            {
-              id:'5',
-              user:'张三5',
-              userName:'asfasx',
-              joinTime:'10:25',
-              status:'在线'
-            },
-            {
-              id:'6',
-              user:'张三2',
-              userName:'asdfbdffx',
-              joinTime:'10:22',
-              status:'在线'
-            },
-            {
-              id:'7',
-              user:'张三3',
-              userName:'awrhwsfx',
-              joinTime:'10:23',
-              status:'离线'
-            },
-            {
-              id:'8',
-              user:'张三4',
-              userName:'asfxbsbx',
-              joinTime:'10:24',
-              status:'在线'
-            },
-            {
-              id:'9',
-              user:'张三5',
-              userName:'asfasx',
-              joinTime:'10:25',
-              status:'在线'
-            },
-          ]
-          setList(list)
-      // },1000*2)
+  // 时间转换
+  const timeToHS = (dateTime) => {
+    let time = dateTime.split(' ')[1]
+    let timeArr = time.split(':')
+    let HSTime = timeArr[0] + ':' + timeArr[1]
+    return HSTime
   }
 
   return (
@@ -392,104 +86,93 @@ const Cooperate = React.forwardRef(({onSubmitOver}, ref,) => {
       height={500}
       keyboardVerticalOffset={-250}
       onClose={() => setVisible(false)}>
-      <View style={[tailwind.flex1,{}]}>
-      <View style={{height:'10%',width:'100%',
-    flexDirection: 'row',justifyContent:'flex-start',alignItems:'center'}}>
-        <Pressable style={{width:'15%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',
-        backgroundColor:funcShow == 1 ? '#2b427d' : '#2b427d00'}}
-        onPress={()=>changeFunc(1)}>
-          <Text style={{color:funcShow == 1 ? '#fff' : '#808285'}}>任务详情</Text>
-        </Pressable>
-        <Pressable style={{width:'15%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center',
-        backgroundColor:funcShow == 2 ? '#2b427d' : '#2b427d00'}}
-        onPress={()=>changeFunc(2)}>
-          <Text style={{color:funcShow == 2 ? '#fff' : '#808285'}}>使用帮助</Text>
-        </Pressable>
-      </View>
-        <View style={[tailwind.flex1,{}]}>
+      <View style={[tailwind.flex1, {}]}>
+        {/* 顶部 */}
+        <View style={{
+          height: '10%', width: '100%',
+          flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'
+        }}>
+          <Pressable style={{
+            width: '15%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center',
+            backgroundColor: funcShow == 1 ? '#2b427d' : '#2b427d00'
+          }}
+            onPress={() => changeFunc(1)}>
+            <Text style={{ color: funcShow == 1 ? '#fff' : '#808285' }}>任务详情</Text>
+          </Pressable>
+          <Pressable style={{
+            width: '15%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center',
+            backgroundColor: funcShow == 2 ? '#2b427d' : '#2b427d00'
+          }}
+            onPress={() => changeFunc(2)}>
+            <Text style={{ color: funcShow == 2 ? '#fff' : '#808285' }}>使用帮助</Text>
+          </Pressable>
+        </View>
+        {/* 内容 */}
+        <View style={[tailwind.flex1, {}]}>
           {
-            funcShow == 1 ? 
-            <View style={{width:'100%',height:'100%',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-              <View style={{width:'50%',height:'100%',alignItems:'center',paddingTop:20,paddingLeft:20}}>
-                  {/* 参与者信息表格 */}
-                  <View style={{width:'100%',height:'90%',padding:10}}>
-                    <Table.Box
-                      numberOfPages={pageTotal}
-                      total={total}
-                      pageNo={page?.pageNo || 0}
-                      onPageChange={e =>
-                        setPage({
-                          pageSize: 10,
-                          pageNo: e,
-                        })
-                      }
-                      header={
-                        <Table.Header>
-                          <Table.Title title="序号" flex={1} />
-                          <Table.Title title="账号" flex={4} />
-                          <Table.Title title="人员" flex={3} />
-                          <Table.Title title="加入时间" flex={2} />
-                          <Table.Title title="状态" flex={2} />
-                        </Table.Header>
-                      }>
-                      <FlatList
-                        data={list}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({item, index}) => (
-                          <Table.Row key={index}>
-                            <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                            <Table.Cell flex={4}>{item.user}</Table.Cell>
-                            <Table.Cell flex={3}>{item.userName}</Table.Cell>
-                            <Table.Cell flex={2}>{item.joinTime}</Table.Cell>
-                            <Table.Cell flex={2}>{item.status}</Table.Cell>
-                          </Table.Row>
-                        )}
-                      />
-                    </Table.Box>
-                  </View>
+            funcShow == 1 &&
+            <View style={{ width: '100%', height: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View style={{ width: '50%', height: '100%', alignItems: 'center', paddingTop: 20, paddingLeft: 20 }}>
+                {/* 参与者信息表格 */}
+                <View style={{ width: '100%', height: '90%', padding: 10 }}>
+                  <Table.Box
+                    header={
+                      <Table.Header>
+                        <Table.Title title="序号" flex={1} />
+                        <Table.Title title="账号" flex={4} />
+                        <Table.Title title="人员" flex={3} />
+                        <Table.Title title="加入时间" flex={2} />
+                        <Table.Title title="状态" flex={2} />
+                      </Table.Header>
+                    }>
+                    <FlatList
+                      data={allyStatusList}
+                      showsVerticalScrollIndicator={false}
+                      renderItem={({ item, index }) => (
+                        <Table.Row key={index}>
+                          <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                          <Table.Cell flex={4}>{item.user_id}</Table.Cell>
+                          <Table.Cell flex={3}>{item.user_name}</Table.Cell>
+                          <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
+                          <Table.Cell flex={2}>{item.state}</Table.Cell>
+                        </Table.Row>
+                      )}
+                    />
+                  </Table.Box>
                 </View>
-            </View>
-            : funcShow == 1 && !bridgeInfo ? 
-              <View style={{width:'100%',height:'100%',display:'flex',justifyContent:'center',alignItems:'center'}}>
-                <Text>*请选择桥梁后再创建协同检测任务</Text>
               </View>
-            : <></>
+            </View>
           }
           {
-            funcShow == 2 ? 
-            <View style={{width:'100%',height:'100%',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-              <View style={{width:'50%',height:'100%',alignItems:'flex-start',paddingTop:50,paddingLeft:20}}>
-                <Text>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
-                <Text>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
-                <Text>3.协同检测盒子WiFi密码：jianlide</Text>
-              </View>
+            funcShow == 2 &&
+            <View style={styles.helpBox}>
+              <Text style={styles.helpText}>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
+              <Text style={styles.helpText}>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
+              <Text style={styles.helpText}>3.协同检测盒子WiFi密码：jianlide</Text>
             </View>
-            : <></>
           }
         </View>
-        
       </View>
       {/* 分割线 */}
       <Divider style={[tailwind.mB2]} />
       {/* 底部操作按钮 */}
       <View style={styles.modalFoote}>
-        {/* 取消按钮，关闭模态框 */}
-        <View></View>
-        {/* <Button style={[{backgroundColor: '#808285'}]} onPress={() => close()}>
-          取消
-        </Button> */}
         {/* 确认 */}
-        <Button style={[{backgroundColor: '#2b427d'}]} onPress={()=>close()}>确认</Button>
+        <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => close()}>确认</Button>
       </View>
     </Modal>
   );
 });
 
-export default function Main({navigation, route}) {
+export default function Main({ navigation, route }) {
   // 全局样式
   const {
-    state: {theme},
+    state: { theme },
   } = React.useContext(ThemeContext);
+  // 协同检测全局参数
+  const {
+    state: { wsOpen }
+  } = React.useContext(synergyContext);
 
   // 桥梁检测的全局参数
   const {
@@ -514,7 +197,7 @@ export default function Main({navigation, route}) {
 
   // 全局参数 -- 桥幅属性
   const {
-    state: {bridgeside},
+    state: { bridgeside },
   } = React.useContext(GlobalContext);
 
   // 当前tab
@@ -553,16 +236,16 @@ export default function Main({navigation, route}) {
   // 当页面改变时,清空当前选中
   React.useEffect(() => setNowEdit(null), [pageType]);
 
-  const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
+  const [screenWidth, setScreenWidth] = React.useState() //屏幕宽度
 
   // 当部件列表变化时 重新设置部件表格的数据
   React.useEffect(() => {
     const windowWidth = Dimensions.get('window').width;
     // console.log('当前屏幕宽度',windowWidth);
     setScreenWidth(windowWidth)
-    if(memberList.length>0){
+    if (memberList.length > 0) {
       setTable1Data(listToPage(memberList, pageRow));
-    }else{
+    } else {
       setTable1Data([])
     }
     if (bridgereportid) {
@@ -573,19 +256,19 @@ export default function Main({navigation, route}) {
       // 获取检测桥梁的 标记条数
       getMainTotal(bridgereportid).then(res => setMianTotal(res.count));
     }
-      memberList.forEach((item) => {
-        if (item.title == '伸缩缝装置') {
-          item.title = '伸缩装置'
-        }
-      })
-    
+    memberList.forEach((item) => {
+      if (item.title == '伸缩缝装置') {
+        item.title = '伸缩装置'
+      }
+    })
+
   }, [memberList]);
 
   // 当跨列表数据变化时, 重新设置跨表格的数据
   React.useEffect(() => {
-    console.log('p1301 route',route);
+    console.log('p1301 route', route);
     kuaList.length && setTable2Data(listToPage(kuaList, pageRow));
-    console.log('table2Data',table2Data.length);
+    console.log('table2Data', table2Data.length);
   }, [kuaList]);
 
   // 页面聚焦时
@@ -639,13 +322,13 @@ export default function Main({navigation, route}) {
     const datas = fileList.filter(
       // 如果是传入类型的图片，并且是图片或虚拟图片，那么存入数据
       item =>
-        item.category.substring(0,1) === category &&
+        item.category.substring(0, 1) === category &&
         new Set(['image', 'virtualimage']).has(item.mediatype),
     );
     // 显示的图片数据--一张
     let _img = {};
     if (datas.length) {
-      const preference = datas.find(({is_preference}) => !!is_preference);
+      const preference = datas.find(({ is_preference }) => !!is_preference);
       _img = preference || datas[0];
     }
     return (
@@ -696,7 +379,7 @@ export default function Main({navigation, route}) {
         // 项目名称 -- 点击返回项目下的，桥梁列表
         name: `${project.projectname}`,
         onPress: () =>
-          navigation.navigate('Collection/Detect/ProjectDetail', {project}),
+          navigation.navigate('Collection/Detect/ProjectDetail', { project }),
       },
       {
         // 桥梁桩号 - 桥梁名称 - 桥幅属性
@@ -722,7 +405,7 @@ export default function Main({navigation, route}) {
     if (!nowEdit) {
       return;
     }
-    console.log('handleMember nowEdit',nowEdit);
+    console.log('handleMember nowEdit', nowEdit);
     navigation.navigate('Collection/Detect/BridgeTest/Member', {
       data: nowEdit,
       list: [],
@@ -745,7 +428,7 @@ export default function Main({navigation, route}) {
   const getMB = list => {
     if (list.length) {
       return (
-        list.map(({filesize}) => filesize || 0).reduce((a, b) => a + b) /
+        list.map(({ filesize }) => filesize || 0).reduce((a, b) => a + b) /
         1024 /
         1024
       ).toFixed(2);
@@ -762,7 +445,7 @@ export default function Main({navigation, route}) {
   // 关闭 编辑部件模态框
   const handleEditClose = () => {
     // 触发刷新
-    dispatch({type: 'reflush', payload: Math.random().toString(36).slice(-8)});
+    dispatch({ type: 'reflush', payload: Math.random().toString(36).slice(-8) });
   };
 
   // 回退
@@ -780,14 +463,14 @@ export default function Main({navigation, route}) {
   }
 
   React.useEffect(() => {
-    console.log('main bridge',bridge);
+    console.log('main bridge', bridge);
     // 桥梁id bridge.bridgeid
-  },[])
+  }, [])
 
   const [infoWrite, setInfoWrite] = React.useState(false)
   const bridgeInfo = () => {
     setInfoWrite(true)
-    console.log('按下了桥梁备注按钮',infoWrite)
+    console.log('按下了桥梁备注按钮', infoWrite)
     let name = bridge.bridgeid + '_' + 'bridgeInfoText'
     getBridgeInfoStorage(name)
   }
@@ -807,7 +490,7 @@ export default function Main({navigation, route}) {
   }
 
   // 存入桥梁备注数据
-  const setBridgeInfoStorage = async(name, value) => {
+  const setBridgeInfoStorage = async (name, value) => {
     console.log('存入桥梁备注数据的函数~~', name, value);
     const REname = bridge.bridgeid + '_' + name
     try {
@@ -818,11 +501,11 @@ export default function Main({navigation, route}) {
     }
   }
   // 读取桥梁备注数据
-  const getBridgeInfoStorage = async(name) => {
-    console.log('读取桥梁备注数据~',name);
+  const getBridgeInfoStorage = async (name) => {
+    console.log('读取桥梁备注数据~', name);
     try {
       const value = await AsyncStorage.getItem(name)
-      console.log('读取的value~~~',value);
+      console.log('读取的value~~~', value);
       setBridgeInfoWriteText(value)
     } catch (error) {
       console.log('读取桥梁备注数据失败main', error);
@@ -830,26 +513,26 @@ export default function Main({navigation, route}) {
   }
 
   // 协同检测按钮 不同状态对应的图标
-  const [imgType,setImgType] = useState('cooperate')
+  const [imgType, setImgType] = useState('cooperate')
   // 是否存在正在进行的协同任务
-  const [isCoop,setIsCoop] = useState(false)
-  useEffect(()=>{
+  const [isCoop, setIsCoop] = useState(false)
+  useEffect(() => {
     // 判断当前进入的桥梁页面，是否存在正在进行的协同任务
     setIsCoop(true)
 
-    
-    if(isCoop == true){
+
+    if (isCoop == true) {
       setImgType('cooperate')
-    } else if (isCoop == false){
+    } else if (isCoop == false) {
       setImgType('cooperateDis')
     }
 
-    
-  },[imgType])
+
+  }, [imgType])
 
   const openCoop = () => {
     console.log('打开协同检测弹窗');
-    coopRef.current.open(navigation,route)
+    coopRef.current.open(navigation, route)
 
     // 打开弹窗后重置表格选中状态、图标状态
     // setNowChecked(null);
@@ -900,44 +583,44 @@ export default function Main({navigation, route}) {
       ) : (
         //---------数据---------
         <Content
-        onBack={goBack}
-        onAhead={nowEdit && handleMember}
-        //右侧按钮 
-        operations={[
-          {
-            // 进入构件管理
-            // name: 'eye',
-            img:'look',
-            onPress: handleMember,
-            disabled: !nowEdit,
-          },
-          {
-            // 进入构件管理
-            // name: 'eye',
-            img:'bridgeInfo',
-            onPress: () => bridgeInfo(),
-          },
-          // {
-          //   // 病害成因
-          //   // name: 'stethoscope',
-          //   img:'disList',
-          //   onPress: () => handlePlanOrGenesis('GenesisEdit'),
-          //   disabled: !nowEdit,
-          // },
-          {
-            // 协同检测按钮
-            // name: 'book-plus',
-            img: imgType,
-            onPress: () => openCoop(),
-            disabled: !isCoop,
-          },
-        ]}>
+          onBack={goBack}
+          onAhead={nowEdit && handleMember}
+          //右侧按钮 
+          operations={[
+            {
+              // 进入构件管理
+              // name: 'eye',
+              img: 'look',
+              onPress: handleMember,
+              disabled: !nowEdit,
+            },
+            {
+              // 进入构件管理
+              // name: 'eye',
+              img: 'bridgeInfo',
+              onPress: () => bridgeInfo(),
+            },
+            // {
+            //   // 病害成因
+            //   // name: 'stethoscope',
+            //   img:'disList',
+            //   onPress: () => handlePlanOrGenesis('GenesisEdit'),
+            //   disabled: !nowEdit,
+            // },
+            {
+              // 协同检测按钮
+              // name: 'book-plus',
+              img: imgType,
+              onPress: openCoop,
+              disabled: !wsOpen,
+            },
+          ]}>
           {/* <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
             </View> */}
           <View style={
-            screenWidth > 830 ? [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:27,width:715,top:1,borderRadius:5}] 
-            :
-            [tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
+            screenWidth > 830 ? [tailwind.flexRow, tailwind.flex1, { backgroundColor: 'rgba(255,255,255,1)', right: 27, width: 715, top: 1, borderRadius: 5 }]
+              :
+              [tailwind.flexRow, tailwind.flex1, { backgroundColor: 'rgba(255,255,255,1)', right: 19, width: 715, top: 1, borderRadius: 5 }]
           }>
             {/* 左侧 */}
             <View style={[styles.card, theme.primaryBgStyle]}>
@@ -967,7 +650,7 @@ export default function Main({navigation, route}) {
                             scrollEnabled={true}
                             data={table1Data[table1PageNo - 1] || []}
                             extraData={table1Data}
-                            renderItem={({item, index}) => (
+                            renderItem={({ item, index }) => (
                               <Table.Row
                                 key={index}
                                 onPress={() => handleCheck(item, 'membertype')}>
@@ -1010,7 +693,7 @@ export default function Main({navigation, route}) {
                             onPageChange={setTable1PageNo}
                             numberOfPages={table1Data.length}
                           />
-                          <Button onPress={handleEdit} style={[{backgroundColor:'#2b427d'}]}>编辑部件</Button>
+                          <Button onPress={handleEdit} style={[{ backgroundColor: '#2b427d' }]}>编辑部件</Button>
                         </View>
                       </>
                     ),
@@ -1033,7 +716,7 @@ export default function Main({navigation, route}) {
                             scrollEnabled={true}
                             data={table2Data[table2PageNo - 1] || []}
                             extraData={table2Data}
-                            renderItem={({item, index}) => (
+                            renderItem={({ item, index }) => (
                               <Table.Row
                                 key={index}
                                 onPress={() => handleCheck(item, 'stepno')}>
@@ -1070,7 +753,7 @@ export default function Main({navigation, route}) {
                             onPageChange={setTable2PageNo}
                             numberOfPages={table2Data.length}
                           />
-                          <Button onPress={handleEdit} style={[{backgroundColor:'#2b427d'}]}>编辑部件</Button>
+                          <Button onPress={handleEdit} style={[{ backgroundColor: '#2b427d' }]}>编辑部件</Button>
                         </View>
                       </>
                     ),
@@ -1082,7 +765,7 @@ export default function Main({navigation, route}) {
             {/* 右侧 */}
             <View style={[styles.card, theme.primaryBgStyle]}>
               {/* 标题 */}
-              <Text style={[tailwind.fontBold, {color: '#2b427d'}]}>
+              <Text style={[tailwind.fontBold, { color: '#2b427d' }]}>
                 全局描述
               </Text>
               {/* 图片 */}
@@ -1104,7 +787,7 @@ export default function Main({navigation, route}) {
                         <Text>
                           {
                             partsList.filter(
-                              ({memberstatus}) => memberstatus === '100',
+                              ({ memberstatus }) => memberstatus === '100',
                             ).length
                           }
                         </Text>
@@ -1116,7 +799,7 @@ export default function Main({navigation, route}) {
                         <Text style={[tailwind.textCenter]}>
                           {
                             partsList.filter(
-                              ({memberstatus}) => memberstatus === '200',
+                              ({ memberstatus }) => memberstatus === '200',
                             ).length
                           }
                         </Text>
@@ -1146,14 +829,14 @@ export default function Main({navigation, route}) {
                         <Text>
                           {
                             fileList.filter(
-                              ({mediatype, filesize}) =>
+                              ({ mediatype, filesize }) =>
                                 mediatype === 'image' && filesize,
                             ).length
                           }
                           /
                           {getMB(
                             fileList.filter(
-                              ({mediatype, filesize}) =>
+                              ({ mediatype, filesize }) =>
                                 mediatype === 'image' && filesize,
                             ),
                           )}
@@ -1167,7 +850,7 @@ export default function Main({navigation, route}) {
                         <Text style={[tailwind.textCenter]}>
                           {
                             fileList.filter(
-                              ({mediatype}) => mediatype === 'virtualimage',
+                              ({ mediatype }) => mediatype === 'virtualimage',
                             ).length
                           }
                           /0MB
@@ -1182,13 +865,13 @@ export default function Main({navigation, route}) {
                         <Text>
                           {
                             fileList.filter(
-                              ({mediatype}) => mediatype === 'voice',
+                              ({ mediatype }) => mediatype === 'voice',
                             ).length
                           }
                           /
                           {getMB(
                             fileList.filter(
-                              ({mediatype}) => mediatype === 'voice',
+                              ({ mediatype }) => mediatype === 'voice',
                             ),
                           )}
                           MB
@@ -1201,13 +884,13 @@ export default function Main({navigation, route}) {
                         <Text style={[tailwind.textCenter]}>
                           {
                             fileList.filter(
-                              ({mediatype}) => mediatype === 'video',
+                              ({ mediatype }) => mediatype === 'video',
                             ).length
                           }
                           /
                           {getMB(
                             fileList.filter(
-                              ({mediatype}) => mediatype === 'video',
+                              ({ mediatype }) => mediatype === 'video',
                             ),
                           )}
                           MB
@@ -1241,51 +924,51 @@ export default function Main({navigation, route}) {
 
       {
         infoWrite ?
-        <Portal>
-          <PaperModal
-          visible={infoWrite}
-          onDismiss={closeBridgeInfoWindow}
-          onClose={closeBridgeInfoWindow}
-          contentContainerStyle={[styles.partsAddModalContent]}>
-            <View style={[theme.primaryBgStyle, tailwind.flex1, tailwind.rounded]}>
-              {/* 顶部 = 标题 + 关闭按钮 */}
-              <View style={[styles.partsEditModalHand]}>
-                <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
-                  <Text
-                    style={[tailwind.textBase, tailwind.fontBold, tailwind.mR2]}>
-                    桥梁备注
-                  </Text>
+          <Portal>
+            <PaperModal
+              visible={infoWrite}
+              onDismiss={closeBridgeInfoWindow}
+              onClose={closeBridgeInfoWindow}
+              contentContainerStyle={[styles.partsAddModalContent]}>
+              <View style={[theme.primaryBgStyle, tailwind.flex1, tailwind.rounded]}>
+                {/* 顶部 = 标题 + 关闭按钮 */}
+                <View style={[styles.partsEditModalHand]}>
+                  <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
+                    <Text
+                      style={[tailwind.textBase, tailwind.fontBold, tailwind.mR2]}>
+                      桥梁备注
+                    </Text>
+                  </View>
+                  <TouchableOpacity onPress={closeBridgeInfoWindow}>
+                    <Icon name="close" size={24} />
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={closeBridgeInfoWindow}>
-                  <Icon name="close" size={24} />
-                </TouchableOpacity>
-              </View>
-              <View
-              style={[tailwind.justifyBetween, tailwind.mT1, tailwind.flexRow]}>
-                <View style={[tailwind.flex1,{height:300,width:600,padding:10}]}>
-                  <View style={[tailwind.mT3,{width:'100%',height:200}]}>
-                    <WriteInput
-                      name="bridgeInfoText"
-                      label=""
-                      lines={3}
-                      value={bridgeInfoWriteText}
-                      onChange={(e) => bridgeInfoWrite(e)}
+                <View
+                  style={[tailwind.justifyBetween, tailwind.mT1, tailwind.flexRow]}>
+                  <View style={[tailwind.flex1, { height: 300, width: 600, padding: 10 }]}>
+                    <View style={[tailwind.mT3, { width: '100%', height: 200 }]}>
+                      <WriteInput
+                        name="bridgeInfoText"
+                        label=""
+                        lines={3}
+                        value={bridgeInfoWriteText}
+                        onChange={(e) => bridgeInfoWrite(e)}
                       // onChange={handleFormChenge}
-                    />
+                      />
+                    </View>
+                  </View>
+                  <View style={[styles.partsEditModalFoot, { width: '40%' }]}>
+                    <Button style={[{ backgroundColor: '#808285', marginRight: 20 }]} onPress={closeBridgeInfoWindow}>
+                      取消
+                    </Button>
+                    <Button style={[{ backgroundColor: '#2b427d' }]} onPress={confirmText}>确定</Button>
                   </View>
                 </View>
-                <View style={[styles.partsEditModalFoot,{width:'40%'}]}>
-                  <Button style={[{backgroundColor: '#808285',marginRight:20}]} onPress={closeBridgeInfoWindow}>
-                    取消
-                  </Button>
-                  <Button style={[{backgroundColor: '#2b427d'}]} onPress={confirmText}>确定</Button>
-                </View>
+
               </View>
-                
-            </View>
-          </PaperModal>
-        </Portal>
-        : <></>
+            </PaperModal>
+          </Portal>
+          : <></>
       }
 
       {/* 协同检测 模态框 */}
@@ -1353,14 +1036,21 @@ const styles = StyleSheet.create({
     ...tailwind.flexRow,
     // ...tailwind.borderT,
     ...tailwind.borderGray300,
-    position:'absolute',
-    bottom:10,
-    right:10,
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
   },
   modalFoote: {
     ...tailwind.mB2,
     ...tailwind.mX4,
     ...tailwind.flexRow,
-    ...tailwind.justifyBetween,
+    ...tailwind.justifyEnd,
   },
+  helpBox: {
+    paddingTop: 20,
+    paddingLeft: 20
+  },
+  helpText: {
+    marginBottom: 10
+  }
 });

@@ -22,9 +22,9 @@ const Provider = props => {
     curSynergyInfo: null,
     // 当前协同检测的桥梁信息
     curSynergyBridgeInfo: null,
+    // 在线状态表格数据
+    allyStatusList: null,
 
-    // 在线状态
-    ally_status: null,
     // 协同检测数据
     synergyTestData: null,
     // 用户检测记录
@@ -38,17 +38,13 @@ const Provider = props => {
       // 打开
       state.wsConnection.current.onopen = () => {
         dispatch({ type: 'wsConnectionState', payload: '已连接' })
-        sendPeople()
       }
       // 接收
       state.wsConnection.current.onmessage = (e) => {
         let data = JSON.parse(e.data)
-        console.log("data", JSON.stringify(data));
         if (data.type == 'ally_status') {
-          // 处理协同人员状态
-          let SynergyStateList = dealSynergyPeople(data.content)
-          // 设置协同人员状态 ally_status
-          dispatch({ type: 'ally_status', payload: SynergyStateList })
+          // 处理协同人员状态列表
+          dealSynergyPeople(data.content)
         } else if (data.type == 'record') {
           // 处理检测记录数据
           dealTestRecordData(data)
@@ -74,28 +70,24 @@ const Provider = props => {
   }, [state.wsOpen])
 
   // 处理在线人员
-  const dealSynergyPeople = (list) => {
-    // let participator = JSON.parse(state.curSynergyInfo.synergyData.participator)
-    // let newList = []
-    // list.offline.forEach(item => {
-    //   let existIndex = participator.findIndex(i => i.deviceId == item)
-    //   if (existIndex !== -1) {
-    //     newList.push({
-    //       ...participator[existIndex],
-    //       state: 'offline'
-    //     })
-    //   }
-    // })
-    // list.online.forEach(item => {
-    //   let existIndex = participator.findIndex(i => i.deviceId == item)
-    //   if (existIndex !== -1) {
-    //     newList.push({
-    //       ...participator[existIndex],
-    //       state: 'online'
-    //     })
-    //   }
-    // })
-    // return newList
+  const dealSynergyPeople = (data) => {
+    let list = []
+    // 处理在线数据
+    for(let i=0;i<data.online.length;i++){
+      list.push({
+        ...data.online[i],
+        state:'在线'
+      })
+    }
+    // 处理离线数据
+    for(let i=0;i<data.offline.length;i++){
+      list.push({
+        ...data.offline[i],
+        state:'离线'
+      })
+    }
+    // 设置协同人员状态列表 allyStatusList
+    dispatch({ type: 'allyStatusList', payload: list })
   }
 
   // 检测记录数据
