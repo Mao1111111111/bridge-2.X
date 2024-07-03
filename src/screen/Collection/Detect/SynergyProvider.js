@@ -47,7 +47,7 @@ const Provider = props => {
           dealSynergyPeople(data.content)
         } else if (data.type == 'record') {
           // 处理检测记录数据
-          dealTestRecordData(data)
+          dealTestRecordData(data.content)
         }
       };
       // 关闭时触发
@@ -93,6 +93,7 @@ const Provider = props => {
   // 检测记录数据
   const dealTestRecordData = (data) => {
     // 
+    console.log("data",data);
   }
 
   // 关闭协同检测
@@ -103,9 +104,9 @@ const Provider = props => {
   }
 
   // 发送人员信息
-  const sendPeople = () => {
-    state.wsConnection.current.send(JSON.stringify({ 'aa': 1 }))
-  }
+  // const sendPeople = (data) => {
+  //   state.wsConnection.current.send(data)
+  // }
 
 
   return (

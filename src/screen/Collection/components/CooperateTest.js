@@ -194,8 +194,10 @@ export default function ({
     }
     // 创建任务fetch
     const creatTaskFetch = async (IP) => {
+        // 设置协同编号
+        let synergyid = bridge.bridgereportid + parseInt((new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999 - 1000 + 1) + 1000 - 1)).toString(36)
         // 处理初始桥梁数据
-        let data = await dealInitBridgeData()
+        let data = await dealInitBridgeData(synergyid)
         // url
         // let url = 'http://'+IP+':8000/task/'+personNum+'/'
         let url = 'http://10.1.1.71:8000/task/' + personNum + '/'
@@ -214,7 +216,7 @@ export default function ({
                         bridgeid: bridge.bridgeid,
                         bridgereportid: bridge.bridgereportid,
                         userid: userInfo.userid,
-                        synergyid: new Date().getTime() + '',
+                        synergyid: synergyid,
                         synergyPeopleNum: personNum,
                         taskId: result.room_id,
                         creator: JSON.stringify({
@@ -264,7 +266,7 @@ export default function ({
             });
     }
     // 处理初始桥梁数据
-    const dealInitBridgeData = async () => {
+    const dealInitBridgeData = async (synergyid) => {
         // 判断 是否有 桥梁检测报告数据
         const bridgeReportData = await bridgeReport.get({
             bridgeid: bridge.bridgeid,
@@ -312,7 +314,7 @@ export default function ({
         // 创建信息
         let createInfo = {
             // 协同编号
-            synergyid: bridge.bridgereportid + parseInt((new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999 - 1000 + 1) + 1000 - 1)).toString(36),
+            synergyid: synergyid,
             // 协同人数
             synergyPeopleNum: personNum,
             // 创建者
@@ -353,7 +355,7 @@ export default function ({
                 if (result.status == 'success') {
                     // 地址
                     // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
-                    let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + creator
+                    let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + creator + '&device_id=' + deviceId
                     // 将ws地址存入本地
                     AsyncStorage.setItem('WSPath', WSPath)
                     // 设置全局ws路径
@@ -500,7 +502,7 @@ export default function ({
                 bridgeid: result.task_msg.bridge.bridgeid,
                 bridgereportid: result.task_msg.bridge.bridgereportid,
                 userid: userInfo.userid,
-                synergyid: new Date().getTime() + '',
+                synergyid: result.task_msg.createInfo.synergyid,
                 synergyPeopleNum: result.task_msg.createInfo.synergyPeopleNum,
                 taskId: joinCode,
                 creator: JSON.stringify(result.task_msg.createInfo.creator),
@@ -527,7 +529,7 @@ export default function ({
             }
             // 地址
             // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
-            let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + joinName
+            let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + joinName + '&device_id=' + deviceId
             // 将协同信息存入数据库
             await synergyTest.save(synergyData)
             // 将协同数据存入本地
