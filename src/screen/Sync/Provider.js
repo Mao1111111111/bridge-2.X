@@ -6,6 +6,7 @@ import * as bridgeProjectBind from '../../database/bridge_project_bind';
 import * as bridgeMember from '../../database/bridge_member';
 import * as uploadStateRecord from '../../database/upload_state_record';
 import * as uploadLog from '../../database/upload_log';
+import * as synergyTest from '../../database/synergy_test';
 import reducer from '../../providers/reducer';
 import {Context as GlobalContext} from '../../providers/GlobalProvider';
 import {alert} from '../../utils/alert';
@@ -42,7 +43,7 @@ const getBaseData = async () => {
 
 function Provider({children}) {
   const {
-    state: {userInfo,basememberinfo},
+    state: {userInfo,basememberinfo,deviceId},
   } = React.useContext(GlobalContext);
 
   const [state, dispatch] = React.useReducer(reducer, {
@@ -65,8 +66,7 @@ function Provider({children}) {
     genesisMate: [],
     membercheckdata: [],
 
-    promptFontErr:{},
-    deviceId:''
+    promptFontErr:{}
   });
 
   React.useEffect(() => {
@@ -78,12 +78,6 @@ function Provider({children}) {
     });
   }, []);
 
-  // 获取设备id
-  React.useEffect(()=>{
-    let deviceId = DeviceInfo.getUniqueId()
-    AsyncStorage.setItem('deviceId', deviceId?deviceId.toUpperCase():'');
-    dispatch({type: 'deviceId', payload: deviceId?deviceId.toUpperCase():''});
-  },[])
 
   // 桥梁上传
   React.useEffect(() => {
@@ -259,6 +253,27 @@ function Provider({children}) {
               }catch(e){
                 return await errorDeal(e,'上传数据分配出错',inx,state,dispatch)
               }
+              // 是否是协同检测
+              let isSynergy = false
+              try{
+                let synergyData = await synergyTest.getByReportid(data.testData.bridgereportid)
+                if(synergyData){
+                  isSynergy = true
+                  let participator = JSON.parse(synergyData.participator)
+                  let deviceGroup = []
+                  for(let i=0;i<participator.length;i++){
+                    deviceGroup.push({
+                      deviceId:participator[i].deviceId,
+                      userid:participator[i].userid,
+                      username:participator[i].username,
+                      realname:participator[i].realname
+                    })
+                  }
+                  data['deviceGroup'] = deviceGroup
+                }
+              }catch(e){
+                return await errorDeal(e,'协同检测数据处理出错',inx,state,dispatch)
+              }
               // 设置当前上传的图片总数
               try{
                 dispatch({
@@ -322,12 +337,13 @@ function Provider({children}) {
               //---------键值
               // 企业编号/用户编号/桥梁编号/桥梁检测编号/对象文件编号
               let ObsReportDataKey = ''
+              let ObsReportDataKey_dirpath = ''
               try{
-                ObsReportDataKey = userInfo.company.companyid + '/'
-                          + data.testData.userid + '/'
-                          + data.bridgeid + '/'
-                          + data.testData.bridgereportid + '/'
-                          + 'reportData.json'
+                ObsReportDataKey_dirpath = userInfo.company.companyid + '/'
+                  + data.testData.userid + '/'
+                  + data.bridgeid + '/'
+                  + data.testData.bridgereportid + '/'
+                ObsReportDataKey = ObsReportDataKey_dirpath + 'reportData'  + (isSynergy?('_'+deviceId):'') +'.json'
               }catch(e){
                 return await errorDeal(e,'键值出错',inx,state,dispatch)
               }
@@ -349,7 +365,7 @@ function Provider({children}) {
                     filenamesys:data.testData.bridgereportid,
                     filesize:Math.floor(fileSize/1024*100)/100,
                     filetypes:'.json',
-                    dirpath:ObsReportDataKey.replace("reportData.json",""),
+                    dirpath:ObsReportDataKey_dirpath,
                     fileinfo:'',
                     filemd5:'',//obs反馈的etag
                     projectkey:data.testData.projectid,
