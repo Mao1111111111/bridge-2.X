@@ -74,7 +74,6 @@ const Provider = props => {
 
   // 处理在线人员
   const dealSynergyPeople = (data) => {
-    console.log("data",data);
     let list = []
     // 处理在线数据
     for(let i=0;i<data.online.length;i++){
@@ -100,7 +99,6 @@ const Provider = props => {
         state:'离线'
       })
     }
-    console.log("list",list);
     syPeopleToDatabase(list)
     // 设置协同人员状态列表 allyStatusList
     dispatch({ type: 'allyStatusList', payload: list })
@@ -110,7 +108,7 @@ const Provider = props => {
   const syPeopleToDatabase = (list) => {
     let participator = JSON.parse(state.curSynergyInfo.participator)
     for(let i=0;i<list.length;i++){
-      let existIndex = participator.findIndex(item=>item.deviceId==list[i].device_id)
+      let existIndex = participator.findIndex(item=>item.deviceId==list[i].deviceId)
       if(existIndex==-1){
         participator.push({
           username:list[i].username,
@@ -121,7 +119,6 @@ const Provider = props => {
         })
       }
     }
-    console.log("participator",participator);
     // 新的协同数据
     let newCurSynergyInfo = {
       ...state.curSynergyInfo,
