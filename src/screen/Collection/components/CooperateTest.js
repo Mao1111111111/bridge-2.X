@@ -643,8 +643,8 @@ export default function ({
             showHead={true}
             // 没有滚动条
             notScroll={true}
-            width={'100%'}
-            height={300}
+            width={800}
+            height={500}
             keyboardVerticalOffset={-50}
             //点击顶部关闭按钮
             onClose={closeModalOk}
