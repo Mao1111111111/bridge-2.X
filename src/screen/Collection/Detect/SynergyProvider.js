@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import reducer from '../../../providers/reducer';
 import * as synergyTest from '../../../database/synergy_test';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 上下文空间
 const Context = React.createContext();
@@ -38,10 +39,12 @@ const Provider = props => {
       state.wsConnection.current = new WebSocket(state.WSPath);
       // 打开
       state.wsConnection.current.onopen = () => {
+        console.log("打开");
         dispatch({ type: 'wsConnectionState', payload: '已连接' })
       }
       // 接收
       state.wsConnection.current.onmessage = (e) => {
+        console.log("接收");
         let data = JSON.parse(e.data)
         if (data.type == 'ally_status') {
           // 处理协同人员状态列表
@@ -66,12 +69,12 @@ const Provider = props => {
       dispatch({ type: 'wsConnectionState', payload: '未连接' })
       // 关闭协同检测
       closeWs()
-      console.log("3333");
     }
   }, [state.wsOpen])
 
   // 处理在线人员
   const dealSynergyPeople = (data) => {
+    console.log("data",data);
     let list = []
     // 处理在线数据
     for(let i=0;i<data.online.length;i++){
@@ -109,6 +112,17 @@ const Provider = props => {
         })
       }
     }
+    console.log("participator",participator);
+    // 新的协同数据
+    let newCurSynergyInfo = {
+      ...state.curSynergyInfo,
+      participator:JSON.stringify(participator)
+    }
+    // 更新全局参数中的数据
+    dispatch({ type: 'curSynergyInfo', payload: newCurSynergyInfo })
+    // 更新本地协同数据
+    AsyncStorage.setItem('curSynergyInfo', JSON.stringify(newCurSynergyInfo))
+    // 更新数据库的数据
     synergyTest.updateParticipator({
       participator:JSON.stringify(participator),
       bridgereportid:state.curSynergyInfo.bridgereportid
