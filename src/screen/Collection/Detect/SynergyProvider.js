@@ -114,7 +114,7 @@ const Provider = props => {
           username:list[i].username,
           realname:list[i].realname,
           userid:list[i].userid,
-          deviceId:list[i].device_id,
+          deviceId:list[i].deviceId,
           isSelf:"false"
         })
       }
