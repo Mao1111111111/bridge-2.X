@@ -643,8 +643,8 @@ export default function ({
             showHead={true}
             // 没有滚动条
             notScroll={true}
-            width={800}
-            height={500}
+            width={'100%'}
+            height={300}
             keyboardVerticalOffset={-50}
             //点击顶部关闭按钮
             onClose={closeModalOk}
@@ -816,8 +816,8 @@ export default function ({
                                                             renderItem={({ item, index }) => (
                                                                 <Table.Row key={index}>
                                                                     <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                                                                    <Table.Cell flex={4}>{item.user_id}</Table.Cell>
-                                                                    <Table.Cell flex={3}>{item.user_name}</Table.Cell>
+                                                                    <Table.Cell flex={4}>{item.username}</Table.Cell>
+                                                                    <Table.Cell flex={3}>{item.realname}</Table.Cell>
                                                                     <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
                                                                     <Table.Cell flex={2}>{item.state}</Table.Cell>
                                                                 </Table.Row>
