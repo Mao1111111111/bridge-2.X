@@ -355,7 +355,7 @@ export default function ({
                 if (result.status == 'success') {
                     // 地址
                     // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
-                    let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + creator + '&device_id=' + deviceId
+                    let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + ',' + userInfo.userid + '&user_name=' + creator + '&device_id=' + deviceId
                     // 将ws地址存入本地
                     AsyncStorage.setItem('WSPath', WSPath)
                     // 设置全局ws路径
@@ -529,7 +529,7 @@ export default function ({
             }
             // 地址
             // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
-            let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + joinName + '&device_id=' + deviceId
+            let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + ',' + userInfo.userid + '&user_name=' + joinName + '&device_id=' + deviceId
             // 将协同信息存入数据库
             await synergyTest.save(synergyData)
             // 将协同数据存入本地
@@ -742,8 +742,8 @@ export default function ({
                                                             renderItem={({ item, index }) => (
                                                                 <Table.Row key={index}>
                                                                     <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                                                                    <Table.Cell flex={4}>{item.user_id}</Table.Cell>
-                                                                    <Table.Cell flex={3}>{item.user_name}</Table.Cell>
+                                                                    <Table.Cell flex={4}>{item.username}</Table.Cell>
+                                                                    <Table.Cell flex={3}>{item.realname}</Table.Cell>
                                                                     <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
                                                                     <Table.Cell flex={2}>{item.state}</Table.Cell>
                                                                 </Table.Row>

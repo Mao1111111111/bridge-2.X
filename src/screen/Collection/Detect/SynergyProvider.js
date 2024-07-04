@@ -78,15 +78,25 @@ const Provider = props => {
     let list = []
     // 处理在线数据
     for(let i=0;i<data.online.length;i++){
+      let user_id_arr = data.online[i].user_id.split(',')
       list.push({
-        ...data.online[i],
+        deviceId:data.online[i].device_id,
+        time:data.online[i].time,
+        realname:data.online[i].user_name,
+        username:user_id_arr[0],
+        userid:user_id_arr[1],
         state:'在线'
       })
     }
     // 处理离线数据
     for(let i=0;i<data.offline.length;i++){
+      let user_id_arr = data.offline[i].user_id.split(',')
       list.push({
-        ...data.offline[i],
+        deviceId:data.offline[i].device_id,
+        time:data.offline[i].time,
+        realname:data.offline[i].user_name,
+        username:user_id_arr[0],
+        userid:user_id_arr[1],
         state:'离线'
       })
     }
@@ -98,15 +108,14 @@ const Provider = props => {
 
   // 人员信息存入协同检测表
   const syPeopleToDatabase = (list) => {
-    console.log("curSynergyInfo",state.curSynergyInfo);
     let participator = JSON.parse(state.curSynergyInfo.participator)
     for(let i=0;i<list.length;i++){
       let existIndex = participator.findIndex(item=>item.deviceId==list[i].device_id)
       if(existIndex==-1){
         participator.push({
-          username:list[i].user_id,
-          realname:list[i].user_name,
-          userid:list[i].user_id,
+          username:list[i].username,
+          realname:list[i].realname,
+          userid:list[i].userid,
           deviceId:list[i].device_id,
           isSelf:"false"
         })
