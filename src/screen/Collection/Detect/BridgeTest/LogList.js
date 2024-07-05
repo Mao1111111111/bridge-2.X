@@ -91,7 +91,7 @@ export default function LogList({list}) {
         },
       ]
       data.sort((a, b) => {
-        return new Date(a.time) - new Date(b.time);
+        return new Date(b.time) - new Date(a.time);
       });
   
       setCoopData(data);
