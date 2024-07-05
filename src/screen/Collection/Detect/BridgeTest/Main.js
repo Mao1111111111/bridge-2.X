@@ -532,8 +532,8 @@ export default function Main({ navigation, route }) {
 
   const openCoop = () => {
     console.log('打开协同检测弹窗');
-    wsConnection.current.send(JSON.stringify({b:'11'}))
-    // coopRef.current.open(navigation, route)
+    // wsConnection.current.send(JSON.stringify({b:'11'}))
+    coopRef.current.open(navigation, route)
 
     // 打开弹窗后重置表格选中状态、图标状态
     // setNowChecked(null);
