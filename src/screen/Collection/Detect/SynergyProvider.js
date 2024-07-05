@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import reducer from '../../../providers/reducer';
+import * as synergyTest from '../../../database/synergy_test';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 上下文空间
 const Context = React.createContext();
@@ -37,10 +39,12 @@ const Provider = props => {
       state.wsConnection.current = new WebSocket(state.WSPath);
       // 打开
       state.wsConnection.current.onopen = () => {
+        console.log("打开");
         dispatch({ type: 'wsConnectionState', payload: '已连接' })
       }
       // 接收
       state.wsConnection.current.onmessage = (e) => {
+        console.log("接收");
         let data = JSON.parse(e.data)
         if (data.type == 'ally_status') {
           // 处理协同人员状态列表
@@ -65,7 +69,6 @@ const Provider = props => {
       dispatch({ type: 'wsConnectionState', payload: '未连接' })
       // 关闭协同检测
       closeWs()
-      console.log("3333");
     }
   }, [state.wsOpen])
 
@@ -74,21 +77,64 @@ const Provider = props => {
     let list = []
     // 处理在线数据
     for(let i=0;i<data.online.length;i++){
+      let user_id_arr = data.online[i].user_id.split(',')
       list.push({
-        ...data.online[i],
+        deviceId:data.online[i].device_id,
+        time:data.online[i].time,
+        realname:data.online[i].user_name,
+        username:user_id_arr[0],
+        userid:user_id_arr[1],
         state:'在线'
       })
     }
     // 处理离线数据
     for(let i=0;i<data.offline.length;i++){
+      let user_id_arr = data.offline[i].user_id.split(',')
       list.push({
-        ...data.offline[i],
+        deviceId:data.offline[i].device_id,
+        time:data.offline[i].time,
+        realname:data.offline[i].user_name,
+        username:user_id_arr[0],
+        userid:user_id_arr[1],
         state:'离线'
       })
     }
+    syPeopleToDatabase(list)
     // 设置协同人员状态列表 allyStatusList
     dispatch({ type: 'allyStatusList', payload: list })
   }
+
+  // 人员信息存入协同检测表
+  const syPeopleToDatabase = (list) => {
+    let participator = JSON.parse(state.curSynergyInfo.participator)
+    for(let i=0;i<list.length;i++){
+      let existIndex = participator.findIndex(item=>item.deviceId==list[i].deviceId)
+      if(existIndex==-1){
+        participator.push({
+          username:list[i].username,
+          realname:list[i].realname,
+          userid:list[i].userid,
+          deviceId:list[i].deviceId,
+          isSelf:"false"
+        })
+      }
+    }
+    // 新的协同数据
+    let newCurSynergyInfo = {
+      ...state.curSynergyInfo,
+      participator:JSON.stringify(participator)
+    }
+    // 更新全局参数中的数据
+    dispatch({ type: 'curSynergyInfo', payload: newCurSynergyInfo })
+    // 更新本地协同数据
+    AsyncStorage.setItem('curSynergyInfo', JSON.stringify(newCurSynergyInfo))
+    // 更新数据库的数据
+    synergyTest.updateParticipator({
+      participator:JSON.stringify(participator),
+      bridgereportid:state.curSynergyInfo.bridgereportid
+    })
+  }
+
 
   // 检测记录数据
   const dealTestRecordData = (data) => {

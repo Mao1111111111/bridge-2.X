@@ -58,6 +58,9 @@ export default function ({
     const [isError, setIsError] = useState(false)
     // 是否是任务创建者
     const [isCreator, setIsCreator] = useState(false)
+    // 测试ip
+    // const testIP = '10.1.1.71:8000'
+    const testIP = '39.91.167.242:9000'
 
     // 打开模态框时触发
     useEffect(() => {
@@ -148,7 +151,7 @@ export default function ({
     // 协同人数加减按钮点击
     const personNumChange = (e) => {
         var _personNum = parseInt(personNum)
-        if(_personNum<10){
+        if (_personNum < 10) {
             _personNum += e
         }
         if (e < 1) {
@@ -200,7 +203,7 @@ export default function ({
         let data = await dealInitBridgeData(synergyid)
         // url
         // let url = 'http://'+IP+':8000/task/'+personNum+'/'
-        let url = 'http://10.1.1.71:8000/task/' + personNum + '/'
+        let url = 'http://' + testIP + '/task/' + personNum + '/'
         fetch(url, {
             method: 'POST',
             headers: {
@@ -346,7 +349,7 @@ export default function ({
     const CTAfterAddTask = (IP, taskid) => {
         // url
         // let url = 'http://'+IP+':8000/task_room/'+taskid
-        let url = 'http://10.1.1.71:8000/task_room/' + taskid
+        let url = 'http://' + testIP + '/task_room/' + taskid
         fetch(url, {
             method: 'GET'
         })
@@ -355,7 +358,7 @@ export default function ({
                 if (result.status == 'success') {
                     // 地址
                     // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
-                    let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + creator + '&device_id=' + deviceId
+                    let WSPath = 'ws://' + testIP + result.ws + '?user_id=' + userInfo.username + ',' + userInfo.userid + '&user_name=' + creator + '&device_id=' + deviceId
                     // 将ws地址存入本地
                     AsyncStorage.setItem('WSPath', WSPath)
                     // 设置全局ws路径
@@ -434,7 +437,7 @@ export default function ({
     const joinTaskGetBridge = async (IP) => {
         // url
         // let url = 'http://'+IP+':8000/task_room/'+joinCode
-        let url = 'http://10.1.1.71:8000/task_room/' + joinCode
+        let url = 'http://' + testIP + '/task_room/' + joinCode
         fetch(url, {
             method: 'GET'
         })
@@ -529,7 +532,7 @@ export default function ({
             }
             // 地址
             // let WSPath = 'ws://'+ IP + ':8000' +result.ws + '?user=' + deviceId
-            let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user_id=' + userInfo.username + '&user_name=' + joinName + '&device_id=' + deviceId
+            let WSPath = 'ws://' + testIP + result.ws + '?user_id=' + userInfo.username + ',' + userInfo.userid + '&user_name=' + joinName + '&device_id=' + deviceId
             // 将协同信息存入数据库
             await synergyTest.save(synergyData)
             // 将协同数据存入本地
@@ -561,7 +564,7 @@ export default function ({
         // 获取所连接wifi的ip
         NetworkInfo.getGatewayIPAddress().then(IP => {
             // let url = 'http://'+IP+':8000/task_room/'+taskCode
-            let url = 'http://10.1.1.71:8000/task_room/' + taskCode
+            let url = 'http://' + testIP + '/task_room/' + taskCode
             fetch(url, {
                 method: 'Delete'
             })
@@ -742,8 +745,8 @@ export default function ({
                                                             renderItem={({ item, index }) => (
                                                                 <Table.Row key={index}>
                                                                     <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                                                                    <Table.Cell flex={4}>{item.user_id}</Table.Cell>
-                                                                    <Table.Cell flex={3}>{item.user_name}</Table.Cell>
+                                                                    <Table.Cell flex={4}>{item.username}</Table.Cell>
+                                                                    <Table.Cell flex={3}>{item.realname}</Table.Cell>
                                                                     <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
                                                                     <Table.Cell flex={2}>{item.state}</Table.Cell>
                                                                 </Table.Row>
@@ -816,8 +819,8 @@ export default function ({
                                                             renderItem={({ item, index }) => (
                                                                 <Table.Row key={index}>
                                                                     <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                                                                    <Table.Cell flex={4}>{item.user_id}</Table.Cell>
-                                                                    <Table.Cell flex={3}>{item.user_name}</Table.Cell>
+                                                                    <Table.Cell flex={4}>{item.username}</Table.Cell>
+                                                                    <Table.Cell flex={3}>{item.realname}</Table.Cell>
                                                                     <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
                                                                     <Table.Cell flex={2}>{item.state}</Table.Cell>
                                                                 </Table.Row>
