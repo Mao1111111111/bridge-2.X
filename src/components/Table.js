@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     ...tailwind.textXs,
   },
   row: {
-    height: 35,
+    minHeight: 35,
   },
   box: {
     ...tailwind.borderGray400,

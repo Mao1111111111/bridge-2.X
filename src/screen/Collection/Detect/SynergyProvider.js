@@ -93,7 +93,7 @@ const Provider = props => {
   // 检测记录数据
   const dealTestRecordData = (data) => {
     // 
-    console.log("data",data);
+    console.log("dealTestRecordData data",data);
   }
 
   // 关闭协同检测
@@ -104,9 +104,9 @@ const Provider = props => {
   }
 
   // 发送人员信息
-  // const sendPeople = (data) => {
-  //   state.wsConnection.current.send(data)
-  // }
+  const sendPeople = (data) => {
+    state.wsConnection.current.send(data)
+  }
 
 
   return (

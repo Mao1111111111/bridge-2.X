@@ -19,6 +19,7 @@ import {
 import {Context} from './Provider';
 import {Context as ThemeContext} from '../../../../providers/ThemeProvider';
 import {Context as GlobalContext} from '../../../../providers/GlobalProvider';
+import {Context as synergyContext} from '../../Detect/SynergyProvider'
 import {Box, Content} from '../../../../components/CommonView';
 import HeaderTabs from './HeaderTabs';
 import LogList from './LogList';
@@ -33,7 +34,7 @@ const Item = ({title, color,coopData,item, checked, onPress}) => {
     state: {theme},
   } = React.useContext(ThemeContext);
   useEffect(()=>{
-    console.log('itemitem',item);
+    // console.log('itemitem',item);
     console.log('coopData',coopData);
   },[])
 
@@ -621,6 +622,11 @@ export default function Member({route, navigation,item}) {
     state: {bridgeside, basememberinfo, userInfo},
   } = React.useContext(GlobalContext);
 
+  // 协同检测
+  const {
+    state: {wsOpen,curSynergyInfo},
+  } = React.useContext(synergyContext);
+
   // 桥梁检测全局参数 -- 桥梁信息、检测构件列表、项目信息
   const {
     state: {bridge, partsList, project},
@@ -659,7 +665,6 @@ export default function Member({route, navigation,item}) {
         })
         .then(res => 
           {
-            console.log('editLog res',res.length);
             setEditLogList(res)
           }
         );
@@ -667,6 +672,20 @@ export default function Member({route, navigation,item}) {
   );
 
   React.useEffect(() => {
+    console.log('构件列表 是否为协同检测wsOpen',wsOpen,);
+
+    if(wsOpen){
+      console.log('当前为协同检测');
+      const coopData = curSynergyInfo
+      const participators = JSON.parse(coopData.participator);
+      participators.forEach((item,index)=>{
+        if(item.isSelf){
+          console.log('当前用户的信息',item);
+        }
+      })
+    }
+
+
     const windowWidth = Dimensions.get('window').width;
     setScreenWidth(windowWidth)
     if (!partsList || !data || !basememberinfo) {
