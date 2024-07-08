@@ -32,6 +32,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { NetworkInfo } from 'react-native-network-info';
 import dayjs from 'dayjs';
 import CooperateTest from '../components/CooperateTest';
+import CooperateTest2 from '../components/CooperateTest2';
 // 克隆
 const Clone = React.forwardRef(({ onSubmitOver }, ref) => {
   // 从 全局参数 中 获取 桥幅属性
@@ -1842,6 +1843,8 @@ export default function ProjectDetail({ route, navigation }) {
   const [imgType, setImgType] = useState('cooperate')
   // 协同检测模态框显示
   const [CoopModalShow, setCoopModalShow] = useState(false)
+  // 协同检测模态框显示
+  const [CoopModalShow2, setCoopModalShow2] = useState(false)
 
   // 点击选择框 -- 单选
   const handleCheck = item => {
@@ -1897,6 +1900,15 @@ export default function ProjectDetail({ route, navigation }) {
     setCoopModalShow(false)
     handleSubmitOver()
   }
+  // 打开协同检测模态框2
+  const openCoopModal2 = () => {
+    setCoopModalShow2(true)
+  }
+  // 关闭协同检测模态框2
+  const closeCoopModal2 = () => {
+    setCoopModalShow2(false)
+    handleSubmitOver()
+  }
 
   // 协同检测--开始检测
   const CoopIntoTest = (item) => {
@@ -1941,7 +1953,8 @@ export default function ProjectDetail({ route, navigation }) {
         {
           // name: 'content-duplicate',
           img: 'clone',
-          onPress: () => cloneRef.current.open(project),
+          // onPress: () => cloneRef.current.open(project),
+          onPress: () => openCoopModal2(),
         },
         // 占位空按钮
         {},
@@ -2108,6 +2121,16 @@ export default function ProjectDetail({ route, navigation }) {
           closeModal={closeCoopModal}
           // 协同检测--开始检测
           CoopIntoTest={CoopIntoTest} ></CooperateTest>
+      }
+      {
+        CoopModalShow2 &&
+        <CooperateTest2
+          project={project}
+          bridge={nowChecked}
+          // 关闭协同检测模态框
+          closeModal={closeCoopModal2}
+          // 协同检测--开始检测
+          CoopIntoTest={CoopIntoTest} ></CooperateTest2>
       }
     </CommonView>
   );

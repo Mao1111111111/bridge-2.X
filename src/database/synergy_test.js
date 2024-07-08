@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS "synergy_test" (
     synergyid TEXT NOT NULL, -- 协同编号
     synergyPeopleNum INTEGER NOT NULL, -- 协同人数
     taskId TEXT NOT NULL, -- 任务id
+    WSPath TEXT NOT NULL, -- 任务ws地址
     creator TEXT NOT NULL, -- 创建者信息
     participator TEXT NOT NULL, -- 参与者信息
     c_date TEXT NOT NULL, -- 创建时间
@@ -31,12 +32,13 @@ export const save = async data => {
         , synergyid
         , synergyPeopleNum
         , taskId
+        , WSPath
         , creator
         , participator
         , c_date
         , state
         , other
-    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
   const param = [
     data.bridgeid,
@@ -45,6 +47,7 @@ export const save = async data => {
     data.synergyid,
     data.synergyPeopleNum,
     data.taskId,
+    data.WSPath,
     data.creator,
     data.participator,
     data.c_date,
@@ -63,6 +66,7 @@ export const update = async data => {
     , synergyid = ?
     , synergyPeopleNum = ?
     , taskId = ?
+    , WSPath = ?
     , creator = ?
     , participator = ?
     , c_date = ?
@@ -76,6 +80,7 @@ export const update = async data => {
     data.synergyid,
     data.synergyPeopleNum,
     data.taskId,
+    data.WSPath,
     data.creator,
     data.participator,
     data.c_date,
