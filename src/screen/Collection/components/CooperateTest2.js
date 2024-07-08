@@ -312,6 +312,176 @@ export default function CooperateTest2({
     const [JTJoinCode, setJTJoinCode] = useState('')
     // 参与者
     const [JTJoinName, setJTJoinName] = useState('')
+    // 确认参与
+    const joinOk = async () => {
+        // 判断是否有任务码
+        if (!JTJoinCode) {
+            Alert.alert('参与失败', '请输入任务码')
+            return
+        }
+        if (!(/^\d{4}$/.test(JTJoinCode))) {
+            Alert.alert('参与失败', '请输入正确的任务号格式不正确')
+            return
+        }
+        if (!JTJoinName) {
+            Alert.alert('参与失败', '请输入工程师名称')
+            return
+        }
+
+        // 判断网络是否连接
+        if (!networkStateAll.isConnected.isConnected) {
+            Alert.alert('参与失败', '请连接网络')
+            return
+        }
+
+        // 是否连接了wifi
+        if (networkStateAll.type !== 'wifi') {
+            Alert.alert('参与失败', '请连接WIFI')
+            return
+        }
+
+        // 判断任任务码是否存在
+        let synergyTestData = await synergyTest.getBytaskId(JTJoinCode)
+        if(synergyTestData){
+            Alert.alert('参与失败', synergyTestData.state=='协同中'?'当前协同任务参与中':'当前协同任务已结束')
+            return
+        }
+
+        // 设置模态框loading
+        setIsLoading(true)
+
+        // 获取所连接wifi的ip
+        NetworkInfo.getGatewayIPAddress().then(IP => {
+            // 参与任务获取桥梁数据
+            joinTaskGetBridge(IP)
+        }).catch(e => {
+            // 设置模态框loading
+            setIsLoading(false)
+        })
+    }
+    // 参与任务获取桥梁数据
+    const joinTaskGetBridge = async (IP) => {
+        // url
+        // let url = 'http://'+IP+':8000/task_room/'+JTJoinCode
+        let url = 'http://' + testIP + '/task_room/' + JTJoinCode
+        fetch(url, {
+            method: 'GET'
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status == 'success') {
+                    // 处理接收的桥梁数据
+                    dealReceiveBridgeData(result)
+                } else {
+                    if (result.detail.msg == 'invalid room_id') {
+                        Alert.alert('任务号不存在')
+                    } else {
+                        Alert.alert('ws失败1：' + result)
+                    }
+                    // 设置模态框loading
+                    setIsLoading(false)
+                }
+            })
+            .catch(err => {
+                Alert.alert('ws失败2：' + err)
+                // 设置模态框loading
+                setIsLoading(false)
+            });
+    }
+    // 处理接收的桥梁数据
+    const dealReceiveBridgeData = async (result) => {
+        // 将桥梁数据存入本地
+        // bridge 表中是否存在这个桥梁
+        let bridgeTableData = await bridgeTable.getByBridgeid(result.task_msg.bridge.bridgeid)
+        // 不存在这个桥梁，将桥梁信息存入
+        if (!bridgeTableData) {
+            // bridge 表 存入数据库
+            bridgeTable.save({
+                ...result.task_msg.bridge,
+                userid: userInfo.userid
+            })
+            // bridgeMember 表 存入数据库
+            result.task_msg.bridge_member.forEach(item => {
+                bridgeMember.save(item)
+            })
+        }
+        // 桥梁检测信息是否存在
+        let bindData = bridgeProjectBind.getByBridgereportid({
+            bridgereportid:result.task_msg.bridge_project_bind.bridgereportid,
+            bridgeid:result.task_msg.bridge
+        })
+        // 不存在桥梁检测信息，将桥梁检测信息存入
+        if (!bindData) {
+            // bridge_project_bind 数据存入数据库
+            bridgeProjectBind.save({
+                projectid: project.projectid,
+                bridgeid: result.task_msg.bridge.bridgeid,
+                bridgereportid: result.task_msg.bridge_project_bind.bridgereportid,
+                userid: userInfo.userid
+            })
+            // bridge_report 表数据 存入数据库
+            bridgeReport.save({
+                ...result.task_msg.bridge_report,
+                userid: userInfo.userid
+            })
+            // uploadStateRecord 表 数据存入数据库
+            uploadStateRecord.save({
+                bridgeid: result.task_msg.bridge.bridgeid,
+                bridgereportid: result.task_msg.bridge_project_bind.bridgereportid,
+                userid: userInfo.userid
+            })
+            // bridge_report_member 表 数据存入数据库
+            result.task_msg.bridge_report_member.forEach(item => {
+                bridgeReportMember.save(item)
+            })
+        }
+
+        // 协同信息
+        let synergyData = {
+            bridgeid: result.task_msg.bridge.bridgeid,
+            bridgereportid: result.task_msg.bridge.bridgereportid,
+            userid: userInfo.userid,
+            synergyid: result.task_msg.createInfo.synergyid,
+            synergyPeopleNum: result.task_msg.createInfo.synergyPeopleNum,
+            taskId: JTJoinCode,
+            // WSPath: 'ws://' + IP + ':8000' + result.ws + '?user_id=' + userInfo.username + ',' + userInfo.userid + '&user_name=' + JTJoinName + '&device_id=' + deviceId,
+            WSPath: 'ws://' + testIP + result.ws + '?user_id=' + userInfo.username + ',' + userInfo.userid + '&user_name=' + JTJoinName + '&device_id=' + deviceId,
+            creator: JSON.stringify(result.task_msg.createInfo.creator),
+            participator: JSON.stringify([
+                {
+                    ...result.task_msg.createInfo.creator,
+                    isSelf: 'false'
+                },
+                {
+                    username: userInfo.username,
+                    realname: JTJoinName,
+                    userid: userInfo.userid,
+                    deviceId: deviceId,
+                    isSelf: 'true'
+                }]),
+            c_date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+            state: '协同中',
+            other: ''
+        }
+        // 检查数据库中是否存在这条数据
+        let synergyTestData = await synergyTest.getByReportid(bridge.bridgereportid)
+        if (synergyTestData) {
+            // 修改数据
+            await synergyTest.update(synergyData)
+        } else {
+            // 将协同信息存入数据库
+            await synergyTest.save(synergyData)
+        }
+        // 设置任务详情数据
+        setITaskCode(JTJoinCode)
+        setIPeopleNum(result.task_msg.createInfo.synergyPeopleNum)
+        setICreator(result.task_msg.createInfo.creator.realname)
+        setIEngineer(JTJoinName)
+        // 设置顶部tab
+        setCurTopItem('任务详情')
+        // 设置模态框loading
+        setIsLoading(false)
+    }
 
     // -------- 任务详情 --------
     // 任务码
@@ -488,7 +658,7 @@ export default function CooperateTest2({
                                 <Button style={[styles.okBtn]} onPress={createOk}>确认创建</Button>
                             }
                             {
-                                curTopItem == '参与任务' && <Button style={[styles.okBtn]}>确认参与</Button>
+                                curTopItem == '参与任务' && <Button style={[styles.okBtn]} onPress={joinOk}>确认参与</Button>
                             }
                             {
                                 curTopItem == '任务详情' &&

@@ -111,3 +111,10 @@ export const listByProject = async projectid => {
   const sql = 'select * from bridge_project_bind where projectid = ?';
   return getResult(await db().executeSql(sql, [projectid]), 'array');
 };
+
+export const getByBridgereportid = async data => {
+  const sql =
+    'select * from bridge_project_bind where bridgeid = ? and bridgereportid = ?';
+  const param = [data.bridgeid, data.bridgereportid];
+  return getResult(await db().executeSql(sql, param), 'object');
+};

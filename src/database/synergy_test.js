@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS "synergy_test" (
     creator TEXT NOT NULL, -- 创建者信息
     participator TEXT NOT NULL, -- 参与者信息
     c_date TEXT NOT NULL, -- 创建时间
-    state TEXT NOT NULL, -- 协同状态 '非协同'、'未开始'、'检测中'、'已完成'
+    state TEXT NOT NULL, -- 协同状态 '非协同'、'未开始'、'协同中'、'协同结束'
     other TEXT NOT NULL -- 其他
 );
 `;
@@ -124,5 +124,12 @@ export const updateParticipator = async data => {
 export const getByReportid = async bridgereportid => {
   const sql = 'select * from synergy_test where bridgereportid = ?';
   const param = [bridgereportid];
+  return getResult(await db().executeSql(sql, param), 'object');
+}; 
+
+// 根据任务码查询
+export const getBytaskId = async taskId => {
+  const sql = 'select * from synergy_test where taskId = ?';
+  const param = [taskId];
   return getResult(await db().executeSql(sql, param), 'object');
 }; 
