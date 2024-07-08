@@ -39,6 +39,8 @@ export default function CooperateTest2({
     const [isLoading, setIsLoading] = useState(false)
     // 当前顶部tab 创建任务、参与任务、任务详情、使用帮助
     const [curTopItem, setCurTopItem] = useState('')
+    // 是否是任务创建者
+    const [isCreator, setIsCreator] = useState(true)
     // 测试ip
     const testIP = '10.1.1.71:8000'
     // const testIP = '39.91.167.242:9000'
@@ -46,7 +48,6 @@ export default function CooperateTest2({
     // 初始化页面
     useEffect(() => {
         if (bridge) {
-            console.log("bridge", bridge);
             // 判断是否有协同任务，以及协同任务是否结束
             if (bridge.synergyTestData && bridge.synergyTestData.state !== '协同结束') {
                 setCurTopItem('任务详情')
@@ -58,11 +59,19 @@ export default function CooperateTest2({
                         setIEngineer(item.realname)
                     }
                 })
+                // 判断是否是创建者
+                if (JSON.parse(bridge.synergyTestData.creator).deviceId == deviceId) {
+                    setIsCreator(true)
+                } else {
+                    setIsCreator(false)
+                }
             } else {
                 setCurTopItem('创建任务')
+                setIsCreator(true)
             }
         } else {
             setCurTopItem('参与任务')
+            setIsCreator(false)
         }
     }, [])
 
@@ -188,6 +197,7 @@ export default function CooperateTest2({
                                 setIPeopleNum(CTPersonNum)
                                 setICreator(CTCreator)
                                 setIEngineer(CTCreator)
+                                // 设置顶部tab
                                 setCurTopItem('任务详情')
                                 // 设置模态框loading
                                 setIsLoading(false)
@@ -312,6 +322,55 @@ export default function CooperateTest2({
     const [ICreator, setICreator] = useState('')
     // 工程师名称
     const [IEngineer, setIEngineer] = useState('')
+    // 退出任务
+    const quitTask = async () => {
+        // 设置模态框loading
+        setIsLoading(true)
+        // 检测记录表--更新检测状态
+        await synergyTest.updateState({ state: '协同结束', bridgereportid: bridge.bridgereportid })
+        // 设置创建页面数据
+        setCTPersonNum('1')
+        setCTCreator('')
+        setCurTopItem('创建任务')
+        // 设置模态框loading
+        setIsLoading(false)
+    }
+    // 删除任务
+    const deleteTask = () => {
+        // 设置模态框loading
+        setIsLoading(true)
+        // 获取所连接wifi的ip
+        NetworkInfo.getGatewayIPAddress().then(IP => {
+            // let url = 'http://'+IP+':8000/task_room/'+ITaskCode
+            let url = 'http://' + testIP + '/task_room/' + ITaskCode
+            fetch(url, {
+                method: 'Delete'
+            })
+                .then(res => res.json())
+                .then(result => {
+                    if (result.status == 'success') {
+                        // 退出任务
+                        quitTask()
+                    } else {
+                        if (result.detail.msg == 'invalid room_id') {
+                            Alert.alert('任务号不存在')
+                        } else {
+                            Alert.alert('ws失败1：' + result)
+                        }
+                        // 设置模态框loading
+                        setIsLoading(false)
+                    }
+                })
+                .catch(err => {
+                    Alert.alert('ws失败2：' + err)
+                    // 设置模态框loading
+                    setIsLoading(false)
+                });
+        }).catch(e => {
+            // 设置模态框loading
+            setIsLoading(false)
+        })
+    }
 
     return (
         <Modal
@@ -381,6 +440,9 @@ export default function CooperateTest2({
                                         style={[styles.InputBox]}
                                         inputStyle={styles.inputStyle}
                                         onChange={(e) => setCTCreator(e.value)} />
+                                    {
+                                        !isCreator && <Text style={{ marginTop: 15, color: 'red' }}>*禁止参与者对该桥梁再次发起协同任务</Text>
+                                    }
                                 </View>
                             }
                             {/* 参与任务 */}
@@ -422,7 +484,8 @@ export default function CooperateTest2({
                             <Button style={[styles.closeBtn]} onPress={closeModal}>取消</Button>
                             {/* 确认按钮 */}
                             {
-                                curTopItem == '创建任务' && <Button style={[styles.okBtn]} onPress={createOk}>确认创建</Button>
+                                curTopItem == '创建任务' && isCreator &&
+                                <Button style={[styles.okBtn]} onPress={createOk}>确认创建</Button>
                             }
                             {
                                 curTopItem == '参与任务' && <Button style={[styles.okBtn]}>确认参与</Button>
@@ -430,8 +493,10 @@ export default function CooperateTest2({
                             {
                                 curTopItem == '任务详情' &&
                                 <View style={{ flexDirection: 'row' }}>
-                                    <Button style={[styles.okBtn]}>删除任务</Button>
-                                    <Button style={[styles.okBtn, { marginLeft: 10 }]}>退出任务</Button>
+                                    {
+                                        isCreator && <Button style={[styles.okBtn]} onPress={deleteTask}>删除任务</Button>
+                                    }
+                                    <Button style={[styles.okBtn, { marginLeft: 10 }]} onPress={quitTask}>退出任务</Button>
                                 </View>
                             }
                             {
