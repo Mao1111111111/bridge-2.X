@@ -59,7 +59,7 @@ export default function ({
     // 是否是任务创建者
     const [isCreator, setIsCreator] = useState(false)
     // 测试ip
-    const testIP = '10.1.1.71:8000' 
+    const testIP = '10.1.1.71:8000'
     // const testIP = '39.91.167.242:9000'
 
     // 打开模态框时触发
