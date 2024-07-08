@@ -1172,15 +1172,15 @@ export function DiseaseA({route, navigation}) {
             }
           }
 
-          if(isCoop){
-            console.log('当前为协同检测状态录入',itemData?.diseaseName);
-            diseaseData['isCoop'] = isCoop
-            if(itemData?.diseaseName){
-              coopData['diseaseName'] = itemData?.diseaseName
-              coopData['checkTime'] = dayjs().valueOf()
-            }
-            diseaseData['coopData'] = coopData
-          }
+          // if(isCoop){
+          //   console.log('当前为协同检测状态录入',itemData?.diseaseName);
+          //   diseaseData['isCoop'] = isCoop
+          //   if(itemData?.diseaseName){
+          //     coopData['diseaseName'] = itemData?.diseaseName
+          //     coopData['checkTime'] = dayjs().valueOf()
+          //   }
+          //   diseaseData['coopData'] = coopData
+          // }
           
           setDiseaseData(_data);
 

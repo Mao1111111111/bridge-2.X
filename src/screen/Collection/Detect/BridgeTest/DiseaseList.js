@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from 'react';
 import {Modal, Portal} from 'react-native-paper';
 import {tailwind} from 'react-native-tailwindcss';
+import dayjs from 'dayjs';
 import {useFocusEffect} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {View, Text, FlatList, TouchableOpacity, StyleSheet,Dimensions} from 'react-native';
@@ -17,6 +18,7 @@ import HeaderTabs from './HeaderTabs';
 import {confirm} from '../../../../utils/alert';
 import { getBaseData } from './utils';
 import uuid from 'react-native-uuid';
+import {Context as synergyContext} from '../../Detect/SynergyProvider'
 
 const TypeModel = React.forwardRef(({groupList, callBack,memberList}, ref) => {
   //console.log("groupList",groupList);
@@ -284,6 +286,11 @@ export default function DiseaseList({route, navigation}) {
     state: {project, bridge, fileList, isLoading, groupList},
   } = React.useContext(Context);
 
+  // 协同检测
+  const {
+    state: {wsOpen,curSynergyInfo,wsConnection},
+  } = React.useContext(synergyContext);
+
   const [tableData, setTableData] = React.useState([]);
 
   const [tablePageNo, setTablePageNo] = React.useState(1);
@@ -309,8 +316,8 @@ export default function DiseaseList({route, navigation}) {
     setScreenWidth(windowWidth)
 
     console.log('构件列表传过来的数据',route.params);
-    // console.log('是否是协同检测',route.params.isCoop);
-    // console.log('协同检测的用户信息',route.params.isCoop.coopData);
+    console.log('是否是协同检测',route.params.isCoop);
+    console.log('协同检测的当前用户信息',route.params.selfCoopData);
   },[])
 
   useFocusEffect(
@@ -348,14 +355,8 @@ export default function DiseaseList({route, navigation}) {
           const _list = [];
           res.forEach((item, index) => {
             if (!_list.find(it => it.version === item.version)) {
-              console.log('病害录入页面返回传入的数据',item.jsondata);
-              
-              
-              // console.log('病害录入页面返回传入的scale',item.jsondata.areatype);
-              
-              // if (item.jsondata.scale =='4') {
-              //   item.jsondata.scale = '2'
-              // }
+              // console.log('病害录入页面返回传入的数据',item.jsondata);
+
               item.jsondata = JSON.parse(item.jsondata || '{}');
               item.index = index + 1;
               if (item?.jsondata?.standard?.scale) {
@@ -406,34 +407,48 @@ export default function DiseaseList({route, navigation}) {
 
   // 向构件列表传的操作历史的数据
   const [noteData,setNoteData] = useState({})
+  // 初次进入病害列表与每次向盒子发送操作记录后重置的起始时间
+  const [startTime, setStartTime] = useState('')
   useEffect(()=>{
     try {
+      if(!startTime){
+        setStartTime(route.params.timestamp)
+        
+      }
+      console.log('初次进入病害列表的时间',startTime);
       if(tableData[0]){
-        console.log('tableData',tableData[0]);
-        // 转存为json对象再取值
-        // let jsonData=eval("("+noteData+")")
+        // console.log('tableData',tableData[0]);
 
-        // console.log('list[0].membername',list[0]);
-
-        let noteData = []
+        let noteData = {}
         tableData[0].forEach((item,index)=>{
-          // console.log('item333',item.jsondata);
-          if(item.jsondata.isCoop){
-            noteData.push({
-              isCoop:item.jsondata.isCoop,
-              memberid:list[0].memberid,
-              membername:list[0].membername,
-              user:item.jsondata.coopData.user,
-              diseaseName:item.jsondata.coopData.diseaseName,
-              checkTime:item.jsondata.coopData.checkTime,
-            })
+          // console.log('item333',item,);
+          if(route.params.isCoop && new Date(item.u_date) > new Date(startTime)){
+            console.log('-------------------有新增修改');
+            noteData['isCoop'] = route.params.isCoop
+            noteData['memberid'] = list[0].memberid
+            noteData['membername'] = list[0].membername
+            noteData['user'] = route.params.selfCoopData.realname
+            noteData['diseaseName'] = item.jsondata.diseaseName
+            noteData['checkTime'] = item.u_date
+
+            console.log('记录.diseaseName在协同检测中的操作历史noteDatanoteData',noteData);
+            wsConnection.current.send(JSON.stringify(noteData))
+            // 发送操作记录成功后重置对照时间
+            setStartTime(dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'))
+            console.log('重置对照时间',startTime);
           }
+          
         })
         // 按时间排序
         // noteData.sort((a, b) => a.checkTime - b.checkTime);
+        if(noteData.diseaseName){
+          // console.log('记录.diseaseName在协同检测中的操作历史noteDatanoteData',noteData);
+          // wsConnection.current.send(JSON.stringify(noteData))
+          // // 发送操作记录成功后重置对照时间
+          // setStartTime(dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'))
+          // console.log('重置对照时间',startTime);
+        }
         
-        console.log('noteDatanoteData',noteData);
-        setNoteData(noteData)
       }
     } catch (error) {
       console.log('转存的json error',error);
