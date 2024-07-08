@@ -50,10 +50,12 @@ export default function CooperateTest2({
         if (bridge) {
             // 判断是否有协同任务，以及协同任务是否结束
             if (bridge.synergyTestData && bridge.synergyTestData.state !== '协同结束') {
-                setCurTopItem('任务详情')
+                setBridgestation(bridge.bridgestation)
+                setBridgename(bridge.bridgename)
                 setITaskCode(bridge.synergyTestData.taskId)
                 setIPeopleNum(bridge.synergyTestData.synergyPeopleNum + '')
                 setICreator(JSON.parse(bridge.synergyTestData.creator).realname)
+                setCurTopItem('任务详情')
                 JSON.parse(bridge.synergyTestData.participator).forEach(item => {
                     if (item.isSelf == 'true') {
                         setIEngineer(item.realname)
@@ -341,11 +343,11 @@ export default function CooperateTest2({
         }
 
         // 判断任任务码是否存在
-        let synergyTestData = await synergyTest.getBytaskId(JTJoinCode)
-        if(synergyTestData){
-            Alert.alert('参与失败', synergyTestData.state=='协同中'?'当前协同任务参与中':'当前协同任务已结束')
-            return
-        }
+        // let synergyTestData = await synergyTest.getBytaskId(JTJoinCode)
+        // if(synergyTestData){
+        //     Alert.alert('参与失败', synergyTestData.state=='协同中'?'当前协同任务参与中':'当前协同任务已结束')
+        //     return
+        // }
 
         // 设置模态框loading
         setIsLoading(true)
@@ -408,7 +410,7 @@ export default function CooperateTest2({
         // 桥梁检测信息是否存在
         let bindData = bridgeProjectBind.getByBridgereportid({
             bridgereportid:result.task_msg.bridge_project_bind.bridgereportid,
-            bridgeid:result.task_msg.bridge
+            bridgeid:result.task_msg.bridge.bridgeid
         })
         // 不存在桥梁检测信息，将桥梁检测信息存入
         if (!bindData) {
@@ -464,7 +466,7 @@ export default function CooperateTest2({
             other: ''
         }
         // 检查数据库中是否存在这条数据
-        let synergyTestData = await synergyTest.getByReportid(bridge.bridgereportid)
+        let synergyTestData = await synergyTest.getByReportid(result.task_msg.bridge_project_bind.bridgereportid)
         if (synergyTestData) {
             // 修改数据
             await synergyTest.update(synergyData)
@@ -473,6 +475,8 @@ export default function CooperateTest2({
             await synergyTest.save(synergyData)
         }
         // 设置任务详情数据
+        setBridgestation(result.task_msg.bridge.bridgestation)
+        setBridgename(result.task_msg.bridge.bridgename)
         setITaskCode(JTJoinCode)
         setIPeopleNum(result.task_msg.createInfo.synergyPeopleNum)
         setICreator(result.task_msg.createInfo.creator.realname)
@@ -484,6 +488,10 @@ export default function CooperateTest2({
     }
 
     // -------- 任务详情 --------
+    // 桥梁桩号
+    const [bridgestation,setBridgestation] = useState('')
+    // 桥梁名称
+    const [bridgename,setBridgename] = useState('')
     // 任务码
     const [ITaskCode, setITaskCode] = useState('')
     // 协同人数
@@ -639,7 +647,7 @@ export default function CooperateTest2({
                             {
                                 curTopItem == '任务详情' &&
                                 <View style={styles.taskConAllBox}>
-                                    <Text style={styles.bridgeInfo1}>{'桥梁桩号：' + bridge.bridgestation + '     桥梁名称：' + bridge.bridgename}</Text>
+                                    <Text style={styles.bridgeInfo1}>{'桥梁桩号：' + bridgestation + '     桥梁名称：' + bridgename}</Text>
                                     <Text style={styles.bridgeInfo1}>{'任务码：' + ITaskCode + '         协同人数：' + IPeopleNum}</Text>
                                     <Text style={styles.bridgeInfo1}>创 建 者：{ICreator}</Text>
                                     <Text style={styles.bridgeInfo1}>工程师名称(本人)：{IEngineer}</Text>
