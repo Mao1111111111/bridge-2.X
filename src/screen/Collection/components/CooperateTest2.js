@@ -351,11 +351,11 @@ export default function CooperateTest2({
         }
 
         // 判断任任务码是否存在
-        // let synergyTestData = await synergyTest.getBytaskId(JTJoinCode)
-        // if(synergyTestData){
-        //     Alert.alert('参与失败', synergyTestData.state=='协同中'?'当前协同任务参与中':'当前协同任务已结束')
-        //     return
-        // }
+        let synergyTestData = await synergyTest.getBytaskId(JTJoinCode)
+        if(synergyTestData){
+            Alert.alert('参与失败', synergyTestData.state=='协同中'?'当前协同任务参与中':'当前协同任务已结束')
+            return
+        }
 
         // 设置模态框loading
         setIsLoading(true)
@@ -682,7 +682,7 @@ export default function CooperateTest2({
                                     {
                                         isCreator && <Button style={[styles.okBtn]} onPress={deleteTask}>删除任务</Button>
                                     }
-                                    <Button style={[styles.okBtn, { marginLeft: 10 }]} onPress={quitTask}>退出任务</Button>
+                                    {/* <Button style={[styles.okBtn, { marginLeft: 10 }]} onPress={quitTask}>退出任务</Button> */}
                                 </View>
                             }
                             {
