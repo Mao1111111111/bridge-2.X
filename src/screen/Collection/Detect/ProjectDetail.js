@@ -1923,9 +1923,11 @@ export default function ProjectDetail({ route, navigation }) {
   }
 
   // ------点击桩号切换协同检测------------
+  // 桩号按钮禁用
+  const [bridgestationDis,setDridgestationDis] = useState(false)
   // 点击桩号时
-  const bridgestationClick = (item) => {
-    console.log("item", item);
+  const bridgestationClick = (item)=>{
+    setDridgestationDis(true)
     if (item.synergyTestData && item.synergyTestData.state == '协同中') {
       // 将协同信息存入全局
       syDispatch({
@@ -1935,14 +1937,27 @@ export default function ProjectDetail({ route, navigation }) {
           participator: JSON.parse(item.synergyTestData.participator)
         }
       })
+      // 将协同桥梁信息存入全局
+      syDispatch({ type: 'curSynergyBridgeInfo', payload: item })
+      // 设置任务状态打开
+      syDispatch({ type: 'wsOpen', payload: true })
     }
-
-    // navigation.navigate('Collection/Detect/BridgeTest', {
-    //   project: project,
-    //   bridge: item,
-    //   list: route.params.list
-    // })
+    // 跳转页面
+    navigation.navigate('Collection/Detect/BridgeTest', {
+      project: project,
+      bridge: item,
+      list: route.params.list
+    })
   }
+
+  // 返回桥梁详情页时，关闭协同检测
+  useFocusEffect(
+    React.useCallback(() => {
+      setDridgestationDis(false)
+      // 设置任务状态关闭
+      syDispatch({ type: 'wsOpen', payload: false })
+    }, []),
+  )
 
   return (
     // 公共box
@@ -2075,6 +2090,7 @@ export default function ProjectDetail({ route, navigation }) {
                     {/* 跳转到桥梁检测 */}
                     <TouchableOpacity
                       // style={[styles.linkBox]}
+                      disabled={bridgestationDis}
                       onPress={() => { bridgestationClick(item) }}>
                       <Text style={[{ color: '#2b427d', textDecorationLine: 'underline' }]}>{item.bridgestation}</Text>
                     </TouchableOpacity>

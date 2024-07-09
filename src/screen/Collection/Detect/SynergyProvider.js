@@ -12,8 +12,6 @@ const Consumer = Context.Consumer;
 // 全局的state
 const Provider = props => {
   const [state, dispatch] = React.useReducer(reducer, {
-    // WSPath
-    WSPath: '',
     // ws开启
     wsOpen: false,
     //  连接状态 未连接、已连接、断开、结束
@@ -36,9 +34,9 @@ const Provider = props => {
   });
 
   useEffect(() => {
-    if (state.wsOpen && (state.wsConnectionState == '未连接'||state.wsConnectionState == '已关闭')) {
+    if (state.wsOpen) {
       // 创建连接
-      state.wsConnection.current = new WebSocket(state.WSPath);
+      state.wsConnection.current = new WebSocket(state.curSynergyInfo.WSPath);
       // 打开
       state.wsConnection.current.onopen = () => {
         console.log("打开");
@@ -46,8 +44,8 @@ const Provider = props => {
       }
       // 接收
       state.wsConnection.current.onmessage = (e) => {
-        console.log("接收");
         let data = JSON.parse(e.data)
+        console.log("接收",JSON.stringify(data));
         if (data.type == 'ally_status') {
           // 处理协同人员状态列表
           dealSynergyPeople(data.content)
@@ -66,7 +64,7 @@ const Provider = props => {
         console.log('错误', e);
         dispatch({ type: 'wsConnectionState', payload: '错误' })
       };
-    }else if(state.wsOpen == false && state.wsConnectionState == '已连接'){
+    }else if(state.wsOpen == false){
       // 设置ws状态
       dispatch({ type: 'wsConnectionState', payload: '未连接' })
       // 关闭协同检测
@@ -108,7 +106,7 @@ const Provider = props => {
 
   // 人员信息存入协同检测表
   const syPeopleToDatabase = (list) => {
-    let participator = JSON.parse(state.curSynergyInfo.participator)
+    let participator = state.curSynergyInfo.participator
     for(let i=0;i<list.length;i++){
       let existIndex = participator.findIndex(item=>item.deviceId==list[i].deviceId)
       if(existIndex==-1){
@@ -128,8 +126,6 @@ const Provider = props => {
     }
     // 更新全局参数中的数据
     dispatch({ type: 'curSynergyInfo', payload: newCurSynergyInfo })
-    // 更新本地协同数据
-    AsyncStorage.setItem('curSynergyInfo', JSON.stringify(newCurSynergyInfo))
     // 更新数据库的数据
     synergyTest.updateParticipator({
       participator:JSON.stringify(participator),
