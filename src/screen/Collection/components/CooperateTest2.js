@@ -88,7 +88,7 @@ export default function CooperateTest2({
 
     // -------- 创建任务 --------
     // 创建任务-协同人数
-    const [CTPersonNum, setCTPersonNum] = useState('1')
+    const [CTPersonNum, setCTPersonNum] = useState('2')
     // 创建者
     const [CTCreator, setCTCreator] = useState('')
     // 协同人数加减按钮点击
@@ -610,7 +610,7 @@ export default function CooperateTest2({
                                             name="CTPersonNum"
                                             label="邀请人数:    "
                                             disabled
-                                            value={CTPersonNum}
+                                            value={parseInt(CTPersonNum)-1+''}
                                             style={[styles.InputBox2]}
                                             inputStyle={styles.inputStyle} />
                                         <Button style={styles.addNumBtn} onPress={() => CTPersonNumChange(1)}>+</Button>
