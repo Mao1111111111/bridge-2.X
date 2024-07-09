@@ -39,6 +39,8 @@ export default function CooperateTest2({
     const [isLoading, setIsLoading] = useState(false)
     // 当前顶部tab 创建任务、参与任务、任务详情、使用帮助
     const [curTopItem, setCurTopItem] = useState('')
+    // 当前左侧按钮还是右侧按钮
+    const [tabBtn, setTabBtn] = useState('left')
     // 是否是任务创建者
     const [isCreator, setIsCreator] = useState(true)
     // 测试ip
@@ -69,7 +71,7 @@ export default function CooperateTest2({
                 }
             } else {
                 // 判断是否是创建者
-                if(bridge.synergyTestData){
+                if (bridge.synergyTestData) {
                     if (JSON.parse(bridge.synergyTestData.creator).deviceId == deviceId) {
                         setIsCreator(true)
                     } else {
@@ -84,6 +86,11 @@ export default function CooperateTest2({
             setIsCreator(false)
         }
     }, [])
+
+    // 顶部导航点击
+    const tabClick = (e) => {
+        setTabBtn(e)
+    }
 
 
     // -------- 创建任务 --------
@@ -352,8 +359,8 @@ export default function CooperateTest2({
 
         // 判断任任务码是否存在
         let synergyTestData = await synergyTest.getBytaskId(JTJoinCode)
-        if(synergyTestData){
-            Alert.alert('参与失败', synergyTestData.state=='协同中'?'当前协同任务参与中':'当前协同任务已结束')
+        if (synergyTestData) {
+            Alert.alert('参与失败', synergyTestData.state == '协同中' ? '当前协同任务参与中' : '当前协同任务已结束')
             return
         }
 
@@ -417,8 +424,8 @@ export default function CooperateTest2({
         }
         // 桥梁检测信息是否存在
         let bindData = await bridgeProjectBind.getByBridgereportid({
-            bridgereportid:result.task_msg.bridge_project_bind.bridgereportid,
-            bridgeid:result.task_msg.bridge.bridgeid
+            bridgereportid: result.task_msg.bridge_project_bind.bridgereportid,
+            bridgeid: result.task_msg.bridge.bridgeid
         })
         // 不存在桥梁检测信息，将桥梁检测信息存入
         if (!bindData) {
@@ -497,9 +504,9 @@ export default function CooperateTest2({
 
     // -------- 任务详情 --------
     // 桥梁桩号
-    const [bridgestation,setBridgestation] = useState('')
+    const [bridgestation, setBridgestation] = useState('')
     // 桥梁名称
-    const [bridgename,setBridgename] = useState('')
+    const [bridgename, setBridgename] = useState('')
     // 任务码
     const [ITaskCode, setITaskCode] = useState('')
     // 协同人数
@@ -575,24 +582,24 @@ export default function CooperateTest2({
             <View style={styles.topBarBox}>
                 {
                     curTopItem == '创建任务' &&
-                    <Pressable style={[styles.topBarBtn, { backgroundColor: curTopItem == '创建任务' ? '#2b427d' : '#2b427d00' }]} onPress={() => setCurTopItem('创建任务')}>
-                        <Text style={{ color: curTopItem == '创建任务' ? '#ffffff' : '#808285' }}>创建任务</Text>
+                    <Pressable style={[styles.topBarBtn, { backgroundColor: tabBtn == 'left' ? '#2b427d' : '#2b427d00' }]} onPress={() => tabClick('left')}>
+                        <Text style={{ color: tabBtn == 'left' ? '#ffffff' : '#808285' }}>创建任务</Text>
                     </Pressable>
                 }
                 {
                     curTopItem == '参与任务' &&
-                    <Pressable style={[styles.topBarBtn, { backgroundColor: curTopItem == '参与任务' ? '#2b427d' : '#2b427d00' }]} onPress={() => setCurTopItem('参与任务')}>
-                        <Text style={{ color: curTopItem == '参与任务' ? '#ffffff' : '#808285' }}>参与任务</Text>
+                    <Pressable style={[styles.topBarBtn, { backgroundColor: tabBtn == 'left' ? '#2b427d' : '#2b427d00' }]} onPress={() => tabClick('left')}>
+                        <Text style={{ color: tabBtn == 'left' ? '#ffffff' : '#808285' }}>参与任务</Text>
                     </Pressable>
                 }
                 {
                     curTopItem == '任务详情' &&
-                    <Pressable style={[styles.topBarBtn, { backgroundColor: curTopItem == '任务详情' ? '#2b427d' : '#2b427d00' }]} onPress={() => setCurTopItem('任务详情')}>
-                        <Text style={{ color: curTopItem == '任务详情' ? '#ffffff' : '#808285' }}>任务详情</Text>
+                    <Pressable style={[styles.topBarBtn, { backgroundColor: tabBtn == 'left' ? '#2b427d' : '#2b427d00' }]} onPress={() => tabClick('left')}>
+                        <Text style={{ color: tabBtn == 'left' ? '#ffffff' : '#808285' }}>任务详情</Text>
                     </Pressable>
                 }
-                <Pressable style={[styles.topBarBtn, { backgroundColor: curTopItem == '使用帮助' ? '#2b427d' : '#2b427d00' }]} onPress={() => setCurTopItem('使用帮助')}>
-                    <Text style={{ color: curTopItem == '使用帮助' ? '#ffffff' : '#808285' }}>使用帮助</Text>
+                <Pressable style={[styles.topBarBtn, { backgroundColor: tabBtn == 'right' ? '#2b427d' : '#2b427d00' }]} onPress={() => tabClick('right')}>
+                    <Text style={{ color: tabBtn == 'right' ? '#ffffff' : '#808285' }}>使用帮助</Text>
                 </Pressable>
             </View>
             {
@@ -602,7 +609,7 @@ export default function CooperateTest2({
                         <View style={styles.contentBox}>
                             {/* 创建任务 */}
                             {
-                                curTopItem == '创建任务' &&
+                                tabBtn == 'left' && curTopItem == '创建任务' &&
                                 <View style={styles.taskConAllBox}>
                                     <Text style={styles.bridgeInfo1}>{'桥梁桩号：' + bridge.bridgestation + '     桥梁名称：' + bridge.bridgename}</Text>
                                     <View style={styles.taskLeftRowBox}>
@@ -610,7 +617,7 @@ export default function CooperateTest2({
                                             name="CTPersonNum"
                                             label="邀请人数:    "
                                             disabled
-                                            value={parseInt(CTPersonNum)-1+''}
+                                            value={parseInt(CTPersonNum) - 1 + ''}
                                             style={[styles.InputBox2]}
                                             inputStyle={styles.inputStyle} />
                                         <Button style={styles.addNumBtn} onPress={() => CTPersonNumChange(1)}>+</Button>
@@ -633,7 +640,7 @@ export default function CooperateTest2({
                             }
                             {/* 参与任务 */}
                             {
-                                curTopItem == '参与任务' &&
+                                tabBtn == 'left' && curTopItem == '参与任务' &&
                                 <View style={styles.taskConAllBox}>
                                     <TextInput
                                         name="JTJoinCode"
@@ -653,12 +660,21 @@ export default function CooperateTest2({
                             }
                             {/* 任务详情 */}
                             {
-                                curTopItem == '任务详情' &&
+                                tabBtn == 'left' && curTopItem == '任务详情' &&
                                 <View style={styles.taskConAllBox}>
                                     <Text style={styles.bridgeInfo1}>{'桥梁桩号：' + bridgestation + '     桥梁名称：' + bridgename}</Text>
                                     <Text style={styles.bridgeInfo1}>{'任务码：' + ITaskCode + '         协同人数：' + IPeopleNum}</Text>
                                     <Text style={styles.bridgeInfo1}>创 建 者：{ICreator}</Text>
                                     <Text style={styles.bridgeInfo1}>工程师名称(本人)：{IEngineer}</Text>
+                                </View>
+                            }
+                            {/* 使用帮助 */}
+                            {
+                                tabBtn == 'right' &&
+                                <View style={styles.helpBox}>
+                                    <Text style={styles.helpText}>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
+                                    <Text style={styles.helpText}>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
+                                    <Text style={styles.helpText}>3.协同检测盒子WiFi密码：jianlide</Text>
                                 </View>
                             }
                         </View>
@@ -670,14 +686,14 @@ export default function CooperateTest2({
                             <Button style={[styles.closeBtn]} onPress={closeModal}>取消</Button>
                             {/* 确认按钮 */}
                             {
-                                curTopItem == '创建任务' && isCreator &&
+                                tabBtn == 'left' && curTopItem == '创建任务' && isCreator &&
                                 <Button style={[styles.okBtn]} onPress={createOk}>确认创建</Button>
                             }
                             {
-                                curTopItem == '参与任务' && <Button style={[styles.okBtn]} onPress={joinOk}>确认参与</Button>
+                                tabBtn == 'left' && curTopItem == '参与任务' && <Button style={[styles.okBtn]} onPress={joinOk}>确认参与</Button>
                             }
                             {
-                                curTopItem == '任务详情' &&
+                                tabBtn == 'left' && curTopItem == '任务详情' &&
                                 <View style={{ flexDirection: 'row' }}>
                                     {
                                         isCreator && <Button style={[styles.okBtn]} onPress={deleteTask}>删除任务</Button>
@@ -686,7 +702,7 @@ export default function CooperateTest2({
                                 </View>
                             }
                             {
-                                curTopItem == '使用帮助' && <Button style={[styles.okBtn]}>确认</Button>
+                                tabBtn == 'right' && <Button style={[styles.okBtn]} onPress={closeModal}>确认</Button>
                             }
                         </View>
                     </>
@@ -814,5 +830,12 @@ const styles = StyleSheet.create({
     },
     rightBtn: {
         backgroundColor: '#2b427d'
+    },
+    helpBox: {
+        paddingTop: 20,
+        paddingLeft: 20
+    },
+    helpText: {
+        marginBottom: 10
     }
 })
