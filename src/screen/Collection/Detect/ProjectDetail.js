@@ -1991,8 +1991,8 @@ export default function ProjectDetail({ route, navigation }) {
         {
           // name: 'content-duplicate',
           img: 'clone',
-          // onPress: () => cloneRef.current.open(project),
-          onPress: () => openCoopModal2(),
+          onPress: () => cloneRef.current.open(project),
+          // onPress: () => openCoopModal2(),
         },
         // 占位空按钮
         {},
@@ -2001,7 +2001,7 @@ export default function ProjectDetail({ route, navigation }) {
         {
           img: imgType,
           // onPress: () => openCoop(),
-          onPress: () => openCoopModal(),
+          onPress: openCoopModal2,
         },
       ]}>
       <View style={
