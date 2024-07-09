@@ -24,145 +24,6 @@ import Media from './Media';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context as synergyContext } from '../../Detect/SynergyProvider'
 
-import { Divider } from 'react-native-paper';
-import Modal from '../../../../components/Modal';
-
-// 协同检测
-const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
-  // 协同检测全局参数
-  const {
-    state: { allyStatusList }
-  } = React.useContext(synergyContext);
-
-  // 模态框是否显示
-  const [visible, setVisible] = React.useState(false);
-  // 当前展示的页面
-  const [funcShow, setFuncShow] = useState(1)
-
-  // 暴露给父组件的函数
-  React.useImperativeHandle(ref, () => ({
-
-    // 打开
-    open: (project, bridge, navigation, route) => {
-      setFuncShow(1)
-      setVisible(true);
-    },
-    // 关闭函数
-    close,
-  }));
-
-
-  // 关闭时
-  const close = () => {
-    // 关闭模态框
-    setVisible(false);
-  };
-
-  // 切换功能页面
-  const changeFunc = (e) => {
-    setFuncShow(e)
-  }
-
-
-
-  // 时间转换
-  const timeToHS = (dateTime) => {
-    let time = dateTime.split(' ')[1]
-    let timeArr = time.split(':')
-    let HSTime = timeArr[0] + ':' + timeArr[1]
-    return HSTime
-  }
-
-  return (
-    // 导入桥梁模态框
-    <Modal
-      visible={visible}
-      title="协同检测"
-      pid="P1303"
-      showHead={true}
-      // 没有滚动条
-      notScroll={true}
-      width={400}
-      height={350}
-      keyboardVerticalOffset={-250}
-      onClose={() => setVisible(false)}>
-      <View style={[tailwind.flex1, {}]}>
-        {/* 顶部 */}
-        <View style={{
-          height: '10%', width: '100%',
-          flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'
-        }}>
-          <Pressable style={{
-            width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
-            backgroundColor: funcShow == 1 ? '#2b427d' : '#2b427d00'
-          }}
-            onPress={() => changeFunc(1)}>
-            <Text style={{ color: funcShow == 1 ? '#fff' : '#808285' }}>任务详情</Text>
-          </Pressable>
-          <Pressable style={{
-            width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
-            backgroundColor: funcShow == 2 ? '#2b427d' : '#2b427d00'
-          }}
-            onPress={() => changeFunc(2)}>
-            <Text style={{ color: funcShow == 2 ? '#fff' : '#808285' }}>使用帮助</Text>
-          </Pressable>
-        </View>
-        {/* 内容 */}
-        <View style={[tailwind.flex1, {}]}>
-          {
-            funcShow == 1 &&
-            <View style={{ width: '100%', height: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View style={{ width: '100%', height: '100%', alignItems: 'center', paddingTop: 5, paddingHorizontal: 10 }}>
-                {/* 参与者信息表格 */}
-                <View style={{ width: '100%', height: '100%', padding: 10 }}>
-                  <Table.Box
-                    header={
-                      <Table.Header>
-                        <Table.Title title="序号" flex={1} />
-                        <Table.Title title="账号" flex={4} />
-                        <Table.Title title="人员" flex={3} />
-                        <Table.Title title="加入时间" flex={2} />
-                        <Table.Title title="状态" flex={2} />
-                      </Table.Header>
-                    }>
-                    <FlatList
-                      data={allyStatusList}
-                      showsVerticalScrollIndicator={false}
-                      renderItem={({ item, index }) => (
-                        <Table.Row key={index}>
-                          <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                          <Table.Cell flex={4}>{item.username}</Table.Cell>
-                          <Table.Cell flex={3}>{item.realname}</Table.Cell>
-                          <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
-                          <Table.Cell flex={2}>{item.state}</Table.Cell>
-                        </Table.Row>
-                      )}
-                    />
-                  </Table.Box>
-                </View>
-              </View>
-            </View>
-          }
-          {
-            funcShow == 2 &&
-            <View style={styles.helpBox}>
-              <Text style={styles.helpText}>1.如需使用协同检测功能，请先让采集端设备连接到协同检测盒子</Text>
-              <Text style={styles.helpText}>2.协同检测盒子WiFi名称：JIANLIDE_LAN1001</Text>
-              <Text style={styles.helpText}>3.协同检测盒子WiFi密码：jianlide</Text>
-            </View>
-          }
-        </View>
-      </View>
-      {/* 分割线 */}
-      <Divider style={[tailwind.mB2]} />
-      {/* 底部操作按钮 */}
-      <View style={styles.modalFoote}>
-        {/* 确认 */}
-        <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => close()}>确认</Button>
-      </View>
-    </Modal>
-  );
-});
 
 export default function Main({ navigation, route }) {
   // 全局样式
@@ -226,9 +87,6 @@ export default function Main({ navigation, route }) {
 
   // 部件编辑组件的引用
   const memberEditRef = React.useRef();
-
-  // 协同检测 模态框的 引用
-  const coopRef = React.useRef();
 
   // 表格每页条数
   const pageRow = 8;
@@ -530,15 +388,6 @@ export default function Main({ navigation, route }) {
 
   }, [imgType])
 
-  const openCoop = () => {
-    console.log('打开协同检测弹窗');
-    // wsConnection.current.send(JSON.stringify({b:'11'}))
-    coopRef.current.open(navigation, route)
-
-    // 打开弹窗后重置表格选中状态、图标状态
-    // setNowChecked(null);
-  }
-
   return (
     // 外部盒子 = 样式 + 顶部导航 + 导航左侧标签
     <Box headerItems={getHeaderItems()} pid="P1301" navigation={navigation} route={route} projectList={project} project={project.projectname} bridge={bridge}>
@@ -608,13 +457,13 @@ export default function Main({ navigation, route }) {
             //   onPress: () => handlePlanOrGenesis('GenesisEdit'),
             //   disabled: !nowEdit,
             // },
-            {
-              // 协同检测按钮
-              // name: 'book-plus',
-              img: imgType,
-              onPress: openCoop,
-              disabled: !wsOpen,
-            },
+            // {
+            //   // 协同检测按钮
+            //   // name: 'book-plus',
+            //   img: imgType,
+            //   onPress: openCoop,
+            //   disabled: !wsOpen,
+            // },
           ]}>
           {/* <View style={[tailwind.flexRow, tailwind.flex1,{backgroundColor:'rgba(255,255,255,1)',right:11.5,width:715,top:1,borderRadius:5}]}>
             </View> */}
@@ -971,9 +820,6 @@ export default function Main({ navigation, route }) {
           </Portal>
           : <></>
       }
-
-      {/* 协同检测 模态框 */}
-      <Cooperate ref={coopRef} />
     </Box>
   );
 }
@@ -1040,18 +886,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 10,
     right: 10,
-  },
-  modalFoote: {
-    ...tailwind.mB2,
-    ...tailwind.mX4,
-    ...tailwind.flexRow,
-    ...tailwind.justifyEnd,
-  },
-  helpBox: {
-    paddingTop: 20,
-    paddingHorizontal: 20
-  },
-  helpText: {
-    marginBottom: 10
   }
 });
