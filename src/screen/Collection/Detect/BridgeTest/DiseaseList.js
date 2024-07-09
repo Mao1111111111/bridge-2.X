@@ -661,7 +661,11 @@ export default function DiseaseList({route, navigation}) {
   const goBack = () => {
     console.log('点击了goBack');
     try {
-      navigation.goBack()
+      // navigation.goBack()
+      navigation.replace('Collection/Detect/BridgeTest/Member', {
+      data: route.params.data,
+      list: [],
+    })
     } catch (e) {
       console.log('goBack err', e);
     }

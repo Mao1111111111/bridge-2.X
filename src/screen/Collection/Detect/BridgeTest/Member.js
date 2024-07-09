@@ -1,7 +1,7 @@
 /* 
   构件管理
  */
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import dayjs from 'dayjs';
 import uuid from 'react-native-uuid';
 import {tailwind, colors} from 'react-native-tailwindcss';
@@ -651,7 +651,7 @@ export default function Member({route, navigation,item}) {
   // 当前选中的跨编号
   const [nowGroup, setNowGroup] = React.useState(null);
 
-  // data是部件数据 data = {"done": 2, "lastEditDate": "2023-04-06 14:27:13", "membertype": "b200001", "title": "桥台", "total": 2, "type": "member"}
+  
   const {data} = route.params;
 
   const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
@@ -673,19 +673,18 @@ export default function Member({route, navigation,item}) {
 
 
   const [selfCoopData,setSelfCoopData] = useState({}) //协同检测中当前用户自己的数据
-  const [noteData,setNoteData] = useState([])
+  const [noteData,setNoteData] = useState()
   React.useEffect(() => {
     console.log('构件列表 是否为协同检测wsOpen',wsOpen,);
-
     if(wsOpen){
+      
       const coopData = curSynergyInfo
       console.log('当前为协同检测',coopData);
       console.log('访问操作记录',operationNoteData);
-      console.log('noteData.length',noteData.length);
-      if(!noteData.length){
+      console.log('noteData.length',noteData?.length);
+      if(!noteData?.length){
         setNoteData(operationNoteData)
       }
-      
       const participators = JSON.parse(coopData.participator);
       participators.forEach((item,index)=>{
         if(item.isSelf){
@@ -857,7 +856,8 @@ export default function Member({route, navigation,item}) {
         }
       })
     })
-    navigation.navigate(path, {
+    // navigate保留当前页面直接跳转、replace销毁当前页面再跳转
+    navigation.replace(path, {
       title: data.title,
       list: list,
       dataGroupId: checkedList.size > 1 ? uuid.v4() : '',
@@ -869,7 +869,8 @@ export default function Member({route, navigation,item}) {
       // 当前协同检测过程中的操作历史记录
       operationNotes:[],
       // 每次开始进入病害列表的时间
-      timestamp:dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+      timestamp:dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
+      data:route.params.data
     });
   };
 
@@ -1090,7 +1091,7 @@ export default function Member({route, navigation,item}) {
 
               </View>
               {/* 右侧 操作历史 */}
-              <LogList list={editLogList} coopList={operationNoteData} />
+              <LogList list={editLogList ? editLogList : ''} coopList={operationNoteData? operationNoteData : ''} />
             </View>
           </Content>
         </View>
