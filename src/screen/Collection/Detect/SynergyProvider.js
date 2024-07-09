@@ -27,6 +27,8 @@ const Provider = props => {
     // 在线状态表格数据
     allyStatusList: null,
 
+    // 协同检测_操作记录数据
+    operationNoteData:null,
     // 协同检测数据
     synergyTestData: null,
     // 用户检测记录
@@ -140,6 +142,7 @@ const Provider = props => {
   const dealTestRecordData = (data) => {
     // 
     console.log("dealTestRecordData data",data);
+    dispatch({ type:'operationNoteData', payload:data })
   }
 
   // 关闭协同检测

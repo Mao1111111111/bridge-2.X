@@ -624,7 +624,7 @@ export default function Member({route, navigation,item}) {
 
   // 协同检测
   const {
-    state: {wsOpen,curSynergyInfo},
+    state: {wsOpen,curSynergyInfo,operationNoteData},
   } = React.useContext(synergyContext);
 
   // 桥梁检测全局参数 -- 桥梁信息、检测构件列表、项目信息
@@ -671,16 +671,26 @@ export default function Member({route, navigation,item}) {
     }, [project, bridge]),
   );
 
+
+  const [selfCoopData,setSelfCoopData] = useState({}) //协同检测中当前用户自己的数据
+  const [noteData,setNoteData] = useState([])
   React.useEffect(() => {
     console.log('构件列表 是否为协同检测wsOpen',wsOpen,);
 
     if(wsOpen){
-      console.log('当前为协同检测');
       const coopData = curSynergyInfo
+      console.log('当前为协同检测',coopData);
+      console.log('访问操作记录',operationNoteData);
+      console.log('noteData.length',noteData.length);
+      if(!noteData.length){
+        setNoteData(operationNoteData)
+      }
+      
       const participators = JSON.parse(coopData.participator);
       participators.forEach((item,index)=>{
         if(item.isSelf){
           console.log('当前用户的信息',item);
+          setSelfCoopData(item)
         }
       })
     }
@@ -853,11 +863,13 @@ export default function Member({route, navigation,item}) {
       dataGroupId: checkedList.size > 1 ? uuid.v4() : '',
       routeParams: data,
       // 是否是协同检测
-      isCoop:true,
-      // 当前用户的信息
-      coopData:{
-        user:'张三134'
-      }
+      isCoop:wsOpen,
+      // 协同检测中当前用户的信息
+      selfCoopData,
+      // 当前协同检测过程中的操作历史记录
+      operationNotes:[],
+      // 每次开始进入病害列表的时间
+      timestamp:dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss')
     });
   };
 
@@ -1078,7 +1090,7 @@ export default function Member({route, navigation,item}) {
 
               </View>
               {/* 右侧 操作历史 */}
-              <LogList list={editLogList} />
+              <LogList list={editLogList} coopList={operationNoteData} />
             </View>
           </Content>
         </View>

@@ -3,98 +3,105 @@ import Table from '../../../../components/Table';
 import {tailwind} from 'react-native-tailwindcss';
 import {View, Text, FlatList} from 'react-native';
 
-export default function LogList({list}) {
+export default function LogList({list,coopList}) {
 
   const [coopData,setCoopData] = useState([])
 
   useEffect(()=>{
     console.log('操作历史的组件内容');
     if(!coopData.length){
-      let data = [
-        {
-          realName:'张三',
-          menberName:'1-2#',
-          time:'2024-7-5 10:06',
-          diseaseName:'混凝土裂缝'
-        },
-        {
-          realName:'张四',
-          menberName:'1-1#',
-          time:'2024-7-5 10:36',
-          diseaseName:'混凝土破损'
-        },
-        {
-          realName:'张三',
-          menberName:'1-3#',
-          time:'2024-7-5 10:09',
-          diseaseName:'混凝土渗水'
-        },
-        {
-          realName:'李一',
-          menberName:'1-2#',
-          time:'2024-7-5 10:02',
-          diseaseName:'混凝土刮伤'
-        },
-        {
-          realName:'张三',
-          menberName:'1-1#',
-          time:'2024-7-6 13:06',
-          diseaseName:'底板裂缝'
-        },
-        {
-          realName:'李五',
-          menberName:'1-4#',
-          time:'2024-7-5 19:50',
-          diseaseName:'混凝土破损'
-        },
-        {
-          realName:'张三',
-          menberName:'3-1#',
-          time:'2024-7-8 16:10',
-          diseaseName:'钢结构锈蚀'
-        },
-        {
-          realName:'张三',
-          menberName:'3-1#',
-          time:'2024-7-12 10:05',
-          diseaseName:'钢结构锈蚀'
-        },
-        {
-          realName:'张三',
-          menberName:'3-1#',
-          time:'2024-7-7 12:10',
-          diseaseName:'钢结构锈蚀'
-        },
-        {
-          realName:'张三',
-          menberName:'3-1#',
-          time:'2024-7-10 11:00',
-          diseaseName:'钢结构锈蚀'
-        },
-        {
-          realName:'张三',
-          menberName:'3-1#',
-          time:'2024-7-8 16:01',
-          diseaseName:'钢结构锈蚀'
-        },
-        {
-          realName:'张三',
-          menberName:'3-1#',
-          time:'2024-7-8 16:19',
-          diseaseName:'钢结构锈蚀'
-        },
-        {
-          realName:'张三',
-          menberName:'3-1#',
-          time:'2024-7-8 16:10',
-          diseaseName:'钢结构锈蚀'
-        },
-      ]
-      data.sort((a, b) => {
-        return new Date(b.time) - new Date(a.time);
-      });
+      if(coopList){
+        const dataArr = coopList
+        dataArr.sort((a, b) => {
+          return new Date(b.checkTime) - new Date(a.checkTime);
+        });
+        setCoopData(dataArr);
+      }
+      // let data = [
+      //   {
+      //     realName:'张三',
+      //     menberName:'1-2#',
+      //     time:'2024-7-5 10:06',
+      //     diseaseName:'混凝土裂缝'
+      //   },
+      //   {
+      //     realName:'张四',
+      //     menberName:'1-1#',
+      //     time:'2024-7-5 10:36',
+      //     diseaseName:'混凝土破损'
+      //   },
+      //   {
+      //     realName:'张三',
+      //     menberName:'1-3#',
+      //     time:'2024-7-5 10:09',
+      //     diseaseName:'混凝土渗水'
+      //   },
+      //   {
+      //     realName:'李一',
+      //     menberName:'1-2#',
+      //     time:'2024-7-5 10:02',
+      //     diseaseName:'混凝土刮伤'
+      //   },
+      //   {
+      //     realName:'张三',
+      //     menberName:'1-1#',
+      //     time:'2024-7-6 13:06',
+      //     diseaseName:'底板裂缝'
+      //   },
+      //   {
+      //     realName:'李五',
+      //     menberName:'1-4#',
+      //     time:'2024-7-5 19:50',
+      //     diseaseName:'混凝土破损'
+      //   },
+      //   {
+      //     realName:'张三',
+      //     menberName:'3-1#',
+      //     time:'2024-7-8 16:10',
+      //     diseaseName:'钢结构锈蚀'
+      //   },
+      //   {
+      //     realName:'张三',
+      //     menberName:'3-1#',
+      //     time:'2024-7-12 10:05',
+      //     diseaseName:'钢结构锈蚀'
+      //   },
+      //   {
+      //     realName:'张三',
+      //     menberName:'3-1#',
+      //     time:'2024-7-7 12:10',
+      //     diseaseName:'钢结构锈蚀'
+      //   },
+      //   {
+      //     realName:'张三',
+      //     menberName:'3-1#',
+      //     time:'2024-7-10 11:00',
+      //     diseaseName:'钢结构锈蚀'
+      //   },
+      //   {
+      //     realName:'张三',
+      //     menberName:'3-1#',
+      //     time:'2024-7-8 16:01',
+      //     diseaseName:'钢结构锈蚀'
+      //   },
+      //   {
+      //     realName:'张三',
+      //     menberName:'3-1#',
+      //     time:'2024-7-8 16:19',
+      //     diseaseName:'钢结构锈蚀'
+      //   },
+      //   {
+      //     realName:'张三',
+      //     menberName:'3-1#',
+      //     time:'2024-7-8 16:10',
+      //     diseaseName:'钢结构锈蚀'
+      //   },
+      // ]
+      // data.sort((a, b) => {
+      //   return new Date(b.time) - new Date(a.time);
+      // });
   
-      setCoopData(data);
+      // setCoopData(data);
     }
     console.log('coopData',coopData);
   },[coopData])
@@ -127,10 +134,10 @@ export default function LogList({list}) {
                 renderItem={({item, index}) => (
                   <Table.Row key={index}>
                     <Table.Cell flex={1}>
-                      <Text style={{textAlign:'left'}}>{`${item.realName}\n${item.menberName}\n${item.diseaseName}`}</Text>
+                      <Text style={{textAlign:'left'}}>{`${item.user}\n${item.membername}\n${item.diseaseName}`}</Text>
                     </Table.Cell>
                     <Table.Cell flex={1}>
-                      <Text>{item.time}</Text>
+                      <Text>{item.checkTime}</Text>
                     </Table.Cell>
                   </Table.Row>
                 )}
