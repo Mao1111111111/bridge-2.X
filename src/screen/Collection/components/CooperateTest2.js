@@ -68,8 +68,16 @@ export default function CooperateTest2({
                     setIsCreator(false)
                 }
             } else {
+                // 判断是否是创建者
+                if(bridge.synergyTestData){
+                    if (JSON.parse(bridge.synergyTestData.creator).deviceId == deviceId) {
+                        setIsCreator(true)
+                    } else {
+                        setIsCreator(false)
+                    }
+                }
+                // 设置顶部导航
                 setCurTopItem('创建任务')
-                setIsCreator(true)
             }
         } else {
             setCurTopItem('参与任务')
@@ -408,7 +416,7 @@ export default function CooperateTest2({
             })
         }
         // 桥梁检测信息是否存在
-        let bindData = bridgeProjectBind.getByBridgereportid({
+        let bindData = await bridgeProjectBind.getByBridgereportid({
             bridgereportid:result.task_msg.bridge_project_bind.bridgereportid,
             bridgeid:result.task_msg.bridge.bridgeid
         })
