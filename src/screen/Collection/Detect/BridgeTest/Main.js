@@ -82,8 +82,8 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       showHead={true}
       // 没有滚动条
       notScroll={true}
-      width={800}
-      height={500}
+      width={400}
+      height={350}
       keyboardVerticalOffset={-250}
       onClose={() => setVisible(false)}>
       <View style={[tailwind.flex1, {}]}>
@@ -93,14 +93,14 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
           flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'
         }}>
           <Pressable style={{
-            width: '15%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center',
+            width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
             backgroundColor: funcShow == 1 ? '#2b427d' : '#2b427d00'
           }}
             onPress={() => changeFunc(1)}>
             <Text style={{ color: funcShow == 1 ? '#fff' : '#808285' }}>任务详情</Text>
           </Pressable>
           <Pressable style={{
-            width: '15%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center',
+            width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
             backgroundColor: funcShow == 2 ? '#2b427d' : '#2b427d00'
           }}
             onPress={() => changeFunc(2)}>
@@ -112,9 +112,9 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
           {
             funcShow == 1 &&
             <View style={{ width: '100%', height: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View style={{ width: '50%', height: '100%', alignItems: 'center', paddingTop: 20, paddingLeft: 20 }}>
+              <View style={{ width: '100%', height: '100%', alignItems: 'center', paddingTop: 5, paddingHorizontal: 10 }}>
                 {/* 参与者信息表格 */}
-                <View style={{ width: '100%', height: '90%', padding: 10 }}>
+                <View style={{ width: '100%', height: '100%', padding: 10 }}>
                   <Table.Box
                     header={
                       <Table.Header>
@@ -1049,7 +1049,7 @@ const styles = StyleSheet.create({
   },
   helpBox: {
     paddingTop: 20,
-    paddingLeft: 20
+    paddingHorizontal: 20
   },
   helpText: {
     marginBottom: 10
