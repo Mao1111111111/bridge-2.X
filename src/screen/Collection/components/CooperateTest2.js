@@ -44,8 +44,8 @@ export default function CooperateTest2({
     // 是否是任务创建者
     const [isCreator, setIsCreator] = useState(true)
     // 测试ip
-    const testIP = '10.1.1.71:8000'
-    // const testIP = '39.91.167.242:9000'
+    // const testIP = '10.1.1.71:8000'
+    const testIP = '39.91.167.242:9000'
 
     // 初始化页面
     useEffect(() => {
@@ -101,13 +101,9 @@ export default function CooperateTest2({
     // 协同人数加减按钮点击
     const CTPersonNumChange = (e) => {
         var _personNum = parseInt(CTPersonNum)
-        if (_personNum < 10) {
+        if((e==1&&_personNum<11)||(e==-1&&_personNum>2)){
             _personNum += e
-        }
-        if (e < 1) {
-            setCTPersonNum('1')
-        } else {
-            setCTPersonNum(_personNum + '')
+                setCTPersonNum(_personNum)
         }
     }
     // 确认创建
