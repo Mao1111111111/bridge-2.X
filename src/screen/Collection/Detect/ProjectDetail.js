@@ -437,12 +437,12 @@ const Inducts = React.forwardRef(({ onSubmitOver }, ref) => {
             id =>
               new Promise((resolve, reject) => {
                 // 设置bridgereportid
-                let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999-1000+1) + 1000-1)
+                let time = (new Date()).valueOf() + '' + Math.ceil(Math.random() * (9999 - 1000 + 1) + 1000 - 1)
                 let bridgereportid = id + parseInt(time).toString(36)
                 // 将数据存到桥梁绑定关系中
                 bridgeProjectBind
                   .save({
-                    bridgereportid:bridgereportid,
+                    bridgereportid: bridgereportid,
                     projectid: projectid,
                     bridgeid: id,
                     userid: userInfo.userid,
@@ -1597,7 +1597,7 @@ export default function ProjectDetail({ route, navigation }) {
 
   const {
     state: { ally_status, synergyTestData, curSynergyInfo, wsConnection, wsConnectionState },
-    dispatch:syDispatch
+    dispatch: syDispatch
   } = React.useContext(synergyContext);
 
   // 全局样式
@@ -1925,14 +1925,16 @@ export default function ProjectDetail({ route, navigation }) {
   // ------点击桩号切换协同检测------------
   // 点击桩号时
   const bridgestationClick = (item) => {
-    console.log("item",item);
-    if(item.synergyTestData&&item.synergyTestData.state=='协同中'){
+    console.log("item", item);
+    if (item.synergyTestData && item.synergyTestData.state == '协同中') {
       // 将协同信息存入全局
-      syDispatch({ type: 'curSynergyInfo', payload: {
-        ...item.synergyTestData,
-        creator:JSON.parse(item.synergyTestData.creator),
-        participator:JSON.parse(item.synergyTestData.participator)
-      } })
+      syDispatch({
+        type: 'curSynergyInfo', payload: {
+          ...item.synergyTestData,
+          creator: JSON.parse(item.synergyTestData.creator),
+          participator: JSON.parse(item.synergyTestData.participator)
+        }
+      })
     }
 
     // navigation.navigate('Collection/Detect/BridgeTest', {
@@ -2073,7 +2075,7 @@ export default function ProjectDetail({ route, navigation }) {
                     {/* 跳转到桥梁检测 */}
                     <TouchableOpacity
                       // style={[styles.linkBox]}
-                      onPress={() => {bridgestationClick(item)}}>
+                      onPress={() => { bridgestationClick(item) }}>
                       <Text style={[{ color: '#2b427d', textDecorationLine: 'underline' }]}>{item.bridgestation}</Text>
                     </TouchableOpacity>
                   </Table.Cell>
