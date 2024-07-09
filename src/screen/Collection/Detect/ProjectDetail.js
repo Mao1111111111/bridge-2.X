@@ -1596,7 +1596,8 @@ export default function ProjectDetail({ route, navigation }) {
   } = React.useContext(GlobalContext);
 
   const {
-    state: { ally_status, synergyTestData, curSynergyInfo, wsConnection, wsConnectionState }
+    state: { ally_status, synergyTestData, curSynergyInfo, wsConnection, wsConnectionState },
+    dispatch:syDispatch
   } = React.useContext(synergyContext);
 
   // 全局样式
@@ -1921,6 +1922,26 @@ export default function ProjectDetail({ route, navigation }) {
     setCoopModalShow(false)
   }
 
+  // ------点击桩号切换协同检测------------
+  // 点击桩号时
+  const bridgestationClick = (item) => {
+    console.log("item",item);
+    if(item.synergyTestData&&item.synergyTestData.state=='协同中'){
+      // 将协同信息存入全局
+      syDispatch({ type: 'curSynergyInfo', payload: {
+        ...item.synergyTestData,
+        creator:JSON.parse(item.synergyTestData.creator),
+        participator:JSON.parse(item.synergyTestData.participator)
+      } })
+    }
+
+    // navigation.navigate('Collection/Detect/BridgeTest', {
+    //   project: project,
+    //   bridge: item,
+    //   list: route.params.list
+    // })
+  }
+
   return (
     // 公共box
     <CommonView
@@ -2052,13 +2073,7 @@ export default function ProjectDetail({ route, navigation }) {
                     {/* 跳转到桥梁检测 */}
                     <TouchableOpacity
                       // style={[styles.linkBox]}
-                      onPress={() =>
-                        navigation.navigate('Collection/Detect/BridgeTest', {
-                          project: project,
-                          bridge: item,
-                          list: route.params.list
-                        })
-                      }>
+                      onPress={() => {bridgestationClick(item)}}>
                       <Text style={[{ color: '#2b427d', textDecorationLine: 'underline' }]}>{item.bridgestation}</Text>
                     </TouchableOpacity>
                   </Table.Cell>
