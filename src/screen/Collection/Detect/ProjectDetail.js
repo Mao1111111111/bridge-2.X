@@ -2108,7 +2108,7 @@ export default function ProjectDetail({ route, navigation }) {
                     {(item.date || '').split(' ')[0] || '未检测'}
                   </Table.Cell>
                   <Table.Cell flex={2}>
-                    {item.isSynergyTest ? item.synergyTestData.state : '非协同'}
+                    {item.isSynergyTest ? (item.synergyTestData.state=='协同中'?item.synergyTestData.taskId:item.synergyTestData.state) : '非协同'}
                   </Table.Cell>
                   <Table.Cell>
                     {item.datasources === 0 ? '本地' : '云端'}
