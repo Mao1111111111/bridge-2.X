@@ -44,8 +44,8 @@ export default function CooperateTest2({
     // 是否是任务创建者
     const [isCreator, setIsCreator] = useState(true)
     // 测试ip
-    // const testIP = '10.1.1.71:8000'
-    const testIP = '39.91.167.242:9000'
+    const testIP = '10.1.1.71:8000'
+    // const testIP = '39.91.167.242:9000'
 
     // 初始化页面
     useEffect(() => {
