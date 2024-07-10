@@ -33,6 +33,8 @@ const Provider = props => {
 
     // 协同检测_操作记录数据
     operationNoteData: null,
+    // 由操作记录operationNoteData整理的构件下显示的用户组数据
+    operationUserArr:null,
     // 协同检测数据
     synergyTestData: null,
     // 用户检测记录
@@ -155,6 +157,42 @@ const Provider = props => {
     })
     console.log("dealTestRecordData data", data);
     dispatch({ type: 'operationNoteData', payload: data })
+
+    // 对操作记录进行分组和处理
+    let data1 = Object.values(data.reduce((acc, currentItem) => {
+      const key = currentItem.memberid;
+      // 初始化每个 memberid 的对象结构
+      if (!acc[key]) {
+        acc[key] = {
+          memberid: currentItem.memberid,
+          membername: currentItem.membername,
+          userGroup: new Set() // 使用Set存储用户数据，自动去重
+        };
+      }
+      
+      // 将当前记录按照 checkTime 排序
+      if (!acc[key].records) {
+        acc[key].records = [];
+      }
+      acc[key].records.push(currentItem);
+      acc[key].records.sort((a, b) => new Date(b.checkTime) - new Date(a.checkTime));
+      
+      // 根据最新的 typeCode 更新 userGroup
+      const latestRecord = acc[key].records[0];
+      if (latestRecord.typeCode === '开始检测') {
+        acc[key].userGroup.add(latestRecord.user);
+      } else if (latestRecord.typeCode === '结束检测') {
+        acc[key].userGroup.delete(latestRecord.user);
+      }
+      return acc;
+    }, {}));
+    data1.forEach(item => {
+      item.userGroup = Array.from(item.userGroup);
+    });
+    
+    // 输出结果
+    console.log('data1',data1);
+    dispatch({ type:'operationUserArr', payload:data1})
   }
 
   // 关闭协同检测

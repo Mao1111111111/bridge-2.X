@@ -624,7 +624,7 @@ export default function Member({route, navigation,item}) {
 
   // 协同检测
   const {
-    state: {wsOpen,curSynergyInfo,operationNoteData},
+    state: {wsOpen,curSynergyInfo,operationNoteData,operationUserArr},
   } = React.useContext(synergyContext);
 
   // 桥梁检测全局参数 -- 桥梁信息、检测构件列表、项目信息
@@ -677,7 +677,6 @@ export default function Member({route, navigation,item}) {
   React.useEffect(() => {
     console.log('构件列表 是否为协同检测wsOpen',wsOpen,);
     if(wsOpen){
-      
       const coopData = curSynergyInfo
       console.log('当前为协同检测',coopData);
       console.log('访问操作记录',operationNoteData);
@@ -944,28 +943,9 @@ export default function Member({route, navigation,item}) {
 
 
   // =============协同检测相关===================
-  const [coopData,setCoopData] = useState() //协同任务中各用户的检测记录数据
   useEffect(()=>{
     // console.log('allList',allList[0]?.list);
-    // 获取当前任务中各用户的检测记录数据
-    let data = [
-      {
-        memberId:'g114ondgptv9904ondgpuxc38_b100001_luuloy3z_0',
-        membername:'1-1#',
-        userGroup:['张三','张三三','张四','张五',]
-      },
-      {
-        memberId:'g114ondgptv9904ondgpuxc38_b100001_luuloy3z_1',
-        membername:'1-2#',
-        userGroup:['张三','张三三','张四','张五','李一','李二','李三','李四','李五','李六','李七','李八','李九',]
-      },
-      {
-        memberId:'g114ondgptv9904ondgpuxc38_b100001_luuloy3z_2',
-        membername:'2-1#',
-        userGroup:['张三','李一','李二',]
-      },
-    ]
-    setCoopData(data)
+    // console.log('userARR',operationUserArr);
   },[])
 
   return (
@@ -1047,7 +1027,7 @@ export default function Member({route, navigation,item}) {
                       // 组列表 ,部件 或 跨 列表
                       data={allList}
                       // 协同检测数据
-                      coopData={coopData}
+                      coopData={operationUserArr}
                       // 组改变时，即点击左侧列表时
                       onGroupChange={item => {
                         // 如果跨编号存在
@@ -1068,7 +1048,7 @@ export default function Member({route, navigation,item}) {
                       // 组列表 ,部件 或 跨 列表
                       data={list}
                       // 协同检测数据
-                      coopData={coopData}
+                      coopData={operationUserArr}
                       // 组改变时，即点击左侧列表时
                       onGroupChange={item => {
                         // 如果跨编号存在

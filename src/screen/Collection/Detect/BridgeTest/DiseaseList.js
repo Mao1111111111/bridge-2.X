@@ -405,8 +405,7 @@ export default function DiseaseList({route, navigation}) {
     }, [list, isLoading, dataGroupId]),
   );
 
-  // 向构件列表传的操作历史的数据
-  const [noteData,setNoteData] = useState({})
+  
   // 初次进入病害列表与每次向盒子发送操作记录后重置的起始时间
   const [startTime, setStartTime] = useState('')
   useEffect(()=>{
@@ -416,34 +415,59 @@ export default function DiseaseList({route, navigation}) {
       }
       console.log('初次进入病害列表的时间',startTime);
       console.log('route.params.selfCoopData.realname',route.params.selfCoopData.realname);
-      if(route.params.isCoop && operationNoteData && tableData[0]){
-        console.log('读取操作记录operationNoteData',operationNoteData);
-        // 使用 some 方法检查是否存在符合条件的对象
-        const hasDataTypeCheck = operationNoteData.some(item => item.dataType);
-        
-        if(hasDataTypeCheck){
-          console.log('操作记录里有dataType属性');
+      // 是否为协同
+      if(route.params.isCoop){
+        if(startTime){
+          // 检查操作记录最新一条是否为开始检测，如是则不再进行发送，避免重复，否则发送
+          console.log('operationNoteData...',operationNoteData);
 
-          const typeCodeCheck = operationNoteData.some(item => item.typeCode == '开始检测');
-          if(typeCodeCheck){
-            console.log('操作记录里有dataType属性，且状态为 ‘开始检测’');
+          // 没有检测记录时，直接发送一条更改状态的数据
+          if(!operationNoteData){
+            let noteTypeData = {}
+            console.log('------用户进入协同检测页面开始检测------',startTime);
+            noteTypeData['isCoop'] = route.params.isCoop
+            noteTypeData['memberid'] = list[0].memberid
+            noteTypeData['membername'] = list[0].membername
+            noteTypeData['user'] = route.params.selfCoopData.realname
+            noteTypeData['dataType'] = '检测状态'
+            noteTypeData['typeCode'] = '开始检测'
+            noteTypeData['checkTime'] = startTime
+            // console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
+            wsConnection.current.send(JSON.stringify(noteTypeData))
           }
-        } else {
-          console.log('未向操作记录里存过dataType属性');
-        }
 
-        let noteTypeData = {}
-        // 是协同检测时 进入页面就发送一条更改检测状态的信息
-        console.log('------用户进入协同检测页面开始检测------',startTime);
-        noteTypeData['isCoop'] = route.params.isCoop
-        noteTypeData['memberid'] = list[0].memberid
-        noteTypeData['membername'] = list[0].membername
-        noteTypeData['user'] = route.params.selfCoopData.realname
-        noteTypeData['dataType'] = '检测状态'
-        noteTypeData['typeCode'] = '开始检测'
-        noteTypeData['checkTime'] = startTime
-        console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
-        // wsConnection.current.send(JSON.stringify(noteTypeData))
+          // 有检测记录时，进行判断
+          if(operationNoteData){
+            // 找到最新的包含 dataType 的记录
+            let latestRecord = null;
+            for (let i = 0; i < operationNoteData.length; i++) {
+              const currentRecord = operationNoteData[i];
+              if (currentRecord.dataType && (!latestRecord || new Date(currentRecord.checkTime) > new Date(latestRecord.checkTime))) {
+                latestRecord = currentRecord;
+              }
+            }
+
+            // 如果找到了符合条件的记录，检查其 typeCode 是否为 '开始检测'
+            if (latestRecord && latestRecord.typeCode === '开始检测') {
+              // console.log('true');
+            } else {
+              // console.log('false');
+              let noteTypeData = {}
+              console.log('------用户进入协同检测页面开始检测------',startTime);
+              noteTypeData['isCoop'] = route.params.isCoop
+              noteTypeData['memberid'] = list[0].memberid
+              noteTypeData['membername'] = list[0].membername
+              noteTypeData['user'] = route.params.selfCoopData.realname
+              noteTypeData['dataType'] = '检测状态'
+              noteTypeData['typeCode'] = '开始检测'
+              noteTypeData['checkTime'] = startTime
+              console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
+              wsConnection.current.send(JSON.stringify(noteTypeData))
+            }
+          }
+
+          
+        }
       }
 
       if(tableData[0]){
@@ -680,10 +704,26 @@ export default function DiseaseList({route, navigation}) {
     console.log('点击了goBack');
     try {
       // navigation.goBack()
+
+      if(route.params.isCoop){
+        let endTime = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+        console.log('用户退出检测返回构件列表',endTime);
+        let noteTypeData = {}
+        noteTypeData['isCoop'] = route.params.isCoop
+        noteTypeData['memberid'] = list[0].memberid
+        noteTypeData['membername'] = list[0].membername
+        noteTypeData['user'] = route.params.selfCoopData.realname
+        noteTypeData['dataType'] = '检测状态'
+        noteTypeData['typeCode'] = '结束检测'
+        noteTypeData['checkTime'] = endTime
+        console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
+        wsConnection.current.send(JSON.stringify(noteTypeData))
+      }
+
       navigation.replace('Collection/Detect/BridgeTest/Member', {
-      data: route.params.data,
-      list: [],
-    })
+        data: route.params.data,
+        list: [],
+      })
     } catch (e) {
       console.log('goBack err', e);
     }
