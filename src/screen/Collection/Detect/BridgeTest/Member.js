@@ -564,7 +564,7 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
                     onPress={() => handleCheck(items.id)}
                   />
                   {
-                    coopData && coopData.some(coopItem => coopItem.memberId === items.memberid) ? 
+                    coopData && coopData.some(coopItem => coopItem.memberid === items.memberid) ? 
                     <View style={{height:50,width:'100%',paddingTop:0,}}>
                       <View style={{
                           width:'85%',
@@ -574,7 +574,7 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
                         <View style={{marginRight:5,}}>
                           {
                             coopData.map((item,index)=>{
-                              if(item.memberId == items.memberid) {
+                              if(item.memberid == items.memberid) {
                                 return (
                                   <Text key={index} style={{color:'#2e407a',fontWeight:'500'}}>
                                     {item.userGroup.length}
@@ -587,7 +587,7 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
                         <Pressable style={{borderLeftWidth:1,borderLeftColor:'#ccd4df',borderStyle:'solid'}}>
                           {
                             coopData.map((item,index)=>{
-                              if(item.memberId == items.memberid) {
+                              if(item.memberid == items.memberid) {
                                 return (
                                   <View key={index}>
                                     {secondItems_all(item.userGroup)}
