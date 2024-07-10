@@ -98,9 +98,7 @@ const Provider = props => {
       // 断开ws
       closeWs()
     }
-
-
-  }, 1000, {
+  }, 300, {
     'leading': false,
     'trailing': true
   }), [])
@@ -141,13 +139,10 @@ const Provider = props => {
         closeWs()
       };
     }
-  }, 1000, {
+  }, 600, {
     'leading': false,
     'trailing': true
   }), [])
-
-
-
 
   // 处理在线人员
   const dealSynergyPeople = (curSynergyInfo, data) => {
@@ -209,7 +204,6 @@ const Provider = props => {
       bridgereportid: curSynergyInfo.bridgereportid
     })
   }
-
 
   // 检测记录数据
   const dealTestRecordData = (data) => {
