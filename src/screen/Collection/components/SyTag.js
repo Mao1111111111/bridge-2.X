@@ -101,7 +101,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     const dealErrFont = () => {
         let font = wsError
         if (wsError == "Expected HTTP 101 response but was '403 Forbidden'") {
-            font = '任务人数超出'
+            font = '任务不存在或任务人数超出'
         } else if (wsError == "Software caused connection abort") {
             font = '网络连接中断'
         } else if (wsError.substring(0, 20) == 'Failed to connect to') {
