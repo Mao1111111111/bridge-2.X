@@ -415,7 +415,8 @@ export default function DiseaseList({route, navigation}) {
         setStartTime(route.params.timestamp)
       }
       console.log('初次进入病害列表的时间',startTime);
-      if(route.params.isCoop){
+      console.log('route.params.selfCoopData.realname',route.params.selfCoopData.realname);
+      if(route.params.isCoop && operationNoteData && tableData[0]){
         console.log('读取操作记录operationNoteData',operationNoteData);
         // 使用 some 方法检查是否存在符合条件的对象
         const hasDataTypeCheck = operationNoteData.some(item => item.dataType);
@@ -440,7 +441,7 @@ export default function DiseaseList({route, navigation}) {
         noteTypeData['user'] = route.params.selfCoopData.realname
         noteTypeData['dataType'] = '检测状态'
         noteTypeData['typeCode'] = '开始检测'
-        noteTypeData['startTime'] = startTime
+        noteTypeData['checkTime'] = startTime
         console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
         // wsConnection.current.send(JSON.stringify(noteTypeData))
       }

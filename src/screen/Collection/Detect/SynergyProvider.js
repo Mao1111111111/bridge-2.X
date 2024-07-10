@@ -150,7 +150,9 @@ const Provider = props => {
 
   // 检测记录数据
   const dealTestRecordData = (data) => {
-    // 
+    data.sort((a,b)=>{
+      return new Date(b.checkTime) - new Date(a.checkTime);
+    })
     console.log("dealTestRecordData data", data);
     dispatch({ type: 'operationNoteData', payload: data })
   }

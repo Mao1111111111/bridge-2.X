@@ -687,7 +687,7 @@ export default function Member({route, navigation,item}) {
       }
       const participators = JSON.parse(coopData.participator);
       participators.forEach((item,index)=>{
-        if(item.isSelf){
+        if(item.isSelf == 'true'){
           console.log('当前用户的信息',item);
           setSelfCoopData(item)
         }
