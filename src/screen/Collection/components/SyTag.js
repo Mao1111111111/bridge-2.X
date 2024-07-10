@@ -54,7 +54,7 @@ export default function SyTag() {
             style={[styles.SyTagBox, { backgroundColor: stateToColor[wsConnectionState] }]}
             onPress={openCoop}>
             <Text style={[styles.font]}>{stateToShow[wsConnectionState]}</Text>
-            {/* 协同检测 模态框 */ }
+            {/* 协同检测 模态框 */}
             <Cooperate ref={coopRef} />
         </TouchableOpacity>
     ) : <></>
@@ -64,7 +64,7 @@ export default function SyTag() {
 const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     // 协同检测全局参数
     const {
-        state: { allyStatusList }
+        state: { allyStatusList, curSynergyInfo }
     } = React.useContext(synergyContext);
 
     // 模态框是否显示
@@ -109,7 +109,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         // 导入桥梁模态框
         <Modal
             visible={visible}
-            title="协同检测"
+            title={"协同检测"}
             pid="P1303"
             showHead={true}
             // 没有滚动条
@@ -122,22 +122,25 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                 {/* 顶部 */}
                 <View style={{
                     height: '10%', width: '100%',
-                    flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'
+                    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'
                 }}>
-                    <Pressable style={{
-                        width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
-                        backgroundColor: funcShow == 1 ? '#2b427d' : '#2b427d00'
-                    }}
-                        onPress={() => changeFunc(1)}>
-                        <Text style={{ color: funcShow == 1 ? '#fff' : '#808285' }}>任务详情</Text>
-                    </Pressable>
-                    <Pressable style={{
-                        width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
-                        backgroundColor: funcShow == 2 ? '#2b427d' : '#2b427d00'
-                    }}
-                        onPress={() => changeFunc(2)}>
-                        <Text style={{ color: funcShow == 2 ? '#fff' : '#808285' }}>使用帮助</Text>
-                    </Pressable>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Pressable style={{
+                            width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
+                            backgroundColor: funcShow == 1 ? '#2b427d' : '#2b427d00'
+                        }}
+                            onPress={() => changeFunc(1)}>
+                            <Text style={{ color: funcShow == 1 ? '#fff' : '#808285' }}>任务详情</Text>
+                        </Pressable>
+                        <Pressable style={{
+                            width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
+                            backgroundColor: funcShow == 2 ? '#2b427d' : '#2b427d00'
+                        }}
+                            onPress={() => changeFunc(2)}>
+                            <Text style={{ color: funcShow == 2 ? '#fff' : '#808285' }}>使用帮助</Text>
+                        </Pressable>
+                    </View>
+                    <Text style={{marginRight:20,fontWeight:'bold'}}>任务码：{curSynergyInfo.taskId}</Text>
                 </View>
                 {/* 内容 */}
                 <View style={[tailwind.flex1, {}]}>
@@ -153,7 +156,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                                                 <Table.Title title="序号" flex={1} />
                                                 <Table.Title title="账号" flex={4} />
                                                 <Table.Title title="人员" flex={3} />
-                                                <Table.Title title="加入时间" flex={2} />
+                                                <Table.Title title="时间" flex={2} />
                                                 <Table.Title title="状态" flex={2} />
                                             </Table.Header>
                                         }>
@@ -221,9 +224,9 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     modalFoote: {
-      ...tailwind.mB2,
-      ...tailwind.mX4,
-      ...tailwind.flexRow,
-      ...tailwind.justifyEnd,
+        ...tailwind.mB2,
+        ...tailwind.mX4,
+        ...tailwind.flexRow,
+        ...tailwind.justifyEnd,
     }
 })
