@@ -3,6 +3,7 @@ import reducer from '../../../providers/reducer';
 import * as synergyTest from '../../../database/synergy_test';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context as GlobalContext } from '../../../providers/GlobalProvider';
+var _ = require('lodash');
 
 // 上下文空间
 const Context = React.createContext();
@@ -20,8 +21,10 @@ const Provider = props => {
   const [state, dispatch] = React.useReducer(reducer, {
     // ws开启
     wsOpen: false,
-    //  连接状态 未连接、已连接、断开、结束
+    //  连接状态 未连接、已连接
     wsConnectionState: '未连接',
+    // ws错误原因
+    wsError: '',
     // ws对象
     wsConnection: React.useRef(),
     // 当前协同检测信息
@@ -41,13 +44,25 @@ const Provider = props => {
     userRecordData: null
   });
 
+  // 监听ws的开启状态
   useEffect(() => {
+    wsLink(state)
+  }, [state.wsOpen])
+
+  // 监听网络状态
+  useEffect(() => {
+    wsReLink(state, networkState)
+  }, [networkState])
+
+  // ws连接  正常连接、正常关闭、异常断开
+  const wsLink = React.useCallback(_.debounce(function (state) {
+    // 正常连接 -- ws打开，ws为null
     if (state.wsOpen) {
       // 创建连接
       state.wsConnection.current = new WebSocket(state.curSynergyInfo.WSPath);
       // 打开
       state.wsConnection.current.onopen = () => {
-        console.log("打开");
+        console.log("打开", state.wsConnection);
         dispatch({ type: 'wsConnectionState', payload: '已连接' })
       }
       // 接收
@@ -56,7 +71,7 @@ const Provider = props => {
         console.log("接收", JSON.stringify(data));
         if (data.type == 'ally_status') {
           // 处理协同人员状态列表
-          dealSynergyPeople(data.content)
+          dealSynergyPeople(state.curSynergyInfo, data.content)
         } else if (data.type == 'record') {
           // 处理检测记录数据
           dealTestRecordData(data.content)
@@ -65,31 +80,74 @@ const Provider = props => {
       // 关闭时触发
       state.wsConnection.current.onclose = (e) => {
         console.log("关闭", e);
-        dispatch({ type: 'wsConnectionState', payload: '已关闭' })
+        dispatch({ type: 'wsConnectionState', payload: '未连接' })
       };
       // 处理错误
       state.wsConnection.current.onerror = (e) => {
         console.log('错误', e);
-        dispatch({ type: 'wsConnectionState', payload: '错误' })
+        dispatch({ type: 'wsError', payload: e.message })
+        // 断开ws
+        closeWs()
       };
-    } else if (state.wsOpen == false) {
+    }
+
+    // 正常断开
+    if (!state.wsOpen) {
       // 设置ws状态
       dispatch({ type: 'wsConnectionState', payload: '未连接' })
-      // 关闭协同检测
+      // 设置错误原因
+      dispatch({ type: 'wsError', payload: '' })
+      // 断开ws
       closeWs()
     }
-  }, [state.wsOpen])
+  }, 300, {
+    'leading': false,
+    'trailing': true
+  }), [])
 
-  useEffect(() => {
-    console.log("networkState",networkState);
-  }, [state.wsOpen,networkState])
-
-  const wsLink = () => {
-
-  }
+  // ws重连
+  const wsReLink = React.useCallback(_.debounce(function (state, networkState) {
+    // 网络连接，ws打开，ws为空，ws为未连接
+    if (networkState.isConnected && state.wsOpen && state.wsConnectionState == '未连接') {
+      // 创建连接
+      state.wsConnection.current = new WebSocket(state.curSynergyInfo.WSPath);
+      // 打开
+      state.wsConnection.current.onopen = () => {
+        console.log("打开1");
+        dispatch({ type: 'wsConnectionState', payload: '已连接' })
+      }
+      // 接收
+      state.wsConnection.current.onmessage = (e) => {
+        let data = JSON.parse(e.data)
+        console.log("接收1", JSON.stringify(data));
+        if (data.type == 'ally_status') {
+          // 处理协同人员状态列表
+          dealSynergyPeople(state.curSynergyInfo, data.content)
+        } else if (data.type == 'record') {
+          // 处理检测记录数据
+          dealTestRecordData(data.content)
+        }
+      };
+      // 关闭时触发
+      state.wsConnection.current.onclose = (e) => {
+        console.log("关闭1", e);
+        dispatch({ type: 'wsConnectionState', payload: '未连接' })
+      };
+      // 处理错误
+      state.wsConnection.current.onerror = (e) => {
+        console.log('错误1', e);
+        dispatch({ type: 'wsError', payload: e.message })
+        // 断开ws
+        closeWs()
+      };
+    }
+  }, 600, {
+    'leading': false,
+    'trailing': true
+  }), [])
 
   // 处理在线人员
-  const dealSynergyPeople = (data) => {
+  const dealSynergyPeople = (curSynergyInfo, data) => {
     let list = []
     // 处理在线数据
     for (let i = 0; i < data.online.length; i++) {
@@ -115,14 +173,14 @@ const Provider = props => {
         state: '离线'
       })
     }
-    syPeopleToDatabase(list)
+    syPeopleToDatabase(curSynergyInfo, list)
     // 设置协同人员状态列表 allyStatusList
     dispatch({ type: 'allyStatusList', payload: list })
   }
 
   // 人员信息存入协同检测表
-  const syPeopleToDatabase = (list) => {
-    let participator = state.curSynergyInfo.participator
+  const syPeopleToDatabase = (curSynergyInfo, list) => {
+    let participator = curSynergyInfo.participator
     for (let i = 0; i < list.length; i++) {
       let existIndex = participator.findIndex(item => item.deviceId == list[i].deviceId)
       if (existIndex == -1) {
@@ -137,22 +195,21 @@ const Provider = props => {
     }
     // 新的协同数据
     let newCurSynergyInfo = {
-      ...state.curSynergyInfo,
-      participator: JSON.stringify(participator)
+      ...curSynergyInfo,
+      participator: participator
     }
     // 更新全局参数中的数据
     dispatch({ type: 'curSynergyInfo', payload: newCurSynergyInfo })
     // 更新数据库的数据
     synergyTest.updateParticipator({
       participator: JSON.stringify(participator),
-      bridgereportid: state.curSynergyInfo.bridgereportid
+      bridgereportid: curSynergyInfo.bridgereportid
     })
   }
 
-
   // 检测记录数据
   const dealTestRecordData = (data) => {
-    data.sort((a,b)=>{
+    data.sort((a, b) => {
       return new Date(b.checkTime) - new Date(a.checkTime);
     })
     console.log("dealTestRecordData data", data);
@@ -199,6 +256,7 @@ const Provider = props => {
   const closeWs = () => {
     if (state.wsConnection.current) {
       state.wsConnection.current?.close();
+      state.wsConnection.current = null
     }
   }
 

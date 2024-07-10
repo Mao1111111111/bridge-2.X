@@ -13,48 +13,50 @@ export default function SyTag() {
         state: { bridgereportid }
     } = React.useContext(bridgeTestContext);
     const {
-        state: { wsOpen, wsConnectionState, curSynergyInfo }
+        state: { wsOpen, wsConnectionState, curSynergyInfo, wsError }
     } = React.useContext(synergyContext);
-
-    const stateToShow = {
-        '已连接': '协同中',
-        '断开': '协同断开',
-        '结束': '协同结束'
-    }
-    const stateToColor = {
-        '已连接': '#A4C979',
-        '断开': '#CC5C5C',
-        '结束': '#8D8D8D'
-    }
 
     // 标签展示
     const [tagShow, setTagShow] = useState(false)
+    // 标签颜色
+    const [tagColor, setTagColor] = useState('#A4C979')
+    // 标签文字
+    const [tagFont, setTagFont] = useState('协同中')
     // 协同检测 模态框的 引用
     const coopRef = React.useRef();
 
+    // 标签展示
     useEffect(() => {
-        if (curSynergyInfo) {
-            if (curSynergyInfo.bridgereportid == bridgereportid) {
-                setTagShow(true)
-            } else {
-                setTagShow(false)
-            }
+        // 有协同检测信息 && 当前桥梁是协同检测桥梁 && 协同检测打开
+        if (curSynergyInfo && (curSynergyInfo.bridgereportid == bridgereportid) && wsOpen) {
+            setTagShow(true)
         } else {
             setTagShow(false)
         }
-    }, [curSynergyInfo, wsOpen, wsConnectionState, bridgereportid])
+    }, [curSynergyInfo, bridgereportid, wsOpen])
 
+    // 标签颜色与文字
+    useEffect(() => {
+        if (wsConnectionState == '未连接' && wsError) {
+            setTagColor('#CC5C5C')
+            setTagFont('协同断开')
+        } else {
+            setTagColor('#A4C979')
+            setTagFont('协同中')
+        }
+    }, [wsConnectionState, wsError])
+
+    // 点击打开协同检测弹窗
     const openCoop = () => {
-        console.log('打开协同检测弹窗');
         coopRef.current.open()
     }
 
     return tagShow ? (
         <TouchableOpacity
-            style={[styles.SyTagBox, { backgroundColor: stateToColor[wsConnectionState] }]}
+            style={[styles.SyTagBox, { backgroundColor: tagColor }]}
             onPress={openCoop}>
-            <Text style={[styles.font]}>{stateToShow[wsConnectionState]}</Text>
-            {/* 协同检测 模态框 */ }
+            <Text style={[styles.font]}>{tagFont}</Text>
+            {/* 协同检测 模态框 */}
             <Cooperate ref={coopRef} />
         </TouchableOpacity>
     ) : <></>
@@ -64,13 +66,15 @@ export default function SyTag() {
 const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     // 协同检测全局参数
     const {
-        state: { allyStatusList }
+        state: { allyStatusList, curSynergyInfo, wsConnectionState, wsError }
     } = React.useContext(synergyContext);
 
     // 模态框是否显示
     const [visible, setVisible] = useState(false);
     // 当前展示的页面
     const [funcShow, setFuncShow] = useState(1)
+    // 断开原因
+    const [errFont, setErrFont] = useState('')
 
     // 暴露给父组件的函数
     React.useImperativeHandle(ref, () => ({
@@ -83,6 +87,30 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         close,
     }));
 
+    // 连接失败处理
+    useEffect(() => {
+        if (wsConnectionState == '未连接' && wsError) {
+            // 处理断开文字
+            dealErrFont()
+        } else {
+            setErrFont('')
+        }
+    }, [wsConnectionState, wsError])
+
+    // 处理断开文字
+    const dealErrFont = () => {
+        let font = wsError
+        if (wsError == "Expected HTTP 101 response but was '403 Forbidden'") {
+            font = '任务不存在或任务人数超出'
+        } else if (wsError == "Software caused connection abort") {
+            font = '网络连接中断'
+        } else if (wsError.substring(0, 20) == 'Failed to connect to') {
+            font = '网络连接失败，请检测网络连接'
+        } else if (wsError.substring(0, 20) == 'failed to connect to') {
+            font = '请连接指定网络'
+        }
+        setErrFont(font)
+    }
 
     // 关闭时
     const close = () => {
@@ -94,8 +122,6 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     const changeFunc = (e) => {
         setFuncShow(e)
     }
-
-
 
     // 时间转换
     const timeToHS = (dateTime) => {
@@ -109,7 +135,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         // 导入桥梁模态框
         <Modal
             visible={visible}
-            title="协同检测"
+            title={"协同检测"}
             pid="P1303"
             showHead={true}
             // 没有滚动条
@@ -122,22 +148,25 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                 {/* 顶部 */}
                 <View style={{
                     height: '10%', width: '100%',
-                    flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'
+                    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'
                 }}>
-                    <Pressable style={{
-                        width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
-                        backgroundColor: funcShow == 1 ? '#2b427d' : '#2b427d00'
-                    }}
-                        onPress={() => changeFunc(1)}>
-                        <Text style={{ color: funcShow == 1 ? '#fff' : '#808285' }}>任务详情</Text>
-                    </Pressable>
-                    <Pressable style={{
-                        width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
-                        backgroundColor: funcShow == 2 ? '#2b427d' : '#2b427d00'
-                    }}
-                        onPress={() => changeFunc(2)}>
-                        <Text style={{ color: funcShow == 2 ? '#fff' : '#808285' }}>使用帮助</Text>
-                    </Pressable>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Pressable style={{
+                            width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
+                            backgroundColor: funcShow == 1 ? '#2b427d' : '#2b427d00'
+                        }}
+                            onPress={() => changeFunc(1)}>
+                            <Text style={{ color: funcShow == 1 ? '#fff' : '#808285' }}>任务详情</Text>
+                        </Pressable>
+                        <Pressable style={{
+                            width: 100, height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center',
+                            backgroundColor: funcShow == 2 ? '#2b427d' : '#2b427d00'
+                        }}
+                            onPress={() => changeFunc(2)}>
+                            <Text style={{ color: funcShow == 2 ? '#fff' : '#808285' }}>使用帮助</Text>
+                        </Pressable>
+                    </View>
+                    <Text style={{ marginRight: 20, fontWeight: 'bold' }}>任务码：{curSynergyInfo.taskId}</Text>
                 </View>
                 {/* 内容 */}
                 <View style={[tailwind.flex1, {}]}>
@@ -147,30 +176,36 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                             <View style={{ width: '100%', height: '100%', alignItems: 'center', paddingTop: 5, paddingHorizontal: 10 }}>
                                 {/* 参与者信息表格 */}
                                 <View style={{ width: '100%', height: '100%', padding: 10 }}>
-                                    <Table.Box
-                                        header={
-                                            <Table.Header>
-                                                <Table.Title title="序号" flex={1} />
-                                                <Table.Title title="账号" flex={4} />
-                                                <Table.Title title="人员" flex={3} />
-                                                <Table.Title title="加入时间" flex={2} />
-                                                <Table.Title title="状态" flex={2} />
-                                            </Table.Header>
-                                        }>
-                                        <FlatList
-                                            data={allyStatusList}
-                                            showsVerticalScrollIndicator={false}
-                                            renderItem={({ item, index }) => (
-                                                <Table.Row key={index}>
-                                                    <Table.Cell flex={1}>{index + 1}</Table.Cell>
-                                                    <Table.Cell flex={4}>{item.username}</Table.Cell>
-                                                    <Table.Cell flex={3}>{item.realname}</Table.Cell>
-                                                    <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
-                                                    <Table.Cell flex={2}>{item.state}</Table.Cell>
-                                                </Table.Row>
-                                            )}
-                                        />
-                                    </Table.Box>
+                                    {
+                                        errFont ?
+                                            <View style={{ height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                                                <Text>{errFont}</Text>
+                                            </View> :
+                                            <Table.Box
+                                                header={
+                                                    <Table.Header>
+                                                        <Table.Title title="序号" flex={1} />
+                                                        <Table.Title title="账号" flex={4} />
+                                                        <Table.Title title="人员" flex={3} />
+                                                        <Table.Title title="时间" flex={2} />
+                                                        <Table.Title title="状态" flex={2} />
+                                                    </Table.Header>
+                                                }>
+                                                <FlatList
+                                                    data={allyStatusList}
+                                                    showsVerticalScrollIndicator={false}
+                                                    renderItem={({ item, index }) => (
+                                                        <Table.Row key={index}>
+                                                            <Table.Cell flex={1}>{index + 1}</Table.Cell>
+                                                            <Table.Cell flex={4}>{item.username}</Table.Cell>
+                                                            <Table.Cell flex={3}>{item.realname}</Table.Cell>
+                                                            <Table.Cell flex={2}>{timeToHS(item.time)}</Table.Cell>
+                                                            <Table.Cell flex={2}>{item.state}</Table.Cell>
+                                                        </Table.Row>
+                                                    )}
+                                                />
+                                            </Table.Box>
+                                    }
                                 </View>
                             </View>
                         </View>
@@ -221,9 +256,9 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     modalFoote: {
-      ...tailwind.mB2,
-      ...tailwind.mX4,
-      ...tailwind.flexRow,
-      ...tailwind.justifyEnd,
+        ...tailwind.mB2,
+        ...tailwind.mX4,
+        ...tailwind.flexRow,
+        ...tailwind.justifyEnd,
     }
 })

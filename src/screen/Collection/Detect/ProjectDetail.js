@@ -1963,6 +1963,10 @@ export default function ProjectDetail({ route, navigation }) {
       setDridgestationDis(false)
       // 设置任务状态关闭
       syDispatch({ type: 'wsOpen', payload: false })
+      // 清除数据
+      syDispatch({ type: 'curSynergyInfo', payload: null })
+      syDispatch({ type: 'curSynergyBridgeInfo', payload: null })
+      syDispatch({ type: 'operationNoteData', payload: null })
     }, []),
   )
 
