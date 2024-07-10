@@ -17,6 +17,7 @@ import * as uploadStateRecord from '../../../database/upload_state_record';
 import * as bridgeMember from '../../../database/bridge_member';
 import * as bridgeReportMember from '../../../database/bridge_report_member';
 import * as bridgeProjectBind from '../../../database/bridge_project_bind';
+import * as projectTable from '../../../database/project';
 import * as synergyTest from '../../../database/synergy_test';
 import { loop } from '../../../utils/common';
 import dayjs from 'dayjs';
@@ -423,6 +424,8 @@ export default function CooperateTest2({
             bridgereportid: result.task_msg.bridge_project_bind.bridgereportid,
             bridgeid: result.task_msg.bridge.bridgeid
         })
+        // 设置提示信息
+        setTipFont('')
         // 不存在桥梁检测信息，将桥梁检测信息存入
         if (!bindData) {
             // bridge_project_bind 数据存入数据库
@@ -447,6 +450,13 @@ export default function CooperateTest2({
             result.task_msg.bridge_report_member.forEach(item => {
                 bridgeReportMember.save(item)
             })
+        }else{
+            // 存在桥梁检测信息，并且桥梁检测信息不在当前项目中
+            if(bindData.projectid!==project.projectid){
+                // 查询项目信息
+                let projectData = await  projectTable.getByProjectid(bindData.projectid)
+                setTipFont('注：当前桥梁在“'+projectData.projectname+'”项目中')
+            }
         }
 
         // 协同信息
@@ -511,6 +521,8 @@ export default function CooperateTest2({
     const [ICreator, setICreator] = useState('')
     // 工程师名称
     const [IEngineer, setIEngineer] = useState('')
+    // 详情提示
+    const [tipFont,setTipFont] = useState('')
     // 退出任务
     const quitTask = async () => {
         // 设置模态框loading
@@ -662,6 +674,9 @@ export default function CooperateTest2({
                                     <Text style={styles.bridgeInfo1}>{'任务码：' + ITaskCode + '         协同人数：' + IPeopleNum}</Text>
                                     <Text style={styles.bridgeInfo1}>创 建 者：{ICreator}</Text>
                                     <Text style={styles.bridgeInfo1}>工程师名称(本人)：{IEngineer}</Text>
+                                    {
+                                        tipFont&&<Text style={[styles.bridgeInfo1,{marginTop:-5,color:'red'}]}>{tipFont}</Text>
+                                    }
                                 </View>
                             }
                             {/* 使用帮助 */}
