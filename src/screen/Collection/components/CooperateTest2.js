@@ -607,7 +607,7 @@ export default function CooperateTest2({
                             {
                                 tabBtn == 'left' && curTopItem == '创建任务' &&
                                 <View style={styles.taskConAllBox}>
-                                    <Text style={styles.bridgeInfo1}>{'桥梁桩号：' + bridge.bridgestation + '     桥梁名称：' + bridge.bridgename}</Text>
+                                    <Text style={styles.bridgeInfo1} numberOfLines={1} ellipsizeMode="tail">{'桩号：' + bridge.bridgestation + '     桥梁：' + bridge.bridgename}</Text>
                                     <View style={styles.taskLeftRowBox}>
                                         <TextInput
                                             name="CTPersonNum"
@@ -658,7 +658,7 @@ export default function CooperateTest2({
                             {
                                 tabBtn == 'left' && curTopItem == '任务详情' &&
                                 <View style={styles.taskConAllBox}>
-                                    <Text style={styles.bridgeInfo1}>{'桥梁桩号：' + bridgestation + '     桥梁名称：' + bridgename}</Text>
+                                    <Text style={styles.bridgeInfo1} numberOfLines={1} ellipsizeMode="tail">{'桩号：' + bridgestation + '     桥梁：' + bridgename}</Text>
                                     <Text style={styles.bridgeInfo1}>{'任务码：' + ITaskCode + '         协同人数：' + IPeopleNum}</Text>
                                     <Text style={styles.bridgeInfo1}>创 建 者：{ICreator}</Text>
                                     <Text style={styles.bridgeInfo1}>工程师名称(本人)：{IEngineer}</Text>
@@ -729,7 +729,7 @@ const styles = StyleSheet.create({
     taskConAllBox: {
         width: '100%',
         height: '100%',
-        marginLeft: 15,
+        paddingHorizontal: 15,
         paddingTop: 20
     },
     taskLeftBox: {
@@ -768,7 +768,8 @@ const styles = StyleSheet.create({
     bridgeInfo1: {
         fontSize: 16,
         fontWeight: 'bold',
-        marginVertical: 10
+        marginVertical: 10,
+        width:'100%'
     },
     addNumBtn: {
         backgroundColor: '#2b427d',
