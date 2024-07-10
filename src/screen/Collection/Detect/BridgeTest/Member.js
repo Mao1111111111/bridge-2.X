@@ -86,6 +86,10 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
     } else {
       setNowEdit({});
     }
+    console.log('coopData999',coopData);
+    coopData.forEach((item)=>{
+      console.log('coopData item',item.memberid);
+    })
   }, [data]);
 
   // 设置构件颜色
@@ -246,7 +250,7 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
                 onPress={() => handleCheck(items.id)}
               />
               {
-                coopData && coopData.some(coopItem => coopItem.memberId === items.memberid) ? 
+                coopData && coopData.some(coopItem => coopItem.memberid === items.memberid) ? 
                 <View style={{height:50,width:'100%',paddingTop:0}}>
                   <View style={{
                     width:'85%',
@@ -256,10 +260,10 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
                     <View style={{marginRight:5,}}>
                       {
                         coopData.map((item,index)=>{
-                          if(item.memberId == items.memberid) {
+                          if(item.memberid == items.memberid) {
                             return (
                               <Text key={index} style={{color:'#2e407a',fontWeight:'500'}}>
-                                {item.userGroup.length}
+                                {item.userGroup.length ? item.userGroup.length : ''}
                               </Text>
                             )
                           }
@@ -269,7 +273,7 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
                     <Pressable style={{borderLeftWidth:1,borderLeftColor:'#ccd4df',borderStyle:'solid'}}>
                       {
                         coopData.map((item,index)=>{
-                          if(item.memberId == items.memberid) {
+                          if(item.memberid == items.memberid) {
                             return (
                               <View key={index}>
                                 {secondItems_big(item.userGroup)}
@@ -684,7 +688,7 @@ export default function Member({route, navigation,item}) {
       if(!noteData?.length){
         setNoteData(operationNoteData)
       }
-      const participators = JSON.parse(coopData.participator);
+      const participators = coopData.participator;
       participators.forEach((item,index)=>{
         if(item.isSelf == 'true'){
           console.log('当前用户的信息',item);
@@ -1027,7 +1031,7 @@ export default function Member({route, navigation,item}) {
                       // 组列表 ,部件 或 跨 列表
                       data={allList}
                       // 协同检测数据
-                      coopData={operationUserArr}
+                      coopData={operationUserArr?operationUserArr:''}
                       // 组改变时，即点击左侧列表时
                       onGroupChange={item => {
                         // 如果跨编号存在
@@ -1048,7 +1052,7 @@ export default function Member({route, navigation,item}) {
                       // 组列表 ,部件 或 跨 列表
                       data={list}
                       // 协同检测数据
-                      coopData={operationUserArr}
+                      coopData={operationUserArr?operationUserArr:''}
                       // 组改变时，即点击左侧列表时
                       onGroupChange={item => {
                         // 如果跨编号存在
