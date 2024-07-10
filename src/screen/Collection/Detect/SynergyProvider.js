@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import reducer from '../../../providers/reducer';
 import * as synergyTest from '../../../database/synergy_test';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Context as GlobalContext } from '../../../providers/GlobalProvider';
 
 // 上下文空间
 const Context = React.createContext();
@@ -11,6 +12,11 @@ const Consumer = Context.Consumer;
 
 // 全局的state
 const Provider = props => {
+
+  const {
+    state: { networkState },
+  } = React.useContext(GlobalContext);
+
   const [state, dispatch] = React.useReducer(reducer, {
     // ws开启
     wsOpen: false,
@@ -26,7 +32,7 @@ const Provider = props => {
     allyStatusList: null,
 
     // 协同检测_操作记录数据
-    operationNoteData:null,
+    operationNoteData: null,
     // 协同检测数据
     synergyTestData: null,
     // 用户检测记录
@@ -45,7 +51,7 @@ const Provider = props => {
       // 接收
       state.wsConnection.current.onmessage = (e) => {
         let data = JSON.parse(e.data)
-        console.log("接收",JSON.stringify(data));
+        console.log("接收", JSON.stringify(data));
         if (data.type == 'ally_status') {
           // 处理协同人员状态列表
           dealSynergyPeople(data.content)
@@ -64,7 +70,7 @@ const Provider = props => {
         console.log('错误', e);
         dispatch({ type: 'wsConnectionState', payload: '错误' })
       };
-    }else if(state.wsOpen == false){
+    } else if (state.wsOpen == false) {
       // 设置ws状态
       dispatch({ type: 'wsConnectionState', payload: '未连接' })
       // 关闭协同检测
@@ -72,31 +78,39 @@ const Provider = props => {
     }
   }, [state.wsOpen])
 
+  useEffect(() => {
+    console.log("networkState",networkState);
+  }, [state.wsOpen,networkState])
+
+  const wsLink = () => {
+
+  }
+
   // 处理在线人员
   const dealSynergyPeople = (data) => {
     let list = []
     // 处理在线数据
-    for(let i=0;i<data.online.length;i++){
+    for (let i = 0; i < data.online.length; i++) {
       let user_id_arr = data.online[i].user_id.split(',')
       list.push({
-        deviceId:data.online[i].device_id,
-        time:data.online[i].time,
-        realname:data.online[i].user_name,
-        username:user_id_arr[0],
-        userid:user_id_arr[1],
-        state:'在线'
+        deviceId: data.online[i].device_id,
+        time: data.online[i].time,
+        realname: data.online[i].user_name,
+        username: user_id_arr[0],
+        userid: user_id_arr[1],
+        state: '在线'
       })
     }
     // 处理离线数据
-    for(let i=0;i<data.offline.length;i++){
+    for (let i = 0; i < data.offline.length; i++) {
       let user_id_arr = data.offline[i].user_id.split(',')
       list.push({
-        deviceId:data.offline[i].device_id,
-        time:data.offline[i].time,
-        realname:data.offline[i].user_name,
-        username:user_id_arr[0],
-        userid:user_id_arr[1],
-        state:'离线'
+        deviceId: data.offline[i].device_id,
+        time: data.offline[i].time,
+        realname: data.offline[i].user_name,
+        username: user_id_arr[0],
+        userid: user_id_arr[1],
+        state: '离线'
       })
     }
     syPeopleToDatabase(list)
@@ -107,29 +121,29 @@ const Provider = props => {
   // 人员信息存入协同检测表
   const syPeopleToDatabase = (list) => {
     let participator = state.curSynergyInfo.participator
-    for(let i=0;i<list.length;i++){
-      let existIndex = participator.findIndex(item=>item.deviceId==list[i].deviceId)
-      if(existIndex==-1){
+    for (let i = 0; i < list.length; i++) {
+      let existIndex = participator.findIndex(item => item.deviceId == list[i].deviceId)
+      if (existIndex == -1) {
         participator.push({
-          username:list[i].username,
-          realname:list[i].realname,
-          userid:list[i].userid,
-          deviceId:list[i].deviceId,
-          isSelf:"false"
+          username: list[i].username,
+          realname: list[i].realname,
+          userid: list[i].userid,
+          deviceId: list[i].deviceId,
+          isSelf: "false"
         })
       }
     }
     // 新的协同数据
     let newCurSynergyInfo = {
       ...state.curSynergyInfo,
-      participator:JSON.stringify(participator)
+      participator: JSON.stringify(participator)
     }
     // 更新全局参数中的数据
     dispatch({ type: 'curSynergyInfo', payload: newCurSynergyInfo })
     // 更新数据库的数据
     synergyTest.updateParticipator({
-      participator:JSON.stringify(participator),
-      bridgereportid:state.curSynergyInfo.bridgereportid
+      participator: JSON.stringify(participator),
+      bridgereportid: state.curSynergyInfo.bridgereportid
     })
   }
 
@@ -137,8 +151,8 @@ const Provider = props => {
   // 检测记录数据
   const dealTestRecordData = (data) => {
     // 
-    console.log("dealTestRecordData data",data);
-    dispatch({ type:'operationNoteData', payload:data })
+    console.log("dealTestRecordData data", data);
+    dispatch({ type: 'operationNoteData', payload: data })
   }
 
   // 关闭协同检测
