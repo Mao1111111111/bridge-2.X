@@ -166,7 +166,6 @@ const Provider = ({values, project, children}) => {
       type: 'memberInfo',
       payload: listToGroup(basememberinfo, 'positionid'),
     });
-    console.log('桥台形式',bridgeabutment);
   }, [values, globalState]);
 
   // 当部件列表变化时，重置部件
