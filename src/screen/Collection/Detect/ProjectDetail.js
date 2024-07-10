@@ -1943,6 +1943,11 @@ export default function ProjectDetail({ route, navigation }) {
       syDispatch({ type: 'wsOpen', payload: true })
       // 清空操作记录
       syDispatch({ type: 'operationNoteData', payload: null })
+    }else{
+      syDispatch({ type: 'curSynergyInfo', payload: null })
+      syDispatch({ type: 'curSynergyBridgeInfo', payload: null })
+      syDispatch({ type: 'wsOpen', payload: false })
+      syDispatch({ type: 'operationNoteData', payload: null })
     }
     // 跳转页面
     navigation.navigate('Collection/Detect/BridgeTest', {
