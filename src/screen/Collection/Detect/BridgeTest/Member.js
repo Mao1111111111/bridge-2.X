@@ -856,7 +856,7 @@ export default function Member({route, navigation,item}) {
         }
       })
     })
-    // navigate保留当前页面直接跳转、replace销毁当前页面再跳转
+    // navigate保留当前页面直接跳转、replace销毁当前页面再跳转（移出路由栈）
     navigation.replace(path, {
       title: data.title,
       list: list,
@@ -1091,12 +1091,13 @@ export default function Member({route, navigation,item}) {
 
               </View>
               {/* 右侧 操作历史 */}
-              <LogList list={editLogList ? editLogList : ''} coopList={operationNoteData? operationNoteData : ''} />
+              <LogList 
+                list={editLogList ? editLogList : ''}
+                coopList={operationNoteData ? operationNoteData : ''}
+              />
             </View>
           </Content>
         </View>
-      
-      
     </Box>
   );
 }

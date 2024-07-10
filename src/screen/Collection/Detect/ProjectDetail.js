@@ -1941,6 +1941,8 @@ export default function ProjectDetail({ route, navigation }) {
       syDispatch({ type: 'curSynergyBridgeInfo', payload: item })
       // 设置任务状态打开
       syDispatch({ type: 'wsOpen', payload: true })
+      // 清空操作记录
+      syDispatch({ type: 'operationNoteData', payload: null })
     }
     // 跳转页面
     navigation.navigate('Collection/Detect/BridgeTest', {

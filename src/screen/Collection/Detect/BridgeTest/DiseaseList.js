@@ -288,7 +288,7 @@ export default function DiseaseList({route, navigation}) {
 
   // 协同检测
   const {
-    state: {wsOpen,curSynergyInfo,wsConnection},
+    state: {wsOpen,curSynergyInfo,wsConnection,operationNoteData},
   } = React.useContext(synergyContext);
 
   const [tableData, setTableData] = React.useState([]);
@@ -413,15 +413,43 @@ export default function DiseaseList({route, navigation}) {
     try {
       if(!startTime){
         setStartTime(route.params.timestamp)
-        
       }
       console.log('初次进入病害列表的时间',startTime);
-      if(tableData[0]){
-        // console.log('tableData',tableData[0]);
+      if(route.params.isCoop){
+        console.log('读取操作记录operationNoteData',operationNoteData);
+        // 使用 some 方法检查是否存在符合条件的对象
+        const hasDataTypeCheck = operationNoteData.some(item => item.dataType);
+        
+        if(hasDataTypeCheck){
+          console.log('操作记录里有dataType属性');
 
+          const typeCodeCheck = operationNoteData.some(item => item.typeCode == '开始检测');
+          if(typeCodeCheck){
+            console.log('操作记录里有dataType属性，且状态为 ‘开始检测’');
+          }
+        } else {
+          console.log('未向操作记录里存过dataType属性');
+        }
+
+        let noteTypeData = {}
+        // 是协同检测时 进入页面就发送一条更改检测状态的信息
+        console.log('------用户进入协同检测页面开始检测------',startTime);
+        noteTypeData['isCoop'] = route.params.isCoop
+        noteTypeData['memberid'] = list[0].memberid
+        noteTypeData['membername'] = list[0].membername
+        noteTypeData['user'] = route.params.selfCoopData.realname
+        noteTypeData['dataType'] = '检测状态'
+        noteTypeData['typeCode'] = '开始检测'
+        noteTypeData['startTime'] = startTime
+        console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
+        // wsConnection.current.send(JSON.stringify(noteTypeData))
+      }
+
+      if(tableData[0]){
         let noteData = {}
+        // 对病害列表数据进行筛选
         tableData[0].forEach((item,index)=>{
-          // console.log('item333',item,);
+          // 当 是协同检测 且 新增的病害数据是进入页面后新增的（避免把以前发送过的记录重复发送）
           if(route.params.isCoop && new Date(item.u_date) > new Date(startTime)){
             console.log('-------------------有新增修改');
             noteData['isCoop'] = route.params.isCoop
@@ -431,24 +459,13 @@ export default function DiseaseList({route, navigation}) {
             noteData['diseaseName'] = item.jsondata.diseaseName
             noteData['checkTime'] = item.u_date
 
-            console.log('记录.diseaseName在协同检测中的操作历史noteDatanoteData',noteData);
+            console.log('记录在协同检测中的操作历史noteData',noteData);
             wsConnection.current.send(JSON.stringify(noteData))
             // 发送操作记录成功后重置对照时间
             setStartTime(dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'))
             console.log('重置对照时间',startTime);
           }
-          
         })
-        // 按时间排序
-        // noteData.sort((a, b) => a.checkTime - b.checkTime);
-        if(noteData.diseaseName){
-          // console.log('记录.diseaseName在协同检测中的操作历史noteDatanoteData',noteData);
-          // wsConnection.current.send(JSON.stringify(noteData))
-          // // 发送操作记录成功后重置对照时间
-          // setStartTime(dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'))
-          // console.log('重置对照时间',startTime);
-        }
-        
       }
     } catch (error) {
       console.log('转存的json error',error);
