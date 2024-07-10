@@ -577,7 +577,7 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
                               if(item.memberid == items.memberid) {
                                 return (
                                   <Text key={index} style={{color:'#2e407a',fontWeight:'500'}}>
-                                    {item.userGroup.length}
+                                    {item.userGroup.length ? item.userGroup.length : ''}
                                   </Text>
                                 )
                               }
