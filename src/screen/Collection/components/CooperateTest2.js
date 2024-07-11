@@ -404,6 +404,7 @@ export default function CooperateTest2({
     }
     // 处理接收的桥梁数据
     const dealReceiveBridgeData = async (result) => {
+        console.log("result",JSON.stringify(result));
         // 将桥梁数据存入本地
         // bridge 表中是否存在这个桥梁
         let bridgeTableData = await bridgeTable.getByBridgeid(result.task_msg.bridge.bridgeid)
