@@ -48,7 +48,7 @@ const Item = ({title, color,coopData,item, checked, onPress}) => {
       ]}>
       <View style={[{backgroundColor: color}, tailwind.w2]} />
       <View style={[styles.itemTitle]}>
-        <Text>{title}</Text>
+        <Text>{title? title : ''}</Text>
         {/* <FlatList
           data={coopData}
           showsVerticalScrollIndicator={false}
@@ -86,10 +86,13 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
     } else {
       setNowEdit({});
     }
-    console.log('coopData999',coopData);
-    coopData.forEach((item)=>{
-      console.log('coopData item',item.memberid);
-    })
+    if(coopData){
+      console.log('coopData999',coopData);
+      coopData.forEach((item)=>{
+        console.log('coopData item',item.memberid);
+      })
+    }
+    
   }, [data]);
 
   // 设置构件颜色
