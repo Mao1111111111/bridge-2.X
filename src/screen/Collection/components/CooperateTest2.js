@@ -675,9 +675,7 @@ export default function CooperateTest2({
                                     <Text style={styles.bridgeInfo1}>{'任务码：' + ITaskCode + '         协同人数：' + IPeopleNum}</Text>
                                     <Text style={styles.bridgeInfo1}>创 建 者：{ICreator}</Text>
                                     <Text style={styles.bridgeInfo1}>工程师名称(本人)：{IEngineer}</Text>
-                                    {
-                                        tipFont&&<Text style={[styles.bridgeInfo1,{marginTop:-5,color:'red'}]}>{tipFont}</Text>
-                                    }
+                                    <Text style={[styles.bridgeInfo1,{marginTop:-5,color:'red'}]}>{tipFont? tipFont: ''}</Text>
                                 </View>
                             }
                             {/* 使用帮助 */}
