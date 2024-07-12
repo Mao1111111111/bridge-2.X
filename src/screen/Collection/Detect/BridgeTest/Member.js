@@ -86,12 +86,12 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
     } else {
       setNowEdit({});
     }
-    if(coopData){
-      console.log('coopData999',coopData);
-      coopData.forEach((item)=>{
-        console.log('coopData item',item.memberid);
-      })
-    }
+    // if(coopData){
+    //   console.log('coopData999',coopData);
+    //   coopData.forEach((item)=>{
+    //     console.log('coopData item',item.memberid);
+    //   })
+    // }
     
   }, [data]);
 

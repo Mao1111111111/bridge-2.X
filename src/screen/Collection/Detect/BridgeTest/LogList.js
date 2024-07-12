@@ -47,14 +47,22 @@ export default function LogList({list,coopList}) {
                 style={[tailwind.flex1]}
                 keyExtractor={(item,index) => index}
                 renderItem={({item, index}) => (
-                  <Table.Row key={index}>
-                    <Table.Cell flex={1}>
-                      <Text style={{textAlign:'left'}}>{`${item.user}\n${item.membername}\n${item.dataType ? item.typeCode : item.diseaseName}`}</Text>
-                    </Table.Cell>
-                    <Table.Cell flex={1}>
-                      <Text>{item.checkTime}</Text>
-                    </Table.Cell>
-                  </Table.Row>
+                  <>
+                    {
+                      !item.dataType ? 
+                      <>
+                        <Table.Row key={index}>
+                          <Table.Cell flex={1}>
+                            <Text style={{textAlign:'left'}}>{`${item.user}\n${item.membername}\n${item.dataType ? item.typeCode : item.diseaseName}`}</Text>
+                          </Table.Cell>
+                          <Table.Cell flex={1}>
+                            <Text>{item.checkTime}</Text>
+                          </Table.Cell>
+                        </Table.Row>
+                      </> 
+                      : <></>
+                    }
+                  </>
                 )}
               />
             </View>
