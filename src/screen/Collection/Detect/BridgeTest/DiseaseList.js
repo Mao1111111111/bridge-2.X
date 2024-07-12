@@ -340,7 +340,7 @@ export default function DiseaseList({route, navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
-      // console.log('123321');
+      console.log('123321 list',list);
       if (!list || isLoading) {
         return;
       }
@@ -355,7 +355,7 @@ export default function DiseaseList({route, navigation}) {
           const _list = [];
           res.forEach((item, index) => {
             if (!_list.find(it => it.version === item.version)) {
-              // console.log('病害录入页面返回传入的数据',item.jsondata);
+              console.log('病害录入页面返回传入的数据',item.jsondata);
 
               item.jsondata = JSON.parse(item.jsondata || '{}');
               item.index = index + 1;
@@ -366,7 +366,7 @@ export default function DiseaseList({route, navigation}) {
                   ] || 0;
               }
               _list.push(item);
-              // console.log('病害列表数据',_list);
+              console.log('病害列表数据',_list);
               
             }
           });
@@ -423,17 +423,20 @@ export default function DiseaseList({route, navigation}) {
 
           // 没有检测记录时，直接发送一条更改状态的数据
           if(!operationNoteData){
-            let noteTypeData = {}
-            console.log('------用户进入协同检测页面开始检测------',startTime);
-            noteTypeData['isCoop'] = route.params.isCoop
-            noteTypeData['memberid'] = list[0].memberid
-            noteTypeData['membername'] = list[0].membername
-            noteTypeData['user'] = route.params.selfCoopData.realname
-            noteTypeData['dataType'] = '检测状态'
-            noteTypeData['typeCode'] = '开始检测'
-            noteTypeData['checkTime'] = startTime
-            // console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
-            wsConnection.current.send(JSON.stringify(noteTypeData))
+            list.forEach((item)=>{
+              let noteTypeData = {}
+              console.log('------用户进入协同检测页面开始检测------',startTime);
+              noteTypeData['isCoop'] = route.params.isCoop
+              noteTypeData['memberid'] = item.memberid
+              noteTypeData['membername'] = item.membername
+              noteTypeData['user'] = route.params.selfCoopData.realname
+              noteTypeData['dataType'] = '检测状态'
+              noteTypeData['typeCode'] = '开始检测'
+              noteTypeData['checkTime'] = startTime
+              // console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
+              wsConnection.current.send(JSON.stringify(noteTypeData))
+            })
+            
           }
 
           // 有检测记录时，进行判断
@@ -452,17 +455,19 @@ export default function DiseaseList({route, navigation}) {
               // console.log('true');
             } else {
               // console.log('false');
-              let noteTypeData = {}
-              console.log('------用户进入协同检测页面开始检测------',startTime);
-              noteTypeData['isCoop'] = route.params.isCoop
-              noteTypeData['memberid'] = list[0].memberid
-              noteTypeData['membername'] = list[0].membername
-              noteTypeData['user'] = route.params.selfCoopData.realname
-              noteTypeData['dataType'] = '检测状态'
-              noteTypeData['typeCode'] = '开始检测'
-              noteTypeData['checkTime'] = startTime
-              console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
-              wsConnection.current.send(JSON.stringify(noteTypeData))
+              list.forEach((item)=>{
+                let noteTypeData = {}
+                console.log('------用户进入协同检测页面开始检测------',startTime);
+                noteTypeData['isCoop'] = route.params.isCoop
+                noteTypeData['memberid'] = item.memberid
+                noteTypeData['membername'] = item.membername
+                noteTypeData['user'] = route.params.selfCoopData.realname
+                noteTypeData['dataType'] = '检测状态'
+                noteTypeData['typeCode'] = '开始检测'
+                noteTypeData['checkTime'] = startTime
+                console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
+                wsConnection.current.send(JSON.stringify(noteTypeData))
+              })
             }
           }
 
@@ -473,24 +478,28 @@ export default function DiseaseList({route, navigation}) {
       if(tableData[0]){
         let noteData = {}
         // 对病害列表数据进行筛选
-        tableData[0].forEach((item,index)=>{
-          // 当 是协同检测 且 新增的病害数据是进入页面后新增的（避免把以前发送过的记录重复发送）
-          if(route.params.isCoop && new Date(item.u_date) > new Date(startTime)){
-            console.log('-------------------有新增修改');
-            noteData['isCoop'] = route.params.isCoop
-            noteData['memberid'] = list[0].memberid
-            noteData['membername'] = list[0].membername
-            noteData['user'] = route.params.selfCoopData.realname
-            noteData['diseaseName'] = item.jsondata.diseaseName
-            noteData['checkTime'] = item.u_date
-
-            console.log('记录在协同检测中的操作历史noteData',noteData);
-            wsConnection.current.send(JSON.stringify(noteData))
-            // 发送操作记录成功后重置对照时间
-            setStartTime(dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'))
-            console.log('重置对照时间',startTime);
-          }
+        list.forEach((items)=>{
+          tableData[0].forEach((item,index)=>{
+            // 当 是协同检测 且 新增的病害数据是进入页面后新增的（避免把以前发送过的记录重复发送）
+            if(route.params.isCoop && new Date(item.u_date) > new Date(startTime)){
+              console.log('-------------------有新增修改');
+              
+              noteData['isCoop'] = route.params.isCoop
+                noteData['memberid'] = items.memberid
+                noteData['membername'] = items.membername
+                noteData['user'] = route.params.selfCoopData.realname
+                noteData['diseaseName'] = item.jsondata.diseaseName
+                noteData['checkTime'] = item.u_date
+  
+                console.log('记录在协同检测中的操作历史noteData',noteData);
+                wsConnection.current.send(JSON.stringify(noteData))
+              // 发送操作记录成功后重置对照时间
+              setStartTime(dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'))
+              console.log('重置对照时间',startTime);
+            }
+          })
         })
+        
       }
     } catch (error) {
       console.log('转存的json error',error);

@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import Table from '../../../../components/Table';
+import Table from '../../../../components/Table_LogList';
 import {tailwind} from 'react-native-tailwindcss';
 import {View, Text, FlatList} from 'react-native';
 
@@ -37,7 +37,7 @@ export default function LogList({list,coopList}) {
               tailwind.border,
             ]}>
             <Table.Header>
-              <Table.Title title="操作" flex={1} />
+              <Table.Title title="操作" flex={2} />
               <Table.Title title="时间" flex={1} />
             </Table.Header>
             <View style={tailwind.flex1}>
@@ -49,14 +49,15 @@ export default function LogList({list,coopList}) {
                 renderItem={({item, index}) => (
                   <>
                     {
+                      // 不显示开始/结束检测状态的内容
                       !item.dataType ? 
                       <>
                         <Table.Row key={index}>
-                          <Table.Cell flex={1}>
-                            <Text style={{textAlign:'left'}}>{`${item.user}\n${item.membername}\n${item.dataType ? item.typeCode : item.diseaseName}`}</Text>
+                          <Table.Cell flex={2}>
+                            <Text style={{textAlign:'left'}}>{`${item.user}_${item.membername}\n${item.dataType ? item.typeCode : item.diseaseName}`}</Text>
                           </Table.Cell>
                           <Table.Cell flex={1}>
-                            <Text>{item.checkTime}</Text>
+                            <Text>{item.checkTime.slice(10, )}</Text>
                           </Table.Cell>
                         </Table.Row>
                       </> 
