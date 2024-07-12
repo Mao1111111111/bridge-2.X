@@ -449,7 +449,10 @@ export default function CooperateTest2({
             })
             // bridge_report_member 表 数据存入数据库
             result.task_msg.bridge_report_member.forEach(item => {
-                bridgeReportMember.save(item)
+                bridgeReportMember.save({
+                    ...item,
+                    memberstatus:'0'
+                })
             })
         }else{
             // 存在桥梁检测信息，并且桥梁检测信息不在当前项目中
