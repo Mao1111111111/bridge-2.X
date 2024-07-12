@@ -102,9 +102,9 @@ export default function CooperateTest2({
     // 协同人数加减按钮点击
     const CTPersonNumChange = (e) => {
         var _personNum = parseInt(CTPersonNum)
-        if((e==1&&_personNum<11)||(e==-1&&_personNum>2)){
+        if ((e == 1 && _personNum < 11) || (e == -1 && _personNum > 2)) {
             _personNum += e
-                setCTPersonNum(_personNum)
+            setCTPersonNum(_personNum)
         }
     }
     // 确认创建
@@ -211,6 +211,9 @@ export default function CooperateTest2({
                                 setIPeopleNum(CTPersonNum)
                                 setICreator(CTCreator)
                                 setIEngineer(CTCreator)
+                                // 设置详情页的桥梁信息
+                                setBridgestation(bridge.bridgestation)
+                                setBridgename(bridge.bridgename)
                                 // 设置顶部tab
                                 setCurTopItem('任务详情')
                                 // 设置模态框loading
@@ -404,7 +407,6 @@ export default function CooperateTest2({
     }
     // 处理接收的桥梁数据
     const dealReceiveBridgeData = async (result) => {
-        console.log("result",JSON.stringify(result));
         // 将桥梁数据存入本地
         // bridge 表中是否存在这个桥梁
         let bridgeTableData = await bridgeTable.getByBridgeid(result.task_msg.bridge.bridgeid)
@@ -449,14 +451,17 @@ export default function CooperateTest2({
             })
             // bridge_report_member 表 数据存入数据库
             result.task_msg.bridge_report_member.forEach(item => {
-                bridgeReportMember.save(item)
+                bridgeReportMember.save({
+                    ...item,
+                    memberstatus: '0'
+                })
             })
-        }else{
+        } else {
             // 存在桥梁检测信息，并且桥梁检测信息不在当前项目中
-            if(bindData.projectid!==project.projectid){
+            if (bindData.projectid !== project.projectid) {
                 // 查询项目信息
-                let projectData = await  projectTable.getByProjectid(bindData.projectid)
-                setTipFont('注：当前桥梁在“'+projectData.projectname+'”项目中')
+                let projectData = await projectTable.getByProjectid(bindData.projectid)
+                setTipFont('注：当前桥梁在“' + projectData.projectname + '”项目中')
             }
         }
 
@@ -523,7 +528,7 @@ export default function CooperateTest2({
     // 工程师名称
     const [IEngineer, setIEngineer] = useState('')
     // 详情提示
-    const [tipFont,setTipFont] = useState('')
+    const [tipFont, setTipFont] = useState('')
     // 退出任务
     const quitTask = async () => {
         // 设置模态框loading
@@ -675,7 +680,7 @@ export default function CooperateTest2({
                                     <Text style={styles.bridgeInfo1}>{'任务码：' + ITaskCode + '         协同人数：' + IPeopleNum}</Text>
                                     <Text style={styles.bridgeInfo1}>创 建 者：{ICreator}</Text>
                                     <Text style={styles.bridgeInfo1}>工程师名称(本人)：{IEngineer}</Text>
-                                    <Text style={[styles.bridgeInfo1,{marginTop:-5,color:'red'}]}>{tipFont? tipFont: ''}</Text>
+                                    <Text style={[styles.bridgeInfo1, { marginTop: -5, color: 'red' }]}>{tipFont ? tipFont : ''}</Text>
                                 </View>
                             }
                             {/* 使用帮助 */}
@@ -783,7 +788,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginVertical: 10,
-        width:'100%'
+        width: '100%'
     },
     addNumBtn: {
         backgroundColor: '#2b427d',
