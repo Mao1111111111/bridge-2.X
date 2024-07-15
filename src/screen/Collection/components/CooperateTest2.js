@@ -50,6 +50,14 @@ export default function CooperateTest2({
 
     // 初始化页面
     useEffect(() => {
+        init()
+    }, [])
+
+    // 初始化页面
+    const init = async () => {
+        // 获取创建者本地名称
+        let synergySelfName = await AsyncStorage.getItem('synergySelfName')
+        // 判断桥梁是否存在
         if (bridge) {
             // 判断是否有协同任务，以及协同任务是否结束
             if (bridge.synergyTestData && bridge.synergyTestData.state !== '协同结束') {
@@ -81,18 +89,23 @@ export default function CooperateTest2({
                 }
                 // 设置顶部导航
                 setCurTopItem('创建任务')
+                // 设置创建者名称
+                setCTCreator(synergySelfName)
             }
         } else {
+            // 设置顶部导航
             setCurTopItem('参与任务')
+            // 设置参与者名称
+            setJTJoinName(synergySelfName)
+            // 设置是否是创建者
             setIsCreator(false)
         }
-    }, [])
+    }
 
     // 顶部导航点击
     const tabClick = (e) => {
         setTabBtn(e)
     }
-
 
     // -------- 创建任务 --------
     // 创建任务-协同人数
@@ -104,7 +117,7 @@ export default function CooperateTest2({
         var _personNum = parseInt(CTPersonNum)
         if ((e == 1 && _personNum < 11) || (e == -1 && _personNum > 2)) {
             _personNum += e
-            setCTPersonNum(_personNum)
+            setCTPersonNum(_personNum+'')
         }
     }
     // 确认创建
@@ -206,6 +219,8 @@ export default function CooperateTest2({
                                     // 将协同信息存入数据库
                                     await synergyTest.save(synergyData)
                                 }
+                                // 将工程师名称存入本地
+                                AsyncStorage.setItem('synergySelfName',CTCreator)
                                 // 设置任务详情数据
                                 setITaskCode(result.room_id)
                                 setIPeopleNum(CTPersonNum)
@@ -501,6 +516,8 @@ export default function CooperateTest2({
             // 将协同信息存入数据库
             await synergyTest.save(synergyData)
         }
+        // 将工程师名称存入本地
+        AsyncStorage.setItem('synergySelfName',JTJoinName)
         // 设置任务详情数据
         setBridgestation(result.task_msg.bridge.bridgestation)
         setBridgename(result.task_msg.bridge.bridgename)
@@ -536,9 +553,11 @@ export default function CooperateTest2({
         // 检测记录表--更新检测状态
         await synergyTest.updateState({ state: '协同结束', bridgereportid: bridge.bridgereportid })
         // 设置创建页面数据
-        setCTPersonNum('1')
-        setCTCreator('')
+        setCTPersonNum('2')
         setCurTopItem('创建任务')
+        // 创建者
+        let synergySelfName = await AsyncStorage.getItem('synergySelfName')
+        setCTCreator(synergySelfName)
         // 设置模态框loading
         setIsLoading(false)
     }
