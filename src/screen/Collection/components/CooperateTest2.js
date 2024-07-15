@@ -325,15 +325,15 @@ export default function CooperateTest2({
     }
 
     // -------- 参与任务 --------
-    // 参与任务码
+    // 参与协同码
     const [JTJoinCode, setJTJoinCode] = useState('')
     // 参与者
     const [JTJoinName, setJTJoinName] = useState('')
     // 确认参与
     const joinOk = async () => {
-        // 判断是否有任务码
+        // 判断是否有协同码
         if (!JTJoinCode) {
-            Alert.alert('参与失败', '请输入任务码')
+            Alert.alert('参与失败', '请输入协同码')
             return
         }
         if (!(/^\d{4}$/.test(JTJoinCode))) {
@@ -357,7 +357,7 @@ export default function CooperateTest2({
             return
         }
 
-        // 判断任任务码是否存在
+        // 判断任协同码是否存在
         let synergyTestData = await synergyTest.getBytaskId(JTJoinCode)
         if (synergyTestData) {
             Alert.alert('参与失败', synergyTestData.state == '协同中' ? '当前协同任务参与中' : '当前协同任务已结束')
@@ -519,7 +519,7 @@ export default function CooperateTest2({
     const [bridgestation, setBridgestation] = useState('')
     // 桥梁名称
     const [bridgename, setBridgename] = useState('')
-    // 任务码
+    // 协同码
     const [ITaskCode, setITaskCode] = useState('')
     // 协同人数
     const [IPeopleNum, setIPeopleNum] = useState('')
@@ -658,7 +658,7 @@ export default function CooperateTest2({
                                 <View style={styles.taskConAllBox}>
                                     <TextInput
                                         name="JTJoinCode"
-                                        label="任务码:        "
+                                        label="协同码:        "
                                         value={JTJoinCode}
                                         style={[styles.InputBox, { marginVertical: 20 }]}
                                         inputStyle={styles.inputStyle}
@@ -677,7 +677,7 @@ export default function CooperateTest2({
                                 tabBtn == 'left' && curTopItem == '任务详情' &&
                                 <View style={styles.taskConAllBox}>
                                     <Text style={styles.bridgeInfo1} numberOfLines={1} ellipsizeMode="tail">{'桩号：' + bridgestation + '     桥梁：' + bridgename}</Text>
-                                    <Text style={styles.bridgeInfo1}>{'任务码：' + ITaskCode + '         协同人数：' + IPeopleNum}</Text>
+                                    <Text style={styles.bridgeInfo1}>{'协同码：' + ITaskCode + '         协同人数：' + IPeopleNum}</Text>
                                     <Text style={styles.bridgeInfo1}>创 建 者：{ICreator}</Text>
                                     <Text style={styles.bridgeInfo1}>工程师名称(本人)：{IEngineer}</Text>
                                     <Text style={[styles.bridgeInfo1, { marginTop: -5, color: 'red' }]}>{tipFont ? tipFont : ''}</Text>

@@ -669,7 +669,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
       if (synergyData_local) {
         // 设置检测中
         setIsTaskIng(true)
-        // 设置任务码
+        // 设置协同码
         setTaskCode(synergyData_local.synergyData.taskId)
         // 设置协同人数
         setPersonNum(synergyData_local.synergyData.synergyPeopleNum)
@@ -681,13 +681,13 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
             setJoinPersonName(item.realname)
           }
         })
-        // 设置参与者任务码
+        // 设置参与者协同码
         setJoinCode(synergyData_local.synergyData.taskId)
       } else {
         // 不存在协同检测数据
         // 设置检测中
         setIsTaskIng(false)
-        // 设置任务码
+        // 设置协同码
         setTaskCode('')
         // 设置协同人数
         setPersonNum('1')
@@ -695,7 +695,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
         setPersonName('')
         // 设置参与者名称
         setJoinPersonName('')
-        // 设置参与者任务码
+        // 设置参与者协同码
         setJoinCode('')
       }
 
@@ -785,7 +785,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     setChecked(new Set(_checked));
   };
 
-  const [taskCode, setTaskCode] = useState(0) // 任务码 - 创建
+  const [taskCode, setTaskCode] = useState(0) // 协同码 - 创建
   const [personNum, setPersonNum] = useState(1) //协同人数
   const [personName, setPersonName] = useState('') //创建者名称 - 创建
   const [btnText, setBtnText] = useState('') //确认按钮的文字
@@ -816,19 +816,19 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   }
 
 
-  // 生成任务码
+  // 生成协同码
   const changeTaskCode = () => {
     // 随机六位整数
     var code = '';
     for (var i = 0; i < 6; i++) {
       code += parseInt(Math.random() * 10);
     }
-    console.log('切换任务码', code);
+    console.log('切换协同码', code);
     setTaskCode(code)
-    // console.log('切换任务码',);
+    // console.log('切换协同码',);
   }
 
-  // 复制任务码
+  // 复制协同码
   const copyCode = async (value) => {
     // 写入
     Clipboard.setString(value);
@@ -836,7 +836,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     let str = await Clipboard.getString();
     // console.log('复制的内容',str)
     if (str) {
-      alert('复制任务码成功【' + str + '】');
+      alert('复制协同码成功【' + str + '】');
     }
   }
 
@@ -1090,7 +1090,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
           let WSPath = 'ws://10.1.1.71:8000' + result.ws + '?user=' + deviceId
           // 将ws存入本地
           AsyncStorage.setItem('synergyWS', WSPath)
-          // 设置参与任务码
+          // 设置参与协同码
           setJoinCode(taskid)
           // 设置参与人名字
           setJoinPersonName(joinPersonName)
@@ -1118,7 +1118,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
   // ----- 参与任务 start -------
   // 参与任务
   const joinTask = () => {
-    // 判断是否有任务码
+    // 判断是否有协同码
     if (!joinCode) {
       Alert.alert('请输入任务号')
       return
@@ -1295,7 +1295,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     AsyncStorage.setItem('synergyWS', '')
     // 重置检测状态
     setIsTaskIng(false)
-    // 设置任务码
+    // 设置协同码
     setTaskCode('')
     // 设置协同人数
     setPersonNum('1')
@@ -1303,7 +1303,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
     setPersonName('')
     // 设置参与者名称
     setJoinPersonName('')
-    // 设置参与者任务码
+    // 设置参与者协同码
     setJoinCode('')
   }
 
@@ -1366,14 +1366,14 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                   <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
                     <TextInput
                       name="taskCode"
-                      label="任务码:    "
+                      label="协同码:    "
                       disabled
                       value={taskCode}
                       onChange={(e) => valueChange(e)}
                       style={[tailwind.mR6, { height: '100%', width: '50%' }]}
                       inputStyle={[{ color: 'black' }]}
                     />
-                    {/* <Button style={{ backgroundColor: '#2b427d' }} onPress={() => changeTaskCode()}>生成任务码</Button> */}
+                    {/* <Button style={{ backgroundColor: '#2b427d' }} onPress={() => changeTaskCode()}>生成协同码</Button> */}
 
                   </View>
                   <View style={{ width: '100%', height: '20%', flexDirection: 'row', alignItems: 'center' }}>
@@ -1449,7 +1449,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                       </Table.Box>
                     </View>
                     <View style={{ width: '100%', height: '30%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                      <Button style={{ backgroundColor: '#2b427d' }} onPress={() => copyCode(taskCode)}>复制任务码</Button>
+                      <Button style={{ backgroundColor: '#2b427d' }} onPress={() => copyCode(taskCode)}>复制协同码</Button>
                       <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => deleteTask()}>删除任务</Button>
                       <Button style={[{ backgroundColor: '#2b427d' }]} onPress={() => goWork()}>开始检测</Button>
                     </View>
@@ -1480,7 +1480,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                     <TextInput
                       disabled={isTaskIng}
                       name="joinCode"
-                      label="任务码:    "
+                      label="协同码:    "
                       value={joinCode}
                       onChange={(e) => joinValueChange(e)}
                       style={[tailwind.mR6, { height: '100%', width: '50%' }]}

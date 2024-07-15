@@ -166,7 +166,7 @@ const Cooperate = React.forwardRef(({ onSubmitOver }, ref,) => {
                             <Text style={{ color: funcShow == 2 ? '#fff' : '#808285' }}>使用帮助</Text>
                         </Pressable>
                     </View>
-                    <Text style={{ marginRight: 20, fontWeight: 'bold' }}>任务码：{curSynergyInfo.taskId}</Text>
+                    <Text style={{ marginRight: 20, fontWeight: 'bold' }}>协同码：{curSynergyInfo.taskId}</Text>
                 </View>
                 {/* 内容 */}
                 <View style={[tailwind.flex1, {}]}>

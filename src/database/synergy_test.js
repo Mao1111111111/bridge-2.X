@@ -127,7 +127,7 @@ export const getByReportid = async bridgereportid => {
   return getResult(await db().executeSql(sql, param), 'object');
 }; 
 
-// 根据任务码查询
+// 根据协同码查询
 export const getBytaskId = async taskId => {
   const sql = 'select * from synergy_test where taskId = ?';
   const param = [taskId];

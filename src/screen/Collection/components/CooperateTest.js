@@ -42,13 +42,13 @@ export default function ({
     const [curTopItem, setCurTopItem] = useState('创建任务')
     // 模态框loading
     const [isLoading, setIsLoading] = useState(true)
-    // 任务码
+    // 协同码
     const [taskCode, setTaskCode] = useState('')
     // 协同人数
     const [personNum, setPersonNum] = useState('1')
     // 创建者
     const [creator, setCreator] = useState('')
-    // 参与任务码
+    // 参与协同码
     const [joinCode, setJoinCode] = useState('')
     // 参与者
     const [joinName, setJoinName] = useState('')
@@ -381,23 +381,23 @@ export default function ({
                 setIsLoading(false)
             });
     }
-    // 复制任务码
+    // 复制协同码
     const copyCode = async () => {
         // 写入
         Clipboard.setString(taskCode);
         // 读取
         let str = await Clipboard.getString();
         if (str) {
-            Alert.alert('提示', '复制任务码成功【' + str + '】');
+            Alert.alert('提示', '复制协同码成功【' + str + '】');
         }
     }
 
     //------参与任务------
     // 确认参与
     const joinOk = () => {
-        // 判断是否有任务码
+        // 判断是否有协同码
         if (!joinCode) {
-            Alert.alert('创建失败', '请输入任务码')
+            Alert.alert('创建失败', '请输入协同码')
             return
         }
         if (!(/^\d{4}$/.test(joinCode))) {
@@ -682,7 +682,7 @@ export default function ({
                                             {
                                                 isTaskIng && <TextInput
                                                     name="taskCode"
-                                                    label="任务码:    "
+                                                    label="协同码:    "
                                                     disabled
                                                     value={taskCode}
                                                     style={[styles.InputBox]}
@@ -758,7 +758,7 @@ export default function ({
                                                 {
                                                     isCreator &&
                                                     <View style={[styles.rightActionBox]}>
-                                                        <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
+                                                        <Button style={[styles.rightBtn]} onPress={copyCode}>复制协同码</Button>
                                                         <Button style={[styles.rightBtn]} onPress={deleteTask}>删除任务</Button>
                                                         <Button style={[styles.rightBtn]} onPress={goWork}>开始检测</Button>
                                                     </View>
@@ -775,7 +775,7 @@ export default function ({
                                         <View style={styles.taskLeftBox}>
                                             <TextInput
                                                 name="joinCode"
-                                                label="任务码:    "
+                                                label="协同码:    "
                                                 disabled={isTaskIng}
                                                 value={joinCode}
                                                 style={[styles.InputBox]}
@@ -830,7 +830,7 @@ export default function ({
                                                 </View>
                                                 {/* 操作按钮 */}
                                                 <View style={[styles.rightActionBox]}>
-                                                    <Button style={[styles.rightBtn]} onPress={copyCode}>复制任务码</Button>
+                                                    <Button style={[styles.rightBtn]} onPress={copyCode}>复制协同码</Button>
                                                     <Button style={[styles.rightBtn]} onPress={quitTask}>退出任务</Button>
                                                     <Button style={[styles.rightBtn]} onPress={goWork}>开始检测</Button>
                                                 </View>
