@@ -25,6 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Loading from '../../../components/Loading';
 import Table from '../../../components/Table';
+import Checkbox from '../../../components/Checkbox';
 
 export default function CooperateTest2({
     project,
@@ -38,6 +39,8 @@ export default function CooperateTest2({
 
     // 模态框loading
     const [isLoading, setIsLoading] = useState(false)
+    // 模态框宽高
+    const [modalWH, setModalWH] = useState({ width: 0, height: 0 })
     // 当前顶部tab 创建任务、参与任务、任务详情、使用帮助
     const [curTopItem, setCurTopItem] = useState('')
     // 当前左侧按钮还是右侧按钮
@@ -59,6 +62,8 @@ export default function CooperateTest2({
         let synergySelfName = await AsyncStorage.getItem('synergySelfName')
         // 判断桥梁是否存在
         if (bridge) {
+            // 设置模态框宽高
+            setModalWH({ width: 450, height: 350 })
             // 判断是否有协同任务，以及协同任务是否结束
             if (bridge.synergyTestData && bridge.synergyTestData.state !== '协同结束') {
                 setBridgestation(bridge.bridgestation)
@@ -93,13 +98,40 @@ export default function CooperateTest2({
                 setCTCreator(synergySelfName)
             }
         } else {
+            // 设置模态框宽高
+            setModalWH({ width: 800, height: 500 })
             // 设置顶部导航
             setCurTopItem('参与任务')
             // 设置参与者名称
             setJTJoinName(synergySelfName)
             // 设置是否是创建者
             setIsCreator(false)
+            // 获取所有任务信息
+            getAllTask()
         }
+    }
+
+    // 获取所有任务信息
+    const getAllTask = () => {
+        // let url = 'http://'+IP+':8000/task_room/'+ITaskCode
+        let url = 'http://' + testIP + '/tasks/'
+        fetch(url, {
+            method: 'get'
+        }).then(res => res.json())
+            .then(async result => {
+                // 判断本地是否存在
+                for (let i = 0; i < result.length; i++) {
+                    let synergyTestData = await synergyTest.getBytaskId(result[i].room_id)
+                    result[i].isExist = synergyTestData ? 1 : 0
+                }
+                // result排序
+                result.sort((a, b) => {
+                    return a.isExist - b.isExist
+                })
+                setTasksList(result)
+            }).catch(e => {
+                setTasksList([])
+            })
     }
 
     // 顶部导航点击
@@ -117,7 +149,7 @@ export default function CooperateTest2({
         var _personNum = parseInt(CTPersonNum)
         if ((e == 1 && _personNum < 11) || (e == -1 && _personNum > 2)) {
             _personNum += e
-            setCTPersonNum(_personNum+'')
+            setCTPersonNum(_personNum + '')
         }
     }
     // 确认创建
@@ -220,7 +252,7 @@ export default function CooperateTest2({
                                     await synergyTest.save(synergyData)
                                 }
                                 // 将工程师名称存入本地
-                                AsyncStorage.setItem('synergySelfName',CTCreator)
+                                AsyncStorage.setItem('synergySelfName', CTCreator)
                                 // 设置任务详情数据
                                 setITaskCode(result.room_id)
                                 setIPeopleNum(CTPersonNum)
@@ -229,6 +261,8 @@ export default function CooperateTest2({
                                 // 设置详情页的桥梁信息
                                 setBridgestation(bridge.bridgestation)
                                 setBridgename(bridge.bridgename)
+                                // 设置模态框宽高
+                                setModalWH({ width: 450, height: 350 })
                                 // 设置顶部tab
                                 setCurTopItem('任务详情')
                                 // 设置模态框loading
@@ -342,10 +376,8 @@ export default function CooperateTest2({
     // -------- 参与任务 --------
     // 参与协同码
     const [JTJoinCode, setJTJoinCode] = useState('')
-    // 参与者
-    const [JTJoinName, setJTJoinName] = useState('')
     // 确认参与
-    const joinOk = async () => {
+    const joinOk1 = async () => {
         // 判断是否有协同码
         if (!JTJoinCode) {
             Alert.alert('参与失败', '请输入协同码')
@@ -391,11 +423,61 @@ export default function CooperateTest2({
             setIsLoading(false)
         })
     }
+
+    // -------- 参与任务 --------
+    // 参与者
+    const [JTJoinName, setJTJoinName] = useState('')
+    // 任务列表
+    const [tasksList, setTasksList] = useState([])
+    // 选中的数据 id 单选
+    const [checked, setChecked] = useState(null);
+    // 点击选择框 单选 
+    const handleCheck = room_id => {
+        // 存的是id
+        setChecked(checked === room_id ? null : room_id);
+    }
+    // 确认参与
+    const joinOk = async () => {
+        // 是否选择
+        if (!checked) {
+            Alert.alert('参与失败', '请选择要参加的任务')
+            return
+        }
+
+        if (!JTJoinName) {
+            Alert.alert('参与失败', '请输入工程师名称')
+            return
+        }
+
+        // 判断网络是否连接
+        if (!networkStateAll.isConnected.isConnected) {
+            Alert.alert('参与失败', '请连接网络')
+            return
+        }
+
+        // 是否连接了wifi
+        if (networkStateAll.type !== 'wifi') {
+            Alert.alert('参与失败', '请连接WIFI')
+            return
+        }
+
+        // 设置模态框loading
+        setIsLoading(true)
+
+        // 获取所连接wifi的ip
+        NetworkInfo.getGatewayIPAddress().then(IP => {
+            // 参与任务获取桥梁数据
+            joinTaskGetBridge(IP)
+        }).catch(e => {
+            // 设置模态框loading
+            setIsLoading(false)
+        })
+    }
     // 参与任务获取桥梁数据
     const joinTaskGetBridge = async (IP) => {
         // url
-        // let url = 'http://'+IP+':8000/task_room/'+JTJoinCode
-        let url = 'http://' + testIP + '/task_room/' + JTJoinCode
+        // let url = 'http://'+IP+':8000/task_room/'+checked
+        let url = 'http://' + testIP + '/task_room/' + checked
         fetch(url, {
             method: 'GET'
         })
@@ -487,7 +569,7 @@ export default function CooperateTest2({
             userid: userInfo.userid,
             synergyid: result.task_msg.createInfo.synergyid,
             synergyPeopleNum: result.task_msg.createInfo.synergyPeopleNum,
-            taskId: JTJoinCode,
+            taskId: checked,
             // WSPath: 'ws://' + IP + ':8000' + result.ws + '?user_id=' + userInfo.username + ',' + userInfo.userid + '&user_name=' + JTJoinName + '&device_id=' + deviceId,
             WSPath: 'ws://' + testIP + result.ws + '?user_id=' + userInfo.username + ',' + userInfo.userid + '&user_name=' + JTJoinName + '&device_id=' + deviceId,
             creator: JSON.stringify(result.task_msg.createInfo.creator),
@@ -517,18 +599,24 @@ export default function CooperateTest2({
             await synergyTest.save(synergyData)
         }
         // 将工程师名称存入本地
-        AsyncStorage.setItem('synergySelfName',JTJoinName)
-        // 设置任务详情数据
-        setBridgestation(result.task_msg.bridge.bridgestation)
-        setBridgename(result.task_msg.bridge.bridgename)
-        setITaskCode(JTJoinCode)
-        setIPeopleNum(result.task_msg.createInfo.synergyPeopleNum)
-        setICreator(result.task_msg.createInfo.creator.realname)
-        setIEngineer(JTJoinName)
-        // 设置顶部tab
-        setCurTopItem('任务详情')
+        AsyncStorage.setItem('synergySelfName', JTJoinName)
         // 设置模态框loading
         setIsLoading(false)
+        // 关闭模态框
+        closeModal()
+
+        // 不跳转任务详情模态框，所以注释了
+        // // 设置任务详情数据
+        // setBridgestation(result.task_msg.bridge.bridgestation)
+        // setBridgename(result.task_msg.bridge.bridgename)
+        // setITaskCode(checked)
+        // setIPeopleNum(result.task_msg.createInfo.synergyPeopleNum)
+        // setICreator(result.task_msg.createInfo.creator.realname)
+        // setIEngineer(JTJoinName)
+        // // 设置模态框宽高
+        // setModalWH({ width: 450, height: 350 })
+        // // 设置顶部tab
+        // setCurTopItem('任务详情')
     }
 
     // -------- 任务详情 --------
@@ -598,15 +686,15 @@ export default function CooperateTest2({
         })
     }
 
-    return (
+    return modalWH.width?(
         <Modal
             title={"协同检测"}
             pid="P1103"
             showHead={true}
             // 没有滚动条
             notScroll={true}
-            width={450}
-            height={350}
+            width={modalWH.width}
+            height={modalWH.height}
             keyboardVerticalOffset={-50}
             //点击顶部关闭按钮
             onClose={closeModal}
@@ -657,16 +745,16 @@ export default function CooperateTest2({
                                         <Button style={styles.addNumBtn} onPress={() => CTPersonNumChange(-1)}>-</Button>
                                     </View>
                                     <View style={[styles.CTPersonNumBtnBox]}>
-                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={()=>setCTPersonNum('2')}>
+                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={() => setCTPersonNum('2')}>
                                             <Text>2</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={()=>setCTPersonNum('3')}>
+                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={() => setCTPersonNum('3')}>
                                             <Text>3</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={()=>setCTPersonNum('4')}>
+                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={() => setCTPersonNum('4')}>
                                             <Text>4</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={()=>setCTPersonNum('5')}>
+                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={() => setCTPersonNum('5')}>
                                             <Text>5</Text>
                                         </TouchableOpacity>
                                     </View>
@@ -688,21 +776,51 @@ export default function CooperateTest2({
                             {/* 参与任务 */}
                             {
                                 tabBtn == 'left' && curTopItem == '参与任务' &&
-                                <View style={styles.taskConAllBox}>
-                                    <TextInput
-                                        name="JTJoinCode"
-                                        label="协同码:        "
-                                        value={JTJoinCode}
-                                        style={[styles.InputBox, { marginVertical: 20 }]}
-                                        inputStyle={styles.inputStyle}
-                                        onChange={(e) => setJTJoinCode(e.value)} />
+                                <View style={[styles.taskConAllBox, { paddingTop:0}]}>
                                     <TextInput
                                         name="JTJoinName"
                                         label="工程师名称:"
                                         value={JTJoinName}
-                                        style={[styles.InputBox]}
+                                        style={[styles.InputBox,{height:50,marginBottom:5}]}
                                         inputStyle={styles.inputStyle}
                                         onChange={(e) => setJTJoinName(e.value)} />
+                                    {/* 表格区域 */}
+                                    <View style={[tailwind.flex1,{marginHorizontal:-15}]}>
+                                        <Table.Box
+                                            total={tasksList.length}
+                                            header={
+                                                <Table.Header>
+                                                    <Table.Title title="选择" flex={1} />
+                                                    <Table.Title title="协同码" flex={1} />
+                                                    <Table.Title title="桥梁名称" flex={4} />
+                                                    <Table.Title title="桩号" flex={3} />
+                                                    <Table.Title title="状态" flex={1} />
+                                                </Table.Header>
+                                            }>
+                                            <FlatList
+                                                data={tasksList}
+                                                extraData={tasksList}
+                                                renderItem={({ item, index }) => (
+                                                    <Table.Row key={index}>
+                                                        {/* 选择框--单选 */}
+                                                        <Table.Cell flex={1}>
+                                                            {
+                                                                item.isExist ? <></> :
+                                                                    <Checkbox
+                                                                        checked={checked === item.room_id}
+                                                                        onPress={() => handleCheck(item.room_id)}
+                                                                    />
+                                                            }
+                                                        </Table.Cell>
+                                                        <Table.Cell flex={1}>{item.room_id}</Table.Cell>
+                                                        <Table.Cell flex={4}>{item?.content?.bridge?.bridgename}</Table.Cell>
+                                                        <Table.Cell flex={3}>{item?.content?.bridge?.bridgestation}</Table.Cell>
+                                                        <Table.Cell flex={1}>{item.isExist ? '已参与' : '未参与'}</Table.Cell>
+                                                    </Table.Row>
+                                                )}
+                                            />
+                                        </Table.Box>
+                                    </View>
                                 </View>
                             }
                             {/* 任务详情 */}
@@ -756,7 +874,7 @@ export default function CooperateTest2({
                     </>
             }
         </Modal>
-    )
+    ):<></>
 }
 
 
@@ -887,18 +1005,18 @@ const styles = StyleSheet.create({
     helpText: {
         marginBottom: 10
     },
-    CTPersonNumBtnBox:{
-        flexDirection:'row',
-        width: '100%', 
+    CTPersonNumBtnBox: {
+        flexDirection: 'row',
+        width: '100%',
         paddingLeft: 82,
-        paddingTop:10, 
+        paddingTop: 10,
         marginBottom: 10
     },
-    CTPersonNumBtn:{
-        borderWidth:1,
-        borderColor:'#7E869C',
-        paddingHorizontal:15,
-        borderRadius:5,
-        marginRight:10
+    CTPersonNumBtn: {
+        borderWidth: 1,
+        borderColor: '#7E869C',
+        paddingHorizontal: 15,
+        borderRadius: 5,
+        marginRight: 10
     }
 })
