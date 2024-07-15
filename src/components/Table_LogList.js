@@ -253,8 +253,9 @@ const styles = StyleSheet.create({
   colText: {
     // ...tailwind.textXs,
     fontSize:10,
-    ...tailwind.justifyLeft,
+    // ...tailwind.justifyLeft,
     // margin:5
+    textAlign:'center'
   },
   row: {
     minHeight: 35,

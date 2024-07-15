@@ -54,7 +54,8 @@ export default function LogList({list,coopList}) {
                       <>
                         <Table.Row key={index}>
                           <Table.Cell flex={2}>
-                            <Text style={{textAlign:'left'}}>{`${item.user}_${item.membername}\n${item.dataType ? item.typeCode : item.diseaseName}`}</Text>
+                            <Text>{`${item.user}_${item.membername}`}</Text>
+                            <Text>{`\n${item.dataType ? item.typeCode : item.diseaseName}`}</Text>
                           </Table.Cell>
                           <Table.Cell flex={1}>
                             <Text>{item.checkTime.slice(10, )}</Text>
