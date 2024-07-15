@@ -3,7 +3,7 @@
  */
 import React, { useEffect, useState } from 'react'
 import Modal from '../../../components/Modal'
-import { View, StyleSheet, Pressable, Text, Alert, FlatList, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Pressable, Text, Alert, FlatList, TouchableOpacity, DeviceEventEmitter } from 'react-native'
 import { tailwind } from 'react-native-tailwindcss';
 import { TextInput } from '../../../components/Input';
 import Button from '../../../components/Button';
@@ -603,20 +603,22 @@ export default function CooperateTest2({
         // 设置模态框loading
         setIsLoading(false)
         // 关闭模态框
-        // closeModal()
+        closeModal()
+        // 提示参与成功
+        DeviceEventEmitter.emit('toast', {title:'参与成功',position:'bottom',duration:'、LENGTH_NORMAL'})
 
         // 不跳转任务详情模态框，所以注释了
         // 设置任务详情数据
-        setBridgestation(result.task_msg.bridge.bridgestation)
-        setBridgename(result.task_msg.bridge.bridgename)
-        setITaskCode(checked)
-        setIPeopleNum(result.task_msg.createInfo.synergyPeopleNum)
-        setICreator(result.task_msg.createInfo.creator.realname)
-        setIEngineer(JTJoinName)
-        // 设置模态框宽高
-        setModalWH({ width: 450, height: 350 })
-        // 设置顶部tab
-        setCurTopItem('任务详情')
+        // setBridgestation(result.task_msg.bridge.bridgestation)
+        // setBridgename(result.task_msg.bridge.bridgename)
+        // setITaskCode(checked)
+        // setIPeopleNum(result.task_msg.createInfo.synergyPeopleNum)
+        // setICreator(result.task_msg.createInfo.creator.realname)
+        // setIEngineer(JTJoinName)
+        // // 设置模态框宽高
+        // setModalWH({ width: 450, height: 350 })
+        // // 设置顶部tab
+        // setCurTopItem('任务详情')
     }
 
     // -------- 任务详情 --------
