@@ -3,7 +3,7 @@
  */
 import React, { useEffect, useState } from 'react'
 import Modal from '../../../components/Modal'
-import { View, StyleSheet, Pressable, Text, Alert, FlatList } from 'react-native'
+import { View, StyleSheet, Pressable, Text, Alert, FlatList, TouchableOpacity } from 'react-native'
 import { tailwind } from 'react-native-tailwindcss';
 import { TextInput } from '../../../components/Input';
 import Button from '../../../components/Button';
@@ -629,17 +629,31 @@ export default function CooperateTest2({
                                     <View style={styles.taskLeftRowBox}>
                                         <TextInput
                                             name="CTPersonNum"
-                                            label="邀请人数:    "
+                                            label="协同人数:    "
                                             disabled
-                                            value={parseInt(CTPersonNum) - 1 + ''}
+                                            value={CTPersonNum}
                                             style={[styles.InputBox2]}
                                             inputStyle={styles.inputStyle} />
                                         <Button style={styles.addNumBtn} onPress={() => CTPersonNumChange(1)}>+</Button>
                                         <Button style={styles.addNumBtn} onPress={() => CTPersonNumChange(-1)}>-</Button>
                                     </View>
-                                    <View style={{ width: '100%', paddingLeft: 80, marginBottom: 10 }}>
-                                        <Text>*除您之外的其他协作者人数（1~10）</Text>
+                                    <View style={[styles.CTPersonNumBtnBox]}>
+                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={()=>setCTPersonNum('2')}>
+                                            <Text>2</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={()=>setCTPersonNum('3')}>
+                                            <Text>3</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={()=>setCTPersonNum('4')}>
+                                            <Text>4</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[styles.CTPersonNumBtn]} onPress={()=>setCTPersonNum('5')}>
+                                            <Text>5</Text>
+                                        </TouchableOpacity>
                                     </View>
+                                    {/* <View style={{ width: '100%', paddingLeft: 80, marginBottom: 10 }}>
+                                        <Text>*除您之外的其他协作者人数（1~10）</Text>
+                                    </View> */}
                                     <TextInput
                                         name="CTCreator"
                                         label="工程师名称:"
@@ -853,5 +867,19 @@ const styles = StyleSheet.create({
     },
     helpText: {
         marginBottom: 10
+    },
+    CTPersonNumBtnBox:{
+        flexDirection:'row',
+        width: '100%', 
+        paddingLeft: 82,
+        paddingTop:10, 
+        marginBottom: 10
+    },
+    CTPersonNumBtn:{
+        borderWidth:1,
+        borderColor:'#7E869C',
+        paddingHorizontal:15,
+        borderRadius:5,
+        marginRight:10
     }
 })
