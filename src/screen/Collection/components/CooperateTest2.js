@@ -603,20 +603,20 @@ export default function CooperateTest2({
         // 设置模态框loading
         setIsLoading(false)
         // 关闭模态框
-        closeModal()
+        // closeModal()
 
         // 不跳转任务详情模态框，所以注释了
-        // // 设置任务详情数据
-        // setBridgestation(result.task_msg.bridge.bridgestation)
-        // setBridgename(result.task_msg.bridge.bridgename)
-        // setITaskCode(checked)
-        // setIPeopleNum(result.task_msg.createInfo.synergyPeopleNum)
-        // setICreator(result.task_msg.createInfo.creator.realname)
-        // setIEngineer(JTJoinName)
-        // // 设置模态框宽高
-        // setModalWH({ width: 450, height: 350 })
-        // // 设置顶部tab
-        // setCurTopItem('任务详情')
+        // 设置任务详情数据
+        setBridgestation(result.task_msg.bridge.bridgestation)
+        setBridgename(result.task_msg.bridge.bridgename)
+        setITaskCode(checked)
+        setIPeopleNum(result.task_msg.createInfo.synergyPeopleNum)
+        setICreator(result.task_msg.createInfo.creator.realname)
+        setIEngineer(JTJoinName)
+        // 设置模态框宽高
+        setModalWH({ width: 450, height: 350 })
+        // 设置顶部tab
+        setCurTopItem('任务详情')
     }
 
     // -------- 任务详情 --------
@@ -913,7 +913,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         ...tailwind.mR6,
-        width: 220
+        width: 270
     },
     inputStyle: {
         color: 'black'
@@ -927,7 +927,7 @@ const styles = StyleSheet.create({
     InputBox2: {
         ...tailwind.mR6,
         // height: '100%',
-        width: 220
+        width: 270
     },
     bridgeInfo: {
         fontSize: 16,
@@ -1014,9 +1014,9 @@ const styles = StyleSheet.create({
     },
     CTPersonNumBtn: {
         borderWidth: 1,
-        borderColor: '#7E869C',
+        borderColor: '#C5C5C5',
         paddingHorizontal: 15,
-        borderRadius: 5,
+        borderRadius: 3,
         marginRight: 10
     }
 })
