@@ -128,6 +128,7 @@ export default function CooperateTest2({
                 result.sort((a, b) => {
                     return a.isExist - b.isExist
                 })
+                console.log("result",JSON.stringify(result));
                 setTasksList(result)
             }).catch(e => {
                 setTasksList([])
@@ -793,10 +794,10 @@ export default function CooperateTest2({
                                             header={
                                                 <Table.Header>
                                                     <Table.Title title="选择" flex={1} />
-                                                    <Table.Title title="协同码" flex={1} />
-                                                    <Table.Title title="桥梁名称" flex={4} />
-                                                    <Table.Title title="桩号" flex={3} />
-                                                    <Table.Title title="状态" flex={1} />
+                                                    <Table.Title title="协同码" flex={2} />
+                                                    <Table.Title title="创建者" flex={2} />
+                                                    <Table.Title title="桥梁" flex={6} />
+                                                    <Table.Title title="状态" flex={2} />
                                                 </Table.Header>
                                             }>
                                             <FlatList
@@ -814,10 +815,10 @@ export default function CooperateTest2({
                                                                     />
                                                             }
                                                         </Table.Cell>
-                                                        <Table.Cell flex={1}>{item.room_id}</Table.Cell>
-                                                        <Table.Cell flex={4}>{item?.content?.bridge?.bridgename}</Table.Cell>
-                                                        <Table.Cell flex={3}>{item?.content?.bridge?.bridgestation}</Table.Cell>
-                                                        <Table.Cell flex={1}>{item.isExist ? '已参与' : '未参与'}</Table.Cell>
+                                                        <Table.Cell flex={2}>{item.room_id}</Table.Cell>
+                                                        <Table.Cell flex={2}>{item?.content?.createInfo?.creator?.realname}</Table.Cell>
+                                                        <Table.Cell flex={6}>{item?.content?.bridge?.bridgestation + ' ' + item?.content?.bridge?.bridgename}</Table.Cell>
+                                                        <Table.Cell flex={2}>{item.isExist ? '已参与' : '未参与'}</Table.Cell>
                                                     </Table.Row>
                                                 )}
                                             />
