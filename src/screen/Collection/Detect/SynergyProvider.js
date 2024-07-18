@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import reducer from '../../../providers/reducer';
 import * as synergyTest from '../../../database/synergy_test';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context as GlobalContext } from '../../../providers/GlobalProvider';
 var _ = require('lodash');
+
+import { AppState } from 'react-native';
 
 // 上下文空间
 const Context = React.createContext();
@@ -17,6 +18,9 @@ const Provider = props => {
   const {
     state: { networkState },
   } = React.useContext(GlobalContext);
+
+  // app 状态 前台还是后台
+  const appState = React.useRef(AppState.currentState);
 
   const [state, dispatch] = React.useReducer(reducer, {
     // ws开启
@@ -41,7 +45,9 @@ const Provider = props => {
     // 协同检测数据
     synergyTestData: null,
     // 用户检测记录
-    userRecordData: null
+    userRecordData: null,
+    // 前台后台状态切换
+    curAppState: ''
   });
 
   // 监听ws的开启状态
@@ -53,6 +59,26 @@ const Provider = props => {
   useEffect(() => {
     wsReLink(state, networkState)
   }, [networkState])
+
+  // 监听软件从后台返回前台
+  useEffect(() => {
+    AppState.addEventListener('change', nextAppState => {
+      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+        dispatch({ type: 'curAppState', payload: new Date() })
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      AppState.removeEventListener();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (state.curAppState) {
+      wsReLink(state, state.networkState)
+    }
+  }, [state.curAppState])
 
   // ws连接  正常连接、正常关闭、异常断开
   const wsLink = React.useCallback(_.debounce(function (state) {
