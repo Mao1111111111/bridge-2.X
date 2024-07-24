@@ -251,7 +251,7 @@ const Clone = React.forwardRef(({ onSubmitOver }, ref) => {
                 <Table.Title title="桥幅属性" flex={2} />
                 <Table.Title title="桥长（米）" flex={2} />
                 <Table.Title title="位置" flex={2} />
-                <Table.Title title="存储" flex={2} />
+                <Table.Title title="来源" flex={2} />
               </Table.Header>
             }>
             <FlatList
@@ -538,7 +538,7 @@ const Inducts = React.forwardRef(({ onSubmitOver }, ref) => {
                 <Table.Title title="桥幅属性" flex={2} />
                 <Table.Title title="桥长（米）" flex={2} />
                 <Table.Title title="位置" flex={2} />
-                <Table.Title title="存储" flex={2} />
+                <Table.Title title="来源" flex={2} />
               </Table.Header>
             }>
             <FlatList
@@ -2087,7 +2087,7 @@ export default function ProjectDetail({ route, navigation }) {
                   <Table.Title title="媒体文件" /> */}
                 <Table.Title title="检测日期" flex={2} />
                 <Table.Title title="协同检测" flex={2} />
-                <Table.Title title="存储" />
+                <Table.Title title="来源" />
                 <Table.Title title="选择" flex={1} />
               </Table.Header>
             }>

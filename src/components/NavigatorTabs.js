@@ -161,11 +161,10 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
   // const type = ['用户设置','退出登录']
   const type = ['退出登录']
   // 左上角的一级菜单选项
-  const typeL = ['采集平台','数据同步','数据统计','用户设置']
+  const typeL = ['采集平台','数据同步','数据统计','用户设置','历史数据']
   
   // 分类选择
   _selectType = (indexA, value) => {
-    console.log('---1', indexA, value)
       // {state.routes.map((route, index) =>(
       //   indexA == '0' && indexA == index ? handlePress(route, index, value) : <></>
       // ))}
@@ -180,7 +179,8 @@ const TabBar = ({state, navigation, descriptors, headerItems, pid}) => {
       indexA == '0' && indexA == index ? handlePress1(route, index, value) :
       indexA == '1' && indexA == index ? handlePress1(route, index, value) :
       indexA == '2' && indexA == index ? handlePress1(route, index, value) :
-      indexA == '3' && indexA == index ? handlePress1(route, index, value) : <></>
+      indexA == '3' && indexA == index ? handlePress1(route, index, value) : 
+      indexA == '4' && indexA == index ? handlePress1(route, index, value) : <></>
     ))}
   }
   // 下拉列表分隔符

@@ -214,7 +214,7 @@ export default function ProjectDetail({route, navigation}) {
               <Table.Title title="路段" flex={2} />
               <Table.Title title="检测次数" flex={2} />
               <Table.Title title="最近检测" flex={4} />
-              <Table.Title title="存储" flex={2} />
+              <Table.Title title="来源" flex={2} />
             </Table.Header>
           }>
           <FlatList

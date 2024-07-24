@@ -10,6 +10,7 @@ import Collection from './Collection/Index';
 import Sync from './Sync/Index';
 import Chart from './Chart';
 import Setting from './Setting';
+import Historical from './Historical'
 import Login from './Login';
 import Lock from '../components/Lock';
 import NurToast from '../components/NurToast';
@@ -92,6 +93,14 @@ export default function Main() {
       img: userSet,
       imgActive: userSetActive,
       component: Setting,
+    },
+    {
+      name: 'Historical',
+      // title: '历史数据',
+      // icon: 'cog',
+      img: userSet,
+      imgActive: userSetActive,
+      component: Historical,
     },
   ];
 
