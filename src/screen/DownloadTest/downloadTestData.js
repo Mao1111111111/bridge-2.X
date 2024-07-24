@@ -53,19 +53,33 @@ const data1 = {
     latitude: 0,
     // 其他配置，有上传(bridgeconfig)
     bridgeconfig: {
+        // 桥台数
         "b200001num": "2",
+        // 桥墩数
         "b200002num": "1",
+        // 梁片数
         "b100001num": "1",
+        // 人行道数
         "b300003num": "2",
+        // 伸缩装置数
         "b300002num": "2",
+        // 支座数
         "zhizuo_total": "2",
+        // 照明系统
         "bridgelightsys": "light10",
+        // 翼墙、耳墙
         "bridgewall": "ears",
+        // 支座编号
         "bridgepadno": "padno1000",
+        // 桥台形式
         "bridgeabutment": "abutment102",
+        // 桥墩形式
         "bridgepier": "pier100",
+        // 桥台柱数
         "qiaotaizhushu": "1",
+        // 桥墩柱数
         "qiaodunzhushu": "1",
+        // 肋板数
         "leibanshu": "1"
     },
     // * 数据来源（int），未上传，app端生成，可以不传或默认为空
