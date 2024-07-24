@@ -1,0 +1,90 @@
+{
+	"membertype": "b100001",
+	"postion": "底板",
+	"disease": "b100001t00c1020",
+	"locationinfo": "底板距0#台1.2m，左侧边缘0.75m处",
+	"describeinfo": "横向裂缝，左腹板长度0.2@@米@@，左腹板宽度0.3@@毫米@@，底板长度0.4@@米@@，底板宽度0.5@@毫米@@",
+	"statusinfo": "",
+	"file": "",
+	"upimgpath": "",
+	"upaudiopath": "",
+	"datatype": "c1001",
+	"memberid": "giqv5dd01myirtl8c2l83vr4d6_b100001_96395_0",
+	"memberstatus": "200",
+	"membername": "1-1#梁",
+	"reportid": "giqv5dd01myirtl8c2l83vr4d6",
+	"postid": "mgiqv5dd01myirtl8c2l83vr4d64jve3mcsrgd",
+	"length": "10",
+	"lengthratio": "12",
+	"width": "15",
+	"widthhratio": "5",
+	"top": "",
+	"topratio": "0",
+	"areaid": "radio_postion1",
+	"tabindex": "0",
+	"checktype": {
+		"checktypeid": "b100001t00c1020",
+		"checktypename": "混凝土L形裂缝",
+		"checkgroupname": "L形裂缝",
+		"checkgroupid": "10000dg00001",
+		"stairgroupid": "10000dg00038",
+		"stairgroupname": "L形裂缝",
+		"strvaluearr": [{
+				"k": "hzbrmc_lb_left_length_m",
+				"n": "左腹板长度",
+				"v": "0.2",
+				"u": "米"
+			},
+			{
+				"k": "hzbrmc_lb_left_width_mm",
+				"n": "左腹板宽度",
+				"v": "0.3",
+				"u": "毫米"
+			},
+			{
+				"k": "hzbrmc_lb_right_length_m",
+				"n": "右腹板长度",
+				"v": "0",
+				"u": "米"
+			},
+			{
+				"k": "hzbrmc_lb_right_width_mm",
+				"n": "右腹板宽度",
+				"v": "0",
+				"u": "毫米"
+			},
+			{
+				"k": "hzbrmc_lb_bottom_length_m",
+				"n": "底板长度",
+				"v": "0.4",
+				"u": "米"
+			},
+			{
+				"k": "hzbrmc_lb_bottom_width_mm",
+				"n": "底板宽度",
+				"v": "0.5",
+				"u": "毫米"
+			}
+		],
+		"scale": "2"
+	},
+	"imginfo": {
+		"imgtitle": "1-1#梁横向裂缝",
+		"imgwidth": "0.40",
+		"imgwidthdesc": "1",
+		"imgtag": "mgiqv5dd01myirtl8c2l83vr4d64lmc4v0g8md",
+		"imglist": [{
+			"tag": "20220916105315460171",
+			"filename": "thumb20220916105315460171.png",
+			"dirpath": "pro_m1624439268_giqv5dd01myirtl8c2l83vr4d6/img/d20220916105314944",
+			"flag": true,
+			"filesize": "270.0kb"
+		}]
+	},
+	"audioinfo": {
+		"audiolist": []
+	},
+	"memberidarr": [],
+	"memberidarrNum": 1,
+	"memberidarrKeys": "5087bab5-a286-4bc9-8d94-0fa4c2c3a09a"
+}
