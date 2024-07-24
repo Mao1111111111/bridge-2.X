@@ -76,7 +76,7 @@ const Provider = props => {
 
   useEffect(() => {
     if (state.curAppState) {
-      wsReLink(state, state.networkState)
+      wsReLink(state, networkState)
     }
   }, [state.curAppState])
 
@@ -134,7 +134,7 @@ const Provider = props => {
   // ws重连
   const wsReLink = React.useCallback(_.debounce(function (state, networkState) {
     // 网络连接，ws打开，ws为空，ws为未连接
-    if (networkState.isConnected && state.wsOpen && state.wsConnectionState == '未连接') {
+    if (networkState?.isConnected && state.wsOpen && state.wsConnectionState == '未连接') {
       // 创建连接
       state.wsConnection.current = new WebSocket(state.curSynergyInfo.WSPath);
       // 打开
