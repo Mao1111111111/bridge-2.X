@@ -3,7 +3,7 @@
  */
 // 1、简立得
 // 2、黑龙江省工程质量道桥检测中心
-export const editionType = '简立得'
+export const editionType = '黑龙江省工程质量道桥检测中心'
 
 // 类型列表
 export const editionList = {

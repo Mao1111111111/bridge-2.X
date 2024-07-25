@@ -61,24 +61,24 @@ const Provider = props => {
   }, [networkState])
 
   // 监听软件从后台返回前台
-  useEffect(() => {
-    AppState.addEventListener('change', nextAppState => {
-      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
-        dispatch({ type: 'curAppState', payload: new Date() })
-      }
-      appState.current = nextAppState;
-    });
+  // useEffect(() => {
+  //   AppState.addEventListener('change', nextAppState => {
+  //     if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+  //       dispatch({ type: 'curAppState', payload: new Date() })
+  //     }
+  //     appState.current = nextAppState;
+  //   });
 
-    return () => {
-      AppState.removeEventListener();
-    };
-  }, []);
+  //   return () => {
+  //     AppState.removeEventListener();
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    if (state.curAppState) {
-      wsReLink(state, networkState)
-    }
-  }, [state.curAppState])
+  // useEffect(() => {
+  //   if (state.curAppState) {
+  //     wsReLink(state, networkState)
+  //   }
+  // }, [state.curAppState])
 
   // ws连接  正常连接、正常关闭、异常断开
   const wsLink = React.useCallback(_.debounce(function (state) {
