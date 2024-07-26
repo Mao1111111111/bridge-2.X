@@ -340,7 +340,6 @@ export default function DiseaseList({route, navigation}) {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log('123321 list',list);
       if (!list || isLoading) {
         return;
       }

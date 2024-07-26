@@ -218,12 +218,12 @@ const jsondata = {
     "checktypeid": "b100001t00c1040",
     // standard
     "standard": {
-        // ？标度 -- 实际
+        // 用户选择的标度 -- 实际
         "scale": "3",
         // 标准
         "id": "JTG-TH21-2011-T000-0"
     },
-    // ？原本默认的标度
+    // 初始默认的标度
     "scale": "2",
     // ？
     "list": [],
@@ -251,7 +251,7 @@ const jsondata = {
     "lengthText": "NaN",
     "widthText": "NaN",
     "heightText": "NaN",
-    // ?checkinfoshort + 
+    // checkinfoshort + / 主要用于显示在病害列表的范围描述
     "remark": "混凝土破损、露筋，/",
     // 一级病害id
     "stairgroupid": "10000dg00003",

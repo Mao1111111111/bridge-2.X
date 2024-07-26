@@ -96,6 +96,7 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
 
   React.useEffect(() => {
     saveData.current = {...diseaseData};
+    console.log('diseaseData',diseaseData);
   }, [diseaseData]);
 
   React.useEffect(() => {
