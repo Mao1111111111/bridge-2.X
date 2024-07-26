@@ -314,7 +314,7 @@ export default function DiseaseList({route, navigation}) {
   React.useEffect(() => {
     const windowWidth = Dimensions.get('window').width;
     setScreenWidth(windowWidth)
-
+    console.log('wsConnection',wsConnection);
     console.log('构件列表传过来的数据',route.params);
     console.log('是否是协同检测',route.params.isCoop);
     console.log('协同检测的当前用户信息',route.params.selfCoopData);
@@ -422,6 +422,7 @@ export default function DiseaseList({route, navigation}) {
 
           // 没有检测记录时，直接发送一条更改状态的数据
           if(!operationNoteData){
+            console.log('if(!operationNoteData)--------------------');
             list.forEach((item)=>{
               let noteTypeData = {}
               console.log('------用户进入协同检测页面开始检测------',startTime);
@@ -440,6 +441,7 @@ export default function DiseaseList({route, navigation}) {
 
           // 有检测记录时，进行判断
           if(operationNoteData){
+            console.log('if(operationNoteData).....................');
             // 找到最新的包含 dataType 的记录
             let latestRecord = null;
             for (let i = 0; i < operationNoteData.length; i++) {
@@ -450,10 +452,10 @@ export default function DiseaseList({route, navigation}) {
             }
 
             // 如果找到了符合条件的记录，检查其 typeCode 是否为 '开始检测'
-            if (latestRecord && latestRecord.typeCode === '开始检测') {
-              // console.log('true');
+            if (latestRecord && latestRecord.typeCode == '开始检测') {
+              console.log('true');
             } else {
-              // console.log('false');
+              console.log('false');
               list.forEach((item)=>{
                 let noteTypeData = {}
                 console.log('------用户进入协同检测页面开始检测------',startTime);
@@ -489,6 +491,9 @@ export default function DiseaseList({route, navigation}) {
                 noteData['user'] = route.params.selfCoopData.realname
                 noteData['diseaseName'] = item.jsondata.diseaseName
                 noteData['checkTime'] = item.u_date
+
+                noteData['dataType'] = '检测状态'
+                noteData['typeCode'] = '开始检测'
   
                 console.log('记录在协同检测中的操作历史noteData',noteData);
                 wsConnection.current.send(JSON.stringify(noteData))
@@ -709,7 +714,7 @@ export default function DiseaseList({route, navigation}) {
 
   // 回退
   const goBack = () => {
-    console.log('点击了goBack');
+    console.log('点击了goBack222');
     try {
       // navigation.goBack()
 
@@ -725,7 +730,10 @@ export default function DiseaseList({route, navigation}) {
         noteTypeData['typeCode'] = '结束检测'
         noteTypeData['checkTime'] = endTime
         console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
-        wsConnection.current.send(JSON.stringify(noteTypeData))
+        if(wsConnection.current){
+          wsConnection.current.send(JSON.stringify(noteTypeData))
+        }
+        
       }
 
       navigation.replace('Collection/Detect/BridgeTest/Member', {

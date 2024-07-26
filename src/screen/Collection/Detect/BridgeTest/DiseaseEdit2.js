@@ -195,7 +195,7 @@ export default function DiseaseEdit2({route, navigation,kuaMembertype}) {
 
   // 回退
   const goBack = () => {
-    console.log('点击了goBack');
+    console.log('点击了goBack12354');
     try {
       navigation.goBack()
     } catch (e) {

@@ -262,6 +262,7 @@ const Provider = props => {
       
       // 根据最新的 typeCode 更新 userGroup
       const latestRecord = acc[key].records[0];
+      console.log('latestRecord',latestRecord);
       if (latestRecord.typeCode === '开始检测') {
         acc[key].userGroup.add(latestRecord.user);
       } else if (latestRecord.typeCode === '结束检测') {

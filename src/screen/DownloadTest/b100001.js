@@ -146,3 +146,40 @@ const datajson = {
 	// 批量病害构件唯一键
 	"memberidarrKeys": "5087bab5-a286-4bc9-8d94-0fa4c2c3a09a"
 }
+
+// 初拟病害录入页所需json
+const needjson = {
+  // 部件id
+  membertype:'b100001',
+  // 构件名称
+  membername:'1-1#',
+  // 构件id
+  memberid:'giqv5dd01myirtl8c2l83vr4d6_b100001_96395_0',
+  // 构件类型
+  areatype:'at0001',
+  // 构件区域
+  area:'at0001r1002',
+  // 标度
+  scale:'3',
+  // 病害位置长宽高与其各自百分比
+  // 病害位置-长度
+	length: '10',
+	// 病害位置-长度比例
+	lengthratio: '12',
+	// 病害位置-宽度
+	width: '15',
+	// 病害位置-宽度比例
+	widthhratio: '5',
+	// 病害位置-距顶
+	top: '',
+	// 病害位置-距顶比例
+	topratio: '0',
+  // 病害值（右侧根据病害类型动态生成的若干输入框）
+  hzbrmc_area_m:'8',
+  // ...
+  // ...
+  // 病害描述
+  describeinfo:"混凝土破损、露筋,面积8@@平方米@@",
+  // 位置描述
+  locationinfo: "底板距0#台1.2m，左侧边缘0.75m处",
+}
