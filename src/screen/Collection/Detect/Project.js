@@ -17,6 +17,7 @@ import * as project from '../../../database/project';
 import {alert, confirm} from '../../../utils/alert';
 import {BoxShadow} from 'react-native-shadow'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { dataDealTest } from '../../DownloadTest/downloadDeal';
 
 export default function Project({navigation}) {
   
@@ -366,6 +367,7 @@ export default function Project({navigation}) {
         :
         [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
       }>
+        <Button onPress={()=>dataDealTest(userInfo)}>111</Button>
          {/* 检索 */}
       <View style={[
         styles.searchCard,

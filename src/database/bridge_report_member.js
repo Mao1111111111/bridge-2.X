@@ -59,7 +59,7 @@ export const save = async data => {
     data.orderdesc || '0',
     data.memberstatus || '0',
     data.dpscores_auto,
-    dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    data.u_date||dayjs().format('YYYY-MM-DD HH:mm:ss'),
   ];
   await db().executeSql(sql, param);
 };
