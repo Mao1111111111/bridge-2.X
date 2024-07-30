@@ -43,7 +43,7 @@ export const save = async data => {
       , c_date
       , u_date
       , datasources
-  ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+  ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   const param = [
     data.projectid || uuid.v4(),
@@ -57,6 +57,7 @@ export const save = async data => {
     data.username,
     dayjs().format('YYYY-MM-DD HH:mm:ss'),
     dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    data.datasources || 0
   ];
   await db().executeSql(sql, param);
 };

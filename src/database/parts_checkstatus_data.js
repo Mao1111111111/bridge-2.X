@@ -54,7 +54,7 @@ export const save = async data => {
     data.mian || 0,
     data.version,
     data.dataGroupId || '',
-    dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    data.u_date||dayjs().format('YYYY-MM-DD HH:mm:ss'),
     data.userid,
     data.longitude || 0,
     data.latitude || 0,
