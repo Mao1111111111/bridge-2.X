@@ -454,6 +454,19 @@ export default function DiseaseList({route, navigation}) {
             // 如果找到了符合条件的记录，检查其 typeCode 是否为 '开始检测'
             if (latestRecord && latestRecord.typeCode == '开始检测') {
               console.log('true');
+              list.forEach((item)=>{
+                let noteTypeData = {}
+                console.log('------用户进入协同检测页面开始检测------',startTime);
+                noteTypeData['isCoop'] = route.params.isCoop
+                noteTypeData['memberid'] = item.memberid
+                noteTypeData['membername'] = item.membername
+                noteTypeData['user'] = route.params.selfCoopData.realname
+                noteTypeData['dataType'] = '检测状态'
+                noteTypeData['typeCode'] = '开始检测'
+                noteTypeData['checkTime'] = startTime
+                console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
+                wsConnection.current.send(JSON.stringify(noteTypeData))
+              })
             } else {
               console.log('false');
               list.forEach((item)=>{
@@ -492,8 +505,8 @@ export default function DiseaseList({route, navigation}) {
                 noteData['diseaseName'] = item.jsondata.diseaseName
                 noteData['checkTime'] = item.u_date
 
-                noteData['dataType'] = '检测状态'
-                noteData['typeCode'] = '开始检测'
+                // noteData['dataType'] = '检测状态'
+                // noteData['typeCode'] = '开始检测'
   
                 console.log('记录在协同检测中的操作历史noteData',noteData);
                 wsConnection.current.send(JSON.stringify(noteData))

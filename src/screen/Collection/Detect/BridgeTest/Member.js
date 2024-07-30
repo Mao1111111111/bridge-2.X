@@ -250,7 +250,7 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
                 item={items}
                 title={items.membername}
                 checked={checked.has(items.id)}
-                onPress={() => handleCheck(items.id)}
+                onPress={() => handleCheck(items?.id)}
               />
               {
                 coopData && coopData.some(coopItem => coopItem.memberid === items.memberid) ? 
@@ -266,7 +266,7 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
                           if(item.memberid == items.memberid) {
                             return (
                               <Text key={index} style={{color:'#2e407a',fontWeight:'500'}}>
-                                {item.userGroup.length ? item.userGroup.length : ''}
+                                {item.userGroup['开始检测'].length ? item.userGroup['开始检测'].length : ''}
                               </Text>
                             )
                           }
@@ -279,7 +279,7 @@ const BigData = ({title, data, coopData,onChange, onGroupChange}) => {
                           if(item.memberid == items.memberid) {
                             return (
                               <View key={index}>
-                                {secondItems_big(item.userGroup)}
+                                {secondItems_big(item.userGroup['开始检测'])}
                               </View>
                             )
                           }
@@ -458,17 +458,6 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
   };
 
   const secondItems_all = (e) => {
-    console.log('桥跨进入__构件下的协同信息ee',e);
-    // return(
-    //   e.map((item,index)=>{
-    //     return(
-    //       <View key={index}>
-    //         <Text>{item}</Text>
-    //       </View>
-    //     )
-        
-    //   })
-    // )
     return (
       <ScrollView horizontal={true} style={{width:80}}>
         {e.map((item, index) => (
@@ -479,6 +468,8 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
       </ScrollView>
     );
   }
+
+  
 
   return (
     <View style={[tailwind.flex1, tailwind.flexRow]}>
@@ -531,6 +522,7 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
           <Text style={[styles.memberListTitle, {color:'#2b427d'}]}>
             {nowEdit?.title}
           </Text>
+          
           <View style={[tailwind.flexRow]}>
             <Button onPress={handleCheckAll} style={[{backgroundColor:'#2b427d'}]}>全选</Button>
             <Button onPress={cancelSelect} style={[{backgroundColor:'#566a8b',marginLeft:10}]}>取消选择</Button> 
@@ -564,7 +556,7 @@ const AllData = ({title, data, coopData,onChange, onGroupChange}) => {
                     item={items}
                     title={items.membername}
                     checked={checked.has(items.id)}
-                    onPress={() => handleCheck(items.id)}
+                    onPress={() => handleCheck(items?.id)}
                   />
                   {
                     coopData && coopData.some(coopItem => coopItem.memberid === items.memberid) ? 
@@ -955,6 +947,147 @@ export default function Member({route, navigation,item}) {
     // console.log('userARR',operationUserArr);
   },[])
 
+  // 测试操作记录增加删除的测试函数
+  const testData = () => {
+    // 总的操作记录
+    let data = [
+      {"checkTime": "2024-07-27 16:19:32", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_1", "membername": "1-1#", "typeCode": "开始检测", "user": "xy"},
+      {"checkTime": "2024-07-26 16:19:32", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "结束检测", "user": "xy"},
+      {"checkTime": "2024-07-26 16:18:36", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:18:32", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "xy"},
+      {"checkTime": "2024-07-26 16:18:30", "dataType": " 检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "结束检测", "user": "xy"},
+      {"checkTime": "2024-07-26 16:17:31", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_1", "membername": "1-1#", "typeCode": "结束检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:17:06", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_1", "membername": "1-1#", "typeCode": "开始检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:16:57", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "xy"},
+      {"checkTime": "2024-07-26 16:16:47", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "结束检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:16:42", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:13:23", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "结束检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:13:17", "diseaseName": "混凝土破损、露筋", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:13:04", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:13:04", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:13:04", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:05:07", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "结束检测", "user": "xy"},
+      {"checkTime": "2024-07-26 16:04:24", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 16:04:18", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "xy"},
+      {"checkTime": "2024-07-26 16:01:44", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "结束检测", "user": "xy"},
+      {"checkTime": "2024-07-26 16:01:35", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "结束检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 15:59:57", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 15:59:50", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "xy"},
+      {"checkTime": "2024-07-26 15:57:07", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "结束检测", "user": "xy"},
+      {"checkTime": "2024-07-26 15:55:20", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "结束检测", "user": "aaaa"},
+      {"checkTime": "2024-07-26 15:55:11", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "xy"},
+      {"checkTime": "2024-07-26 15:55:06", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "aaaa"}
+    ];
+
+
+
+    // 列举所有构件id并去重
+    // let memberIds = data.map(item => item.memberid);
+    // let uniqueMemberIds = [...new Set(memberIds)];
+    // console.log('操作记录中涉及的构件',uniqueMemberIds);
+
+    // // 统计所有用户并去重
+    // let users = [...new Set(data.map(item => item.user))];
+    // console.log('操作记录中涉及的所有用户',users);
+
+    // // 列出各用户最新的检测状态（开始/结束、构件信息）
+    // let latestData = data.reduce((acc, curr) => {
+    //   if (!acc[curr.user] || new Date(curr.checkTime) > new Date(acc[curr.user].checkTime)) {
+    //     acc[curr.user] = { typeCode: curr.typeCode, memberid: curr.memberid, checkTime: curr.checkTime };
+    //   }
+    //   return acc;
+    // }, {});
+
+    // console.log('各用户最新的检测状态记录',latestData);
+
+    // 按构件分组，统计各自构件下，开始检测的有哪些用户，结束检测的有哪些用户
+    // 创建一个对象存储结果
+let groupedData = {};
+
+// 创建一个对象存储每个用户在不同memberid下的typeCode
+let userStatus = {};
+
+// 遍历数据进行分组统计
+data.forEach(item => {
+  let { memberid, typeCode, user } = item;
+
+  // 初始化用户的状态记录
+  if (!userStatus[user]) {
+    userStatus[user] = {};
+  }
+
+  // 如果该用户在该memberid下已经有记录且与当前typeCode不同，则报错
+  if (userStatus[user][memberid] && userStatus[user][memberid] !== typeCode) {
+    // console.error(`Error: User ${user} has conflicting typeCode under memberid ${memberid}`);
+    return;
+  }
+
+  // 记录用户在该memberid下的typeCode
+  userStatus[user][memberid] = typeCode;
+
+  // 组装groupedData
+  if (!groupedData[memberid]) {
+    groupedData[memberid] = {
+      开始检测: new Set(),
+      结束检测: new Set()
+    };
+  }
+
+  // 检查当前构件下该用户是否已经存在另一种类型的 typeCode
+  if (typeCode === '开始检测') {
+    if (groupedData[memberid]['结束检测'].has(user)) {
+      groupedData[memberid]['结束检测'].delete(user); // 删除结束检测中已经存在的用户
+    }
+    groupedData[memberid]['开始检测'].add(user); // 添加用户到开始检测集合中
+  } else if (typeCode === '结束检测') {
+    if (groupedData[memberid]['开始检测'].has(user)) {
+      groupedData[memberid]['开始检测'].delete(user); // 删除开始检测中已经存在的用户
+    }
+    groupedData[memberid]['结束检测'].add(user); // 添加用户到结束检测集合中
+  }
+});
+
+// 删除同时存在开始检测和结束检测的用户记录
+for (let memberid in groupedData) {
+  let { 开始检测, 结束检测 } = groupedData[memberid];
+  开始检测.forEach(user => {
+    if (结束检测.has(user)) {
+      结束检测.delete(user);
+    }
+  });
+}
+
+// 将 Set 转为数组形式
+for (let memberid in groupedData) {
+  groupedData[memberid]['开始检测'] = [...groupedData[memberid]['开始检测']];
+  groupedData[memberid]['结束检测'] = [...groupedData[memberid]['结束检测']];
+}
+
+// console.log(groupedData);
+
+let a = groupedData['g114peovt24cak4peovt3rick_b100001_lye1xlp9_1']['开始检测']
+console.log('a',a);
+
+    
+let arr = [];
+
+Object.keys(groupedData).forEach(key => {
+  let item = {
+    memberid: key,
+    userGroup: {
+      "开始检测": groupedData[key]["开始检测"],
+      "结束检测": groupedData[key]["结束检测"]
+    }
+  };
+  arr.push(item);
+});
+
+console.log(arr);
+
+    // 如果是开始，则读取
+
+  }
+
   return (
     <Box pid="P1501" navigation={navigation} route={route} headerItems={getHeaderItems()} labelname={data.title} projectList={project} project={project.projectname} bridge={bridge}>
       {/* 年份 + 数据影音 tab，当选中构件时，数据影音tab禁用 */}
@@ -1077,6 +1210,7 @@ export default function Member({route, navigation,item}) {
 
 
               </View>
+              {/* <Button onPress={testData} style={[{backgroundColor:'#2b427d'}]}>1223</Button> */}
               {/* 右侧 操作历史 */}
               <LogList 
                 list={editLogList ? editLogList : ''}

@@ -61,24 +61,24 @@ const Provider = props => {
   }, [networkState])
 
   // 监听软件从后台返回前台
-  // useEffect(() => {
-  //   AppState.addEventListener('change', nextAppState => {
-  //     if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
-  //       dispatch({ type: 'curAppState', payload: new Date() })
-  //     }
-  //     appState.current = nextAppState;
-  //   });
+  useEffect(() => {
+    AppState.addEventListener('change', nextAppState => {
+      if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+        dispatch({ type: 'curAppState', payload: new Date() })
+      }
+      appState.current = nextAppState;
+    });
 
-  //   return () => {
-  //     AppState.removeEventListener();
-  //   };
-  // }, []);
+    return () => {
+      AppState.removeEventListener();
+    };
+  }, []);
 
-  // useEffect(() => {
-  //   if (state.curAppState) {
-  //     wsReLink(state, networkState)
-  //   }
-  // }, [state.curAppState])
+  useEffect(() => {
+    if (state.curAppState) {
+      wsReLink(state, networkState)
+    }
+  }, [state.curAppState])
 
   // ws连接  正常连接、正常关闭、异常断开
   const wsLink = React.useCallback(_.debounce(function (state) {
@@ -238,45 +238,93 @@ const Provider = props => {
     data.sort((a, b) => {
       return new Date(b.checkTime) - new Date(a.checkTime);
     })
-    console.log("dealTestRecordData data", data);
+    console.log("dealTestRecordData data倒序排列后的操作记录数组", data);
     dispatch({ type: 'operationNoteData', payload: data })
 
-    // 对操作记录进行分组和处理
-    let data1 = Object.values(data.reduce((acc, currentItem) => {
-      const key = currentItem.memberid;
-      // 初始化每个 memberid 的对象结构
-      if (!acc[key]) {
-        acc[key] = {
-          memberid: currentItem.memberid,
-          membername: currentItem.membername,
-          userGroup: new Set() // 使用Set存储用户数据，自动去重
+    // 从data中提取出各用户最新的状态
+
+    let groupedData = {};
+
+    // 创建一个对象存储每个用户在不同memberid下的typeCode
+    let userStatus = {};
+
+    // 遍历数据进行分组统计
+    data.forEach(item => {
+      let { memberid, typeCode, user } = item;
+
+      // 初始化用户的状态记录
+      if (!userStatus[user]) {
+        userStatus[user] = {};
+      }
+
+      // 如果该用户在该memberid下已经有记录且与当前typeCode不同，则提示并返回
+      if (userStatus[user][memberid] && userStatus[user][memberid] !== typeCode) {
+        // console.error(`Error: User ${user} has conflicting typeCode under memberid ${memberid}`);
+        return;
+      }
+
+      // 记录用户在该memberid下的typeCode
+      userStatus[user][memberid] = typeCode;
+
+      // 组装groupedData
+      if (!groupedData[memberid]) {
+        groupedData[memberid] = {
+          开始检测: new Set(),
+          结束检测: new Set()
         };
       }
-      
-      // 将当前记录按照 checkTime 排序
-      if (!acc[key].records) {
-        acc[key].records = [];
+
+      // 检查当前构件下该用户是否已经存在另一种类型的 typeCode
+      if (typeCode === '开始检测') {
+        if (groupedData[memberid]['结束检测'].has(user)) {
+          groupedData[memberid]['结束检测'].delete(user); // 删除结束检测中已经存在的用户
+        }
+        groupedData[memberid]['开始检测'].add(user); // 添加用户到开始检测集合中
+      } else if (typeCode === '结束检测') {
+        if (groupedData[memberid]['开始检测'].has(user)) {
+          groupedData[memberid]['开始检测'].delete(user); // 删除开始检测中已经存在的用户
+        }
+        groupedData[memberid]['结束检测'].add(user); // 添加用户到结束检测集合中
       }
-      acc[key].records.push(currentItem);
-      acc[key].records.sort((a, b) => new Date(b.checkTime) - new Date(a.checkTime));
-      
-      // 根据最新的 typeCode 更新 userGroup
-      const latestRecord = acc[key].records[0];
-      console.log('latestRecord',latestRecord);
-      if (latestRecord.typeCode === '开始检测') {
-        acc[key].userGroup.add(latestRecord.user);
-      } else if (latestRecord.typeCode === '结束检测') {
-        acc[key].userGroup.delete(latestRecord.user);
-      }
-      return acc;
-    }, {}));
-    data1.forEach(item => {
-      item.userGroup = Array.from(item.userGroup);
     });
+
+    // 删除同时存在开始检测和结束检测的用户记录
+    for (let memberid in groupedData) {
+      let { 开始检测, 结束检测 } = groupedData[memberid];
+      开始检测.forEach(user => {
+        if (结束检测.has(user)) {
+          结束检测.delete(user);
+        }
+      });
+    }
+
+    // 将 Set 转为数组形式
+    for (let memberid in groupedData) {
+      groupedData[memberid]['开始检测'] = [...groupedData[memberid]['开始检测']];
+      groupedData[memberid]['结束检测'] = [...groupedData[memberid]['结束检测']];
+    }
+
+        
+    let arr = [];
+
+    Object.keys(groupedData).forEach(key => {
+      let item = {
+        memberid: key,
+        userGroup: {
+          "开始检测": groupedData[key]["开始检测"],
+          "结束检测": groupedData[key]["结束检测"]
+        }
+      };
+      arr.push(item);
+    });
+
+    // console.log(arr[0]?.userGroup)
+
     
-    // 输出结果
-    console.log('data1',data1);
-    dispatch({ type:'operationUserArr', payload:data1})
+    
+
+  
+    dispatch({ type:'operationUserArr', payload:arr})
   }
 
   // 关闭协同检测
