@@ -242,7 +242,6 @@ const Provider = props => {
     dispatch({ type: 'operationNoteData', payload: data })
 
     // 从data中提取出各用户最新的状态
-
     let groupedData = {};
 
     // 创建一个对象存储每个用户在不同memberid下的typeCode
@@ -266,7 +265,7 @@ const Provider = props => {
       // 记录用户在该memberid下的typeCode
       userStatus[user][memberid] = typeCode;
 
-      // 组装groupedData
+      
       if (!groupedData[memberid]) {
         groupedData[memberid] = {
           开始检测: new Set(),
@@ -304,7 +303,7 @@ const Provider = props => {
       groupedData[memberid]['结束检测'] = [...groupedData[memberid]['结束检测']];
     }
 
-        
+    // obj转为数组形式
     let arr = [];
 
     Object.keys(groupedData).forEach(key => {
@@ -317,13 +316,8 @@ const Provider = props => {
       };
       arr.push(item);
     });
-
     // console.log(arr[0]?.userGroup)
 
-    
-    
-
-  
     dispatch({ type:'operationUserArr', payload:arr})
   }
 

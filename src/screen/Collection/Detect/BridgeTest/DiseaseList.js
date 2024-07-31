@@ -288,7 +288,7 @@ export default function DiseaseList({route, navigation}) {
 
   // 协同检测
   const {
-    state: {wsOpen,curSynergyInfo,wsConnection,operationNoteData},
+    state: {wsOpen,curSynergyInfo,wsConnection,operationNoteData,allyStatusList},
   } = React.useContext(synergyContext);
 
   const [tableData, setTableData] = React.useState([]);
@@ -496,6 +496,33 @@ export default function DiseaseList({route, navigation}) {
           tableData[0].forEach((item,index)=>{
             // 当 是协同检测 且 新增的病害数据是进入页面后新增的（避免把以前发送过的记录重复发送）
             if(route.params.isCoop && new Date(item.u_date) > new Date(startTime)){
+
+              let latestData = operationNoteData.reduce((acc, curr) => {
+                if (!acc[curr.user] || new Date(curr.checkTime) > new Date(acc[curr.user].checkTime)) {
+                  acc[curr.user] = { typeCode: curr.typeCode, memberid: curr.memberid, checkTime: curr.checkTime };
+                }
+                return acc;
+              }, {});
+              console.log('latestData33',latestData);
+              if(route.params.isCoop){
+                if(latestData[route.params.selfCoopData.realname]?.typeCode == '结束检测'){
+                  let noteTypeData = {}
+                  noteTypeData['isCoop'] = route.params.isCoop
+                  noteTypeData['memberid'] = items.memberid
+                  noteTypeData['membername'] = items.membername
+                  noteTypeData['user'] = route.params.selfCoopData.realname
+                  noteTypeData['dataType'] = '检测状态'
+                  noteTypeData['typeCode'] = '开始检测'
+                  noteTypeData['checkTime'] = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+                  console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
+                  if(wsConnection.current){
+                    wsConnection.current.send(JSON.stringify(noteTypeData))
+                  }
+                }
+              }
+              
+
+
               console.log('-------------------有新增修改');
               
               noteData['isCoop'] = route.params.isCoop
@@ -513,6 +540,8 @@ export default function DiseaseList({route, navigation}) {
               // 发送操作记录成功后重置对照时间
               setStartTime(dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss'))
               console.log('重置对照时间',startTime);
+
+              
             }
           })
         })
@@ -757,6 +786,78 @@ export default function DiseaseList({route, navigation}) {
       console.log('goBack err', e);
     }
   }
+
+  useEffect(()=>{
+    // console.log('allList',allList[0]?.list);
+    // console.log('userARR',operationUserArr);
+    // console.log('operationNoteData操作记录',operationNoteData);
+    console.log('协同人员信息有变化',curSynergyInfo);
+    console.log('在线信息有变化',allyStatusList);
+
+    try {
+      // 先取出当前离线的用户信息
+      if(allyStatusList){
+        allyStatusList.forEach((item)=>{
+          if(item.state == '离线'){
+            console.log('离线的用户信息',item);
+            // 列出各用户最新的检测状态（开始/结束、构件信息）
+            let latestData = operationNoteData.reduce((acc, curr) => {
+              if (!acc[curr.user] || new Date(curr.checkTime) > new Date(acc[curr.user].checkTime)) {
+                acc[curr.user] = { typeCode: curr.typeCode, memberid: curr.memberid, checkTime: curr.checkTime };
+              }
+              return acc;
+            }, {});
+            // 离线用户掉线前的最后一条开始检测的数据
+            let userLatestData = latestData[item.realname]
+            console.log('离线用户掉线前的最后一条开始检测的数据',userLatestData);
+            if(userLatestData){
+              // 如果是开始检测，则代发一条结束检测的记录
+              if(userLatestData?.typeCode == '开始检测'){
+                if(route.params.isCoop){
+                  let endTime = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+                  console.log('代发的退出检测记录',endTime);
+                  let noteTypeData = {}
+                  noteTypeData['isCoop'] = route.params.isCoop
+                  noteTypeData['memberid'] = userLatestData.memberid
+                  // noteTypeData['membername'] = userLatestData.membername
+                  noteTypeData['user'] = item.realname
+                  noteTypeData['dataType'] = '检测状态'
+                  noteTypeData['typeCode'] = '结束检测'
+                  noteTypeData['checkTime'] = endTime
+                  console.log('向盒子发送一条更改检测状态的信息',noteTypeData);
+                  if(wsConnection.current){
+                    wsConnection.current.send(JSON.stringify(noteTypeData))
+                  }
+                  
+                }
+              }
+            }
+          }
+          if(item.state == '在线'){
+            let latestData = operationNoteData.reduce((acc, curr) => {
+              if (!acc[curr.user] || new Date(curr.checkTime) > new Date(acc[curr.user].checkTime)) {
+                acc[curr.user] = { typeCode: curr.typeCode, memberid: curr.memberid, checkTime: curr.checkTime };
+              }
+              return acc;
+            }, {});
+            console.log('latestData',latestData);
+            if(latestData[item.realname].typeCode == '结束检测'){
+              console.log('更新一条开始检测的记录',item.realname,route.params);
+            }
+          }
+        })
+      }
+      // 在操作记录的数据里找出该用户的最新一条数据（开始检测、构件信息、）
+
+      // 向盒子发送一条该用户结束检测的信息（当前时间、最新一条的构件检测信息）
+
+    } catch (error) {
+      
+    }
+    
+
+
+  },[operationNoteData,curSynergyInfo,allyStatusList])
 
   return (
     <Box headerItems={getHeaderItems()} navigation={navigation} pid="P1603" labelname={route.params.title} membername={list[0].membername} projectList={project} project={project.projectname} bridge={bridge}>

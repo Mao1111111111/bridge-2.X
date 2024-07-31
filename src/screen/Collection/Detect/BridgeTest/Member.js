@@ -623,7 +623,7 @@ export default function Member({route, navigation,item}) {
 
   // 协同检测
   const {
-    state: {wsOpen,curSynergyInfo,operationNoteData,operationUserArr},
+    state: {wsOpen,wsConnection,curSynergyInfo,allyStatusList,operationNoteData,operationUserArr},
   } = React.useContext(synergyContext);
 
   // 桥梁检测全局参数 -- 桥梁信息、检测构件列表、项目信息
@@ -945,7 +945,75 @@ export default function Member({route, navigation,item}) {
   useEffect(()=>{
     // console.log('allList',allList[0]?.list);
     // console.log('userARR',operationUserArr);
-  },[])
+    // console.log('operationNoteData操作记录',operationNoteData);
+    console.log('构件下人名列表',operationUserArr[0].userGroup);
+    console.log('协同人员信息有变化',curSynergyInfo);
+    console.log('在线信息有变化',allyStatusList);
+
+    try {
+      // 先取出当前离线的用户信息
+      if(allyStatusList){
+        allyStatusList.forEach((item)=>{
+          if(item.state == '离线'){
+            console.log('离线的用户信息',item);
+            // 列出各用户最新的检测状态（开始/结束、构件信息）
+            let latestData = operationNoteData.reduce((acc, curr) => {
+              if (!acc[curr.user] || new Date(curr.checkTime) > new Date(acc[curr.user].checkTime)) {
+                acc[curr.user] = { typeCode: curr.typeCode, memberid: curr.memberid, checkTime: curr.checkTime };
+              }
+              return acc;
+            }, {});
+            // 离线用户掉线前的最后一条开始检测的数据
+            let userLatestData = latestData[item.realname]
+            console.log('离线用户掉线前的最后一条开始检测的数据',userLatestData);
+            if(userLatestData){
+              // 如果是开始检测，则代发一条结束检测的记录
+              if(userLatestData?.typeCode == '开始检测'){
+                // if(route.params.isCoop){
+                  let endTime = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+                  console.log('代发的退出检测记录',endTime);
+                  let noteTypeData = {}
+                  // noteTypeData['isCoop'] = route.params.isCoop
+                  noteTypeData['memberid'] = userLatestData.memberid
+                  // noteTypeData['membername'] = userLatestData.membername
+                  noteTypeData['user'] = item.realname
+                  noteTypeData['dataType'] = '检测状态'
+                  noteTypeData['typeCode'] = '结束检测'
+                  noteTypeData['checkTime'] = endTime
+                  console.log('向盒子发送一条更改检测状态的信息',wsConnection?.current);
+                  if(wsConnection.current){
+                    wsConnection.current.send(JSON.stringify(noteTypeData))
+                  }
+                  
+                // }
+              }
+            }
+          }
+          if(item.state == '在线'){
+            let latestData = operationNoteData.reduce((acc, curr) => {
+              if (!acc[curr.user] || new Date(curr.checkTime) > new Date(acc[curr.user].checkTime)) {
+                acc[curr.user] = { typeCode: curr.typeCode, memberid: curr.memberid, checkTime: curr.checkTime };
+              }
+              return acc;
+            }, {});
+            console.log('latestData',latestData);
+            if(latestData[item.realname].typeCode == '结束检测'){
+              console.log('更新一条开始检测的记录',item.realname,route.params);
+            }
+          }
+        })
+      }
+      // 在操作记录的数据里找出该用户的最新一条数据（开始检测、构件信息、）
+
+      // 向盒子发送一条该用户结束检测的信息（当前时间、最新一条的构件检测信息）
+
+    } catch (error) {
+      
+    }
+    
+
+
+  },[operationNoteData,curSynergyInfo,allyStatusList,operationUserArr])
 
   // 测试操作记录增加删除的测试函数
   const testData = () => {
@@ -979,7 +1047,7 @@ export default function Member({route, navigation,item}) {
       {"checkTime": "2024-07-26 15:55:06", "dataType": "检测状态", "isCoop": true, "memberid": "g114peovt24cak4peovt3rick_b100001_lye1xlp9_0", "membername": "1-1#", "typeCode": "开始检测", "user": "aaaa"}
     ];
 
-
+    console.log('协同检测中的人员在线状态信息curSynergyInfo',curSynergyInfo,allyStatusList);
 
     // 列举所有构件id并去重
     // let memberIds = data.map(item => item.memberid);
