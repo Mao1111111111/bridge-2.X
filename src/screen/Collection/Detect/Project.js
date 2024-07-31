@@ -18,6 +18,7 @@ import {alert, confirm} from '../../../utils/alert';
 import {BoxShadow} from 'react-native-shadow'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { dataDealTest } from '../../DownloadTest/downloadDeal';
+import { S3GetFile } from '../../../utils/AWS';
 
 export default function Project({navigation}) {
   
@@ -330,6 +331,10 @@ export default function Project({navigation}) {
     console.log('点击了goAhead');
   }
 
+  const dataDealTestBtn =async () => {
+    let message = await dataDealTest(userInfo)
+    console.log("message",message);
+  }
   return (
     <CommonView
       //顶部导航最左侧标签 
@@ -367,7 +372,7 @@ export default function Project({navigation}) {
         :
         [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
       }>
-        <Button onPress={()=>dataDealTest(userInfo)}>111</Button>
+        <Button onPress={dataDealTestBtn}>111</Button>
          {/* 检索 */}
       <View style={[
         styles.searchCard,

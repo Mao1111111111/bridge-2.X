@@ -1,4 +1,4 @@
-{
+export const yunduanData = {
     "bridgeid": "g634pep6b4cr3s",
     "bridgename": "k33+44测试桥梁123",
     "bridgetype": "bridge-g",
