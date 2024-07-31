@@ -2,7 +2,7 @@ export const yunduanData = {
     "bridgeid": "g634pep6b4cr3s",
     "bridgename": "k33+44测试桥梁123",
     "bridgetype": "bridge-g",
-    "bridgestation": "",
+    "bridgestation": "4",
     "b16": 0.0,
     "bridgefunc": "func101",
     "bridgeside": "side111",
