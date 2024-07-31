@@ -91,4 +91,3 @@ export const S3GetFile = (key, filePath) => {
         console.log('上传数据-S3Upload', e);
     }
 }
-

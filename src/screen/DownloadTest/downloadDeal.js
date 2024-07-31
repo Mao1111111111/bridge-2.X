@@ -10,6 +10,9 @@ import * as bridgeReportFile from '../../database/bridge_report_file';
 import * as checkstatusMedia from '../../database/bridge_report_member_checkstatus_media';
 import * as fileGps from '../../database/file_gps';
 import dayjs from 'dayjs';
+import fs from '../../utils/fs';
+import { S3GetFile, test } from '../../utils/AWS';
+import uuid from 'react-native-uuid';
 
 const testData = {
     // 数据类型 structure(结构)、testData(测试数据)
@@ -19,13 +22,13 @@ const testData = {
     // 项目id
     projectid: '22',
     // 桥梁id
-    bridgeid: 'g114pkr3y1z980',
+    bridgeid: 'g114pkr3y2z980',
     // 桥梁名称
-    bridgename: '测试桥梁-g114pkr3y1z980',
+    bridgename: '测试桥梁-g114pkr3y2z980',
     // 桥梁类型
     bridgetype: 'bridge-g',
     // 桥梁桩号
-    bridgestation: 'k500+g114pkr3y1z980',
+    bridgestation: 'k500+g114pkr3y2z980',
     // 桥梁长度（浮点数），有上传(b16)
     b16: 0,
     // 功能类型（字符串），有上传(bridgefunc)
@@ -63,13 +66,13 @@ const testData = {
     structureInfo: [
         {
             // 桥梁id（字符串），有上传(bridgeid)，同桥梁基本数据中bridgeid
-            bridgeid: 'g114pkr3y1z980',
+            bridgeid: 'g114pkr3y2z980',
             // 部件结构（字符串），有上传(structureInfo.memberData.position)
             position: 'b10',
             // 部件编号（字符串），有上传(structureInfo.memberData.membertype)
             membertype: 'b100001',
             // 构件编号（字符串），有上传(structureInfo.memberData.memberid)
-            memberid: 'g114pkr3y1z980_b100001_lz6c37cc_0',
+            memberid: 'g114pkr3y2z980_b100001_lz6c37cc_0',
             // 构件名称（字符串），有上传(structureInfo.memberData.membername)
             membername: '1-1#',
             // 跨编号（int），有上传(structureInfo.memberData.stepno)
@@ -81,13 +84,13 @@ const testData = {
         },
         {
             // 桥梁id（字符串），有上传(bridgeid)，同桥梁基本数据中bridgeid
-            bridgeid: 'g114pkr3y1z980',
+            bridgeid: 'g114pkr3y2z980',
             // 部件结构（字符串），有上传(structureInfo.memberData.position)
             position: 'b10',
             // 部件编号（字符串），有上传(structureInfo.memberData.membertype)
             membertype: 'b100001',
             // 构件编号（字符串），有上传(structureInfo.memberData.memberid)
-            memberid: 'g114pkr3y1z980_b100001_lz6c37cc_1',
+            memberid: 'g114pkr3y2z980_b100001_lz6c37cc_1',
             // 构件名称（字符串），有上传(structureInfo.memberData.membername)
             membername: '2-1#',
             // 跨编号（int），有上传(structureInfo.memberData.stepno)
@@ -99,13 +102,13 @@ const testData = {
         },
         {
             // 桥梁id（字符串），有上传(bridgeid)，同桥梁基本数据中bridgeid
-            bridgeid: 'g114pkr3y1z980',
+            bridgeid: 'g114pkr3y2z980',
             // 部件结构（字符串），有上传(structureInfo.memberData.position)
             position: 'b20',
             // 部件编号（字符串），有上传(structureInfo.memberData.membertype)
             membertype: 'b200001',
             // 构件编号（字符串），有上传(structureInfo.memberData.memberid)
-            memberid: 'g114pkr3y1z980_b200001_lz6c37cc_2',
+            memberid: 'g114pkr3y2z980_b200001_lz6c37cc_2',
             // 构件名称（字符串），有上传(structureInfo.memberData.membername)
             membername: '0#台台身',
             // 跨编号（int），有上传(structureInfo.memberData.stepno)
@@ -117,13 +120,13 @@ const testData = {
         },
         {
             // 桥梁id（字符串），有上传(bridgeid)，同桥梁基本数据中bridgeid
-            bridgeid: 'g114pkr3y1z980',
+            bridgeid: 'g114pkr3y2z980',
             // 部件结构（字符串），有上传(structureInfo.memberData.position)
             position: 'b20',
             // 部件编号（字符串），有上传(structureInfo.memberData.membertype)
             membertype: 'b200001',
             // 构件编号（字符串），有上传(structureInfo.memberData.memberid)
-            memberid: 'g114pkr3y1z980_b200001_lz6c37cc_3',
+            memberid: 'g114pkr3y2z980_b200001_lz6c37cc_3',
             // 构件名称（字符串），有上传(structureInfo.memberData.membername)
             membername: '0#台台帽',
             // 跨编号（int），有上传(structureInfo.memberData.stepno)
@@ -135,13 +138,13 @@ const testData = {
         },
         {
             // 桥梁id（字符串），有上传(bridgeid)，同桥梁基本数据中bridgeid
-            bridgeid: 'g114pkr3y1z980',
+            bridgeid: 'g114pkr3y2z980',
             // 部件结构（字符串），有上传(structureInfo.memberData.position)
             position: 'b20',
             // 部件编号（字符串），有上传(structureInfo.memberData.membertype)
             membertype: 'b200001',
             // 构件编号（字符串），有上传(structureInfo.memberData.memberid)
-            memberid: 'g114pkr3y1z980_b200001_lz6c37cc_4',
+            memberid: 'g114pkr3y2z980_b200001_lz6c37cc_4',
             // 构件名称（字符串），有上传(structureInfo.memberData.membername)
             membername: '2#台台身',
             // 跨编号（int），有上传(structureInfo.memberData.stepno)
@@ -153,13 +156,13 @@ const testData = {
         },
         {
             // 桥梁id（字符串），有上传(bridgeid)，同桥梁基本数据中bridgeid
-            bridgeid: 'g114pkr3y1z980',
+            bridgeid: 'g114pkr3y2z980',
             // 部件结构（字符串），有上传(structureInfo.memberData.position)
             position: 'b20',
             // 部件编号（字符串），有上传(structureInfo.memberData.membertype)
             membertype: 'b200001',
             // 构件编号（字符串），有上传(structureInfo.memberData.memberid)
-            memberid: 'g114pkr3y1z980_b200001_lz6c37cc_5',
+            memberid: 'g114pkr3y2z980_b200001_lz6c37cc_5',
             // 构件名称（字符串），有上传(structureInfo.memberData.membername)
             membername: '2#台台帽',
             // 跨编号（int），有上传(structureInfo.memberData.stepno)
@@ -171,13 +174,13 @@ const testData = {
         },
         {
             // 桥梁id（字符串），有上传(bridgeid)，同桥梁基本数据中bridgeid
-            bridgeid: 'g114pkr3y1z980',
+            bridgeid: 'g114pkr3y2z980',
             // 部件结构（字符串），有上传(structureInfo.memberData.position)
             position: 'b20',
             // 部件编号（字符串），有上传(structureInfo.memberData.membertype)
             membertype: 'b300003',
             // 构件编号（字符串），有上传(structureInfo.memberData.memberid)
-            memberid: 'g114pkr3y1z980_b300003_lz6c37cc_6',
+            memberid: 'g114pkr3y2z980_b300003_lz6c37cc_6',
             // 构件名称（字符串），有上传(structureInfo.memberData.membername)
             membername: '左侧1#跨',
             // 跨编号（int），有上传(structureInfo.memberData.stepno)
@@ -189,13 +192,13 @@ const testData = {
         },
         {
             // 桥梁id（字符串），有上传(bridgeid)，同桥梁基本数据中bridgeid
-            bridgeid: 'g114pkr3y1z980',
+            bridgeid: 'g114pkr3y2z980',
             // 部件结构（字符串），有上传(structureInfo.memberData.position)
             position: 'b20',
             // 部件编号（字符串），有上传(structureInfo.memberData.membertype)
             membertype: 'b300003',
             // 构件编号（字符串），有上传(structureInfo.memberData.memberid)
-            memberid: 'g114pkr3y1z980_b300003_lz6c37cc_7',
+            memberid: 'g114pkr3y2z980_b300003_lz6c37cc_7',
             // 构件名称（字符串），有上传(structureInfo.memberData.membername)
             membername: '左侧2#跨',
             // 跨编号（int），有上传(structureInfo.memberData.stepno)
@@ -207,13 +210,13 @@ const testData = {
         },
         {
             // 桥梁id（字符串），有上传(bridgeid)，同桥梁基本数据中bridgeid
-            bridgeid: 'g114pkr3y1z980',
+            bridgeid: 'g114pkr3y2z980',
             // 部件结构（字符串），有上传(structureInfo.memberData.position)
             position: 'b20',
             // 部件编号（字符串），有上传(structureInfo.memberData.membertype)
             membertype: 'b300003',
             // 构件编号（字符串），有上传(structureInfo.memberData.memberid)
-            memberid: 'g114pkr3y1z980_b300003_lz6c37cc_8',
+            memberid: 'g114pkr3y2z980_b300003_lz6c37cc_8',
             // 构件名称（字符串），有上传(structureInfo.memberData.membername)
             membername: '右侧1#跨',
             // 跨编号（int），有上传(structureInfo.memberData.stepno)
@@ -225,13 +228,13 @@ const testData = {
         },
         {
             // 桥梁id（字符串），有上传(bridgeid)，同桥梁基本数据中bridgeid
-            bridgeid: 'g114pkr3y1z980',
+            bridgeid: 'g114pkr3y2z980',
             // 部件结构（字符串），有上传(structureInfo.memberData.position)
             position: 'b20',
             // 部件编号（字符串），有上传(structureInfo.memberData.membertype)
             membertype: 'b300003',
             // 构件编号（字符串），有上传(structureInfo.memberData.memberid)
-            memberid: 'g114pkr3y1z980_b300003_lz6c37cc_9',
+            memberid: 'g114pkr3y2z980_b300003_lz6c37cc_9',
             // 构件名称（字符串），有上传(structureInfo.memberData.membername)
             membername: '右侧2#跨',
             // 跨编号（int），有上传(structureInfo.memberData.stepno)
@@ -243,7 +246,7 @@ const testData = {
         },
     ],
     //----- 测试数据 -----
-    bridgereportid: 'g114pkr3y1z9804pkr3y24w7w',
+    bridgereportid: 'g114pkr3y2z9804pkr3y24w7w',
     // 报告名
     reportname: "G1011哈同高速k69+275三宝分离式立交桥(右幅)桥梁检测",
     // 开始时间
@@ -262,7 +265,7 @@ const testData = {
             // 部件编号，有上传(testData.detailTestData.memberData.membertype)
             membertype: 'b100001',
             // 构件编号，有上传(testData.detailTestData.memberData.memberid)
-            memberid: 'g114pkr3y1z9804pkr3y24w7w_b100001_lz6c37cc_0',
+            memberid: 'g114pkr3y2z9804pkr3y24w7w_b100001_lz6c37cc_0',
             // 构建名称，有上传(testData.detailTestData.memberData.membername)
             membername: '1-1#',
             // 跨编号，有上传(testData.detailTestData.memberData.stepno)
@@ -282,7 +285,7 @@ const testData = {
             // 部件编号，有上传(testData.detailTestData.memberData.membertype)
             membertype: 'b100001',
             // 构件编号，有上传(testData.detailTestData.memberData.memberid)
-            memberid: 'g114pkr3y1z9804pkr3y24w7w_b100001_lz6c37cc_1',
+            memberid: 'g114pkr3y2z9804pkr3y24w7w_b100001_lz6c37cc_1',
             // 构建名称，有上传(testData.detailTestData.memberData.membername)
             membername: '2-1#',
             // 跨编号，有上传(testData.detailTestData.memberData.stepno)
@@ -302,7 +305,7 @@ const testData = {
             // 部件编号，有上传(testData.detailTestData.memberData.membertype)
             membertype: 'b200001',
             // 构件编号，有上传(testData.detailTestData.memberData.memberid)
-            memberid: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_2',
+            memberid: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_2',
             // 构建名称，有上传(testData.detailTestData.memberData.membername)
             membername: '0#台台身',
             // 跨编号，有上传(testData.detailTestData.memberData.stepno)
@@ -322,7 +325,7 @@ const testData = {
             // 部件编号，有上传(testData.detailTestData.memberData.membertype)
             membertype: 'b200001',
             // 构件编号，有上传(testData.detailTestData.memberData.memberid)
-            memberid: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_3',
+            memberid: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_3',
             // 构建名称，有上传(testData.detailTestData.memberData.membername)
             membername: '0#台台帽',
             // 跨编号，有上传(testData.detailTestData.memberData.stepno)
@@ -342,7 +345,7 @@ const testData = {
             // 部件编号，有上传(testData.detailTestData.memberData.membertype)
             membertype: 'b200001',
             // 构件编号，有上传(testData.detailTestData.memberData.memberid)
-            memberid: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_4',
+            memberid: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_4',
             // 构建名称，有上传(testData.detailTestData.memberData.membername)
             membername: '2#台台身',
             // 跨编号，有上传(testData.detailTestData.memberData.stepno)
@@ -362,7 +365,7 @@ const testData = {
             // 部件编号，有上传(testData.detailTestData.memberData.membertype)
             membertype: 'b200001',
             // 构件编号，有上传(testData.detailTestData.memberData.memberid)
-            memberid: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_5',
+            memberid: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_5',
             // 构建名称，有上传(testData.detailTestData.memberData.membername)
             membername: '2#台台帽',
             // 跨编号，有上传(testData.detailTestData.memberData.stepno)
@@ -382,7 +385,7 @@ const testData = {
             // 部件编号，有上传(testData.detailTestData.memberData.membertype)
             membertype: 'b300003',
             // 构件编号，有上传(testData.detailTestData.memberData.memberid)
-            memberid: 'g114pkr3y1z9804pkr3y24w7w_b300003_lz6c37cc_6',
+            memberid: 'g114pkr3y2z9804pkr3y24w7w_b300003_lz6c37cc_6',
             // 构建名称，有上传(testData.detailTestData.memberData.membername)
             membername: '左侧1#跨',
             // 跨编号，有上传(testData.detailTestData.memberData.stepno)
@@ -402,7 +405,7 @@ const testData = {
             // 部件编号，有上传(testData.detailTestData.memberData.membertype)
             membertype: 'b300003',
             // 构件编号，有上传(testData.detailTestData.memberData.memberid)
-            memberid: 'g114pkr3y1z9804pkr3y24w7w_b300003_lz6c37cc_7',
+            memberid: 'g114pkr3y2z9804pkr3y24w7w_b300003_lz6c37cc_7',
             // 构建名称，有上传(testData.detailTestData.memberData.membername)
             membername: '左侧2#跨',
             // 跨编号，有上传(testData.detailTestData.memberData.stepno)
@@ -422,7 +425,7 @@ const testData = {
             // 部件编号，有上传(testData.detailTestData.memberData.membertype)
             membertype: 'b300003',
             // 构件编号，有上传(testData.detailTestData.memberData.memberid)
-            memberid: 'g114pkr3y1z9804pkr3y24w7w_b300003_lz6c37cc_8',
+            memberid: 'g114pkr3y2z9804pkr3y24w7w_b300003_lz6c37cc_8',
             // 构建名称，有上传(testData.detailTestData.memberData.membername)
             membername: '右侧1#跨',
             // 跨编号，有上传(testData.detailTestData.memberData.stepno)
@@ -442,7 +445,7 @@ const testData = {
             // 部件编号，有上传(testData.detailTestData.memberData.membertype)
             membertype: 'b300003',
             // 构件编号，有上传(testData.detailTestData.memberData.memberid)
-            memberid: 'g114pkr3y1z9804pkr3y24w7w_b300003_lz6c37cc_9',
+            memberid: 'g114pkr3y2z9804pkr3y24w7w_b300003_lz6c37cc_9',
             // 构建名称，有上传(testData.detailTestData.memberData.membername)
             membername: '右侧2#跨',
             // 跨编号，有上传(testData.detailTestData.memberData.stepno)
@@ -461,7 +464,7 @@ const testData = {
     bridge_report_data: [
         {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
-            dataid: 'g114pkr3y1z9804pkr3y24w7w_b100001_lz6c37cc_0',
+            dataid: 'g114pkr3y2z9804pkr3y24w7w_b100001_lz6c37cc_0',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
             jsondata: JSON.stringify({
                 "areatype": "at0001",
@@ -546,7 +549,7 @@ const testData = {
             // 是否重点关注 -- 未存
             mian: 0,
             // 数据版本，病害唯一值，有上传(testData.detailTestData.memberData.diseaseData/goodData.version)，对应图片数据中的 dataid，用来确定图片
-            version: 'g114pkr3y1z9804pkr3y24w7w_b100001_lz6c37cc_0_1',
+            version: 'g114pkr3y2z9804pkr3y24w7w_b100001_lz6c37cc_0_1',
             // 更新时间，有上传(testData.detailTestData.memberData.diseaseData/goodData.u_date)
             u_date: '2024-07-29 13:53:12',
             // 经度，有上传(testData.detailTestData.memberData.diseaseData/goodData.longitude)
@@ -556,7 +559,7 @@ const testData = {
         },
         {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
-            dataid: 'g114pkr3y1z9804pkr3y24w7w_b100001_lz6c37cc_0',
+            dataid: 'g114pkr3y2z9804pkr3y24w7w_b100001_lz6c37cc_0',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
             jsondata: JSON.stringify({
                 "areatype": "at0001",
@@ -637,7 +640,7 @@ const testData = {
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
             datatype: 'c1001',
             // 数据版本，病害唯一值，有上传(testData.detailTestData.memberData.diseaseData/goodData.version)，对应图片数据中的 dataid，用来确定图片
-            version: 'g114pkr3y1z9804pkr3y24w7w_b100001_lz6c37cc_0_2',
+            version: 'g114pkr3y2z9804pkr3y24w7w_b100001_lz6c37cc_0_2',
             // 更新时间，有上传(testData.detailTestData.memberData.diseaseData/goodData.u_date)
             u_date: '2024-07-29 13:53:53',
             // 经度，有上传(testData.detailTestData.memberData.diseaseData/goodData.longitude)
@@ -647,7 +650,7 @@ const testData = {
         },
         {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
-            dataid: 'g114pkr3y1z9804pkr3y24w7w_b100001_lz6c37cc_1',
+            dataid: 'g114pkr3y2z9804pkr3y24w7w_b100001_lz6c37cc_1',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
             jsondata: JSON.stringify({
                 "areatype": "at0001",
@@ -728,7 +731,7 @@ const testData = {
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
             datatype: 'c1001',
             // 数据版本，病害唯一值，有上传(testData.detailTestData.memberData.diseaseData/goodData.version)，对应图片数据中的 dataid，用来确定图片
-            version: 'g114pkr3y1z9804pkr3y24w7w_b100001_lz6c37cc_1_1',
+            version: 'g114pkr3y2z9804pkr3y24w7w_b100001_lz6c37cc_1_1',
             // 更新时间，有上传(testData.detailTestData.memberData.diseaseData/goodData.u_date)
             u_date: '2024-07-29 13:53:27',
             // 经度，有上传(testData.detailTestData.memberData.diseaseData/goodData.longitude)
@@ -738,7 +741,7 @@ const testData = {
         },
         {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
-            dataid: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_2',
+            dataid: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_2',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
             jsondata: JSON.stringify({}),
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
@@ -746,7 +749,7 @@ const testData = {
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
             datatype: '',
             // 数据版本，病害唯一值，有上传(testData.detailTestData.memberData.diseaseData/goodData.version)，对应图片数据中的 dataid，用来确定图片
-            version: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_2_1',
+            version: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_2_1',
             // 更新时间，有上传(testData.detailTestData.memberData.diseaseData/goodData.u_date)
             u_date: '2024-07-29 13:54:02',
             // 经度，有上传(testData.detailTestData.memberData.diseaseData/goodData.longitude)
@@ -756,7 +759,7 @@ const testData = {
         },
         {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
-            dataid: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_3',
+            dataid: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_3',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
             jsondata: JSON.stringify({}),
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
@@ -764,7 +767,7 @@ const testData = {
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
             datatype: '',
             // 数据版本，病害唯一值，有上传(testData.detailTestData.memberData.diseaseData/goodData.version)，对应图片数据中的 dataid，用来确定图片
-            version: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_3_1',
+            version: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_3_1',
             // 更新时间，有上传(testData.detailTestData.memberData.diseaseData/goodData.u_date)
             u_date: '2024-07-29 13:54:02',
             // 经度，有上传(testData.detailTestData.memberData.diseaseData/goodData.longitude)
@@ -774,7 +777,7 @@ const testData = {
         },
         {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
-            dataid: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_4',
+            dataid: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_4',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
             jsondata: JSON.stringify({}),
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
@@ -782,7 +785,7 @@ const testData = {
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
             datatype: '',
             // 数据版本，病害唯一值，有上传(testData.detailTestData.memberData.diseaseData/goodData.version)，对应图片数据中的 dataid，用来确定图片
-            version: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_4_1',
+            version: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_4_1',
             // 更新时间，有上传(testData.detailTestData.memberData.diseaseData/goodData.u_date)
             u_date: '2024-07-29 13:54:02',
             // 经度，有上传(testData.detailTestData.memberData.diseaseData/goodData.longitude)
@@ -792,7 +795,7 @@ const testData = {
         },
         {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
-            dataid: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_5',
+            dataid: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_5',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
             jsondata: JSON.stringify({}),
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
@@ -800,7 +803,7 @@ const testData = {
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
             datatype: '',
             // 数据版本，病害唯一值，有上传(testData.detailTestData.memberData.diseaseData/goodData.version)，对应图片数据中的 dataid，用来确定图片
-            version: 'g114pkr3y1z9804pkr3y24w7w_b200001_lz6c37cc_5_1',
+            version: 'g114pkr3y2z9804pkr3y24w7w_b200001_lz6c37cc_5_1',
             // 更新时间，有上传(testData.detailTestData.memberData.diseaseData/goodData.u_date)
             u_date: '2024-07-29 13:54:02',
             // 经度，有上传(testData.detailTestData.memberData.diseaseData/goodData.longitude)
@@ -810,7 +813,7 @@ const testData = {
         },
         {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
-            dataid: 'g114pkr3y1z9804pkr3y24w7w_b300003_lz6c37cc_7',
+            dataid: 'g114pkr3y2z9804pkr3y24w7w_b300003_lz6c37cc_7',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
             jsondata: JSON.stringify({}),
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
@@ -818,7 +821,7 @@ const testData = {
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
             datatype: '',
             // 数据版本，病害唯一值，有上传(testData.detailTestData.memberData.diseaseData/goodData.version)，对应图片数据中的 dataid，用来确定图片
-            version: 'g114pkr3y1z9804pkr3y24w7w_b300003_lz6c37cc_7_1',
+            version: 'g114pkr3y2z9804pkr3y24w7w_b300003_lz6c37cc_7_1',
             // 更新时间，有上传(testData.detailTestData.memberData.diseaseData/goodData.u_date)
             u_date: '2024-07-29 13:54:12',
             // 经度，有上传(testData.detailTestData.memberData.diseaseData/goodData.longitude)
@@ -828,7 +831,7 @@ const testData = {
         },
         {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
-            dataid: 'g114pkr3y1z9804pkr3y24w7w_b300003_lz6c37cc_8',
+            dataid: 'g114pkr3y2z9804pkr3y24w7w_b300003_lz6c37cc_8',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
             jsondata: JSON.stringify({
                 "remark": "1"
@@ -838,7 +841,7 @@ const testData = {
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
             datatype: '',
             // 数据版本，病害唯一值，有上传(testData.detailTestData.memberData.diseaseData/goodData.version)，对应图片数据中的 dataid，用来确定图片
-            version: 'g114pkr3y1z9804pkr3y24w7w_b300003_lz6c37cc_8_1',
+            version: 'g114pkr3y2z9804pkr3y24w7w_b300003_lz6c37cc_8_1',
             // 更新时间，有上传(testData.detailTestData.memberData.diseaseData/goodData.u_date)
             u_date: '2024-07-29 13:54:12',
             // 经度，有上传(testData.detailTestData.memberData.diseaseData/goodData.longitude)
@@ -853,7 +856,7 @@ const testData = {
             // 数据编号，有上传(dataid)，建议使用上传的dataid，桥梁图片(dataid=bridgeid)，部件图片(dataid=partid)，良好构件图片(dataid=构件的memberid)，病害图片(dataid=病害唯一值)
             dataid: 'b100001',
             // 文件id，有上传(memberid)
-            mediaid: "g114pkr3y1z9804pkr3y24w7w_1",
+            mediaid: "g114pkr3y2z9804pkr3y24w7w_1",
             // 文件类型，有上传(type)，建议使用上传的type，桥梁图片(bridge)，部件图片(member)，良好构件图片(goodParts)，病害图片(diseaseParts)
             type: 'member',
             // ？ 分类，有上传(category)，建议使用上传的category，这里是后期改动的，可能和之前的数据对应不上
@@ -878,13 +881,13 @@ const testData = {
             duration: 0,
             // * 文件gps，如果没有gps数据，那么没有gpsInfo字段
             // ？ 远端下载的key 或 在压缩包中对应的名字
-            key: '/data/user/0/com.jianlide/files/f99e921e-977e-4b5b-abc1-e32ee20959a0.jpg'
+            key: 'pro_m1624439268_g334nhpyb8wg084nhpybajp68/img/d20231207135411/thumbnail_001502ac-178e-409e-bbcd-01002a531aec.jpg'
         },
         {
             // 数据编号，有上传(dataid)，建议使用上传的dataid，桥梁图片(dataid=bridgeid)，部件图片(dataid=partid)，良好构件图片(dataid=构件的memberid)，病害图片(dataid=病害唯一值)
             dataid: 'b100001',
             // 文件id，有上传(memberid)
-            mediaid: "g114pkr3y1z9804pkr3y24w7w_2",
+            mediaid: "g114pkr3y2z9804pkr3y24w7w_2",
             // 文件类型，有上传(type)，建议使用上传的type，桥梁图片(bridge)，部件图片(member)，良好构件图片(goodParts)，病害图片(diseaseParts)
             type: 'member',
             // ？ 分类，有上传(category)，建议使用上传的category，这里是后期改动的，可能和之前的数据对应不上
@@ -917,13 +920,13 @@ const testData = {
                 altitude: 0
             },
             // ？ 远端下载的key 或 在压缩包中对应的名字
-            key: '/data/user/0/com.jianlide/files/f023f1ff-8a85-47e5-b4e1-a177b5ae5b5c.jpg'
+            key: 'pro_m1624439268_g334nhpyb8wg084nhpybajp68/img/d20231207135411/thumbnail_001502ac-178e-409e-bbcd-01002a531aec.jpg'
         },
         {
             // 数据编号，有上传(dataid)，建议使用上传的dataid，桥梁图片(dataid=bridgeid)，部件图片(dataid=partid)，良好构件图片(dataid=构件的memberid)，病害图片(dataid=病害唯一值)
-            dataid: 'g114pkr3y1z980',
+            dataid: 'g114pkr3y2z980',
             // 文件id，有上传(memberid)
-            mediaid: "g114pkr3y1z9804pkr3y24w7w_3",
+            mediaid: "g114pkr3y2z9804pkr3y24w7w_3",
             // 文件类型，有上传(type)，建议使用上传的type，桥梁图片(bridge)，部件图片(member)，良好构件图片(goodParts)，病害图片(diseaseParts)
             type: 'bridge',
             // ？ 分类，有上传(category)，建议使用上传的category，这里是后期改动的，可能和之前的数据对应不上
@@ -956,13 +959,13 @@ const testData = {
                 altitude: 0
             },
             // ？ 远端下载的key 或 在压缩包中对应的名字
-            key: '/data/user/0/com.jianlide/files/aee6a28e-9ede-4fb2-83b6-c1e4068141ce.jpg'
+            key: 'pro_m1624439268_g334nhpyb8wg084nhpybajp68/img/d20231207135411/thumbnail_001502ac-178e-409e-bbcd-01002a531aec.jpg'
         },
         {
             // 数据编号，有上传(dataid)，建议使用上传的dataid，桥梁图片(dataid=bridgeid)，部件图片(dataid=partid)，良好构件图片(dataid=构件的memberid)，病害图片(dataid=病害唯一值)
-            dataid: 'g114pkr3y1z980',
+            dataid: 'g114pkr3y2z980',
             // 文件id，有上传(memberid)
-            mediaid: "g114pkr3y1z9804pkr3y24w7w_4",
+            mediaid: "g114pkr3y2z9804pkr3y24w7w_4",
             // 文件类型，有上传(type)，建议使用上传的type，桥梁图片(bridge)，部件图片(member)，良好构件图片(goodParts)，病害图片(diseaseParts)
             type: 'bridge',
             // ？ 分类，有上传(category)，建议使用上传的category，这里是后期改动的，可能和之前的数据对应不上
@@ -995,13 +998,52 @@ const testData = {
                 altitude: 0
             },
             // ？ 远端下载的key 或 在压缩包中对应的名字
-            key: '/data/user/0/com.jianlide/files/7e7795f2-a971-43d3-9f87-ac48a5224377.jpg'
+            key: 'pro_m1624439268_g334nhpyb8wg084nhpybajp68/img/d20231207135411/thumbnail_001502ac-178e-409e-bbcd-01002a531aec.jpg'
         },
         {
             // 数据编号，有上传(dataid)，建议使用上传的dataid，桥梁图片(dataid=bridgeid)，部件图片(dataid=partid)，良好构件图片(dataid=构件的memberid)，病害图片(dataid=病害唯一值)
-            dataid: 'g114pkr3y1z9804pkr3y24w7w_b100001_lz6c37cc_0_2',
+            dataid: 'g114pkr3y2z980',
             // 文件id，有上传(memberid)
-            mediaid: "g114pkr3y1z9804pkr3y24w7w_5",
+            mediaid: "g114pkr3y2z9804pkr3y24w7w_41",
+            // 文件类型，有上传(type)，建议使用上传的type，桥梁图片(bridge)，部件图片(member)，良好构件图片(goodParts)，病害图片(diseaseParts)
+            type: 'bridge',
+            // ？ 分类，有上传(category)，建议使用上传的category，这里是后期改动的，可能和之前的数据对应不上
+            category: 'L0101',
+            // 图片描述，有上传(remark)
+            remark: '',
+            // 更新时间，有上传(u_date)
+            u_date: '2024-07-29 15:39:36',
+            // ？媒体类型，有上传(mediatype)，voice、image、virtualimage、video，以前还有虚拟图片，现在没有了
+            mediatype: 'image',
+            // * 主媒体id，默认0
+            parentmediaid: '0',
+            // 媒体文件名称，有上传(filename)
+            filename: '桥梁左侧起点立面照',
+            // 媒体文件扩展名，有上传(filetypes)
+            filetypes: '',
+            // 媒体文件大小Kb，有上传(filesize)
+            filesize: 0,
+            // 媒体文件时长，有上传(duration)
+            duration: 0,
+            // * 文件gps，如果没有gps数据，那么没有gpsInfo字段
+            gpsInfo: {
+                // 经度
+                longitude: 106.826929,
+                // 纬度
+                latitude: 29.719054,
+                // 精度
+                accuracy: 30,
+                // 高度
+                altitude: 0
+            },
+            // ？ 远端下载的key 或 在压缩包中对应的名字
+            key: ''
+        },
+        {
+            // 数据编号，有上传(dataid)，建议使用上传的dataid，桥梁图片(dataid=bridgeid)，部件图片(dataid=partid)，良好构件图片(dataid=构件的memberid)，病害图片(dataid=病害唯一值)
+            dataid: 'g114pkr3y2z9804pkr3y24w7w_b100001_lz6c37cc_0_2',
+            // 文件id，有上传(memberid)
+            mediaid: "g114pkr3y2z9804pkr3y24w7w_5",
             // 文件类型，有上传(type)，建议使用上传的type，桥梁图片(bridge)，部件图片(member)，良好构件图片(goodParts)，病害图片(diseaseParts)
             type: 'diseaseParts',
             // ？ 分类，有上传(category)，建议使用上传的category，这里是后期改动的，可能和之前的数据对应不上
@@ -1034,7 +1076,7 @@ const testData = {
                 altitude: 0
             },
             // ？ 远端下载的key 或 在压缩包中对应的名字
-            key: '/data/user/0/com.jianlide/files/69c19a1a-a1c8-46ea-a898-43ac19bb7e16.jpg'
+            key: 'pro_m1624439268_g334nhpyb8wg084nhpybajp68/img/d20231207135411/thumbnail_001502ac-178e-409e-bbcd-01002a531aec.jpg'
         }
     ]
 }
@@ -1089,7 +1131,7 @@ const dataDeal = async (testData, userInfo) => {
             bridgeside: testData.bridgeside,
             bridgestruct: testData.bridgestruct,
             userid: userInfo.userid,
-            c_date:testData.bridge_c_date,
+            c_date: testData.bridge_c_date,
             longitude: testData.longitude || 0,
             latitude: testData.latitude || 0,
             bridgeconfig: JSON.stringify(testData.bridgeconfig),
@@ -1138,9 +1180,9 @@ const dataDeal = async (testData, userInfo) => {
             await bridgeReport.save({
                 bridgeid: bridgeData.bridgeid,
                 bridgereportid: bridgeProjectBindData.bridgereportid,
-                reportname:testData.reportname,
-                startdate:testData.startdate,
-                finishdate:testData.finishdate,
+                reportname: testData.reportname,
+                startdate: testData.startdate,
+                finishdate: testData.finishdate,
                 userid: userInfo.userid,
                 longitude: testData.bridge_report_longitude || 0,
                 latitude: testData.bridge_report_latitude || 0
@@ -1186,6 +1228,19 @@ const dataDeal = async (testData, userInfo) => {
                     latitude: item.latitude || '',
                 })
             }
+            // ---- 下载图片 ----
+            await Promise.all(
+                testData.bridge_report_media.map((item) => {
+                    if (item.key) {
+                        let path = `${fs.dir}/${uuid.v4()}.${item.filetypes}`
+                        item.filepath = path
+                        return S3GetFile(item.key, path)
+                    } else {
+                        return null
+                    }
+                }
+                ),
+            )
             // ---- bridge_report_file 表、bridge_report_member_checkstatus_media 表、file_gps 表 ----
             for (let i = 0; i < testData.bridge_report_media.length; i++) {
                 let item = testData.bridge_report_media[i]
@@ -1199,9 +1254,14 @@ const dataDeal = async (testData, userInfo) => {
                     inx: i,
                     remark: item.remark || '',
                     userid: userInfo.userid,
-                    is_source:1,
+                    is_source: 1,
                     u_date: item.u_date
                 })
+                // 下载图片
+                let filePath = ''
+                if (item.key) {
+                    let filePath = `${fs.dir}/${uuid.v4()}.${item.filetypes}`
+                }
                 await checkstatusMedia.save({
                     bridgereportid: bridgeProjectBindData.bridgereportid,
                     mediatype: item.mediatype,
@@ -1210,7 +1270,7 @@ const dataDeal = async (testData, userInfo) => {
                     filetypes: item.filetypes,
                     filesize: item.filesize,
                     // 需要替换
-                    filepath: item.key,
+                    filepath: item.filepath,
                     duration: item.duration || 0,
                     userid: userInfo.userid,
                     u_date: item.u_date
