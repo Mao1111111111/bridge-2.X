@@ -444,7 +444,7 @@ export const testData = {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
             dataid: 'g114pkr3y2z0014pkr3y24w7w_b100001_lz6c37cc_0',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
-            jsondata: JSON.stringify({
+            jsondata: {
                 "areatype": "at0001",
                 "checktypeid": "b100001t00c1044",
                 "standard": {
@@ -519,7 +519,7 @@ export const testData = {
                 "area": "at0001r1002",
                 "checktypegroupid": "10000dg00047",
                 "scalegroupid": "10000sg0015"
-            }),
+            },
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
             memberstatus: '200',
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
@@ -539,7 +539,7 @@ export const testData = {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
             dataid: 'g114pkr3y2z0014pkr3y24w7w_b100001_lz6c37cc_0',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
-            jsondata: JSON.stringify({
+            jsondata: {
                 "areatype": "at0001",
                 "checktypeid": "b100001t00c1041",
                 "standard": {
@@ -612,7 +612,7 @@ export const testData = {
                 "area": "at0001r1002",
                 "checktypegroupid": "10000dg00045",
                 "scalegroupid": "10000sg0013"
-            }),
+            },
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
             memberstatus: '200',
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
@@ -630,7 +630,7 @@ export const testData = {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
             dataid: 'g114pkr3y2z0014pkr3y24w7w_b100001_lz6c37cc_1',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
-            jsondata: JSON.stringify({
+            jsondata: {
                 "areatype": "at0001",
                 "checktypeid": "b100001t00c1044",
                 "standard": {
@@ -703,7 +703,7 @@ export const testData = {
                 "area": "at0001r1002",
                 "checktypegroupid": "10000dg00047",
                 "scalegroupid": "10000sg0015"
-            }),
+            },
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
             memberstatus: '200',
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
@@ -721,7 +721,7 @@ export const testData = {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
             dataid: 'g114pkr3y2z0014pkr3y24w7w_b200001_lz6c37cc_2',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
-            jsondata: JSON.stringify({}),
+            jsondata: {},
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
             memberstatus: '100',
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
@@ -739,7 +739,7 @@ export const testData = {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
             dataid: 'g114pkr3y2z0014pkr3y24w7w_b200001_lz6c37cc_3',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
-            jsondata: JSON.stringify({}),
+            jsondata: {},
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
             memberstatus: '100',
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
@@ -757,7 +757,7 @@ export const testData = {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
             dataid: 'g114pkr3y2z0014pkr3y24w7w_b200001_lz6c37cc_4',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
-            jsondata: JSON.stringify({}),
+            jsondata: {},
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
             memberstatus: '100',
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
@@ -775,7 +775,7 @@ export const testData = {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
             dataid: 'g114pkr3y2z0014pkr3y24w7w_b200001_lz6c37cc_5',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
-            jsondata: JSON.stringify({}),
+            jsondata: {},
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
             memberstatus: '100',
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
@@ -793,7 +793,7 @@ export const testData = {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
             dataid: 'g114pkr3y2z0014pkr3y24w7w_b300003_lz6c37cc_7',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
-            jsondata: JSON.stringify({}),
+            jsondata: {},
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
             memberstatus: '100',
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
@@ -811,9 +811,9 @@ export const testData = {
             // 构件编号，构件id，有上传(testData.detailTestData.memberData.diseaseData/goodData.dataid = testData.detailTestData.memberData.memberid)
             dataid: 'g114pkr3y2z0014pkr3y24w7w_b300003_lz6c37cc_8',
             // ？构件检测数据，是一个json，下面会具体举例，对应不上的情况
-            jsondata: JSON.stringify({
+            jsondata: {
                 "remark": "1"
-            }),
+            },
             // 构件状态，有上传(testData.detailTestData.memberData.diseaseData/goodData.memberstatus)
             memberstatus: '100',
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
