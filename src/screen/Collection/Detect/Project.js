@@ -331,10 +331,6 @@ export default function Project({navigation}) {
     console.log('点击了goAhead');
   }
 
-  const getFile = () => {
-    S3GetFile()
-  }
-
   return (
     <CommonView
       //顶部导航最左侧标签 
@@ -373,7 +369,6 @@ export default function Project({navigation}) {
         [styles.tableCard,{backgroundColor:'rgba(255,255,255,1)',right:19,width:715,top:1,borderRadius:5}]
       }>
         <Button onPress={()=>dataDealTest(userInfo)}>111</Button>
-        <Button onPress={getFile}>222</Button>
          {/* 检索 */}
       <View style={[
         styles.searchCard,

@@ -34,8 +34,14 @@ const testData = {
     bridgeside: 'side111',
     // 结构体系（字符串），有上传(bridgestruct)
     bridgestruct: 'funcg101',
+    // 主桥id -- 未存
+    mainbridgeid: "",
     // 桥梁创建时间
     bridge_c_date: "2023-09-13 11:19:29",
+    // 桥梁经度
+    longitude: 0,
+    // 桥梁维度
+    latitude: 0,
     // 其他配置，有上传(bridgeconfig)
     bridgeconfig: {
         "b200001num": "2",
@@ -244,6 +250,10 @@ const testData = {
     startdate: "2023-10-08 08:42:24",
     // 结束时间
     finishdate: "2023-09-19 15:26:19",
+    // 报告经度
+    bridge_report_longitude: 0,
+    // 报告维度
+    bridge_report_latitude: 0,
     // 桥梁检测--构件数据（bridge_report_member表）
     bridge_report_member: [
         {
@@ -533,6 +543,8 @@ const testData = {
             memberstatus: '200',
             // 数据类型，有上传(testData.detailTestData.memberData.diseaseData/goodData.datatype)
             datatype: 'c1001',
+            // 是否重点关注 -- 未存
+            mian: 0,
             // 数据版本，病害唯一值，有上传(testData.detailTestData.memberData.diseaseData/goodData.version)，对应图片数据中的 dataid，用来确定图片
             version: 'g114pkr3y1z9804pkr3y24w7w_b100001_lz6c37cc_0_1',
             // 更新时间，有上传(testData.detailTestData.memberData.diseaseData/goodData.u_date)
@@ -848,6 +860,8 @@ const testData = {
             category: 'member-b100001',
             // 图片描述，有上传(remark)
             remark: '',
+            // 未存 -- 默认值
+            is_source: 1,
             // 更新时间，有上传(u_date)
             u_date: '2024-07-29 15:39:36',
             // ？媒体类型，有上传(mediatype)，voice、image、virtualimage、video，以前还有虚拟图片，现在没有了
@@ -1126,6 +1140,7 @@ const dataDeal = async (testData, userInfo) => {
                 bridgereportid: bridgeProjectBindData.bridgereportid,
                 reportname:testData.reportname,
                 startdate:testData.startdate,
+                finishdate:testData.finishdate,
                 userid: userInfo.userid,
                 longitude: testData.bridge_report_longitude || 0,
                 latitude: testData.bridge_report_latitude || 0
