@@ -11,7 +11,7 @@ import * as checkstatusMedia from '../../database/bridge_report_member_checkstat
 import * as fileGps from '../../database/file_gps';
 import dayjs from 'dayjs';
 import fs from '../../utils/fs';
-import { S3GetFile, test } from '../../utils/AWS';
+import { S3GetFile } from '../../utils/AWS';
 import uuid from 'react-native-uuid';
 
 const testData = {
@@ -1082,6 +1082,8 @@ const testData = {
 }
 
 const dataDeal = async (testData, userInfo) => {
+    // 消息 桥梁结构已存在、桥梁结构下载成功、桥梁检测数据已存在、桥梁检测数据下载成功
+    let message = ''
     // ------- 项目表-projectData --------
     // 项目名称 (历史)+云端项目名称
     // 根据项目名称判断项目，项目名称存在则下载到项目，不存在则新建一个项目
@@ -1157,6 +1159,7 @@ const dataDeal = async (testData, userInfo) => {
     let bridgeProjectBindData = {}
     if (_bridgeProjectBindData) {
         bridgeProjectBindData = _bridgeProjectBindData
+        message = '桥梁结构已存在'
     } else {
         bridgeProjectBindData = {
             projectid: projectData.projectid,
@@ -1166,6 +1169,7 @@ const dataDeal = async (testData, userInfo) => {
         }
         // 存入
         await bridgeProjectBind.save(bridgeProjectBindData)
+        message = '桥梁结构下载成功'
     }
 
     // ------- 测试数据存入 -------
@@ -1287,12 +1291,21 @@ const dataDeal = async (testData, userInfo) => {
                     })
                 }
             }
+
+            message = '桥梁检测数据下载成功'
+            return message
+        }else{
+            message = '桥梁检测数据已存在'
+            return message
         }
+    }else{
+        return message
     }
 }
 
-const dataDealTest = (userInfo) => {
-    dataDeal(testData, userInfo)
+const dataDealTest = async (userInfo) => {
+   let message = await dataDeal(testData, userInfo)
+   return message
 }
 
 export {
