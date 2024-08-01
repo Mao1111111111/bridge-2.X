@@ -177,7 +177,7 @@ export const useP1001Init = ({route, navigation}) => {
               onPress: () => navigation.goBack(),
             },
             {
-              name: `${route.params.type.checktypegroupname}`,
+              name: `${route.params.type?.checktypegroupname}`,
             },
           ]);
         }
@@ -330,7 +330,7 @@ export const useP1002Init = ({route, navigation}) => {
         onPress: () => navigation.goBack(),
       },
       {
-        name: `${route.params.type.checktypegroupname}`,
+        name: `${route.params.type?.checktypegroupname}`,
       },
     ];
   })();

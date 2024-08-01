@@ -333,6 +333,7 @@ export default function DiseaseList({route, navigation}) {
             .list,
         );
       }
+      console.log('group',group);
     }, [list, group, groupList]),
   );
 
@@ -621,7 +622,7 @@ export default function DiseaseList({route, navigation}) {
       .find(item => data.jsondata.checktypegroupid === item.checktypegroupid);
       const kuaMembertype = route.params.list[0].membertype
     const url =
-      type.paneltype === 'p1001'
+      type?.paneltype === 'p1001'
         ? 'Collection/Detect/BridgeTest/Member/DiseaseEdit'
         : 'Collection/Detect/BridgeTest/Member/DiseaseEdit2';
     navigation.navigate(url, {

@@ -646,8 +646,26 @@ export const testData = {
                     "scale": "2",
                     "lengthText": "NaN",
                     "widthText": "NaN",
-                    "heightText": "NaN"
+                    "heightText": "NaN",
+                    // =======================
+                    "disHeight": 29,
+                    "disLength": 73,
+                    "disWidth": 49,
+                    "memberHeight": "9",
+                    "memberLength": "7",
+                    "memberWidth": "8",
+                    // =======================
                 },
+                // ================================
+                "latitude": 29.719011,
+                "longitude": 106.826904,
+                "memberstatus": "200",
+                "mian": 0,
+                "score": 20, //云端数据缺失
+                "u_date": "2024-07-31 16:39:50",
+                "userid": "11",
+                "version": "5230bf00-1958-4885-92f1-63e6844dc39c",
+                // ============================
                 "lengthText": "NaN",
                 "widthText": "NaN",
                 "heightText": "NaN",

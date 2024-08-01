@@ -203,6 +203,7 @@ export function DiseaseA({route, navigation}) {
           // console.log('navigation',navigation);
           // console.log('route.params.thridData',route.params.thridData);
           // console.log('baseData.membercheckdata',baseData.membercheckdata);
+          // console.log('route.params.data.jsondata.infoList',route.params.data.jsondata.infoList);
           if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
             setInfoList(route.params.data.jsondata.infoList)
             diseaseData['checktypeid'] = route.params.data.jsondata.checktypeid
@@ -2089,7 +2090,7 @@ export function DiseaseA({route, navigation}) {
         </Text>
       </View>
       <View style={[tailwind.mT2]} />
-      {infoList.length ? (
+      {infoList?.length ? (
           infoList.map(({strvalue, strinfo}, index) => (
             <React.Fragment key={index}>
                 <View style={[tailwind.mB2]}>
