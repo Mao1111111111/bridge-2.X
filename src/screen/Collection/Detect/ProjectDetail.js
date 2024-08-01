@@ -1741,6 +1741,7 @@ export default function ProjectDetail({ route, navigation }) {
           })
         }
         setList(_list);
+        console.log("_list",_list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
         res.list.forEach((item) => {
@@ -2097,16 +2098,16 @@ export default function ProjectDetail({ route, navigation }) {
               renderItem={({ item, index }) => (
                 <Table.Row key={index}>
                   <Table.Cell flex={1}>{index + page.pageNo * 10 + 1}</Table.Cell>
-                  <Table.Cell flex={2} notText={true}>
+                  <Table.Cell flex={2}>{item.bridgestation}</Table.Cell>
+                  <Table.Cell flex={3} notText={true}>
                     {/* 跳转到桥梁检测 */}
                     <TouchableOpacity
                       // style={[styles.linkBox]}
                       disabled={bridgestationDis}
                       onPress={() => { bridgestationClick(item) }}>
-                      <Text style={[{ color: '#2b427d', textDecorationLine: 'underline' }]}>{item.bridgestation}</Text>
+                      <Text style={[{ color: '#2b427d', textDecorationLine: 'underline' }]}>{item.bridgename}</Text>
                     </TouchableOpacity>
                   </Table.Cell>
-                  <Table.Cell flex={3}>{item.bridgename}</Table.Cell>
                   <Table.Cell>
                     {
                       bridgeside?.find(it => it.paramid === item.bridgeside)
