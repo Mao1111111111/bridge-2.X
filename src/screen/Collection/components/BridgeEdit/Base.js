@@ -174,7 +174,7 @@ export default function Base({navigation}) {
               label="所属路段:"
               labelName="label"
               valueName="code"
-              values={areaList2}
+              values={[{ name:'areacode',label:'无', code: '' }, ...(areaList2 || [])]}
               value={values.areacode}
               onChange={handleChange}
               inputStyle={[{height:25,marginTop:10}]}
@@ -184,7 +184,7 @@ export default function Base({navigation}) {
               label="所属路线:"
               labelName="label"
               valueName="code"
-              values={routeList2}
+              values={[{ name:'routecode',label:'无', code: '' }, ...(routeList2 || [])]}
               value={values.routecode}
               onChange={handleChange}
               inputStyle={[{height:25,marginTop:10}]}
