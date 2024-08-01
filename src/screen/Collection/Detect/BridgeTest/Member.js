@@ -946,7 +946,7 @@ export default function Member({route, navigation,item}) {
     // console.log('allList',allList[0]?.list);
     // console.log('userARR',operationUserArr);
     // console.log('operationNoteData操作记录',operationNoteData);
-    console.log('构件下人名列表',operationUserArr[0].userGroup);
+    // console.log('构件下人名列表',operationUserArr[0]?.userGroup);
     console.log('协同人员信息有变化',curSynergyInfo);
     console.log('在线信息有变化',allyStatusList);
 
