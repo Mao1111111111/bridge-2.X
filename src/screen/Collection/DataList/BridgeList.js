@@ -1,28 +1,28 @@
 import React from 'react';
-import {tailwind} from 'react-native-tailwindcss';
-import {View, StyleSheet, FlatList} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
+import { tailwind } from 'react-native-tailwindcss';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import Table from '../../../components/Table';
 import Select from '../../../components/Select';
 import Button from '../../../components/Button';
-import {TextInput} from '../../../components/Input';
+import { TextInput } from '../../../components/Input';
 import Checkbox from '../../../components/Checkbox';
 import CommonView from '../../../components/CommonView';
-import {alert, confirm} from '../../../utils/alert';
+import { alert, confirm } from '../../../utils/alert';
 import BridgeForm from '../components/BridgeEdit/Index';
-import {Context as GlobalContext} from '../../../providers/GlobalProvider';
-import {Context as ThemeContext} from '../../../providers/ThemeProvider';
+import { Context as GlobalContext } from '../../../providers/GlobalProvider';
+import { Context as ThemeContext } from '../../../providers/ThemeProvider';
 import * as bridge from '../../../database/bridge';
 import * as bridgeProjectBind from '../../../database/bridge_project_bind';
 
-export default function BridgeList({navigation}) {
+export default function BridgeList({ navigation }) {
   const {
-    state: {areaList, bridgeside},
+    state: { areaList, bridgeside },
     dispatch,
   } = React.useContext(GlobalContext);
 
   const {
-    state: {theme},
+    state: { theme },
   } = React.useContext(ThemeContext);
 
   const [search, setSearch] = React.useState({});
@@ -86,7 +86,7 @@ export default function BridgeList({navigation}) {
     }
     setLoading(true);
     bridge
-      .search({param: search, page})
+      .search({ param: search, page })
       .then(res => {
         setList(res.list);
         setPageTotal(res.page.pageTotal);
@@ -165,7 +165,7 @@ export default function BridgeList({navigation}) {
       onAdd={() => bridgeRef.current.open()}
       onDelete={nowChecked && handleDelete}
       onEdit={nowChecked && (() => bridgeRef.current.open(nowChecked))}>
-      <View style={[styles.searchCard, {width:700, backgroundColor:'#fff'}]}>
+      <View style={[styles.searchCard, { width: 700, backgroundColor: '#fff' }]}>
         <TextInput
           name="bridgestation"
           label="桩号:"
@@ -193,10 +193,10 @@ export default function BridgeList({navigation}) {
           ref={el => (searchRef.current.bridgeside = el)}
           style={[tailwind.mR6, tailwind.flex1]}
         />
-        <Button onPress={handleSearch} style={[{backgroundColor: '#2b427d'}]}>检索</Button>
+        <Button onPress={handleSearch} style={[{ backgroundColor: '#2b427d' }]}>检索</Button>
       </View>
       <View style={tailwind.mY1} />
-      <View style={[styles.tableCard, {width:700, backgroundColor:'#fff'}]}>
+      <View style={[styles.tableCard, { width: 700, backgroundColor: '#fff' }]}>
         <Table.Box
           loading={loading}
           style={tailwind.roundedSm}
@@ -225,7 +225,7 @@ export default function BridgeList({navigation}) {
           <FlatList
             data={list}
             extraData={list}
-            renderItem={({item, index}) => (
+            renderItem={({ item, index }) => (
               <Table.Row
                 key={index}
                 onPress={() => {
