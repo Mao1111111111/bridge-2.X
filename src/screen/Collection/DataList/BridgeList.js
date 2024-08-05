@@ -257,7 +257,7 @@ export default function BridgeList({ navigation }) {
                     }
                   </Table.Cell>
                   <Table.Cell flex={2}>
-                    {areaList?.find(it => it.code === item.areacode)?.name}
+                    {areaList?.find(it => it.code === item.areacode)?.name||'--'}
                   </Table.Cell>
                   <Table.Cell flex={2}>{item.testTotal}</Table.Cell>
                   <Table.Cell flex={4}>{item.testDate || '--'}</Table.Cell>
