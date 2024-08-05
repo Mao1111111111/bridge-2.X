@@ -1,6 +1,6 @@
 import React from 'react';
 import { tailwind } from 'react-native-tailwindcss';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList, Dimensions, ImageBackground, Text } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Table from '../../../components/Table';
 import Select from '../../../components/Select';
@@ -43,21 +43,16 @@ export default function BridgeList({ navigation }) {
 
   const searchRef = React.useRef([]);
 
+  const [screenWidth, setScreenWidth] = React.useState() //屏幕宽度
+
+  React.useEffect(() => {
+    const windowWidth = Dimensions.get('window').width;
+    setScreenWidth(windowWidth)
+  }, [])
+
   const headerItems = [
     {
-      name: '采集平台',
-      onPress: () =>
-        dispatch({
-          type: 'drawerShowFlg',
-          payload: Math.random().toString(36).slice(-8),
-        }),
-    },
-    {
       name: '桥梁管理',
-    },
-    {
-      name: '数据列表',
-      onPress: () => navigation.navigate('Collection/DataList/Main'),
     },
     {
       name: '桥梁列表',
@@ -162,106 +157,120 @@ export default function BridgeList({ navigation }) {
     <CommonView
       pid="P1701"
       headerItems={headerItems}
+      list={list}
       onAdd={() => bridgeRef.current.open()}
       onDelete={nowChecked && handleDelete}
       onEdit={nowChecked && (() => bridgeRef.current.open(nowChecked))}>
-      <View style={[styles.searchCard, { width: 700, backgroundColor: '#fff' }]}>
-        <TextInput
-          name="bridgestation"
-          label="桩号:"
-          ref={el => (searchRef.current.bridgestation = el)}
-          style={[tailwind.mR6, tailwind.flex1]}
-        />
-        <TextInput
-          name="bridgename"
-          label="桥梁名称:"
-          ref={el => (searchRef.current.bridgename = el)}
-          style={[tailwind.mR6, tailwind.flex1]}
-        />
-        <Select
-          name="bridgeside"
-          label="桥幅属性:"
-          labelName="paramname"
-          valueName="paramid"
-          values={[
-            {
-              paramname: '无',
-              paramid: '',
-            },
-            ...(bridgeside || []),
-          ]}
-          ref={el => (searchRef.current.bridgeside = el)}
-          style={[tailwind.mR6, tailwind.flex1]}
-        />
-        <Button onPress={handleSearch} style={[{ backgroundColor: '#2b427d' }]}>检索</Button>
-      </View>
-      <View style={tailwind.mY1} />
-      <View style={[styles.tableCard, { width: 700, backgroundColor: '#fff' }]}>
-        <Table.Box
-          loading={loading}
-          style={tailwind.roundedSm}
-          numberOfPages={pageTotal}
-          total={total}
-          pageNo={page?.pageNo || 0}
-          onPageChange={e =>
-            setPage({
-              pageSize: 10,
-              pageNo: e,
-            })
-          }
-          header={
-            <Table.Header>
-              <Table.Title title="选择" flex={1} />
-              <Table.Title title="序号" flex={1} />
-              <Table.Title title="桩号" flex={3} />
-              <Table.Title title="桥梁名称" flex={4} />
-              <Table.Title title="桥幅" flex={1} />
-              <Table.Title title="路段" flex={2} />
-              <Table.Title title="检测次数" flex={2} />
-              <Table.Title title="最近检测" flex={4} />
-              <Table.Title title="存储" flex={2} />
-            </Table.Header>
-          }>
-          <FlatList
-            data={list}
-            extraData={list}
-            renderItem={({ item, index }) => (
-              <Table.Row
-                key={index}
-                onPress={() => {
-                  navigation.navigate('Collection/DataList/BridgeDetail', {
-                    pageName: `${item.bridgestation}-${item.bridgename}`,
-                    bridgeid: item.bridgeid,
-                  });
-                }}>
-                <Table.Cell flex={1}>
-                  <Checkbox
-                    checked={(nowChecked || {}) === item}
-                    onPress={() => handleCheck(item)}
-                  />
-                </Table.Cell>
-                <Table.Cell flex={1}>{item.id}</Table.Cell>
-                <Table.Cell flex={3}>{item.bridgestation}</Table.Cell>
-                <Table.Cell flex={4}>{item.bridgename}</Table.Cell>
-                <Table.Cell flex={1}>
-                  {
-                    bridgeside?.find(it => it.paramid === item.bridgeside)
-                      .paramname
-                  }
-                </Table.Cell>
-                <Table.Cell flex={2}>
-                  {areaList?.find(it => it.code === item.areacode)?.name}
-                </Table.Cell>
-                <Table.Cell flex={2}>{item.testTotal}</Table.Cell>
-                <Table.Cell flex={4}>{item.testDate || '--'}</Table.Cell>
-                <Table.Cell flex={2}>
-                  {item.datasources === 0 ? '本地' : '云端'}
-                </Table.Cell>
-              </Table.Row>
-            )}
+      <View style={
+        screenWidth > 830 ? [styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', right: 27, width: 715, top: 1, borderRadius: 5 }]
+          :
+          [styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', right: 19, width: 715, top: 1, borderRadius: 5,marginTop:18 }]
+      }>
+        <View style={[styles.searchCard]}>
+          <TextInput
+            name="bridgestation"
+            label="桩号:"
+            ref={el => (searchRef.current.bridgestation = el)}
+            style={[tailwind.mR4, tailwind.flex1]}
           />
-        </Table.Box>
+          <TextInput
+            name="bridgename"
+            label="桥梁名称:"
+            ref={el => (searchRef.current.bridgename = el)}
+            style={[tailwind.mR4, tailwind.flex1]}
+          />
+          <Select
+            name="bridgeside"
+            label="桥幅属性:"
+            labelName="paramname"
+            valueName="paramid"
+            values={[
+              {
+                paramname: '无',
+                paramid: '',
+              },
+              ...(bridgeside || []),
+            ]}
+            ref={el => (searchRef.current.bridgeside = el)}
+            style={[tailwind.mR4, tailwind.flex1]}
+          />
+          {/* 检索按钮 */}
+          <ImageBackground
+            source={require('../../../iconImg/search.png')} style={[{ width: 40, height: 40 }]}
+          >
+            {/* <Pressable OnPressIn={handleSearch}></Pressable> */}
+            <Text onPress={handleSearch}>{'         '}</Text>
+          </ImageBackground>
+        </View>
+        <View style={tailwind.mY1} />
+        <View style={[styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', padding: 10 }]}>
+        {/* <View style={[styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', padding: 10 }]}> */}
+          <Table.Box
+            loading={loading}
+            numberOfPages={pageTotal}
+            total={total}
+            pageNo={page?.pageNo || 0}
+            onPageChange={e =>
+              setPage({
+                pageSize: 10,
+                pageNo: e,
+              })
+            }
+            header={
+              <Table.Header>
+                <Table.Title title="选择" flex={1} />
+                <Table.Title title="序号" flex={1} />
+                <Table.Title title="桩号" flex={3} />
+                <Table.Title title="桥梁名称" flex={4} />
+                <Table.Title title="桥幅" flex={1} />
+                <Table.Title title="路段" flex={2} />
+                <Table.Title title="检测次数" flex={2} />
+                <Table.Title title="最近检测" flex={4} />
+                <Table.Title title="存储" flex={2} />
+              </Table.Header>
+            }>
+            <FlatList
+              data={list}
+              extraData={list}
+              renderItem={({ item, index }) => (
+                <Table.Row
+                  key={index}
+                  onPress={() => {
+                    navigation.navigate('Collection/DataList/BridgeDetail', {
+                      pageName: `${item.bridgestation}-${item.bridgename}`,
+                      bridgeid: item.bridgeid,
+                    });
+                  }}>
+                  <Table.Cell flex={1}>
+                    <Checkbox
+                      checked={(nowChecked || {}) === item}
+                      onPress={() => handleCheck(item)}
+                    />
+                  </Table.Cell>
+                  <Table.Cell flex={1}>{item.id}</Table.Cell>
+                  <Table.Cell flex={3}>{item.bridgestation}</Table.Cell>
+                  <Table.Cell flex={4}>{item.bridgename}</Table.Cell>
+                  <Table.Cell flex={1}>
+                    {
+                      bridgeside?.find(it => it.paramid === item.bridgeside)
+                        .paramname
+                    }
+                  </Table.Cell>
+                  <Table.Cell flex={2}>
+                    {areaList?.find(it => it.code === item.areacode)?.name}
+                  </Table.Cell>
+                  <Table.Cell flex={2}>{item.testTotal}</Table.Cell>
+                  <Table.Cell flex={4}>{item.testDate || '--'}</Table.Cell>
+                  <Table.Cell flex={2}>
+                    {item.datasources === 0 ? '本地' : '云端'}
+                  </Table.Cell>
+                </Table.Row>
+              )}
+            />
+          </Table.Box>
+        </View>
       </View>
+
       <BridgeForm ref={bridgeRef} onSubmitOver={handleSubmitOver} />
     </CommonView>
   );
