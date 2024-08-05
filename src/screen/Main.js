@@ -7,6 +7,7 @@ import {tailwind, colors} from 'react-native-tailwindcss';
 import {Context as GlobalContext} from '../providers/GlobalProvider';
 import NavigatorTabs from '../components/NavigatorTabs';
 import Collection from './Collection/Index';
+import DataRecord from './Collection/DataList/Index'
 import Sync from './Sync/Index';
 import Chart from './Chart';
 import Setting from './Setting';
@@ -69,6 +70,14 @@ export default function Main() {
       img: collectData,
       imgActive: collectDataActive,
       component: Collection,
+    },
+    {
+      name: 'DataRecord',
+      // title: '桥梁管理',
+      // icon: 'plus-thick',
+      img: collectData,
+      imgActive: collectDataActive,
+      component: DataRecord,
     },
     {
       name: 'Sync',

@@ -37,7 +37,7 @@ export default function BridgeDetail({route, navigation}) {
         }),
     },
     {
-      name: '数据记录',
+      name: '桥梁管理',
     },
     {
       name: '数据列表',

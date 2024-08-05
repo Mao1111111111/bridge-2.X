@@ -32,7 +32,7 @@ function Main({navigation}) {
         }),
     },
     {
-      name: '数据记录',
+      name: '桥梁管理',
     },
     {
       name: '数据列表',
@@ -65,6 +65,14 @@ function Main({navigation}) {
 export default function DataList() {
   const routes = [
     {
+      name: 'Collection/DataList/BridgeList',
+      component: BridgeList,
+    },
+    {
+      name: 'Collection/DataList/BridgeDetail',
+      component: BridgeDetail,
+    },
+    {
       name: 'Collection/DataList/Main',
       component: Main,
     },
@@ -75,15 +83,7 @@ export default function DataList() {
     {
       name: 'Collection/DataList/ProjectDetail',
       component: ProjectDetail,
-    },
-    {
-      name: 'Collection/DataList/BridgeList',
-      component: BridgeList,
-    },
-    {
-      name: 'Collection/DataList/BridgeDetail',
-      component: BridgeDetail,
-    },
+    }
   ];
   return <NavigatorStack routes={routes} />;
 }

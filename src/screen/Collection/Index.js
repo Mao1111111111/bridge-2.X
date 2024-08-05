@@ -29,12 +29,12 @@ export default function Collection() {
             name: 'Collection/Detect',
             title: '检测平台',
             component: DetectIndex,
-          },
-          {
-            name: 'Collection/DataList',
-            title: '数据记录',
-            component: DataList,
-          },
+          }
+          // {
+          //   name: 'Collection/DataList',
+          //   title: '数据记录',
+          //   component: DataList,
+          // },
         ]}
       />
     </View>
