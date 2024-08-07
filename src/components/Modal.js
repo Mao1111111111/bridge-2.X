@@ -34,7 +34,8 @@ export default function ({
   height,
   onClose,
   children,
-  keyboardVerticalOffset
+  keyboardVerticalOffset,
+  closeHide
 }) {
   const {
     state: {theme},
@@ -75,9 +76,12 @@ export default function ({
                             <></>
                           )}
                         </View>
-                        <TouchableOpacity onPress={onClose}>
-                          <Icon name="close" size={24} />
-                        </TouchableOpacity>
+                        {
+                          !closeHide &&
+                          <TouchableOpacity onPress={onClose}>
+                            <Icon name="close" size={24} />
+                          </TouchableOpacity>
+                        }
                       </View>
                       {dividerStyle ? (
                         <Divider style={[dividerStyle]} />

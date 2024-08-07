@@ -11,7 +11,7 @@ import DataRecord from './Collection/DataList/Index'
 import Sync from './Sync/Index';
 import Chart from './Chart';
 import Setting from './Setting';
-import Historical from './Historical'
+import Historical from './Historical/Historical'
 import Login from './Login';
 import Lock from '../components/Lock';
 import NurToast from '../components/NurToast';

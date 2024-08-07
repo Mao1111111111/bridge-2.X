@@ -3,21 +3,26 @@ import dayjs from 'dayjs';
 import {tailwind} from 'react-native-tailwindcss';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {View, Text, TouchableOpacity, FlatList, StyleSheet, ImageBackground, Pressable, Image,Dimensions,Alert,StatusBar,SafeAreaView,Switch} from 'react-native';
-import Table from '../components/Table';
-import Modal from '../components/Modal';
-import {Password} from '../components/Input';
-import Headerbar from '../components/Headerbar';
-import {Context as ThemeContext} from '../providers/ThemeProvider';
-import { Context as GlobalContext } from '../providers/GlobalProvider';
-import {Context} from '../providers/GlobalProvider';
-import {confirm, alert} from '../utils/alert';
-import {syncCommonData} from '../utils/fetch-data';
-import Button from '../components/Button';
-import {logout, check, createpin} from '../database/user';
-import {allData} from '../utils/sqlite';
-import fs from '../utils/fs';
+import Table from '../../components/Table';
+import Modal from '../../components/Modal';
+import {Password} from '../../components/Input';
+import Headerbar from '../../components/Headerbar';
+import {Context as ThemeContext} from '../../providers/ThemeProvider';
+import { Context as GlobalContext } from '../../providers/GlobalProvider';
+import {Context} from '../../providers/GlobalProvider';
+import {confirm, alert} from '../../utils/alert';
+import {syncCommonData} from '../../utils/fetch-data';
+import Button from '../../components/Button';
+import {logout, check, createpin} from '../../database/user';
+import {allData} from '../../utils/sqlite';
+import fs from '../../utils/fs';
 import RNFS from 'react-native-fs';
-import ExportData from './components/ExportData';
+import ExportData from '../components/ExportData';
+import Select from '../../components/Select';
+// 接口
+import { getGcompanylist, getGprojectlist, getBridgelist, getStructureData } from './HistoricalAPI';
+// 进度条
+import Progress from '../../components/Progress';
 
 
 export default function Historical() {
@@ -34,6 +39,11 @@ export default function Historical() {
   const [screenWidth,setScreenWidth] = React.useState() //屏幕宽度
 
   const [cloudDataList,setCloudDataList] = useState([])
+
+  // 当前选择的本地项目
+  const [curLocProject,setCurLocProject] = useState('1')
+  // 本地项目列表
+  const [locProjectList,setLocProjectList] = useState([])
 
   
 
@@ -52,25 +62,29 @@ export default function Historical() {
       return
     }
     console.log('获取分公司列表');
-    let companyList = [
-      {
-        comName:'哈尔滨养护分公司甲',
-        comId:'proId_A',
-      },
-      {
-        comName:'哈尔滨养护分公司乙',
-        comId:'proId_B',
-      },
-      {
-        comName:'哈尔滨养护分公司丙',
-        comId:'proId_C',
-      },
-      {
-        comName:'哈尔滨养护分公司丁',
-        comId:'proId_D',
-      },
-    ]
-    setCompanyList(companyList)
+    // let companyList = [
+    //   {
+    //     comName:'哈尔滨养护分公司甲',
+    //     comId:'proId_A',
+    //   },
+    //   {
+    //     comName:'哈尔滨养护分公司乙',
+    //     comId:'proId_B',
+    //   },
+    //   {
+    //     comName:'哈尔滨养护分公司丙',
+    //     comId:'proId_C',
+    //   },
+    //   {
+    //     comName:'哈尔滨养护分公司丁',
+    //     comId:'proId_D',
+    //   },
+    // ]
+    // setCompanyList(companyList)
+    // 获取养护公司列表
+    getGcompanylist().then(res=>{
+      setCompanyList(res)
+    })
   }
 
   const Item = ({title,type,value}) => (
@@ -139,6 +153,13 @@ export default function Historical() {
       },
     ]
     setProList(proList)
+    // 获取项目列表
+    getGprojectlist({
+      gycompanyid:value.gycompanyid,
+      userid:userInfo.userid
+    }).then(res=>{
+      console.log("res",res);
+    })
   }
 
   const [bridgeList, setBridgeList] = useState([])
@@ -192,6 +213,10 @@ export default function Historical() {
       },
     ]
     setBridgeList(bridgeList)
+    // 获取桥梁列表
+    getBridgelist({value}).then(res=>{
+      console.log("res111",res);
+    })
   }
 
   const BridgeItem = ({title,type,value}) => (
@@ -232,8 +257,13 @@ export default function Historical() {
     setItemSelectArr(arr)
   }
   
+  // --- 下载模态框 ---
   const [confirmShow,setConfirmShow] = useState(false)
+  // 模态框状态 default(默认)，underway(下载中)，finish(下载完成)
+  const [modalState,setModalState] = useState('default')
   const downloadConfirm = () => {
+    // 设置模态框状态
+    setModalState('underway')
     // 下载前确认
     setConfirmShow(true)
   }
@@ -301,8 +331,8 @@ export default function Historical() {
                     <View style={{width:'25%',height:'100%',borderColor:'#999',borderRightWidth:1,borderStyle:'dashed',padding: 5,}}>
                       <FlatList
                         data={companyList}
-                        renderItem={({item}) => <Item title={item.comName} type={'company'} value={item} />}
-                        keyExtractor={item => item.comId}
+                        renderItem={({item}) => <Item title={item.gycompanyname} type={'company'} value={item} />}
+                        keyExtractor={item => item.gycompanyid}
                       />
                     </View>
                     {
@@ -354,24 +384,66 @@ export default function Historical() {
                   <Modal
                     visible={confirmShow}
                     showHead={true}
-                    title={'下载确认'}
+                    title={modalState=='underway'?'数据下载中':modalState=='finish'?'下载完成':'下载确认'}
                     width={300}
                     height={200}
                     keyboardVerticalOffset={-250}
-                    onClose={() => setConfirmShow(false)}
+                    // onClose={() => setConfirmShow(false)}
                     notScroll={false}
+                    closeHide={modalState=='underway'}
                   >
-                    <View style={{width:'100%',height:100,justifyContent: "center",alignItems:'center',}}>
-                      <Switch
-                        trackColor={{ false: "#767577", true: "#2b427d" }}
-                        thumbColor={isEnabled ? "#f4f3f4" : "#f4f3f4"}
-                        onValueChange={toggleSwitch}
-                        value={isEnabled}
-                      />
-                      <Text style={{color:'#999',}}>{isEnabled? '下载完整的桥梁结构数据与病害检测数据' : '仅下载桥梁结构数据'}</Text>
+                    <View style={{ width: '100%', height: 100, justifyContent: "center", alignItems: 'center', }}>
+                      {/* 下载确认 */}
+                      {
+                        modalState == 'default' &&
+                        <>
+                          <Switch
+                            trackColor={{ false: "#767577", true: "#2b427d" }}
+                            thumbColor={isEnabled ? "#f4f3f4" : "#f4f3f4"}
+                            onValueChange={toggleSwitch}
+                            value={isEnabled}
+                          />
+                          <Text style={{ color: '#999', }}>{isEnabled ? '下载完整的桥梁结构数据与病害检测数据' : '仅下载桥梁结构数据'}</Text>
+                          {
+                            isEnabled && <Select
+                              name="bridgeside"
+                              label="选择项目"
+                              labelName="label"
+                              valueName="value"
+                              values={locProjectList}
+                              value={curLocProject}
+                              onChange={el => setCurLocProject(el.value)}
+                              // ref={el => (searchRef.current.bridgeside = el)}
+                              style={[tailwind.mR6, tailwind.mL6, tailwind.flex1]}
+                            />
+                          }
+                        </>
+                      }
+                      {/* 下载进度 */}
+                      {
+                        modalState == 'underway' &&
+                        <View style={{width:'80%'}}>
+                          <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+                            <Text style={{marginBottom:10}}>数据下载中：</Text>
+                            <Text>3/4</Text>
+                          </View>
+                          <Progress
+                            ProgressColor='#6BC1F3'
+                            value={60}></Progress>
+                        </View>
+                      }
+                      {/* 下载完成 */}
+                      {
+                        modalState == 'finish' &&<Text>数据下载成功</Text>
+                      }
                     </View>
                     <View style={{position:'absolute',bottom:5,right:5}}>
-                      <Button style={{ backgroundColor: '#2b427d' }} onPress={downloadData}>确认下载</Button>
+                      {
+                        modalState=='default'&&<Button style={{ backgroundColor: '#2b427d' }} onPress={downloadData}>确认下载</Button>
+                      }
+                      {
+                        modalState=='finish'&&<Button style={{ backgroundColor: '#2b427d' }} onPress={() => setConfirmShow(false)}>确认</Button>
+                      }
                     </View>
                   </Modal>
                 </>
