@@ -84,6 +84,8 @@ export default function Historical() {
     // 获取养护公司列表
     getGcompanylist().then(res=>{
       setCompanyList(res)
+    }).catch(e=>{
+      setCompanyList([])
     })
   }
 
@@ -126,39 +128,41 @@ export default function Historical() {
     }
     console.log('获取项目列表',value);
 
-    let proList = [
-      {
-        proName:'2024哈尔滨养护分公司绥满高速A',
-        proId:'proId_A',
-      },
-      {
-        proName:'2024哈尔滨养护分公司绥满高速B',
-        proId:'proId_B',
-      },
-      {
-        proName:'2024哈尔滨养护分公司绥满高速C',
-        proId:'proId_C',
-      },
-      {
-        proName:'2024哈尔滨养护分公司绥满高速D',
-        proId:'proId_D',
-      },
-      {
-        proName:'2024哈尔滨养护分公司绥满高速E',
-        proId:'proId_E',
-      },
-      {
-        proName:'2024哈尔滨养护分公司绥满高速F',
-        proId:'proId_F',
-      },
-    ]
-    setProList(proList)
+    // let proList = [
+    //   {
+    //     proName:'2024哈尔滨养护分公司绥满高速A',
+    //     proId:'proId_A',
+    //   },
+    //   {
+    //     proName:'2024哈尔滨养护分公司绥满高速B',
+    //     proId:'proId_B',
+    //   },
+    //   {
+    //     proName:'2024哈尔滨养护分公司绥满高速C',
+    //     proId:'proId_C',
+    //   },
+    //   {
+    //     proName:'2024哈尔滨养护分公司绥满高速D',
+    //     proId:'proId_D',
+    //   },
+    //   {
+    //     proName:'2024哈尔滨养护分公司绥满高速E',
+    //     proId:'proId_E',
+    //   },
+    //   {
+    //     proName:'2024哈尔滨养护分公司绥满高速F',
+    //     proId:'proId_F',
+    //   },
+    // ]
+    // setProList(proList)
     // 获取项目列表
     getGprojectlist({
       gycompanyid:value.gycompanyid,
       userid:userInfo.userid
     }).then(res=>{
-      console.log("res",res);
+      setProList(res)
+    }).catch(e=>{
+      setProList([])
     })
   }
 
@@ -170,52 +174,54 @@ export default function Historical() {
     }
     console.log('获取桥梁列表',value);
 
-    let bridgeList = [
-      {
-        bridgeName:'K123456_XXXXXX大桥1',
-        bridgeId:'bridgeId_1',
-      },
-      {
-        bridgeName:'K123456_XXXXXX大桥2',
-        bridgeId:'bridgeId_2',
-      },
-      {
-        bridgeName:'K123456_XXXXXX大桥3',
-        bridgeId:'bridgeId_3',
-      },
-      {
-        bridgeName:'K123456_XXXXXX大桥4',
-        bridgeId:'bridgeId_4',
-      },
-      {
-        bridgeName:'K123456_XXXXXX大桥5',
-        bridgeId:'bridgeId_5',
-      },
-      {
-        bridgeName:'K123456_XXXXXX大桥6',
-        bridgeId:'bridgeId_6',
-      },
-      {
-        bridgeName:'K123456_XXXXXX大桥7',
-        bridgeId:'bridgeId_7',
-      },
-      {
-        bridgeName:'K123456_XXXXXX大桥8',
-        bridgeId:'bridgeId_8',
-      },
-      {
-        bridgeName:'K123456_XXXXXX大桥9',
-        bridgeId:'bridgeId_9',
-      },
-      {
-        bridgeName:'K123456_XXXXXX大桥10',
-        bridgeId:'bridgeId_10',
-      },
-    ]
-    setBridgeList(bridgeList)
+    // let bridgeList = [
+    //   {
+    //     bridgeName:'K123456_XXXXXX大桥1',
+    //     bridgeId:'bridgeId_1',
+    //   },
+    //   {
+    //     bridgeName:'K123456_XXXXXX大桥2',
+    //     bridgeId:'bridgeId_2',
+    //   },
+    //   {
+    //     bridgeName:'K123456_XXXXXX大桥3',
+    //     bridgeId:'bridgeId_3',
+    //   },
+    //   {
+    //     bridgeName:'K123456_XXXXXX大桥4',
+    //     bridgeId:'bridgeId_4',
+    //   },
+    //   {
+    //     bridgeName:'K123456_XXXXXX大桥5',
+    //     bridgeId:'bridgeId_5',
+    //   },
+    //   {
+    //     bridgeName:'K123456_XXXXXX大桥6',
+    //     bridgeId:'bridgeId_6',
+    //   },
+    //   {
+    //     bridgeName:'K123456_XXXXXX大桥7',
+    //     bridgeId:'bridgeId_7',
+    //   },
+    //   {
+    //     bridgeName:'K123456_XXXXXX大桥8',
+    //     bridgeId:'bridgeId_8',
+    //   },
+    //   {
+    //     bridgeName:'K123456_XXXXXX大桥9',
+    //     bridgeId:'bridgeId_9',
+    //   },
+    //   {
+    //     bridgeName:'K123456_XXXXXX大桥10',
+    //     bridgeId:'bridgeId_10',
+    //   },
+    // ]
+    // setBridgeList(bridgeList)
     // 获取桥梁列表
-    getBridgelist({value}).then(res=>{
-      console.log("res111",res);
+    getBridgelist({gprojectid:value.gprojectid}).then(res=>{
+      setBridgeList(res)
+    }).catch(e=>{
+      setBridgeList([])
     })
   }
 
@@ -340,8 +346,8 @@ export default function Historical() {
                       <View style={{width:'40%',height:'100%',borderColor:'#999',borderRightWidth:1,borderStyle:'dashed',padding: 5,}}>
                         <FlatList
                           data={proList}
-                          renderItem={({item}) => <Item title={item.proName}  type={'proJect'} value={item} />}
-                          keyExtractor={item => item.proId}
+                          renderItem={({item}) => <Item title={item.gprojectname}  type={'proJect'} value={item} />}
+                          keyExtractor={item => item.gprojectid}
                         />
                       </View> 
                       : 
@@ -353,8 +359,8 @@ export default function Historical() {
                         <>
                           <FlatList
                             data={bridgeList}
-                            renderItem={({item}) => <BridgeItem title={item.bridgeName}  type={'bridge'} value={item} />}
-                            keyExtractor={item => item.bridgeId}
+                            renderItem={({item}) => <BridgeItem title={item.reportname}  type={'bridge'} value={item} />}
+                            keyExtractor={item => item.bridgeid}
                           />
                         </> 
                         : 
@@ -369,8 +375,8 @@ export default function Historical() {
                       <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center',padding:5}}>
                         <FlatList
                           data={itemSelectArr}
-                          renderItem={({item}) => <BridgeSelectItem title={item.bridgeName}  type={'bridge'} value={item} />}
-                          keyExtractor={item => item.bridgeId}
+                          renderItem={({item}) => <BridgeSelectItem title={item.reportname}  type={'bridge'} value={item} />}
+                          keyExtractor={item => item.bridgeid}
                         />
                       </View>
                       <TouchableOpacity style={styles.bottomButton} onPress={downloadConfirm}>

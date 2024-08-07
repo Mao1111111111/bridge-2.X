@@ -28,13 +28,17 @@ export const getGprojectlist = (params) => {
         gycompanyid: 'm16244jt01000',
         userid: '63'
     }
+
+    let form = new FormData()
+    form.append('gycompanyid', params.gycompanyid)
+    form.append('userid', params.userid)
     return new Promise((resolve, reject) => {
         fetch(host + '/get_gprojectlist', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                "Content-type": "multipart/form-data"
             },
-            body: JSON.stringify(params)
+            body: form
         })
             .then(response => response.json())
             .then(res => {
@@ -53,13 +57,16 @@ export const getBridgelist = (params) => {
     params = {
         gprojectid: 'r100000000_1705561696577'
     }
+
+    let form = new FormData()
+    form.append('gprojectid', params.gprojectid)
     return new Promise((resolve, reject) => {
         fetch(host + '/get_bridgelist', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                "Content-type": "multipart/form-data"
             },
-            body: JSON.stringify(params)
+            body: form
         })
             .then(response => response.json())
             .then(res => {
@@ -75,8 +82,8 @@ export const getBridgelist = (params) => {
 // 下载结构数据
 export const getStructureData = (params) => {
     params = {
-        bridgeid:'g114mv2d60lip0',
-        reportid:'g114mv2d60lip04mv2d61nbjo'
+        bridgeid: 'g114mv2d60lip0',
+        reportid: 'g114mv2d60lip04mv2d61nbjo'
     }
     return new Promise((resolve, reject) => {
         fetch(host + '/get_structure_data', {
