@@ -268,7 +268,7 @@ const Clone = React.forwardRef(({ onSubmitOver }, ref) => {
                   </Table.Cell>
                   <Table.Cell flex={1}>{item.id}</Table.Cell>
                   <Table.Cell flex={4}>{item.bridgename}</Table.Cell>
-                  <Table.Cell flex={3}>{item.bridgestation}</Table.Cell>
+                  <Table.Cell flex={3}>{item.bridgestation?item.bridgestation:'/'}</Table.Cell>
                   <Table.Cell flex={2}>
                     {
                       bridgeside?.find(it => it.paramid === item.bridgeside)
@@ -553,7 +553,7 @@ const Inducts = React.forwardRef(({ onSubmitOver }, ref) => {
                   </Table.Cell>
                   <Table.Cell flex={1}>{index + 1}</Table.Cell>
                   <Table.Cell flex={4}>{item.bridgename}</Table.Cell>
-                  <Table.Cell flex={3}>{item.bridgestation}</Table.Cell>
+                  <Table.Cell flex={3}>{item.bridgestation?item.bridgestation:'/'}</Table.Cell>
                   <Table.Cell flex={2}>
                     {
                       bridgeside?.find(it => it.paramid === item.bridgeside)
