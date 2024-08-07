@@ -2098,7 +2098,7 @@ export default function ProjectDetail({ route, navigation }) {
               renderItem={({ item, index }) => (
                 <Table.Row key={index}>
                   <Table.Cell flex={1}>{index + page.pageNo * 10 + 1}</Table.Cell>
-                  <Table.Cell flex={2}>{item.bridgestation}</Table.Cell>
+                  <Table.Cell flex={2}>{item.bridgestation?item.bridgestation:'/'}</Table.Cell>
                   <Table.Cell flex={3} notText={true}>
                     {/* 跳转到桥梁检测 */}
                     <TouchableOpacity
