@@ -236,10 +236,10 @@ export default function BridgeList({ navigation }) {
                 <Table.Row
                   key={index}
                   onPress={() => {
-                    navigation.navigate('Collection/DataList/BridgeDetail', {
-                      pageName: `${item.bridgestation}-${item.bridgename}`,
-                      bridgeid: item.bridgeid,
-                    });
+                    // navigation.navigate('Collection/DataList/BridgeDetail', {
+                    //   pageName: `${item.bridgestation}-${item.bridgename}`,
+                    //   bridgeid: item.bridgeid,
+                    // });
                   }}>
                   <Table.Cell flex={1}>
                     <Checkbox
