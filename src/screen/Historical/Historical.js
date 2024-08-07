@@ -267,9 +267,14 @@ export default function Historical() {
   const [confirmShow,setConfirmShow] = useState(false)
   // 模态框状态 default(默认)，underway(下载中)，finish(下载完成)
   const [modalState,setModalState] = useState('default')
+  // 成功项
+  const [successList,setSuccessList] = useState([])
+  // 失败项
+  const [errList,setErrList] = useState([])
+
   const downloadConfirm = () => {
     // 设置模态框状态
-    setModalState('underway')
+    setModalState('default')
     // 下载前确认
     setConfirmShow(true)
   }
@@ -278,7 +283,7 @@ export default function Historical() {
     setIsEnabled(previousState => !previousState);
   }
 
-  const downloadData = () => {
+  const downloadData = async () => {
     console.log('确认下载',isEnabled);
     console.log('要下载的桥梁信息',itemSelectArr);
     // 获取当前需要下载的桥梁列表
@@ -291,6 +296,41 @@ export default function Historical() {
 
     // 执行本地创建对应项目、桥梁、结构、病害
 
+    // 模态框状态变为 下载中
+    setModalState('underway')
+    // 重置成功列表
+    setSuccessList([])
+    // 重置失败列表
+    setErrList([])
+    // 判断下载的是结构数据还是检测数据
+    if(isEnabled){
+      // 检测数据
+    }else{
+      let _successList = []
+      let _errList = []
+      // 结构数据 
+      await Promise.all(
+        itemSelectArr.map(async (item)=>{
+          return await getStructureData(item,userInfo).then(res=>{
+            _successList.push(res)
+            setSuccessList(_successList)
+          }).catch(e=>{
+            _errList.push(e)
+            setErrList(_errList)
+          })
+        })
+      )
+      // 设置模态框状态为结束
+      setModalState('finish')
+      // 清空选择的桥梁
+      setItemSelectArr([])
+    }
+  }
+
+  // 处理下载进度
+  const progressNumDeal = () => {
+    let num = parseInt((successList.length + errList.length)/itemSelectArr.length* 100) 
+    return num
   }
 
   return (
@@ -431,16 +471,21 @@ export default function Historical() {
                         <View style={{width:'80%'}}>
                           <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                             <Text style={{marginBottom:10}}>数据下载中：</Text>
-                            <Text>3/4</Text>
+                            <Text>{(successList.length+errList.length)+'/'+itemSelectArr.length}</Text>
                           </View>
                           <Progress
                             ProgressColor='#6BC1F3'
-                            value={60}></Progress>
+                            value={progressNumDeal() }></Progress>
                         </View>
                       }
                       {/* 下载完成 */}
                       {
-                        modalState == 'finish' &&<Text>数据下载成功</Text>
+                        modalState == 'finish' &&
+                        <>
+                          <Text>数据下载成功</Text>
+                          <Text>下载成功 {successList.length} 条</Text>
+                          <Text>下载失败 {errList.length} 条</Text>
+                        </>
                       }
                     </View>
                     <View style={{position:'absolute',bottom:5,right:5}}>

@@ -1,6 +1,18 @@
 /* 
     历史数据-接口
  */
+import * as projectTable from '../../database/project';
+import * as bridgeTable from '../../database/bridge';
+import * as bridgeMember from '../../database/bridge_member';
+import * as bridgeProjectBind from '../../database/bridge_project_bind';
+import * as bridgeReport from '../../database/bridge_report';
+import * as uploadStateRecord from '../../database/upload_state_record';
+import * as bridgeReportMember from '../../database/bridge_report_member';
+import * as partsCheckStatus from '../../database/parts_checkstatus_data';
+import * as bridgeReportFile from '../../database/bridge_report_file';
+import * as checkstatusMedia from '../../database/bridge_report_member_checkstatus_media';
+import * as fileGps from '../../database/file_gps';
+import dayjs from 'dayjs';
 
 const host = 'http://106.3.97.61:1081/history'
 
@@ -80,28 +92,63 @@ export const getBridgelist = (params) => {
 }
 
 // 下载结构数据
-export const getStructureData = (params) => {
+export const getStructureData = (params, userInfo) => {
     params = {
         bridgeid: 'g114mv2d60lip0',
         reportid: 'g114mv2d60lip04mv2d61nbjo'
     }
+
+    let form = new FormData()
+    form.append('bridgeid', params.bridgeid)
+    form.append('reportid', params.reportid)
     return new Promise((resolve, reject) => {
         fetch(host + '/get_structure_data', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                "Content-type": "multipart/form-data"
             },
-            body: JSON.stringify(params)
+            body: form
         })
             .then(response => response.json())
-            .then(res => {
+            .then(async res => {
                 if (res.success) {
-                    resolve(res.resultJson)
+                    try {
+                        // 桥梁数据
+                        let data = res.resultJson
+                        // 数据库中是否存在此桥梁
+                        let _bridgeData = await bridgeTable.getByBridgeid(data.bridgeid)
+                        if (!_bridgeData) {
+                            // 存入 bridge表
+                            await bridgeTable.save({
+                                bridgeid: data.bridgeid,
+                                bridgename: data.bridgename,
+                                bridgetype: data.bridgetype,
+                                bridgestation: data.bridgestation,
+                                b16: data.b16,
+                                areacode: '',
+                                routecode: '',
+                                bridgefunc: data.bridgefunc,
+                                bridgeside: data.bridgeside,
+                                bridgestruct: data.bridgestruct,
+                                userid: userInfo.userid,
+                                c_date: data.bridge_c_date,
+                                longitude: data.longitude || 0,
+                                latitude: data.latitude || 0,
+                                bridgeconfig: JSON.stringify(data.bridgeconfig),
+                                datasources: 1
+                            })
+                            // 存入桥梁结构数据
+                            for (let i = 0; i < data.structureInfo.length; i++) {
+                                await bridgeMember.save(data.structureInfo[i])
+                            }
+                        }
+                        resolve(params)
+                    } catch (e) {
+                        reject(params)
+                    }
                 } else {
-                    reject(res.resultMsg)
+                    reject(params)
                 }
             })
     })
 }
-
-// 下载结构数据分配处理
