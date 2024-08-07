@@ -311,7 +311,7 @@ export default function Synced({list, onUpload}) {
                     checked={nowEdit.has(item.id)}
                   />
                 </Table.Cell>
-                <Table.Cell flex={2}>{item.bridgestation}</Table.Cell>
+                <Table.Cell flex={2}>{item.bridgestation?item.bridgestation:'/'}</Table.Cell>
                 <Table.Cell flex={2}>{item.bridgename}</Table.Cell>
                 <Table.Cell flex={2}>
                   {

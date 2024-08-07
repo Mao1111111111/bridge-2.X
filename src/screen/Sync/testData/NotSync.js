@@ -310,7 +310,7 @@ export default function NotSync({list, onUpload}) {
                     checked={nowEdit.has(item.id)}
                   />
                 </Table.Cell>
-                <Table.Cell flex={3}>{item.bridgestation}</Table.Cell>
+                <Table.Cell flex={3}>{item.bridgestation?item.bridgestation:'/'}</Table.Cell>
                 <Table.Cell flex={3}>{item.bridgename}</Table.Cell>
                 <Table.Cell flex={2}>
                   {
