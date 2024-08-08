@@ -176,9 +176,6 @@ export const getDetectionData = (params, userInfo, projectid) => {
             .then(async res => {
                 if (res.success) {
                     try {
-                        console.log("res.resultJson",res.resultJson);
-                        resolve(params)
-                        return
                         // 桥梁数据
                         let data = res.resultJson
                         // 数据库中是否存在此桥梁
