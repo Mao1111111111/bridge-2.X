@@ -97,6 +97,11 @@ export const search = async ({param, page}) => {
   return await pageQuery(sql, [param.userid], page);
 };
 
+export const getList  = async (userid) => {
+  const sql = 'select * from project where userid = ?';
+  return getResult(await db().executeSql(sql,[userid]), 'array');
+}
+
 export const switchStatus = async data => {
   const sql = 'update project set projectstatus = 1, u_date = ? where id = ?';
   const param = [dayjs().format('YYYY-MM-DD HH:mm:ss'), data.id];

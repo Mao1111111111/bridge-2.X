@@ -35,7 +35,8 @@ export default function ({
   onClose,
   children,
   keyboardVerticalOffset,
-  closeHide
+  closeHide,
+  onRequestClose
 }) {
   const {
     state: {theme},
@@ -51,7 +52,7 @@ export default function ({
       transparent={true}
       visible={visible}
       statusBarTranslucent={true}
-      onRequestClose={onClose}>
+      onRequestClose={onRequestClose}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView behavior={'padding'} style={tailwind.flex1} keyboardVerticalOffset={keyboardVerticalOffset?keyboardVerticalOffset:0}>
           <ModalView notScroll={notScroll}>

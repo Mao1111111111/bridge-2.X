@@ -19,8 +19,9 @@ import fs from '../../utils/fs';
 import RNFS from 'react-native-fs';
 import ExportData from '../components/ExportData';
 import Select from '../../components/Select';
+import * as projectTable from '../../database/project';
 // 接口
-import { getGcompanylist, getGprojectlist, getBridgelist, getStructureData } from './HistoricalAPI';
+import { getGcompanylist, getGprojectlist, getBridgelist, getStructureData, getDetectionData } from './HistoricalAPI';
 // 进度条
 import Progress from '../../components/Progress';
 
@@ -272,7 +273,10 @@ export default function Historical() {
   // 失败项
   const [errList,setErrList] = useState([])
 
-  const downloadConfirm = () => {
+  const downloadConfirm = async () => {
+    // 获取本地项目列表
+    let projectData = await projectTable.getList(userInfo.userid)
+    setLocProjectList(projectData)
     // 设置模态框状态
     setModalState('default')
     // 下载前确认
@@ -305,6 +309,24 @@ export default function Historical() {
     // 判断下载的是结构数据还是检测数据
     if(isEnabled){
       // 检测数据
+      let _successList = []
+      let _errList = []
+      // 结构数据 
+      await Promise.all(
+        itemSelectArr.map(async (item)=>{
+          return await getDetectionData(item,userInfo,curLocProject).then(res=>{
+            _successList.push(res)
+            setSuccessList(_successList)
+          }).catch(e=>{
+            _errList.push(e)
+            setErrList(_errList)
+          })
+        })
+      )
+      // 设置模态框状态为结束
+      setModalState('finish')
+      // 清空选择的桥梁
+      setItemSelectArr([])
     }else{
       let _successList = []
       let _errList = []
@@ -434,7 +456,7 @@ export default function Historical() {
                     width={300}
                     height={200}
                     keyboardVerticalOffset={-250}
-                    // onClose={() => setConfirmShow(false)}
+                    onClose={() => setConfirmShow(false)}
                     notScroll={false}
                     closeHide={modalState=='underway'}
                   >
@@ -454,11 +476,11 @@ export default function Historical() {
                             isEnabled && <Select
                               name="bridgeside"
                               label="选择项目"
-                              labelName="label"
-                              valueName="value"
+                              labelName="projectname"
+                              valueName="projectid"
                               values={locProjectList}
                               value={curLocProject}
-                              onChange={el => setCurLocProject(el.value)}
+                              onChange={el => setCurLocProject(el.projectid)}
                               // ref={el => (searchRef.current.bridgeside = el)}
                               style={[tailwind.mR6, tailwind.mL6, tailwind.flex1]}
                             />
