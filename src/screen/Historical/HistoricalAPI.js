@@ -183,7 +183,7 @@ export const getDetectionData = (params, userInfo, projectid) => {
                         let _bridgeData = await bridgeTable.getByBridgeid(data.bridgeid)
                         // 桥梁数据
                         let bridgeData = {}
-                        if (!_bridgeData) {
+                        if (_bridgeData) {
                             bridgeData = _bridgeData
                         } else {
                             bridgeData = {
