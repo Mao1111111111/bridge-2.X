@@ -182,7 +182,7 @@ export const new_search = async ({param, page}) => {
 
 export const new_search2 = async ({ param, page }) => {
   const sql = `
-  select  b.* from bridge b
+  select  p.bridgereportid, b.* from bridge b
   join bridge_project_bind p on b.bridgeid = p.bridgeid
   where p.projectid = '${param.projectid}'
     ${param.bridgename ? ` and bridgename like '%${param.bridgename}%' ` : ''}
