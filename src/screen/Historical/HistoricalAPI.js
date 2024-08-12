@@ -176,7 +176,6 @@ export const getDetectionData = (params, userInfo, projectid) => {
             .then(async res => {
                 if (res.success) {
                     try {
-                        console.log("res.resultJson",JSON.stringify(res.resultJson));
                         // 桥梁数据
                         let data = res.resultJson
                         // 数据库中是否存在此桥梁
@@ -215,9 +214,9 @@ export const getDetectionData = (params, userInfo, projectid) => {
                         // ------- 测试数据存入 -------
                         // ------- 桥梁项目绑定表-bridge_project_bind表 -------
                         // 项目绑定表数据 是否存在
-                        let _bridgeProjectBindData = await bridgeProjectBind.get(
+                        let _bridgeProjectBindData = await bridgeProjectBind.getByBridgereportid(
                             {
-                                projectid: projectid,
+                                bridgereportid: bridgeData.bridgereportid,
                                 bridgeid: bridgeData.bridgeid
                             }
                         )

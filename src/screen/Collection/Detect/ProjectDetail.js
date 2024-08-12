@@ -1708,7 +1708,7 @@ export default function ProjectDetail({ route, navigation }) {
 
     // 查询数据
     bridge
-      .new_search({
+      .new_search2({
         param: {
           ...search,
           projectid: project.projectid,
@@ -1719,29 +1719,21 @@ export default function ProjectDetail({ route, navigation }) {
         setLoading(false);
         let _list = res.list
         for (let i = 0; i < _list.length; i++) {
-          let bindDataParams = {
-            bridgeid: _list[i].bridgeid,
-            projectid: project.projectid,
-          }
-          await bridgeProjectBind.get(bindDataParams).then(async res1 => {
-            _list[i].bridgereportid = res1.bridgereportid
-            await synergyTest.getByReportid(res1.bridgereportid).then(synergyTestData => {
-              if (synergyTestData) {
-                _list[i].isSynergyTest = true
-                _list[i].synergyTestData = synergyTestData
-              } else {
-                _list[i].isSynergyTest = false
-              }
-            })
-            await bridgeReportMember.searchUpDate(res1.bridgereportid).then(res2 => {
-              if (res2) {
-                _list[i].date = res2.u_date
-              }
-            })
+          await synergyTest.getByReportid(_list[i].bridgereportid).then(synergyTestData => {
+            if (synergyTestData) {
+              _list[i].isSynergyTest = true
+              _list[i].synergyTestData = synergyTestData
+            } else {
+              _list[i].isSynergyTest = false
+            }
+          })
+          await bridgeReportMember.searchUpDate(_list[i].bridgereportid).then(res2 => {
+            if (res2) {
+              _list[i].date = res2.u_date
+            }
           })
         }
         setList(_list);
-        console.log("_list",_list);
         setPageTotal(res.page.pageTotal);
         setTotal(res.page.total);
         res.list.forEach((item) => {
@@ -2094,7 +2086,7 @@ export default function ProjectDetail({ route, navigation }) {
             }>
             <FlatList
               data={list}
-              extraData={list}
+              keyExtractor={item=>item.bridgereportid}
               renderItem={({ item, index }) => (
                 <Table.Row key={index}>
                   <Table.Cell flex={1}>{index + page.pageNo * 10 + 1}</Table.Cell>
