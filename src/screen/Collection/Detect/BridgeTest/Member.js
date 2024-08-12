@@ -854,6 +854,11 @@ export default function Member({route, navigation,item}) {
         }
       })
     })
+    if(list){
+      console.log('parts',parts);
+      console.log('checkedList',checkedList);
+      console.log('构件列表传往病害列表的list',list);
+    }
     // navigate保留当前页面直接跳转、replace销毁当前页面再跳转（移出路由栈）
     navigation.replace(path, {
       title: data.title,

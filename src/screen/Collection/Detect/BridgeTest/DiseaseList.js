@@ -353,9 +353,11 @@ export default function DiseaseList({route, navigation}) {
         })
         .then(res => {
           const _list = [];
+          console.log('初次进入病害列表时的病害数据res',res);
+          
           res.forEach((item, index) => {
             if (!_list.find(it => it.version === item.version)) {
-              console.log('病害录入页面返回传入的数据',item.jsondata);
+              // console.log('病害录入页面返回传入的数据',item.jsondata);
 
               item.jsondata = JSON.parse(item.jsondata || '{}');
               item.index = index + 1;
@@ -365,6 +367,25 @@ export default function DiseaseList({route, navigation}) {
                     item.jsondata.scale
                   ] || 0;
               }
+
+              if(item?.jsondata?.describeinfo){
+                console.log('item?.jsondata?.describeinfo',item?.jsondata?.describeinfo);
+                // 把云端返回的数据里英文逗号替换为中文逗号，与本地数据一致
+                let replaced = item?.jsondata?.describeinfo.replace(/,/g, '，');
+                item.jsondata['remark'] = replaced
+
+                // 找到逗号的位置
+                let commaIndex = replaced.indexOf('，');
+                // 提取逗号之前的内容
+                let beforeComma = replaced.slice(0, commaIndex);
+                item.jsondata['diseaseName'] = beforeComma
+
+                item.jsondata['description'] = replaced
+
+              }
+
+              console.log('item',item);
+              
               _list.push(item);
               console.log('病害列表数据',_list);
               
@@ -400,7 +421,7 @@ export default function DiseaseList({route, navigation}) {
 
           // console.log('DiseaseList route', route);
           // console.log('res[0].jsondata', route.params.list[0].membertype);
-          // console.log('list',list);
+          console.log('list000',list);
         });
     }, [list, isLoading, dataGroupId]),
   );

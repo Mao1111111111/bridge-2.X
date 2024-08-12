@@ -65,9 +65,12 @@ export function DiseaseA({route, navigation}) {
       React.useEffect(() => {
         setDiseaseData(itemData);
         // console.log('route.params.data.jsondata',route.params.data.jsondata);
+        console.log('itemData001',itemData);
         try {
-          setBiaodu(itemData.standard.scale)
-          diseaseData['scale'] = itemData.standard.scale
+          if(itemData){
+            setBiaodu(itemData.standard.scale)
+            diseaseData['scale'] = itemData.standard.scale
+          }
         } catch (error) {
           console.log('areatype error',error);
         }
@@ -200,8 +203,10 @@ export function DiseaseA({route, navigation}) {
         saveData.current = {...diseaseData};
         try {
           // console.log('route',route);
-          // console.log('navigation',navigation);
-          // console.log('route.params.thridData',route.params.thridData);
+          // console.log('navigation',navigation)
+          console.log('route.params.thridData',route.params);
+          console.log('diseaseData',diseaseData);
+          
           // console.log('baseData.membercheckdata',baseData.membercheckdata);
           // console.log('route.params.data.jsondata.infoList',route.params.data.jsondata.infoList);
           if (route.params.mediaType == 'edit' && !diseaseData.checktypeid) {
@@ -216,28 +221,31 @@ export function DiseaseA({route, navigation}) {
             // console.log('保存baseData数据');
             // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
           }
-          if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
-            // console.log('执行了999');
-            let infoList = []
-            route.params.thridData.datastr.forEach((item) => {
-              // console.log('病害列表传入的datastr',item);
-              baseData.membercheckdata.forEach((item1) => {
-                if (item == item1.strid) {
-                  // console.log('取出来的item1',item1);
-                  infoList.push(item1)
-                }
+          if (!diseaseData.infoList){
+            if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
+              // console.log('执行了999');
+              let infoList = []
+              route.params.thridData.datastr.forEach((item) => {
+                // console.log('病害列表传入的datastr',item);
+                baseData.membercheckdata.forEach((item1) => {
+                  if (item == item1.strid) {
+                    // console.log('取出来的item1',item1);
+                    infoList.push(item1)
+                  }
+                })
               })
-            })
-            setInfoList(infoList)
-            if (!diseaseData.infoList) {
-              // console.log('执行了321122');
-              diseaseData['infoList'] = infoList
-              handleFormChenge(infoList, diseaseData.infoList)
+              setInfoList(infoList)
+              if (!diseaseData.infoList) {
+                // console.log('执行了321122');
+                diseaseData['infoList'] = infoList
+                handleFormChenge(infoList, diseaseData.infoList)
+              }
+            } else if (!baseData.membercheckdata) {
+              // console.log('读取baseData数据');
+              // getBaseDataStorage('baseData')
             }
-          } else if (!baseData.membercheckdata) {
-            // console.log('读取baseData数据');
-            // getBaseDataStorage('baseData')
           }
+          
           
           
           if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
@@ -256,14 +264,15 @@ export function DiseaseA({route, navigation}) {
 
           // 构件类型与构件区域的初始默认值
           // console.log('构件类型：',diseaseData.areatype);
-          baseData.components.forEach((item,index) => {
-            if (!diseaseData.area && diseaseData.area == undefined) {
+          if (!diseaseData.area && diseaseData.area == undefined){
+            baseData.components.forEach((item,index) => {
               if (item.areaname == '板梁') {
                 diseaseData['areatype'] = baseData.components[index].areatype
                 diseaseData['area'] = baseData.components[index].areaparamjson.areaparamlist[1].areaparamid
               }
-            }
-          })
+            })
+          }
+          
         } catch (err) {
           console.log('err08', err);
         }
@@ -289,9 +298,44 @@ export function DiseaseA({route, navigation}) {
 
           // console.log('baseData.membercheckdata',baseData.membercheckdata);
           // console.log('infoList---------------',infoList);
-          if (!diseaseData.infoList) {
-            // diseaseData['infoList'] = infoList
-            // handleFormChenge(infoList, diseaseData.infoList)
+
+          
+
+          // length/width/height 页面左侧的长宽高，结构本身的数据
+          // disLength/disWidth/disHeight 滑块的百分比（本地）
+          // lengthratio/widthratio/heightratio 滑块的百分比（云端）
+          // lengthText/widthText/heightText 计算出的病害位置长宽高
+          
+          if(!diseaseData.memberLength){
+            if(diseaseData?.length){
+              diseaseData['memberLength'] = diseaseData.length
+            }
+          }
+          if(!diseaseData.memberWidth){
+            if(diseaseData?.width){
+              diseaseData['memberWidth'] = diseaseData.width
+            }
+          }
+          if(!diseaseData.memberHeight){
+            if(diseaseData?.top){
+              diseaseData['memberHeight'] = diseaseData.top
+            }
+          }
+
+          if(!diseaseData.disLength){
+            if(diseaseData?.lengthratio){
+              diseaseData['disLength'] = diseaseData.lengthratio
+            }
+          }
+          if(!diseaseData.disWidth){
+            if(diseaseData?.widthhratio){
+              diseaseData['disWidth'] = diseaseData.widthhratio
+            }
+          }
+          if(!diseaseData.disHeight){
+            if(diseaseData?.topratio){
+              diseaseData['disHeight'] = diseaseData.topratio
+            }
           }
 
           let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
@@ -300,6 +344,9 @@ export function DiseaseA({route, navigation}) {
           setWidthText(widthText)
           let heightText = (diseaseData.memberHeight * (diseaseData.disHeight / 100)).toFixed(2)
           setHeightText(heightText)
+
+          
+
           if (lengthText == 'NaN') {
             let lengthText = '0'
             setLengthText(lengthText)
@@ -329,7 +376,7 @@ export function DiseaseA({route, navigation}) {
           diseaseData['lengthText'] = lengthText
           diseaseData['widthText'] = widthText
           diseaseData['heightText'] = heightText
-          diseaseData['remark'] = route.params.thridData.checkinfoshort
+          diseaseData['remark'] = route.params.data.jsondata.remark ? route.params.data.jsondata.remark : route.params.thridData.checkinfoshort
 
 
           // console.log('打印一下病害名称:',route);
@@ -576,7 +623,7 @@ export function DiseaseA({route, navigation}) {
         }
 
         try {
-          if (diseaseData.checktypeid) {
+          if (!diseaseData.checktypeid) {
             diseaseData['checktypeid'] = route.params.thridData.checktypeid
             handleFormChenge(route.params.thridData.checktypeid, diseaseData.checktypeid)
           }
@@ -604,7 +651,7 @@ export function DiseaseA({route, navigation}) {
         }
       },[])
 
-      const {isCoop,coopData} = route.params;
+      
 
       const handleScaleOpen = () => scaleInfoRef.current.open();
       const handleFormChenge = ({name,value}) => {
@@ -1632,11 +1679,15 @@ export function DiseaseA({route, navigation}) {
       }
 
       useEffect(() => {
-        console.log('getBridgeInfoStorage');
-        if (diseaseData) {
-          diseaseData['bridgeInfoText'] = ''
-          let name = bridgeId + '_' + 'bridgeInfoText'
-          getBridgeInfoStorage(name)
+        try {
+          console.log('getBridgeInfoStorage');
+          if (diseaseData) {
+            diseaseData['bridgeInfoText'] = ''
+            let name = bridgeId + '_' + 'bridgeInfoText'
+            getBridgeInfoStorage(name)
+          }
+        } catch (error) {
+          console.log('getBridgeInfoStorage err',error);
         }
       },[])
       // 读取桥梁备注数据
@@ -1960,7 +2011,7 @@ export function DiseaseA({route, navigation}) {
         )} */}
 
         {/* 修改标度数据源 */}
-        {rightScale.length ? (
+        {rightScale?.length ? (
           <View style={[tailwind.flexRow, tailwind.itemsCenter]}>
             <LabelItem label="标度" />
             <TouchableOpacity onPress={handleScaleOpen}>
@@ -2287,26 +2338,29 @@ export function DiseaseB({route, navigation}) {
           // console.log('保存baseData数据');
           // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
-          let infoList = []
-          route.params.thridData.datastr.forEach((item) => {
-            // console.log('病害列表传入的datastr',item);
-            baseData.membercheckdata.forEach((item1) => {
-              if (item == item1.strid) {
-                // console.log('取出来的item1',item1);
-                infoList.push(item1)
-              }
+        if(!diseaseData.infoList){
+          if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
+            let infoList = []
+            route.params.thridData.datastr.forEach((item) => {
+              // console.log('病害列表传入的datastr',item);
+              baseData.membercheckdata.forEach((item1) => {
+                if (item == item1.strid) {
+                  // console.log('取出来的item1',item1);
+                  infoList.push(item1)
+                }
+              })
             })
-          })
-          setInfoList(infoList)
-          if (!diseaseData.infoList) {
-            diseaseData['infoList'] = infoList
-            handleFormChenge(infoList, diseaseData.infoList)
+            setInfoList(infoList)
+            if (!diseaseData.infoList) {
+              diseaseData['infoList'] = infoList
+              handleFormChenge(infoList, diseaseData.infoList)
+            }
+          } else if (!baseData.membercheckdata) {
+            // console.log('读取baseData数据');
+            // getBaseDataStorage('baseData')
           }
-        } else if (!baseData.membercheckdata) {
-          // console.log('读取baseData数据');
-          // getBaseDataStorage('baseData')
         }
+        
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -2318,6 +2372,39 @@ export function DiseaseB({route, navigation}) {
         console.log('err09', err);
       }
       try {
+
+        if(!diseaseData.memberLength){
+          if(diseaseData?.length){
+            diseaseData['memberLength'] = diseaseData.length
+          }
+        }
+        if(!diseaseData.memberWidth){
+          if(diseaseData?.width){
+            diseaseData['memberWidth'] = diseaseData.width
+          }
+        }
+        if(!diseaseData.memberHeight){
+          if(diseaseData?.top){
+            diseaseData['memberHeight'] = diseaseData.top
+          }
+        }
+
+        if(!diseaseData.disLength){
+          if(diseaseData?.lengthratio){
+            diseaseData['disLength'] = diseaseData.lengthratio
+          }
+        }
+        if(!diseaseData.disWidth){
+          if(diseaseData?.widthhratio){
+            diseaseData['disWidth'] = diseaseData.widthhratio
+          }
+        }
+        if(!diseaseData.disHeight){
+          if(diseaseData?.topratio){
+            diseaseData['disHeight'] = diseaseData.topratio
+          }
+        }
+
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
@@ -3154,11 +3241,15 @@ export function DiseaseB({route, navigation}) {
     };
 
     useEffect(() => {
-      console.log('getBridgeInfoStorage');
-      if (diseaseData) {
-        diseaseData['bridgeInfoText'] = ''
-        let name = bridgeId + '_' + 'bridgeInfoText'
-        getBridgeInfoStorage(name)
+      try {
+        console.log('getBridgeInfoStorage');
+        if (diseaseData) {
+          diseaseData['bridgeInfoText'] = ''
+          let name = bridgeId + '_' + 'bridgeInfoText'
+          getBridgeInfoStorage(name)
+        }
+      } catch (error) {
+        console.log('getBridgeInfoStorage err',error);
       }
     },[])
     // 读取桥梁备注数据
@@ -4170,26 +4261,29 @@ export function DiseaseC({route, navigation}) {
           // console.log('保存baseData数据');
           // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
-          let infoList = []
-          route.params.thridData.datastr.forEach((item) => {
-            // console.log('病害列表传入的datastr',item);
-            baseData.membercheckdata.forEach((item1) => {
-              if (item == item1.strid) {
-                // console.log('取出来的item1',item1);
-                infoList.push(item1)
-              }
+        if(!diseaseData.infoList){
+          if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
+            let infoList = []
+            route.params.thridData.datastr.forEach((item) => {
+              // console.log('病害列表传入的datastr',item);
+              baseData.membercheckdata.forEach((item1) => {
+                if (item == item1.strid) {
+                  // console.log('取出来的item1',item1);
+                  infoList.push(item1)
+                }
+              })
             })
-          })
-          setInfoList(infoList)
-          if (!diseaseData.infoList) {
-            diseaseData['infoList'] = infoList
-            handleFormChenge(infoList, diseaseData.infoList)
+            setInfoList(infoList)
+            if (!diseaseData.infoList) {
+              diseaseData['infoList'] = infoList
+              handleFormChenge(infoList, diseaseData.infoList)
+            }
+          } else if (!baseData.membercheckdata) {
+            // console.log('读取baseData数据');
+            // getBaseDataStorage('baseData')
           }
-        } else if (!baseData.membercheckdata) {
-          // console.log('读取baseData数据');
-          // getBaseDataStorage('baseData')
         }
+        
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -4200,6 +4294,39 @@ export function DiseaseC({route, navigation}) {
         console.log('err09', err);
       }
       try {
+
+        if(!diseaseData.memberLength){
+          if(diseaseData?.length){
+            diseaseData['memberLength'] = diseaseData.length
+          }
+        }
+        if(!diseaseData.memberWidth){
+          if(diseaseData?.width){
+            diseaseData['memberWidth'] = diseaseData.width
+          }
+        }
+        if(!diseaseData.memberHeight){
+          if(diseaseData?.top){
+            diseaseData['memberHeight'] = diseaseData.top
+          }
+        }
+
+        if(!diseaseData.disLength){
+          if(diseaseData?.lengthratio){
+            diseaseData['disLength'] = diseaseData.lengthratio
+          }
+        }
+        if(!diseaseData.disWidth){
+          if(diseaseData?.widthhratio){
+            diseaseData['disWidth'] = diseaseData.widthhratio
+          }
+        }
+        if(!diseaseData.disHeight){
+          if(diseaseData?.topratio){
+            diseaseData['disHeight'] = diseaseData.topratio
+          }
+        }
+
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
@@ -5030,11 +5157,15 @@ export function DiseaseC({route, navigation}) {
     };
 
     useEffect(() => {
-      console.log('getBridgeInfoStorage');
-      if (diseaseData) {
-        diseaseData['bridgeInfoText'] = ''
-        let name = bridgeId + '_' + 'bridgeInfoText'
-        getBridgeInfoStorage(name)
+      try {
+        console.log('getBridgeInfoStorage');
+        if (diseaseData) {
+          diseaseData['bridgeInfoText'] = ''
+          let name = bridgeId + '_' + 'bridgeInfoText'
+          getBridgeInfoStorage(name)
+        }
+      } catch (error) {
+        console.log('getBridgeInfoStorage err',error);
       }
     },[])
     // 读取桥梁备注数据
@@ -6051,26 +6182,29 @@ export function DiseaseD({route, navigation}) {
           // console.log('保存baseData数据');
           // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
-          let infoList = []
-          route.params.thridData.datastr.forEach((item) => {
-            // console.log('病害列表传入的datastr',item);
-            baseData.membercheckdata.forEach((item1) => {
-              if (item == item1.strid) {
-                // console.log('取出来的item1',item1);
-                infoList.push(item1)
-              }
+        if(!diseaseData.infoList){
+          if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
+            let infoList = []
+            route.params.thridData.datastr.forEach((item) => {
+              // console.log('病害列表传入的datastr',item);
+              baseData.membercheckdata.forEach((item1) => {
+                if (item == item1.strid) {
+                  // console.log('取出来的item1',item1);
+                  infoList.push(item1)
+                }
+              })
             })
-          })
-          setInfoList(infoList)
-          if (!diseaseData.infoList) {
-            diseaseData['infoList'] = infoList
-            handleFormChenge(infoList, diseaseData.infoList)
+            setInfoList(infoList)
+            if (!diseaseData.infoList) {
+              diseaseData['infoList'] = infoList
+              handleFormChenge(infoList, diseaseData.infoList)
+            }
+          } else if (!baseData.membercheckdata) {
+            // console.log('读取baseData数据');
+            // getBaseDataStorage('baseData')
           }
-        } else if (!baseData.membercheckdata) {
-          // console.log('读取baseData数据');
-          // getBaseDataStorage('baseData')
         }
+        
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -6082,6 +6216,39 @@ export function DiseaseD({route, navigation}) {
       }
       
       try {
+
+        if(!diseaseData.memberLength){
+          if(diseaseData?.length){
+            diseaseData['memberLength'] = diseaseData.length
+          }
+        }
+        if(!diseaseData.memberWidth){
+          if(diseaseData?.width){
+            diseaseData['memberWidth'] = diseaseData.width
+          }
+        }
+        if(!diseaseData.memberHeight){
+          if(diseaseData?.top){
+            diseaseData['memberHeight'] = diseaseData.top
+          }
+        }
+
+        if(!diseaseData.disLength){
+          if(diseaseData?.lengthratio){
+            diseaseData['disLength'] = diseaseData.lengthratio
+          }
+        }
+        if(!diseaseData.disWidth){
+          if(diseaseData?.widthhratio){
+            diseaseData['disWidth'] = diseaseData.widthhratio
+          }
+        }
+        if(!diseaseData.disHeight){
+          if(diseaseData?.topratio){
+            diseaseData['disHeight'] = diseaseData.topratio
+          }
+        }
+
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
@@ -6941,11 +7108,15 @@ export function DiseaseD({route, navigation}) {
     };
 
     useEffect(() => {
-      console.log('getBridgeInfoStorage');
-      if (diseaseData) {
-        diseaseData['bridgeInfoText'] = ''
-        let name = bridgeId + '_' + 'bridgeInfoText'
-        getBridgeInfoStorage(name)
+      try {
+        console.log('getBridgeInfoStorage');
+        if (diseaseData) {
+          diseaseData['bridgeInfoText'] = ''
+          let name = bridgeId + '_' + 'bridgeInfoText'
+          getBridgeInfoStorage(name)
+        }
+      } catch (error) {
+        console.log('getBridgeInfoStorage err',error);
       }
     },[])
     // 读取桥梁备注数据
@@ -7794,26 +7965,29 @@ export function DiseaseE({route, navigation}) {
           // console.log('保存baseData数据');
           // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
-          let infoList = []
-          route.params.thridData.datastr.forEach((item) => {
-            // console.log('病害列表传入的datastr',item);
-            baseData.membercheckdata.forEach((item1) => {
-              if (item == item1.strid) {
-                // console.log('取出来的item1',item1);
-                infoList.push(item1)
-              }
+        if(!diseaseData.infoList){
+          if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
+            let infoList = []
+            route.params.thridData.datastr.forEach((item) => {
+              // console.log('病害列表传入的datastr',item);
+              baseData.membercheckdata.forEach((item1) => {
+                if (item == item1.strid) {
+                  // console.log('取出来的item1',item1);
+                  infoList.push(item1)
+                }
+              })
             })
-          })
-          setInfoList(infoList)
-          if (!diseaseData.infoList) {
-            diseaseData['infoList'] = infoList
-            handleFormChenge(infoList, diseaseData.infoList)
+            setInfoList(infoList)
+            if (!diseaseData.infoList) {
+              diseaseData['infoList'] = infoList
+              handleFormChenge(infoList, diseaseData.infoList)
+            }
+          } else if (!baseData.membercheckdata) {
+            // console.log('读取baseData数据');
+            // getBaseDataStorage('baseData')
           }
-        } else if (!baseData.membercheckdata) {
-          // console.log('读取baseData数据');
-          // getBaseDataStorage('baseData')
         }
+        
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -7847,6 +8021,39 @@ export function DiseaseE({route, navigation}) {
         console.log('err08', err);
       }
       try {
+
+        if(!diseaseData.memberLength){
+          if(diseaseData?.length){
+            diseaseData['memberLength'] = diseaseData.length
+          }
+        }
+        if(!diseaseData.memberWidth){
+          if(diseaseData?.width){
+            diseaseData['memberWidth'] = diseaseData.width
+          }
+        }
+        if(!diseaseData.memberHeight){
+          if(diseaseData?.top){
+            diseaseData['memberHeight'] = diseaseData.top
+          }
+        }
+
+        if(!diseaseData.disLength){
+          if(diseaseData?.lengthratio){
+            diseaseData['disLength'] = diseaseData.lengthratio
+          }
+        }
+        if(!diseaseData.disWidth){
+          if(diseaseData?.widthhratio){
+            diseaseData['disWidth'] = diseaseData.widthhratio
+          }
+        }
+        if(!diseaseData.disHeight){
+          if(diseaseData?.topratio){
+            diseaseData['disHeight'] = diseaseData.topratio
+          }
+        }
+
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
@@ -8684,11 +8891,15 @@ export function DiseaseE({route, navigation}) {
     };
 
     useEffect(() => {
-      console.log('getBridgeInfoStorage');
-      if (diseaseData) {
-        diseaseData['bridgeInfoText'] = ''
-        let name = bridgeId + '_' + 'bridgeInfoText'
-        getBridgeInfoStorage(name)
+      try {
+        console.log('getBridgeInfoStorage');
+        if (diseaseData) {
+          diseaseData['bridgeInfoText'] = ''
+          let name = bridgeId + '_' + 'bridgeInfoText'
+          getBridgeInfoStorage(name)
+        }
+      } catch (error) {
+        console.log('getBridgeInfoStorage err',error);
       }
     },[])
     // 读取桥梁备注数据
@@ -9553,26 +9764,29 @@ export function DiseaseK({route, navigation}) {
           // console.log('保存baseData数据');
           // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
-          let infoList = []
-          route.params.thridData.datastr.forEach((item) => {
-            // console.log('病害列表传入的datastr',item);
-            baseData.membercheckdata.forEach((item1) => {
-              if (item == item1.strid) {
-                // console.log('取出来的item1',item1);
-                infoList.push(item1)
-              }
+        if(!diseaseData.infoList){
+          if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
+            let infoList = []
+            route.params.thridData.datastr.forEach((item) => {
+              // console.log('病害列表传入的datastr',item);
+              baseData.membercheckdata.forEach((item1) => {
+                if (item == item1.strid) {
+                  // console.log('取出来的item1',item1);
+                  infoList.push(item1)
+                }
+              })
             })
-          })
-          setInfoList(infoList)
-          if (!diseaseData.infoList) {
-            diseaseData['infoList'] = infoList
-            handleFormChenge(infoList, diseaseData.infoList)
+            setInfoList(infoList)
+            if (!diseaseData.infoList) {
+              diseaseData['infoList'] = infoList
+              handleFormChenge(infoList, diseaseData.infoList)
+            }
+          } else if (!baseData.membercheckdata) {
+            // console.log('读取baseData数据');
+            // getBaseDataStorage('baseData')
           }
-        } else if (!baseData.membercheckdata) {
-          // console.log('读取baseData数据');
-          // getBaseDataStorage('baseData')
         }
+        
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -9584,6 +9798,39 @@ export function DiseaseK({route, navigation}) {
       }
       
       try {
+
+        if(!diseaseData.memberLength){
+          if(diseaseData?.length){
+            diseaseData['memberLength'] = diseaseData.length
+          }
+        }
+        if(!diseaseData.memberWidth){
+          if(diseaseData?.width){
+            diseaseData['memberWidth'] = diseaseData.width
+          }
+        }
+        if(!diseaseData.memberHeight){
+          if(diseaseData?.top){
+            diseaseData['memberHeight'] = diseaseData.top
+          }
+        }
+
+        if(!diseaseData.disLength){
+          if(diseaseData?.lengthratio){
+            diseaseData['disLength'] = diseaseData.lengthratio
+          }
+        }
+        if(!diseaseData.disWidth){
+          if(diseaseData?.widthhratio){
+            diseaseData['disWidth'] = diseaseData.widthhratio
+          }
+        }
+        if(!diseaseData.disHeight){
+          if(diseaseData?.topratio){
+            diseaseData['disHeight'] = diseaseData.topratio
+          }
+        }
+
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
@@ -10445,11 +10692,15 @@ export function DiseaseK({route, navigation}) {
     };
 
     useEffect(() => {
-      console.log('getBridgeInfoStorage');
-      if (diseaseData) {
-        diseaseData['bridgeInfoText'] = ''
-        let name = bridgeId + '_' + 'bridgeInfoText'
-        getBridgeInfoStorage(name)
+      try {
+        console.log('getBridgeInfoStorage');
+        if (diseaseData) {
+          diseaseData['bridgeInfoText'] = ''
+          let name = bridgeId + '_' + 'bridgeInfoText'
+          getBridgeInfoStorage(name)
+        }
+      } catch (error) {
+        console.log('getBridgeInfoStorage err',error);
       }
     },[])
     // 读取桥梁备注数据
@@ -11503,26 +11754,29 @@ export function DiseaseG({route, navigation}) {
           // console.log('保存baseData数据');
           // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
-          let infoList = []
-          route.params.thridData.datastr.forEach((item) => {
-            // console.log('病害列表传入的datastr',item);
-            baseData.membercheckdata.forEach((item1) => {
-              if (item == item1.strid) {
-                // console.log('取出来的item1',item1);
-                infoList.push(item1)
-              }
+        if(!diseaseData.infoList){
+          if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
+            let infoList = []
+            route.params.thridData.datastr.forEach((item) => {
+              // console.log('病害列表传入的datastr',item);
+              baseData.membercheckdata.forEach((item1) => {
+                if (item == item1.strid) {
+                  // console.log('取出来的item1',item1);
+                  infoList.push(item1)
+                }
+              })
             })
-          })
-          setInfoList(infoList)
-          if (!diseaseData.infoList) {
-            diseaseData['infoList'] = infoList
-            handleFormChenge(infoList, diseaseData.infoList)
+            setInfoList(infoList)
+            if (!diseaseData.infoList) {
+              diseaseData['infoList'] = infoList
+              handleFormChenge(infoList, diseaseData.infoList)
+            }
+          } else if (!baseData.membercheckdata) {
+            // console.log('读取baseData数据');
+            // getBaseDataStorage('baseData')
           }
-        } else if (!baseData.membercheckdata) {
-          // console.log('读取baseData数据');
-          // getBaseDataStorage('baseData')
         }
+        
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -11547,6 +11801,39 @@ export function DiseaseG({route, navigation}) {
       }
       
       try {
+
+        if(!diseaseData.memberLength){
+          if(diseaseData?.length){
+            diseaseData['memberLength'] = diseaseData.length
+          }
+        }
+        if(!diseaseData.memberWidth){
+          if(diseaseData?.width){
+            diseaseData['memberWidth'] = diseaseData.width
+          }
+        }
+        if(!diseaseData.memberHeight){
+          if(diseaseData?.top){
+            diseaseData['memberHeight'] = diseaseData.top
+          }
+        }
+
+        if(!diseaseData.disLength){
+          if(diseaseData?.lengthratio){
+            diseaseData['disLength'] = diseaseData.lengthratio
+          }
+        }
+        if(!diseaseData.disWidth){
+          if(diseaseData?.widthhratio){
+            diseaseData['disWidth'] = diseaseData.widthhratio
+          }
+        }
+        if(!diseaseData.disHeight){
+          if(diseaseData?.topratio){
+            diseaseData['disHeight'] = diseaseData.topratio
+          }
+        }
+
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
@@ -12402,11 +12689,15 @@ export function DiseaseG({route, navigation}) {
     };
 
     useEffect(() => {
-      console.log('getBridgeInfoStorage');
-      if (diseaseData) {
-        diseaseData['bridgeInfoText'] = ''
-        let name = bridgeId + '_' + 'bridgeInfoText'
-        getBridgeInfoStorage(name)
+      try {
+        console.log('getBridgeInfoStorage');
+        if (diseaseData) {
+          diseaseData['bridgeInfoText'] = ''
+          let name = bridgeId + '_' + 'bridgeInfoText'
+          getBridgeInfoStorage(name)
+        }
+      } catch (error) {
+        console.log('getBridgeInfoStorage err',error);
       }
     },[])
     // 读取桥梁备注数据
@@ -13449,26 +13740,29 @@ export function DiseaseH({route, navigation}) {
           // console.log('保存baseData数据');
           // setBaseDataStorage(JSON.stringify(baseData.membercheckdata))
         }
-        if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
-          let infoList = []
-          route.params.thridData.datastr.forEach((item) => {
-            // console.log('病害列表传入的datastr',item);
-            baseData.membercheckdata.forEach((item1) => {
-              if (item == item1.strid) {
-                // console.log('取出来的item1',item1);
-                infoList.push(item1)
-              }
+        if(!diseaseData.infoList){
+          if (route.params.thridData.datastr && baseData.membercheckdata && !diseaseData.infoList) {
+            let infoList = []
+            route.params.thridData.datastr.forEach((item) => {
+              // console.log('病害列表传入的datastr',item);
+              baseData.membercheckdata.forEach((item1) => {
+                if (item == item1.strid) {
+                  // console.log('取出来的item1',item1);
+                  infoList.push(item1)
+                }
+              })
             })
-          })
-          setInfoList(infoList)
-          if (!diseaseData.infoList) {
-            diseaseData['infoList'] = infoList
-            handleFormChenge(infoList, diseaseData.infoList)
+            setInfoList(infoList)
+            if (!diseaseData.infoList) {
+              diseaseData['infoList'] = infoList
+              handleFormChenge(infoList, diseaseData.infoList)
+            }
+          } else if (!baseData.membercheckdata) {
+            // console.log('读取baseData数据');
+            // getBaseDataStorage('baseData')
           }
-        } else if (!baseData.membercheckdata) {
-          // console.log('读取baseData数据');
-          // getBaseDataStorage('baseData')
         }
+        
 
         if (diseaseData.diseaseName == undefined || diseaseData.diseaseName == '') {
           console.log('7777');
@@ -13479,6 +13773,39 @@ export function DiseaseH({route, navigation}) {
         console.log('err09', err);
       }
       try {
+
+        if(!diseaseData.memberLength){
+          if(diseaseData?.length){
+            diseaseData['memberLength'] = diseaseData.length
+          }
+        }
+        if(!diseaseData.memberWidth){
+          if(diseaseData?.width){
+            diseaseData['memberWidth'] = diseaseData.width
+          }
+        }
+        if(!diseaseData.memberHeight){
+          if(diseaseData?.top){
+            diseaseData['memberHeight'] = diseaseData.top
+          }
+        }
+
+        if(!diseaseData.disLength){
+          if(diseaseData?.lengthratio){
+            diseaseData['disLength'] = diseaseData.lengthratio
+          }
+        }
+        if(!diseaseData.disWidth){
+          if(diseaseData?.widthhratio){
+            diseaseData['disWidth'] = diseaseData.widthhratio
+          }
+        }
+        if(!diseaseData.disHeight){
+          if(diseaseData?.topratio){
+            diseaseData['disHeight'] = diseaseData.topratio
+          }
+        }
+
         let lengthText = (diseaseData.memberLength * (diseaseData.disLength / 100)).toFixed(2)
         setLengthText(lengthText)
         let widthText = (diseaseData.memberWidth * (diseaseData.disWidth / 100)).toFixed(2)
@@ -14332,11 +14659,15 @@ export function DiseaseH({route, navigation}) {
     };
 
     useEffect(() => {
-      console.log('getBridgeInfoStorage');
-      if (diseaseData) {
-        diseaseData['bridgeInfoText'] = ''
-        let name = bridgeId + '_' + 'bridgeInfoText'
-        getBridgeInfoStorage(name)
+      try {
+        console.log('getBridgeInfoStorage');
+        if (diseaseData) {
+          diseaseData['bridgeInfoText'] = ''
+          let name = bridgeId + '_' + 'bridgeInfoText'
+          getBridgeInfoStorage(name)
+        }
+      } catch (error) {
+        console.log('getBridgeInfoStorage err',error);
       }
     },[])
     // 读取桥梁备注数据
