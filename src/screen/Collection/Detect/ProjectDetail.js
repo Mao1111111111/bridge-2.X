@@ -1708,7 +1708,7 @@ export default function ProjectDetail({ route, navigation }) {
 
     // 查询数据
     bridge
-      .new_search({
+      .new_search2({
         param: {
           ...search,
           projectid: project.projectid,
