@@ -161,10 +161,11 @@ export default function BridgeList({ navigation }) {
       onAdd={() => bridgeRef.current.open()}
       onDelete={nowChecked && handleDelete}
       onEdit={nowChecked && (() => bridgeRef.current.open(nowChecked))}>
+        <View style={tailwind.mY2} />
       <View style={
         screenWidth > 830 ? [styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', right: 27, width: 715, top: 1, borderRadius: 5 }]
           :
-          [styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', right: 19, width: 715, top: 1, borderRadius: 5,marginTop:18 }]
+          [styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', right: 19, width: 715, top: 1, borderRadius: 5 }]
       }>
         <View style={[styles.searchCard]}>
           <TextInput
@@ -294,8 +295,8 @@ const styles = StyleSheet.create({
     ...tailwind.flex1,
   },
   modalFoot: {
-    ...tailwind.mB4,
-    ...tailwind.mX6,
+    ...tailwind.mB2,
+    ...tailwind.mX4,
     ...tailwind.flexRow,
     ...tailwind.justifyBetween,
   },

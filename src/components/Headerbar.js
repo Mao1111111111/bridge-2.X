@@ -227,7 +227,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
           <></>
         )
       )} */}
-      {pid && pid !== 'P1001' && pid !== 'P1101' ? (
+      {pid && pid !== 'P1001' && pid !== 'P1101' && pid !== 'P1701' ? (
         <View style={
           screenWidth > 830 ? [styles.pid] :
           [styles.pidSmall]
@@ -240,7 +240,7 @@ export default function Headerbar({route,items, pid, proNameList, bridgeList,
         <></>
       )}
 
-      {pid && pid == 'P1001' || pid == 'P1101' ? (
+      {pid && pid == 'P1001' || pid == 'P1101' || pid == 'P1701' ? (
         <View style={
           screenWidth > 830 ? [styles.pid001] :
           [styles.pidSmall]
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
     left:650,
     // width:60
   },
-  // P1001 与 P1101页面的pid样式
+  // P1001 与 P1101 P1701页面的pid样式
   pid001: {
     ...tailwind.mL2,
     ...tailwind.mB1,

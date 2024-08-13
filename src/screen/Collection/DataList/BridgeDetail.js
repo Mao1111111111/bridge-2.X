@@ -83,7 +83,11 @@ export default function BridgeDetail({route, navigation}) {
 
   return (
     <CommonView pid="P1702" headerItems={headerItems}>
-      <View style={[styles.tableCard, {width:700, backgroundColor:'#fff'}]}>
+      <View style={
+        screenWidth > 830 ? [styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', right: 27, width: 715, top: 1, borderRadius: 5 }]
+          :
+          [styles.tableCard, { backgroundColor: 'rgba(255,255,255,1)', right: 19, width: 715, top: 1, borderRadius: 5 }]
+      }>
         <Table.Box
           loading={loading}
           numberOfPages={pageTotal}
