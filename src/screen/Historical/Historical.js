@@ -453,15 +453,26 @@ export default function Historical() {
                       {
                         modalState == 'default' &&
                         <>
-                        <View style={{flexDirection:'row'}}>
+                        <View style={{justifyContent: "center", alignItems: 'center',}}>
                           <Switch
                             trackColor={{ false: "#767577", true: "#2b427d" }}
                             thumbColor={isEnabled ? "#f4f3f4" : "#f4f3f4"}
                             onValueChange={toggleSwitch}
                             value={isEnabled}
                           />
-                          <Text style={{ color: '#999', }}>{isEnabled ? '下载完整的结构数据与病害检测数据' : '仅下载结构数据'}</Text>
+                          <Text style={{ color: '#666', }}>{isEnabled ? '下载完整的结构数据与病害检测数据' : '仅下载结构数据'}</Text>
+                          
                         </View>
+                        {
+                          !isEnabled ? 
+                          <>
+                            <Text style={{color: '#999',fontSize:12}}>数据将存入桥梁管理列表</Text>
+                            <Text style={{color: '#999',fontSize:12}}>可通过桥梁导入进行编辑</Text>
+                          </> 
+                          : 
+                          <></>
+                        }
+                        
                           
                           {
                             isEnabled && <Select
