@@ -133,3 +133,20 @@ export const getBytaskId = async taskId => {
   const param = [taskId];
   return getResult(await db().executeSql(sql, param), 'object');
 }; 
+
+// 移除数据
+export const remove = async data => {
+  const sql = `
+  delete from synergy_test where 1=1
+   ${data.bridgeid ? 'and bridgeid = ?' : ''}
+   ${data.bridgereportid ? 'and bridgereportid = ?' : ''} 
+  `;
+
+  let param = [
+    data.bridgeid, 
+    data.bridgereportid
+  ];
+  if (param.length) {
+    await db().executeSql(sql, param);
+  }
+};
