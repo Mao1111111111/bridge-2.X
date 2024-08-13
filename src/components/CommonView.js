@@ -421,7 +421,7 @@ export default function CommonView({
                         (operation.img == 'induct' ? inductImg : //依次进行条件判断
                         (operation.img == 'clone' ? cloneImg : 
                         (operation.img == 'cooperate' ? cooperateImg : 
-                        (operation.img == 'cooperateDis' ? cooperateDisImg : '')))))
+                        (operation.img == 'cooperateDis' ? cooperateDisImg : null)))))
                       }
                       />
                     </Pressable>
