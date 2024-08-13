@@ -25,6 +25,11 @@ export const remove = async id => {
   const param = [id];
   await db().executeSql(sql, param);
 };
+export const remove2 = async bridgereportid => {
+  const sql = 'delete from bridge_report_member where bridgereportid = ?';
+  const param = [bridgereportid];
+  await db().executeSql(sql, param);
+};
 
 export const removeByMembertype = async data => {
   const sql =

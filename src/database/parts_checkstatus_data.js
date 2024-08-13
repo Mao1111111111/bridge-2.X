@@ -30,6 +30,12 @@ export const remove = async data => {
   await db().executeSql(sql, param);
 };
 
+export const remove2 = async bridgereportid => {
+  const sql = 'delete from parts_checkstatus_data where bridgereportid = ?';
+  const param = [bridgereportid];
+  await db().executeSql(sql, param);
+};
+
 export const save = async data => {
   const sql = `insert into parts_checkstatus_data (
       bridgereportid

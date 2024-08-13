@@ -10,7 +10,7 @@ import * as bridgeReportMember from '../../database/bridge_report_member';
 import * as partsCheckStatus from '../../database/parts_checkstatus_data';
 import * as bridgeReportFile from '../../database/bridge_report_file';
 import * as checkstatusMedia from '../../database/bridge_report_member_checkstatus_media';
-import * as fileGps from '../../database/file_gps';;
+import * as fileGps from '../../database/file_gps';
 import fs from '../../utils/fs';
 import { S3GetFile } from '../../utils/AWS';
 import uuid from 'react-native-uuid';

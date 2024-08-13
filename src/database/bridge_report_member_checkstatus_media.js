@@ -26,6 +26,11 @@ export const remove = async mediaid => {
   const param = [mediaid];
   await db().executeSql(sql, param);
 };
+export const remove2 = async bridgereportid => {
+  const sql = 'delete from bridge_report_member_checkstatus_media where bridgereportid = ?';
+  const param = [bridgereportid];
+  await db().executeSql(sql, param);
+};
 
 export const removeByParentmediaid = async parentmediaid => {
   const sql =

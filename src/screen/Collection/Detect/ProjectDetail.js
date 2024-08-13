@@ -23,7 +23,12 @@ import * as bridgeProjectBind from '../../../database/bridge_project_bind';
 import * as bridgeReport from '../../../database/bridge_report';
 import * as uploadStateRecord from '../../../database/upload_state_record';
 import * as bridgeReportMember from '../../../database/bridge_report_member';
+import * as partsCheckStatus from '../../../database/parts_checkstatus_data';
+import * as bridgeReportFile from '../../../database/bridge_report_file';
+import * as checkstatusMedia from '../../../database/bridge_report_member_checkstatus_media';
+import * as fileGps from '../../../database/file_gps';
 import * as synergyTest from '../../../database/synergy_test';
+
 import { alert, confirm } from '../../../utils/alert';
 import { loop, listToGroup } from '../../../utils/common';
 import CommonView from '../../../components/CommonView';
@@ -1788,6 +1793,20 @@ export default function ProjectDetail({ route, navigation }) {
           projectid: project.projectid,
           bridgereportid: nowChecked.bridgereportid
         });
+        // 删除基础信息表数据
+        await bridgeReport.remove2(nowChecked.bridgereportid)
+        // 删除上传记录表数据
+        await uploadStateRecord.remove(nowChecked.bridgereportid)
+        // 删除检测构件数据-bridge_report_member表
+        await bridgeReportMember.remove2(nowChecked.bridgereportid)
+        // 删除检测情况表数据-parts_checkstatus_data
+        await partsCheckStatus.remove2(nowChecked.bridgereportid)
+        // 删除 bridge_report_file 表数据
+        await bridgeReportFile.remove2(nowChecked.bridgereportid)
+        // 删除 bridge_report_member_checkstatus_media 表数据
+        await checkstatusMedia.remove2(nowChecked.bridgereportid)
+        // 删除file_gps 表数据
+        await fileGps.remove2(nowChecked.bridgereportid)
         // 删除协同检测的数据
         await synergyTest.remove({
           bridgeid: nowChecked.bridgeid,

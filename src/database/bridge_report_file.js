@@ -25,6 +25,11 @@ export const remove = async mediaid => {
   const param = [mediaid];
   await db().executeSql(sql, param);
 };
+export const remove2 = async bridgereportid => {
+  const sql = 'delete from bridge_report_file where bridgereportid = ?';
+  const param = [bridgereportid];
+  await db().executeSql(sql, param);
+};
 
 export const save = async data => {
   const sql = `

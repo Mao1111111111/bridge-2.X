@@ -57,3 +57,10 @@ export const getById = async bridgereportid => {
   const param = [bridgereportid];
   return getResult(await db().executeSql(sql, param), 'object');
 }; 
+
+// 移除
+export const remove = async bridgereportid => {
+  const sql = 'delete from upload_state_record where bridgereportid = ?';
+  const param = [bridgereportid];
+  await db().executeSql(sql, param);
+};
