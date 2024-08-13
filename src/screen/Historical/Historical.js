@@ -52,8 +52,8 @@ export default function Historical() {
     const windowWidth = Dimensions.get('window').width;
     setScreenWidth(windowWidth)
     console.log('设备deviceId',deviceId);
-    console.log('设备是否联网',networkStateAll.isConnected.isConnected); 
-  },[networkStateAll,])
+    console.log('设备是否联网',networkStateAll.isConnected.isConnected);
+  },[networkStateAll])
 
   const [companyList,setCompanyList] = useState([])
   // 获取用于展示的项目与桥梁列表
@@ -63,25 +63,6 @@ export default function Historical() {
       return
     }
     console.log('获取分公司列表');
-    // let companyList = [
-    //   {
-    //     comName:'哈尔滨养护分公司甲',
-    //     comId:'proId_A',
-    //   },
-    //   {
-    //     comName:'哈尔滨养护分公司乙',
-    //     comId:'proId_B',
-    //   },
-    //   {
-    //     comName:'哈尔滨养护分公司丙',
-    //     comId:'proId_C',
-    //   },
-    //   {
-    //     comName:'哈尔滨养护分公司丁',
-    //     comId:'proId_D',
-    //   },
-    // ]
-    // setCompanyList(companyList)
     // 获取养护公司列表
     getGcompanylist().then(res=>{
       setCompanyList(res)
@@ -92,14 +73,45 @@ export default function Historical() {
 
   const Item = ({title,type,value}) => (
     <Pressable style={styles.item} onPress={()=>itemClick(type,value)}>
-      <Text style={styles.title}>{title}</Text>
+      {
+        type == 'company' ? 
+        <>
+          {
+            title == companySel ? 
+            <>
+              <Text style={styles.itemTitleSel}>{title}</Text>
+            </> 
+            : 
+            <>
+              <Text style={styles.itemTitle}>{title}</Text>
+            </>
+          }
+        </> 
+        : 
+        <>
+          {
+            title == proSel ? 
+            <>
+              <Text style={styles.itemTitleSel}>{title}</Text>
+            </>
+            :
+            <>
+              <Text style={styles.itemTitle}>{title}</Text>
+            </>
+          }
+        </>
+      }
+      {/* <Text style={styles.itemTitle}>{title}</Text> */}
     </Pressable>
   );
 
-  
+  const [companySel,setCompanySel] = useState('')
+  const [proSel,setProSel] = useState('')
   const itemClick = (type,value) => {
     console.log('列表点击',type,value);
     if(type == 'company'){
+      setCompanySel(value?.gycompanyname)
+      setProSel('')
       // 重置项目列表
       setProList([])
       // 重置桥梁列表
@@ -108,6 +120,7 @@ export default function Historical() {
       // 获取分公司下的项目列表
       getProList(value)
     } else if(type == 'proJect'){
+      setProSel(value?.gprojectname)
       // 重置桥梁列表
       setBridgeList([])
       setItemSelectArr([])
@@ -120,6 +133,10 @@ export default function Historical() {
       getBridgeList(value)
     }
   }
+  useEffect(()=>{
+    console.log('companySel',companySel,proSel);
+    
+  },[companySel,proSel])
 
   const [proList,setProList] = useState([])
   const getProList = (value) => {
@@ -128,34 +145,6 @@ export default function Historical() {
       return
     }
     console.log('获取项目列表',value);
-
-    // let proList = [
-    //   {
-    //     proName:'2024哈尔滨养护分公司绥满高速A',
-    //     proId:'proId_A',
-    //   },
-    //   {
-    //     proName:'2024哈尔滨养护分公司绥满高速B',
-    //     proId:'proId_B',
-    //   },
-    //   {
-    //     proName:'2024哈尔滨养护分公司绥满高速C',
-    //     proId:'proId_C',
-    //   },
-    //   {
-    //     proName:'2024哈尔滨养护分公司绥满高速D',
-    //     proId:'proId_D',
-    //   },
-    //   {
-    //     proName:'2024哈尔滨养护分公司绥满高速E',
-    //     proId:'proId_E',
-    //   },
-    //   {
-    //     proName:'2024哈尔滨养护分公司绥满高速F',
-    //     proId:'proId_F',
-    //   },
-    // ]
-    // setProList(proList)
     // 获取项目列表
     getGprojectlist({
       gycompanyid:value.gycompanyid,
@@ -174,50 +163,6 @@ export default function Historical() {
       return
     }
     console.log('获取桥梁列表',value);
-
-    // let bridgeList = [
-    //   {
-    //     bridgeName:'K123456_XXXXXX大桥1',
-    //     bridgeId:'bridgeId_1',
-    //   },
-    //   {
-    //     bridgeName:'K123456_XXXXXX大桥2',
-    //     bridgeId:'bridgeId_2',
-    //   },
-    //   {
-    //     bridgeName:'K123456_XXXXXX大桥3',
-    //     bridgeId:'bridgeId_3',
-    //   },
-    //   {
-    //     bridgeName:'K123456_XXXXXX大桥4',
-    //     bridgeId:'bridgeId_4',
-    //   },
-    //   {
-    //     bridgeName:'K123456_XXXXXX大桥5',
-    //     bridgeId:'bridgeId_5',
-    //   },
-    //   {
-    //     bridgeName:'K123456_XXXXXX大桥6',
-    //     bridgeId:'bridgeId_6',
-    //   },
-    //   {
-    //     bridgeName:'K123456_XXXXXX大桥7',
-    //     bridgeId:'bridgeId_7',
-    //   },
-    //   {
-    //     bridgeName:'K123456_XXXXXX大桥8',
-    //     bridgeId:'bridgeId_8',
-    //   },
-    //   {
-    //     bridgeName:'K123456_XXXXXX大桥9',
-    //     bridgeId:'bridgeId_9',
-    //   },
-    //   {
-    //     bridgeName:'K123456_XXXXXX大桥10',
-    //     bridgeId:'bridgeId_10',
-    //   },
-    // ]
-    // setBridgeList(bridgeList)
     // 获取桥梁列表
     getBridgelist({gprojectid:value.gprojectid}).then(res=>{
       setBridgeList(res)
@@ -228,7 +173,29 @@ export default function Historical() {
 
   const BridgeItem = ({title,type,value}) => (
     <Pressable style={[styles.item]} onPress={()=>bridgeItemClick(type,value)}>
-      <Text style={styles.title}>{title}</Text>
+      <View style={{flexDirection:'row',alignItems:'center'}}>
+          {
+            // 当前列表项是否是已被选择的桥梁
+            itemSelectArr.includes(value) ?
+            <Pressable style={{display:'flex',alignItems:'center',justifyContent:'center',marginRight:3,paddingTop:3,flexDirection:'row',alignItems:'center'}} onPress={()=>deleteItem(value)}>
+              <Image style={
+                { height: 15, width: 15, alignItems: 'center' }}
+                source={require('../../iconImg/briSel.png')}
+              />
+              <Text style={styles.itemTitle}>{title}</Text>
+            </Pressable>
+            : 
+            <View style={{display:'flex',alignItems:'center',justifyContent:'center',marginRight:3,paddingTop:3,flexDirection:'row',alignItems:'center'}}>
+              <Image style={
+                { height: 15, width: 15, alignItems: 'center' }}
+                source={require('../../iconImg/briUnSel.png')}
+              />
+              <Text style={styles.itemTitle}>{title}</Text>
+            </View>
+          }
+        {/* <Text style={styles.itemTitle}>{title}</Text> */}
+      </View>
+      
     </Pressable>
   );
 
@@ -243,18 +210,20 @@ export default function Historical() {
       console.log('aaaa',a);
       // setItemSelectArr(a.reverse())
     // }
-    
   }
   useEffect(()=>{
     console.log('itemSelectArr',itemSelectArr);
   },[itemSelectArr])
 
   const BridgeSelectItem = ({title,type,value}) => (
-    <Pressable style={[styles.item,{width:'85%',flexDirection:'row',alignItems:'center'}]}>
-      <Pressable onPress={()=>deleteItem(value)} style={{backgroundColor:'#999',width:30,height:30,alignItems:'center',justifyContent:'center'}}>
-        <Text>-</Text>
-      </Pressable>
-      <Text style={styles.title}>{title}</Text>
+    <Pressable style={[styles.item,{width:'85%',flexDirection:'row',alignItems:'center'}]} onPress={()=>deleteItem(value)}>
+      <View style={{display:'flex',alignItems:'center',justifyContent:'center',marginRight:3,paddingTop:3}}>
+      <Image style={
+        { height: 15, width: 15, alignItems: 'center' }}
+        source={require('../../iconImg/briDel1.png')}
+      />
+      </View>
+      <Text style={styles.itemTitle}>{title}</Text>
     </Pressable>
   );
 
@@ -356,7 +325,7 @@ export default function Historical() {
   }
 
   return (
-    <View style={tailwind.flex1}>
+    <View style={[tailwind.flex1]}>
       <View
         style={
           [
@@ -381,22 +350,28 @@ export default function Historical() {
               width:713,
               height:466,
               position:'absolute',
-              left:70
+              left:70,
+              padding:10
             }
           ]
         }
       >
         <View style={tailwind.mY3} />
         <View style={{width:'100%',height:'95%',
-          display:'flex',justifyContent:'center',alignItems:'center'}}>
+          display:'flex',justifyContent:'center',alignItems:'center',}}>
             {
               !cloudDataList?.length ? 
               <>
               {
                 companyList?.length ? 
-                <>
+                <View style={{width:'100%',height:'100%',borderWidth:1,borderStyle:'solid',borderRadius:5,borderTopColor:"#c7c7c7",borderLeftColor:"#c7c7c7",borderBottomColor:"#e6e6e6",borderRightColor:"#e6e6e6",padding:5}}>
                   <View style={{width:'100%',height:'50%',flexDirection:'row',marginBottom:10}}>
-                    <View style={{width:'25%',height:'100%',borderColor:'#999',borderRightWidth:1,borderStyle:'dashed',padding: 5,}}>
+                    <View style={{width:'25%',height:'100%',padding: 5,}}>
+                      <View style={{width:'100%',height:'15%',
+                        display:'flex',justifyContent:'center',alignItems:'flex-start',
+                        paddingLeft:5,borderBottomWidth:1,borderStyle:'solid',borderBottomColor:"#c7c7c7",marginBottom:5}}>
+                        <Text style={styles.listTitle}>分公司列表</Text>
+                      </View>
                       <FlatList
                         data={companyList}
                         renderItem={({item}) => <Item title={item.gycompanyname} type={'company'} value={item} />}
@@ -405,7 +380,12 @@ export default function Historical() {
                     </View>
                     {
                       proList?.length ? 
-                      <View style={{width:'40%',height:'100%',borderColor:'#999',borderRightWidth:1,borderStyle:'dashed',padding: 5,}}>
+                      <View style={{width:'40%',height:'100%',borderColor:'#c7c7c7',borderLeftWidth:1,borderStyle:'dashed',padding: 5,}}>
+                        <View style={{width:'100%',height:'15%',
+                          display:'flex',justifyContent:'center',alignItems:'flex-start',
+                          paddingLeft:5,borderBottomWidth:1,borderStyle:'solid',borderBottomColor:"#c7c7c7",marginBottom:5}}>
+                          <Text style={styles.listTitle}>项目列表</Text>
+                        </View>
                         <FlatList
                           data={proList}
                           renderItem={({item}) => <Item title={item.gprojectname}  type={'proJect'} value={item} />}
@@ -415,25 +395,33 @@ export default function Historical() {
                       : 
                       <></>
                     }
-                    <View style={{width:'35%',height:'100%',padding: 5,}}>
-                      {
-                        bridgeList?.length ? 
-                        <>
-                          <FlatList
-                            data={bridgeList}
-                            renderItem={({item}) => <BridgeItem title={item.reportname}  type={'bridge'} value={item} />}
-                            keyExtractor={item => item.bridgeid}
-                          />
-                        </> 
-                        : 
-                        <></>
-                      }
-                    </View>
+                    {
+                      bridgeList?.length ? 
+                      <View style={{width:'35%',height:'100%',borderColor:'#c7c7c7',borderLeftWidth:1,borderStyle:'dashed',padding: 5,}}>
+                        <View style={{width:'100%',height:'15%',
+                          display:'flex',justifyContent:'center',alignItems:'flex-start',
+                          paddingLeft:5,borderBottomWidth:1,borderStyle:'solid',borderBottomColor:"#c7c7c7",marginBottom:5}}>
+                          <Text style={styles.listTitle}>桥梁列表</Text>
+                        </View>
+                        <FlatList
+                          data={bridgeList}
+                          renderItem={({item}) => <BridgeItem title={item.reportname}  type={'bridge'} value={item} />}
+                          keyExtractor={item => item.bridgeid}
+                        />
+                      </View> 
+                      : 
+                      <></>
+                    }
                   </View>
                   <View style={{width:'100%',height:'40%',}}>
                   {
                     itemSelectArr?.length ? 
                     <>
+                      <View style={{width:'100%',height:'15%',
+                        display:'flex',justifyContent:'center',alignItems:'flex-start',
+                        paddingLeft:5,borderBottomWidth:1,borderStyle:'solid',borderBottomColor:"#c7c7c7",marginBottom:5}}>
+                        <Text style={styles.listTitle}>已选桥梁列表 _ 共{itemSelectArr.length}条</Text>
+                      </View>
                       <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center',padding:5}}>
                         <FlatList
                           data={itemSelectArr}
@@ -465,17 +453,20 @@ export default function Historical() {
                       {
                         modalState == 'default' &&
                         <>
+                        <View style={{flexDirection:'row'}}>
                           <Switch
                             trackColor={{ false: "#767577", true: "#2b427d" }}
                             thumbColor={isEnabled ? "#f4f3f4" : "#f4f3f4"}
                             onValueChange={toggleSwitch}
                             value={isEnabled}
                           />
-                          <Text style={{ color: '#999', }}>{isEnabled ? '下载完整的桥梁结构数据与病害检测数据' : '仅下载桥梁结构数据'}</Text>
+                          <Text style={{ color: '#999', }}>{isEnabled ? '下载完整的结构数据与病害检测数据' : '仅下载结构数据'}</Text>
+                        </View>
+                          
                           {
                             isEnabled && <Select
                               name="bridgeside"
-                              label="选择项目"
+                              label="存入项目"
                               labelName="projectname"
                               valueName="projectid"
                               values={locProjectList}
@@ -519,22 +510,19 @@ export default function Historical() {
                       }
                     </View>
                   </Modal>
-                </>
+                </View>
                 : 
                 <>
                   <Pressable onPress={getViewList}>
-                    <Button>获取云端数据列表</Button>
+                    <Button style={[{ backgroundColor: '#2b427d' }]}>获取云端数据列表</Button>
                   </Pressable>
                 </>
               }
                 
               </> 
               : 
-              <>
-                <Text>有云端数据列表</Text>
-              </>
+              <></>
             }
-          
         </View>
       </ImageBackground>
       <View
@@ -584,12 +572,17 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: '#fff',
-    padding: 5,
+    padding: 4,
     // marginVertical: 8,
     // marginHorizontal: 16,
   },
-  title: {
-    fontSize: 16,
+  itemTitle: {
+    fontSize: 12,
+  },
+  itemTitleSel: {
+    fontSize: 12,
+    color:'#2b427d',
+    fontWeight:'700',
   },
   bottomButton: {
     backgroundColor:'#2b427d',
@@ -610,5 +603,10 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     width:'100%',
     height:'10%',
+  },
+  listTitle:{
+    fontSize:13,
+    color:'#2b427d',
+    fontWeight:'900',
   }
 });
