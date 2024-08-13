@@ -37,6 +37,24 @@ export const remove = async data => {
   }
 };
 
+export const remove2 = async data => {
+  const sql = `
+  delete from bridge_project_bind where 1=1
+   ${data.bridgeid ? 'and bridgeid = ?' : ''}
+   ${data.projectid ? 'and projectid = ?' : ''} 
+   ${data.bridgereportid ? 'and bridgereportid = ?' : ''} 
+  `;
+
+  let param = [
+    data.bridgeid, 
+    data.projectid,
+    data.bridgereportid
+  ];
+  if (param.length) {
+    await db().executeSql(sql, param);
+  }
+};
+
 export const save = async data => {
   const sql = `
   insert into bridge_project_bind (

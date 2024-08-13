@@ -1783,10 +1783,16 @@ export default function ProjectDetail({ route, navigation }) {
         // 表格loading
         setLoading(true);
         // 删除桥梁和项目的绑定关系
-        await bridgeProjectBind.remove({
+        await bridgeProjectBind.remove2({
           bridgeid: nowChecked.bridgeid,
           projectid: project.projectid,
+          bridgereportid: nowChecked.bridgereportid
         });
+        // 删除协同检测的数据
+        await synergyTest.remove({
+          bridgeid: nowChecked.bridgeid,
+          bridgereportid: nowChecked.bridgereportid
+        })
         // 重置页码
         setPage({
           pageSize: 10,
